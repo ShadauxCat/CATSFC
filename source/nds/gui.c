@@ -330,6 +330,9 @@ gui_action_type get_gui_input(void)
 		case KEY_X:
 			ret = CURSOR_EXIT;
 			break;
+		case KEY_TOUCH:
+			ret = CURSOR_TOUCH;
+			break;
 		default:
 			ret = CURSOR_NONE;
 			break;
@@ -778,10 +781,71 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 	return_value = -1;
 	while(repeat)
 	{
+		struct key_buf inputdata;
 		gui_action = get_gui_input();
+		int mod;
 
 		switch(gui_action)
 		{
+			case CURSOR_TOUCH:
+				ds2_getrawInput(&inputdata);
+				if(inputdata.y <= 33)
+					break;
+				else if(inputdata.y <= 60)
+					mod = 0;
+				else if(inputdata.y <= 87)
+					mod = 1;
+				else if(inputdata.y <= 114)
+					mod = 2;
+				else if(inputdata.y <= 141)
+					mod = 3;
+				else if(inputdata.y <= 168)
+					mod = 4;
+				else if(inputdata.y <= 192)
+					mod = 5;
+				else
+					break;
+				
+				if(selected_item_on_list - selected_item_on_screen + mod >= total_items_num)
+					break;
+					
+				selected_item_on_list = selected_item_on_list - selected_item_on_screen + mod;
+				
+				if(selected_item_on_list + 1 <= num_files)
+				{
+					//The ".." directory
+					if(!strcasecmp(file_list[selected_item_on_list], ".."))
+					{
+						char *ext_pos;
+
+						strcpy(filelist_info.current_path, default_dir_name);
+						ext_pos = strrchr(filelist_info.current_path, '/');
+						if(NULL != ext_pos)	//Not root directory
+						{
+							*ext_pos = '\0';
+							to_update_filelist= 1;
+						}
+					}
+					else
+					{
+						repeat = 0;
+						return_value = 0;
+						strcpy(default_dir_name, filelist_info.current_path);
+						strcpy(result, file_list[selected_item_on_list]);
+					}
+				}
+				//directory selected
+				else if(num_dirs > 0)
+				{
+					unsigned int m;
+
+					m = selected_item_on_list - num_files;
+					strcpy(filelist_info.current_path, default_dir_name);
+					strcat(filelist_info.current_path, "/");
+					strcat(filelist_info.current_path, dir_list[m]);
+					to_update_filelist= 1;
+				}
+				break;
 			case CURSOR_UP:
 				redraw = 1;
 				if(selected_item_on_screen > 0)
@@ -2894,7 +2958,7 @@ u32 menu(u16 *screen)
 
     char *enable_disable_options[] = { (char*)&msg[MSG_EN_DIS_ABLE_0], (char*)&msg[MSG_EN_DIS_ABLE_1] };
 
-    char *language_options[] = { (char*)&lang[1], (char*)&lang[0] };
+    char *language_options[] = { (char*)&lang[0], (char*)&lang[1] };
 
     char *keyremap_options[] = {(char*)&msg[MSG_KEY_MAP_NONE], (char*)&msg[MSG_KEY_MAP_A], (char*)&msg[MSG_KEY_MAP_B], 
                                 (char*)&msg[MSG_KEY_MAP_SL], (char*)&msg[MSG_KEY_MAP_ST], (char*)&msg[MSG_KEY_MAP_RT], 
@@ -3687,16 +3751,273 @@ u32 menu(u16 *screen)
     	    }
     	}
 
+		struct key_buf inputdata;
 		gui_action = get_gui_input();
-		if(gui_action == CURSOR_TOUCH)
-		{
-		}
-		else
-		{
-		}
 
 		switch(gui_action)
 		{
+			case CURSOR_TOUCH:
+				ds2_getrawInput(&inputdata);
+				/* Back button at the top of every menu but the main one */
+				if(current_menu != &main_menu && inputdata.x > 231 && inputdata.y <= 25)
+				{
+					choose_menu(current_menu->options->sub_menu);
+					break;
+				}
+				/* Main menu */
+				if(current_menu == &main_menu)
+				{
+					if(inputdata.x <= 86 && inputdata.y <= 80)
+						current_option_num = 0;
+					else if(inputdata.x <= 172 && inputdata.y <= 80)
+						current_option_num = 1;
+					else if(inputdata.x <= 256 && inputdata.y <= 80)
+						current_option_num = 2;
+					else if(inputdata.x <= 86 && inputdata.y <= 160)
+						current_option_num = 3;
+					else if(inputdata.x <= 172 && inputdata.y <= 160)
+						current_option_num = 4;
+					else if(inputdata.x <= 256 && inputdata.y <= 160)
+						current_option_num = 5;
+					else if(inputdata.x <= 86 && inputdata.y <= 192)
+						current_option_num = 6;
+					else if(inputdata.x <= 172 && inputdata.y <= 192)
+						current_option_num = 7;
+					else if(inputdata.x <= 256 && inputdata.y <= 192)
+						current_option_num = 8;
+					else
+						break;
+					current_option = current_menu->options + current_option_num;
+					
+					if(current_option -> option_type & HIDEN_TYPE)
+						break;
+					else if(current_option->option_type & ACTION_TYPE)
+						current_option->action_function();
+					else if(current_option->option_type & SUBMENU_TYPE)
+						choose_menu(current_option->sub_menu);
+				}
+				/* This is the majority case, covering all menus except save states, screen shots, and game loading */
+				else if(current_menu != (main_menu.options + 1)->sub_menu 
+				&& current_menu != ((main_menu.options +1)->sub_menu->options + 3)->sub_menu
+				&& current_menu != (main_menu.options +3)->sub_menu 
+				&& current_menu != ((main_menu.options +3)->sub_menu->options + 1)->sub_menu
+				&& current_menu != ((main_menu.options +3)->sub_menu->options + 2)->sub_menu
+				&& current_menu != (main_menu.options +6)->sub_menu
+				&& current_menu != ((main_menu.options +6)->sub_menu->options + 2)->sub_menu)
+				{
+					if(inputdata.y <= 33)
+						break;
+					else if(inputdata.y <= 60)
+						current_option_num = 1;
+					else if(inputdata.y <= 87)
+						current_option_num = 2;
+					else if(inputdata.y <= 114)
+						current_option_num = 3;
+					else if(inputdata.y <= 141)
+						current_option_num = 4;
+					else if(inputdata.y <= 168)
+						current_option_num = 5;
+					else if(inputdata.y <= 192)
+						current_option_num = 6;
+					else
+						break;
+						
+					current_option = current_menu->options + current_option_num;
+					
+					if(current_option -> option_type & HIDEN_TYPE)
+						break;
+						
+					if(!current_option)
+						break;
+					
+					if(current_menu->key_function)
+					{
+						gui_action = CURSOR_RIGHT;
+						current_menu->key_function();
+					}
+					else if(current_option->option_type & (NUMBER_SELECTION_TYPE | STRING_SELECTION_TYPE))
+					{
+						u32 current_option_val = *(current_option->current_option);
+
+						if(current_option_val <  current_option->num_options -1)
+							current_option_val++;
+						else
+							current_option_val= 0;
+						*(current_option->current_option) = current_option_val;
+
+						if(current_option->action_function)
+							current_option->action_function();
+					}
+				}
+				/* Save states */
+				else if(current_menu == (main_menu.options + 1)->sub_menu)
+				{
+					if(inputdata.y <= 33)
+						break;
+					else if(inputdata.y <= 60)
+						current_option_num = 1;
+					else if(inputdata.y <= 87)
+						break;
+					else if(inputdata.y <= 114)
+						current_option_num = 2;
+					else if(inputdata.y <= 141)
+						current_option_num = 3;
+					else
+						break;
+					
+					current_option = current_menu->options + current_option_num;
+					
+					if(current_option_num == 2)
+					{
+						u32 current_option_val = *(current_option->current_option);
+						u32 old_option_val = current_option_val;
+
+						if(inputdata.x <= 25)
+							break;
+						else if(inputdata.x <= 45)
+							current_option_val = 0;
+						else if(inputdata.x <= 65)
+							current_option_val = 1;
+						else if(inputdata.x <= 86)
+							current_option_val = 2;
+						else if(inputdata.x <= 107)
+							current_option_val = 3;
+						else if(inputdata.x <= 128)
+							current_option_val = 4;
+						else if(inputdata.x <= 149)
+							current_option_val = 5;
+						else if(inputdata.x <= 170)
+							current_option_val = 6;
+						else if(inputdata.x <= 191)
+							current_option_val = 7;
+						else if(inputdata.x <= 212)
+							current_option_val = 8;
+						else if(inputdata.x <= 233)
+							current_option_val = 9;
+						else
+							break;
+						
+						*(current_option->current_option) = current_option_val;
+						
+						if(current_option_val == old_option_val)
+						{
+							gui_action = CURSOR_SELECT;
+							if(current_option->option_type & ACTION_TYPE)
+								current_option->action_function();
+							else if(current_option->option_type & SUBMENU_TYPE)
+								choose_menu(current_option->sub_menu);
+						}
+						break;
+					}
+					
+					gui_action = CURSOR_SELECT;
+					if(current_option -> option_type & HIDEN_TYPE)
+						break;
+					else if(current_option->option_type & ACTION_TYPE)
+						current_option->action_function();
+					else if(current_option->option_type & SUBMENU_TYPE)
+						choose_menu(current_option->sub_menu);
+				}
+				/* Delete state sub menu */
+				else if(current_menu == ((main_menu.options + 1)->sub_menu->options + 3)->sub_menu)
+				{
+					if(inputdata.y <= 33)
+						break;
+					else if(inputdata.y <= 60)
+						current_option_num = 1;
+					else if(inputdata.y <= 87)
+						break;
+					else if(inputdata.y <= 114)
+						current_option_num = 2;
+					else
+						break;
+					
+					current_option = current_menu->options + current_option_num;
+					
+					if(current_option_num == 2)
+					{
+						u32 current_option_val = *(current_option->current_option);
+						u32 old_option_val = current_option_val;
+
+						if(inputdata.x <= 25)
+							break;
+						else if(inputdata.x <= 45)
+							current_option_val = 0;
+						else if(inputdata.x <= 65)
+							current_option_val = 1;
+						else if(inputdata.x <= 86)
+							current_option_val = 2;
+						else if(inputdata.x <= 107)
+							current_option_val = 3;
+						else if(inputdata.x <= 128)
+							current_option_val = 4;
+						else if(inputdata.x <= 149)
+							current_option_val = 5;
+						else if(inputdata.x <= 170)
+							current_option_val = 6;
+						else if(inputdata.x <= 191)
+							current_option_val = 7;
+						else if(inputdata.x <= 212)
+							current_option_val = 8;
+						else if(inputdata.x <= 233)
+							current_option_val = 9;
+						else
+							break;
+						
+						*(current_option->current_option) = current_option_val;
+						
+						if(current_option_val == old_option_val)
+						{
+							gui_action = CURSOR_SELECT;
+							if(current_option->option_type & ACTION_TYPE)
+								current_option->action_function();
+							else if(current_option->option_type & SUBMENU_TYPE)
+								choose_menu(current_option->sub_menu);
+						}
+						break;
+					}
+					
+					gui_action = CURSOR_SELECT;
+					if(current_option -> option_type & HIDEN_TYPE)
+						break;
+					else if(current_option->option_type & ACTION_TYPE)
+						current_option->action_function();
+					else if(current_option->option_type & SUBMENU_TYPE)
+						choose_menu(current_option->sub_menu);
+				}
+				/* Screenshots and new game loading */
+				else if(current_menu == (main_menu.options + 3)->sub_menu
+				|| current_menu == ((main_menu.options +3)->sub_menu->options + 1)->sub_menu
+				|| current_menu == (main_menu.options + 6)->sub_menu
+				|| current_menu == ((main_menu.options +6)->sub_menu->options + 2)->sub_menu)
+				{
+					if(inputdata.y <= 33)
+						break;
+					else if(inputdata.y <= 60)
+						current_option_num = 1;
+					else if(inputdata.y <= 87)
+						current_option_num = 2;
+					else if(inputdata.y <= 114)
+						current_option_num = 3;
+					else if(inputdata.y <= 141)
+						current_option_num = 4;
+					else if(inputdata.y <= 168)
+						current_option_num = 5;
+					else if(inputdata.y <= 192)
+						current_option_num = 6;
+					else
+						break;
+					
+					current_option = current_menu->options + current_option_num;
+					
+					if(current_option -> option_type & HIDEN_TYPE)
+						break;
+					else if(current_option->option_type & ACTION_TYPE)
+						current_option->action_function();
+					else if(current_option->option_type & SUBMENU_TYPE)
+						choose_menu(current_option->sub_menu);
+				}
+				break;
 			case CURSOR_DOWN:
 				if(current_menu->key_function)
 					current_menu->key_function();
@@ -3803,7 +4124,15 @@ u32 menu(u16 *screen)
 	destroy_dynamic_cheats();
 	if(bg_screenp != NULL) free((void*)bg_screenp);
 	
-	save_game_config_file();
+	if(gamepak_name[0] != 0)
+	{
+		game_config.clock_speed_number = clock_speed_number;
+
+		reorder_latest_file();
+		//S9xAutoSaveSRAM ();
+		save_game_config_file();
+	}
+	save_emu_config_file();
 	mdelay(100);
 	set_cpu_clock(clock_speed_number);
 	mdelay(200);
