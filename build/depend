@@ -1,0 +1,8 @@
+fxdbg.o: ../source/fxdbg.cpp ../source/fxemu.h ../source/fxinst.h
+fxemu.o: ../source/fxemu.cpp ../source/fxemu.h ../source/fxinst.h
+fxinst.o: ../source/fxinst.cpp ../source/fxemu.h ../source/fxinst.h
+sdd1emu.o: ../source/sdd1emu.cpp ../source/port.h ../source/pixform.h \
+  ../source/sdd1emu.h
+seta.o: ../source/seta.cpp ../source/seta.h ../source/port.h \
+  ../source/pixform.h
+charsets.o: ../source/nds/charsets.c ../source/nds/charsets.h

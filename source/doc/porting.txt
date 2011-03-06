@@ -1,0 +1,725 @@
+                   How to Port Snes9x to a New Platform
+                   ====================================
+
+Version: 1.01
+Date: 23-December-1998
+
+(c) Copyright 1998 Gary Henderson (gary@daniver.demon.co.uk)
+
+Introduction
+============
+
+This is brief description of the steps involved in porting Snes9x, the Super
+Nintendo Entertainment System emulator, to new hardware which is at least
+similar to Workstation or PC. It describes what code you have to write and
+what functions exist that you can make use of. It also gives some insights as
+to how Snes9x actually works, although that will be subject of another
+document yet to be written.
+
+Host System Requirements
+========================
+
+A C++ compiler, so you can compile the emulator! Snes9x really isn't written
+in C++, it just uses the C++ compiler as a 'better C' compiler to get inline
+functions and so on. With some modification, it could be converted to be
+compiled with an ordinary C compiler. Snes9x isn't very C type safe and
+will probably not work on a system who's integers are less than 32-bits wide
+without lots of editing.
+
+If the host system uses a CPU that implements the i386 instruction set then
+you will also want to use the three assembler CPU cores, although I recently
+scrapped the SPC700 assembler code (too many bugs) and replaced it with
+compiler generated assembler code that I haven't got around to optimising
+yet.  The 65c816 and SPC700 code needs to be assembled using the GNU
+assembler that comes with gcc and the Super FX code assembled with NASM
+v0.97 or higher. gcc is available from lots of sites. NASM is available from
+http://www.cryogen.com/Nasm
+
+A fast CPU. SNES emulation is very compute intensive: two, or sometimes three
+CPUs to emulate, an 8-channel 16-bit stereo sound digital signal processor
+with real-time sample decompression, filter and echo effects, two custom
+graphics processor chips that can produce transparency, scaling, rotation
+and window effects in 32768 colors, and finally hardware DMA all take their
+toll on the host CPU.
+
+Lots of RAM. The SNES itself has 128k work RAM, 64k V-RAM and 64k sound CPU
+RAM. If a Super FX game is being emulated, that usually comes with another
+64k inside the game pack. Snes9x itself needs 4Mb to load SNES ROM images
+into (or 6Mb if I ever figure out the SNES memory map of the 48Mbit ROM
+images out there), 256k to cache decompressed sound samples in, 512k to
+cache converted SNES tiles in, and another 64k for S-RAM emulation. And
+that's not counting a few large lookup tables that the graphics code needs
+for speeding up transparency effects plus few other tables used by the ZSNES
+Super FX code. It all adds up to 7Mb (ish). Add to that RAM needed to
+store the actual emulator code and RAM required by the host operating system
+and any other process that is running; that's lots of RAM. Well, it is if
+your host system only has a few mega-bytes of RAM available.
+
+An 8-bit, 256 color (one byte per pixel) or deeper display, at least 256x239
+pixels in resolution, or 512x478 if you're going to support the SNES'
+hi-res. background screen modes. Ideally, a 16-bit, 65536 color screen mode
+is required if you want to support transparency at speed, as that is what the
+code renders internally. Any other format screen, with transparency enabled,
+will require picture format conversion before you can place the rendered
+SNES image on to the screen.
+
+Sound output requires spooling 8-bit or 16-bit, mono or stereo digital sound
+data to the host computer's sound hardware. The DOS port uses interrupts
+from the sound card to know when more sound data is required, most other
+ports have to periodically poll the host sound hardware to see if more data
+is required; if it is then the SNES sound mixing code provided by Snes9x is
+called to fill an area of system memory with ready mixed SNES sound data,
+which then can be passed on to the host sound hardware. Sound data is
+generated as an array of bytes (uint8) for 8-bit sound or shorts (int16) for
+16-bit data.  Stereo sound data generates twice as many samples, with each
+channel's samples interleaved, first left's then right's.
+
+For the user to be able to control and play SNES games, some form of input
+device is required, a joystick or keyboard, for example. The real SNES can
+have 2 eight-button digital joy-pads connected to it or 5 joy-pads when an
+optional multi-player adaptor was purchased, although most games only require
+a single joy-pad. Access to all eight buttons and the direction pad, of
+course, are usually required by most games. Snes9x does emulate the
+multi-player adaptor hardware, if you were wondering, but its still up to
+you to provide the emulation of the individual joy-pads.
+
+The SNES also had a mouse and light gun available as optional extras,
+Snes9x can emulate both of these using some form of pointing device,
+usually the host system's mouse.
+
+If an accurate, constant SNES play rate is required, then a real-time timer
+will be needed that can time intervals of 16.7ms (NTSC frame time) or 20ms
+(PAL frame time).
+
+Some SNES game packs contained a small amount of extra RAM and a battery so
+ROMs could save a player's progress through a game for games that takes many
+hours to play from start to finish.  Snes9x simulates this S-RAM by saving
+the contents of the area of memory normally occupied by the S-RAM into file
+then automatically restoring it again the next time the user plays the same
+game. If the hardware you're porting to doesn't have a hard disk available
+then you could be in trouble.
+
+Snes9x also implements freeze-game files which can record the state of the
+SNES hardware and RAM at a particular point in time and can restore it to
+that exact state at a later date - the result is that users can save a game
+at any point, not just at save-game or password points provided by the
+original game coders. Each freeze file is over 400k in size. To help save
+disk space, Snes9x can be compiled with zlib, which is used to compress the
+freeze files, reducing the size to typically below 100k.  Download zlib from
+its homepage at http://www.cdrom.com/pub/infozip/zlib/, compile Snes9x with
+ZLIB defined and link with zlib. zlib is also used to load any compressed
+ROM images Snes9x my encounter, compressed with gzip or compress.
+
+Porting
+=======
+
+In theory you will only need to edit port.h, then in a separate file write
+all the initialisation code and interface routines that Snes9x expects the
+you to implement. You, no doubt, will discover otherwise....
+
+There are several compile-time only options available:
+
+DEBUGGER
+--------
+
+Enables extra code to assist me in debugging SNES ROMs. The debugger has only
+ever been a quick-hack by me and user-interface to debugger facilities is
+virtually non-existent. Most of the debugger information is output via
+stdout and enabling the compile-time options slows the whole emulator down
+slightly. However, the debugger options available are very powerful; you
+could use it to help get your port working. You probably still want to ship
+the finished version with the debugger disabled, it will only confuse
+non-technical users.
+
+VAR_CYCLES
+----------
+
+I recommend you define this. The main CPU in the SNES actually varies in
+speed depending on what area of memory its accessing and the ROM access
+speed of the game pack; defining VAR_CYCLES causes Snes9x to emulate this,
+using a good approximation, rather than fixed cycle length as ZSNES does. The
+resultant code is slightly slower. Leaving it undefined results in many more
+emulation timing errors appearing while playing games.
+
+CPU_SHUTDOWN and SPC700_SHUTDOWN
+--------------------------------
+
+Again I recommend defining both of these. They are both speed up hacks.
+When defined, Snes9x starts watching for when either the main or sound CPUs
+are in simply loops waiting for a known event to happen - like the end of
+the current scan-line, and interrupt or a sound timer to reach a particular
+value. If Snes9x spots either CPU in such a loop it uses its insider
+knowledge to simply skip the emulation of that CPU's instructions until the
+event happens. It can be a big win with lots of SNES games.
+
+I'm constantly amazed at the ingenuity of some programmers who are able to
+produce complex code to do simple things: some ROM's wait loops are so
+complex Snes9x fails to spot the CPU is in such a loop and the shutdown
+speed up hacks don't work.
+
+You might be wondering why VAR_CYCLES, and the two SHUTDOWN options have to
+be enabled with defines, well, in the past they sometimes introduced
+problems with some ROMs, so I kept them as options. I think I've fixed all
+the problems now, but you never know...
+
+SPC700_C
+--------
+
+Define this if you are using the C/C++ version of the SPC700 CPU core. It
+enables a ROM compatibility feature that executes SPC700 instructions during
+SNES DMA, it allows several games to start that would otherwise lock up and
+fixes music pauses when ROMs do lots of DMA, usually when switching between
+game screens.
+
+ZLIB
+----
+
+Define this if you have the zlib library available and you want it to
+compress freeze-game files to save disk space. The library is also used to
+support compressed ROM images.
+
+NO_INLINE_SET_GET
+-----------------
+
+Define this to stop several of the memory access routines from being
+defined in-line. Whether the C++ compiler actually in-lines when this symbol
+is not defined is up to the compiler itself. In-lines functions can speed up
+the C++ CPU emulations on some architectures at the cost of increased code
+size. Try fiddling with this option once you've got port working to see if
+it helps the speed of your port.
+
+EXECUTE_SUPERFX_PER_LINE and ZSNES_FX
+-------------------------------------
+
+Define these if you're going to be using the ZSNES Super FX i386 assembler
+code, otherwise leave them both undefined. In theory,
+EXECUTE_SUPERFX_PER_LINE can also be defined when using the C++ Super FX
+emulation code, but the code is still buggy and enabling the option
+introduces more problems than it fixes. Any takers for fixing the C++ code?
+
+JOYSTICK_SUPPORT, SIDEWINDER_SUPPORT and GRIP_SUPPORT
+-----------------------------------------------------
+
+These options enable support for various input devices in the UNIX and MS-DOS
+port code. They're only of interest if you're able to use the existing UNIX
+or MS-DOS port specific code.
+
+port.h
+======
+
+If the byte ordering of the target system is least significant byte first,
+make sure LSB_FIRST is defined in this header, otherwise, make sure its not
+defined.
+
+If you're going to support 16-bit screen rendering (required if you want
+transparency effects) and your system doesn't use RGB 565 - 5 bits for red,
+6 bits for green and 5 bits for blue - then you'll need make sure RGB555,
+BGR565 or BGR555 is defined instead. You might want to take a look at the
+*_LOW_BIT_MASKs, *_HI_BIT_MASKs and BUILD_PIXEL macros to make sure they're
+correct, because I've only every tested the RGB565 version, though the Mac
+port uses the RGB555 option. If your system is 24 or 32-bit only, then
+don't define anything; instead write a conversion routine that will take a
+complete rendered 16-bit SNES screen in RGB565 format and convert to the
+format required to be displayed on your hardware.
+
+port.h also typedefs some types, uint8 for an unsigned, 8-bit quantity,
+uint16 for an unsigned, 16-bit quantity, uint32 for a 32-bit, unsigned
+quantity and bool8 for a true/false type. Signed versions are also
+typedef'ed.
+
+The CHECK_SOUND macro can be defined to invoke some code that polls the
+host system's sound hardware to see if it can accept any more sound data.
+Snes9x makes calls to this macro several times when it is rendering the SNES
+screen, during large SNES DMAs and after every emulated CPU instruction.
+
+Since this CHECK_SOUND macro is invoked often, the code should only take a
+very small amount of time to execute or it will slow down the emulator's
+performance. The Linux and UNIX ports use a system timer and set a variable
+when it has expired; the CHECK_SOUND only has to check to see if the
+variable is set. On the MS-DOS and Mac ports, the sound hardware is not
+polled at all, instead it is driven by interrupts or callbacks and the
+CHECK_SOUND macro is defined to be empty.
+
+Initialisation Code
+-------------------
+
+This is what the Linux, UNIX and MS-DOS ports do, I suspect your code
+might be similar:
+
+- The Settings structure is initialised to some sensible default values -
+  check the main function in unix.cpp for the values it uses.
+
+- The command line is parsed, options specified override default values in
+  the Settings structure and specify a ROM image filename that the user
+  wants loaded. Your port could load user preferences from a file or some
+  other source at this point. Most values, with a little care, can be changed
+  via a GUI once the emulator is running.
+
+- Some Settings structure value validation takes place, for example if
+  transparency effects are requested the code also makes sure 16-bit
+  screen rendering is turned on as well.
+
+- Memory.Init() and S9xInitAPU() are called, checking neither failed. The
+  only reason they would fail is if memory allocation failed.
+
+- Memory.LoadROM (filename) is called to load the specified ROM image into
+  memory. If that worked Memory.LoadSRAM (sram_filename) is called to load
+  the ROM's S-RAM file, if one exists. The all current ports base the
+  sram_filename on the filename of the ROM image, changing the file's
+  extension (the .smc or whatever bit) and changing the directory where its
+  located - you won't be able to save S-RAM files onto a CD if that's where
+  the ROM image is located!
+
+  If your port has a GUI, you can delay this step until the user picks an
+  image to load.
+
+  SNES roms images come in all shapes and sizes, some with headers, some
+  without, some have been mangled by the copier device in one of two ways, and
+  some split into several pieces; plus the SNES itself has several different
+  memory map models. The code tries to auto-detect all these various types,
+  but sometimes the SNES ROM header information has been manually edited by
+  someone at some stage and the code guesses wrong. To help it out it these
+  situations, the Settings structure contains several options to force a
+  particular ROM image format; these values must be initialised prior to each
+  call to Memory.LoadROM(filename).
+
+- The Linux and UNIX ports now do some more operating system initialisation
+  ready for a system timer to be started.
+
+- The host display hardware is now initialised. The actual screen depth and
+  resolution should be picked based on the user preferences if possible.
+  The X Window System port can't control the screen depth or resolution, if
+  the user requests transparency effects but the display hardware is only
+  set to 8-bit, it has to invoke an extra step of converting the 16-bit SNES
+  rendered screen to a fixed palette 8-bit display just before the SNES
+  screen is copied to the display hardware.
+
+  The GFX.Screen pointer needs to be initialised to point to an array of
+  uint8 for 8-bit screen rendering or uint16 for 16-bit rendering, cast to
+  an array of uint8. The array needs to be at least 256x239 bytes or shorts
+  in size for lo-res only support (Settings.SupportHiRes = FALSE) or
+  512x478 for lo-res and hi-res support. If transparency effects are
+  required, the GFX.SubScreen array also needs to be initialised to another
+  identically sized array of the same type, otherwise it can be just
+  initialised to NULL.
+
+  The GFX.Pitch variable needs to be set to the number of bytes on each line
+  of the arrays, e.g. 256 for lo-res only support, up to 1024 for 16-bit
+  hi-res support. If GFX.Screen is pointing into an existing array, one
+  created by the library function rather than just calling malloc or new,
+  then set GFX.Pitch to the number of bytes per line of that array,
+  including any padding the library function may have added.
+
+  If the target hardware supports fast access to video RAM, the screen is in
+  16-bit format supported by the SNES rendering code and you can double
+  buffer the display, you might want to point GFX.Screen directly at the
+  video buffer RAM. You will need to recompute the GFX.Delta value every
+  time you change the GFX.Screen value to double-buffer the rendering and
+  display.
+
+- A call to S9xGraphicsInit() is made; make sure all your graphics rendering
+  options are setup correctly by now. If later, you want to change some
+  settings, for example 16-bit to 8-bit rendering, call S9xGraphicsDeinit()
+  first, change your settings, GFX.Screen and GFX.SubScreen arrays, etc.,
+  then call S9xGraphicsInit() again.
+
+- S9xInitSound(int playbackrate, bool8 stereo, int sound_buffer_size)
+  is now called, which in turn will call your S9xOpenSoundDevice function -
+  see below.
+
+- The display is switched to graphics mode using a call to S9xGraphicsMode().
+
+- The system timer is started; its used for keeping the emulator speed
+  relatively constant on the MS-DOS port and noting when the sound hardware
+  sound should be able to accept more sound data on the Linux and UNIX ports.
+
+- A main loop is entered which is just a loop constantly calling
+  S9xMainLoop() then polling the operating system for any pending events
+  such as key presses and releases, joystick updates, mouse position
+  updates, GUI user interaction, etc. 
+
+  Pause functionality can be implemented by skipping the call to S9xMainLoop
+  and muting the sound output by calling S9xSetSoundMute (TRUE).
+
+  Don't enter the main loop until a SNES ROM image has been loaded, or at
+  least skip calling S9xMainLoop inside the loop until one is and make sure
+  S9xReset is called instead before entering the main loop. The Mac port
+  implements this technique by starting in pause mode and refusing to unpause
+  until a ROM image is loaded.
+
+  S9xMainLoop processes SNES CPU emulation, SNES screen rendering, DMA and
+  H-DMA emulation, until emulated scan-line 0 is reached, then it returns.
+  Now is your chance to process any system events pending, scan the
+  keyboard, read joystick values, etc.
+
+  If DEBUGGER compile-time support is enabled and the CPU emulation has hit
+  a break point or single-stepping is switched on, or the DEBUG_MODE_FLAG is
+  set in the CPU.Flags variable, then the S9xMainLoop routine returns early,
+  allowing you to act on the event in some way. The Linux, DOS and UNIX ports
+  respond to the DEBUG_MODE_FLAG being set by calling S9xDoDebug(), which in
+  turn outputs the current instruction and loops reading commands from stdin
+  and outputting debug information, currently via stdout. The debugger
+  desperately needs rewriting to support a GUI interface, more descriptive
+  commands and better error handling; maybe one day...
+
+Existing Interface Routines
+---------------------------
+
+These are routines already written that you will either need to call or
+might find useful.
+
+-> bool8 Memory.Init ()
+
+Allocates and initialises several major lumps of memory, for example
+the SNES ROM and RAM arrays, tile cache arrays, etc. Returns FALSE if
+memory allocation fails.
+
+-> void Memory.Deinit ()
+
+Undoes the memory allocations made by Memory.Init.
+
+-> bool8 S9xGraphicsInit ()
+
+Allocated and initialises several lookup tables used to speed up SNES
+graphics rendering. Call after you have initialised the GFX.Screen, 
+GFX.SubScreen and GFX.Pitch values. If Settings.Transparency is false it
+does not allocate tables used to speed up transparency effects. If you
+want to provide the user with option to turn the effects on and off during
+game play, make sure Settings.Transparency is true when this function is
+called, it can later be set to FALSE.
+
+Returns FALSE if memory allocation fails.
+
+-> void S9xGraphicsDeinit ()
+
+Undoes the memory allocations made by S9xGraphicsInit.
+
+-> bool8 S9xInitAPU ()
+
+Allocates and initialises several arrays used by the sound CPU and sound
+generation code.
+
+-> void S9xDeinitAPU ()
+
+Undoes the allocations made by S9xInitAPU.
+
+-> bool8 S9xInitSound (int mode, bool8 stereo, int buffer_size)
+
+Does more sound code initialisation and opens the host system's sound hardware
+by calling the S9xOpenSoundDevice function provided by you.
+
+-> void S9xReset ()
+
+Resets the SNES emulated hardware back to the state it was in at 'switch-on'
+except the S-RAM area is presevered. The effect is it resets the current game
+back to the start. This function is automatically called by Memory.LoROM.
+
+-> bool8 Memory.LoadROM (const char *filename)
+
+Attempts to load the specified ROM image filename into the emulated ROM area.
+There are many different SNES ROM image formats and the code attempts to
+auto-detect as many different types as it can and in a vast majority of the
+cases gets it right. However, some ROM images have been edited by someone at
+some stage or have been mangled by the ROM copier that produced them and
+LoadROM needs help. Inparticular, it can't auto-detect the odd way in which
+some Super FX games have been mangled and needs to be told, via
+Settings.Interleaved2, that the ROM image is in that format, or that
+odd-sized ROM images have a 512 byte copier header.
+
+There are several other ROM image options in the Settings structure;
+allow the user to set them before calling LoadROM, or make sure they all
+reset to default values before each call to LoadROM.
+
+-> bool8 Memory.LoadSRAM (const char *filename)
+
+Call this routine to load the associated S-RAM save file (if any). The
+filename should be based on the ROM image name to allow easy linkage.
+The current ports change the directory and the filename extension of the ROM
+filename to derive the S-RAM filename.
+
+-> bool8 Memory.SaveSRAM (const char *filename)
+
+Call this routine to save the emulated S-RAM area into a file so it can
+be restored again the next time the user wants to play the game. Remember
+to call this when just before the emulator exits or when the user has been
+playing a game and is about to load another one.
+
+-> void S9xMainLoop()
+
+The emulator main loop. Call this from your own main loop that calls this
+function (if a ROM image is loaded and the game is not paused), processes
+any pending host system events, then goes back around the loop again until
+the emulator exits.
+
+S9xMainLoop normally returns control to your main loop once every emulated
+frame, when it reaches the start of scan-line zero. However, the routine
+can return more often if the DEBUGGER compile-time flag is defined and the
+CPU has hit a break point, or the DEBUG_MODE_FLAG bit is set in CPU.Flags
+or instruction single-stepping is enabled.
+
+-> void S9xMixSamples (uint8 *buffer, int sample_count)
+
+Call this routine from your host sound hardware handling code to fill the
+specified buffer with ready mixed SNES sound data. If 16-bit sound mode is
+choosen, then the buffer will be filled with an array of sample_count int16,
+otherwise an array of sample_count uint8. If stereo sound generation is
+selected the buffer is filled with the same number of samples, but in pairs,
+first a left channel sample followed by the right channel sample.
+
+There is a limit on how much data S9xMixSamples can deal with in one go and
+hence a limit on the sample_count value; the limit is the value of the
+MAX_BUFFER_SIZE symbol, normally 4096 bytes.
+
+-> bool8 S9xSetSoundMute (bool8 mute)
+
+Call with a TRUE parmeter to prevent S9xMixSamples from processing SNES
+sample data and instead just filling the return buffer with silent sound
+data. Useful if your sound system is interrupt or callback driven and the
+game has been paused either directly or indirectly because the user 
+interacting with the emulator's user interface in some way.
+
+-> bool8 S9xFreezeGame (const char *filename)
+
+Call this routine to record the current SNES hardware state into a file,
+the file can be loaded back using S9xUnfreezeGame at a later date effectively
+restoring the current game to exact same spot. Call this routine while
+you're processing any pending system events when S9xMainLoop has returned
+control to you in your main loop.
+
+-> bool8 S9xUnfreezeGame (const char *filename)
+
+Restore the SNES hardware back to the exactly the state it was in when
+S9xFreezeGame was used to generate the file specified. You have to arrange
+the correct ROM is already loaded using Memory.LoadROM, an easy way to
+arrange this is to base freeze-game filenames on the ROM image name. The
+Linux, UNIX and DOS ports load freeze-game files when the user presses a
+function key, with the names romfilename.000 for F1, romfilename.001 for F2,
+etc. Games are frozen in the first place when the user presses Shift-function
+key. You could choose some other scheme.
+
+-> void S9xNextController ()
+
+The real SNES allows several different types of devices to be plugged into
+the game controller ports. The devices Snes9x emulates are a joy-pad,
+multi-player adaptor (allowing a further 4 joy-pads to be plugged in),
+a 2-button mouse and a light gun known as the SuperScope.
+
+Each call to S9xNextController will step the current emulated device on to
+the next device in the sequence multi-player, joy-pad, mouse on port 1,
+mouse on port 2, light gun then back to multi-player again. Defines
+allocating a number of each device type are in snes9x.h. The currently
+selected device is stored in IPPU.Controller if you want to give some
+feedback to the user. The initial value of IPPU.Controller (set when
+S9xReset is called) is obtained from Settings.ControllerOption based on
+currently enabled options.
+
+Some ROMs object to certain non-joy-pad devices being plugged into the real
+SNES while they are running, all Super FX games should only allow joy-pads to
+be plugged in because the Super FX chip and any other device would overload
+the SNES power supply. Tetris and Dr. Mario also objects for reasons best
+known to itself. For this reason there are switches in the Settings
+structure to enable and display the emulation of the various devices.
+
+const char *S9xGameGenieToRaw (const char *code, uint32 &address, uint8 &byte)
+
+const char *S9xProActionReplayToRaw (const char *code, uint32 &address, 
+                                     uint8 &byte)
+
+const char *S9xGoldFingerToRaw (const char *code, uint32 &address, bool8 &sram,
+			        uint8 &num_bytes, uint8 bytes[3])
+
+void S9xApplyCheats (bool8 apply)
+
+void S9xRemoveCheats ()
+
+void S9xAddCheat (uint32 address, bool8 cpu_address, bool8 sram, uint8 num_bytes,
+	          uint8 byte1, uint8 byte2, uint8 byte3)
+
+void S9xDeleteCheats ()
+
+void S9xDoDebug ()
+
+Interface Routines You Need to Implement
+----------------------------------------
+
+bool8 S9xOpenSnapshotFile (const char *base, bool8 read_only, STREAM *file)
+***************************************************************************
+void S9xCloseSnapshotFile (STREAM file)
+***************************************
+
+Routines to open and close freeze-game files. STREAM is defined as a
+gzFile if ZLIB is defined else its defined as FILE *. The read_only parameter
+is set to TRUE when reading a freeze-game file and FALSE when writing a
+freeze-game file.
+
+void S9xExit ()
+***************
+
+Called when some fatal error situation arises or when the 'q' debugger
+command is used. The Mac port just beeps and drops back to the GUI when
+S9xExit is called, the MS-DOS, Linux and Solaris ports all call exit () to
+terminate the emulator process.
+
+void S9xParseArg (char **argv, int &index, int argc)
+****************************************************
+
+void S9xExtraUsage ()
+*********************
+
+If you're going to be using the simple command line parser, when it
+encounters an unknown option it calls S9xUsage which is supposed to report
+all options the generic parse knows about (I haven't been keeping it up to
+date of late). S9xUsage then, in turn calls S9xExtraUsage which you
+implement to report any port-specific options available.
+
+void S9xGraphicsMode ()
+***********************
+void S9xTextMode ()
+*******************
+
+The SNES debugger calls these routines to switch from a graphics screen
+mode used to display the SNES game to a debugger screen used to display
+debugger output. If the SNES screen can be displayed at the same time as
+a text display, as would be the case when the host system implements a
+graphical window system, or you're not going to support the SNES debugger,
+then these routines should do nothing.
+
+On the X Window System UNIX/Linux port, these routines do nothing where as
+on the MS-DOS port they switch between a graphics screen mode and a text-only
+screen mode.
+
+bool8 S9xInitUpdate ()
+**********************
+
+Called just before Snes9x starts to render a SNES screen. The Windows port
+uses this call to lock Direct X screen area to allow exclusive access; on
+other existing ports its implemented as an empty function.
+
+bool8 S9xDeinitDisplay (int width, int height, bool8 sixteen_bit)
+*****************************************************************
+
+Called once a complete SNES screen has been rendered into the GFX.Screen
+memory buffer, now is your chance to copy the SNES rendered screen to the
+host computer's screen memory. The problem is that you have to cope with
+different sized SNES rendered screens. Width is always 256, unless you're
+supporting SNES hi-res. screen modes (Settings.SupportHiRes is TRUE), in
+which case it can be 256 or 512. The height parameter can be either 224 or
+239 if you're only supporting SNES lo-res. screen modes, or 224, 239, 448 or
+478 if hi-res. SNES screen modes are being supported.
+
+All current ports support scaling the SNES screen to fill the host system's
+screen, the many ports even supports interpolation - blending the colours of
+adjacent pixels to help hide the fact they've been scaled - and scan-line
+simulation - slightly darkening every other horizontal line.
+
+Don't forget that if you're just placing the SNES image centerally in the
+screen then you might need to clear areas of the screen if the SNES image
+changes size between calls to S9xDeinitDisplay. The MS-DOS and UNIX ports
+currently don't do this which results in junk being left on the screen if
+the ROM changes SNES screen modes.
+
+The sixteen_bit is just a copy of the Settings.SixteenBit setting and if
+TRUE indicates a 16-bit SNES screen image has been rendered, 8-bit otherwise.
+
+void S9xMessage (int type, int number, const char *message)
+***********************************************************
+
+I've started work on converting all the old printfs into calls to this
+routine.  When Snes9x wants to display an error, information or warning
+message, it calls this routine. Check in messages.h for the types and
+individual message numbers that Snes9x currently passes as parameters.
+
+The idea is display the message string so the user can see it, but you
+choose not to display anything at all, or change the message based on the
+message number or message type.
+
+Eventually all debug output will also go via this function, trace information
+already does.
+
+bool8 S9xOpenSoundDevice(int mode, bool8 stereo, int buffer_size)
+*****************************************************************
+
+S9xInitSound calls this function to actually open the host operating system's
+sound device, or initialise the sound card in MS-DOS port. 
+
+The mode parameter is the value passed in on the command line with the -r
+command line flag, assuming you're using the Snes9x parser. Its meant to
+indicate what playback the sound hardware should be set to, value 1 to 7.
+I think the real SNES sound chip playback rate is 30kHz, but such high
+playback rates take a lot of native CPU power to emulate. The default
+playback rate is 22kHz for the MS-DOS and UNIX ports.
+
+The stereo flag indicates if the user wants stereo sound. Again, stereo
+sound takes more CPU to power to emulate compared to mono sound.
+
+The buffer_size value indicates what sample buffer size the user wants,
+usually zero, meaning you should pick the value best suited to the current
+playback rate. Sound data is normally passed to the sound hardware in
+blocks, the smaller the block the less latency between the SNES game playing
+a sound and it being heard by the user. But if you pick a too smaller value,
+and you're having to periodically poll the operating system to see if it can
+accept more sound data, then the sound output will break up because other
+actions such as rendering the SNES screen can prevent you from polling the
+hardware often enough and the operating system runs out of sound data to
+play.
+
+The MS-DOS port uses a buffer size of 128 samples since the sound card
+sends an interrupt when more data is required which is acted upon promptly,
+where as the Linux and Solaris ports use a buffer size of 512 samples or
+more depending on the playback rate. Stereo and 16-bit sound both double the
+actual size of the buffer in bytes.
+
+uint32 S9xReadJoypad (int which1_0_to_4)
+****************************************
+
+This function is called to return a bit-wise mask of the state of one of the
+five emulated SNES controllers. Return 0 if you're not supporting controllers
+past a certain number or return the mask representing the current state of
+the controller number passed as a parameter or'ed with 0x80000000.
+
+Symbolic constants are defined in snes9x.h indicating the bit positions of
+the various SNES buttons and direction indicators; they're all in the form
+SNES_X_MASK where X is the SNES controller button name.
+
+The MS-DOS and X Window System ports record what keys are currently pressed
+and use that to build up a mask, the Windows port polls the operating system
+when S9xReadJoypad is called to find out what keys are pressed. All ports
+also implement host joysticks and joy-pads via this interface.
+
+bool8 S9xReadMousePosition (int which1_0_to_1, int &x, int &y, uint32 &buttons)
+*******************************************************************************
+
+Used by Snes9x to get the current position of the host pointing device,
+usually a mouse, used to emulated the SNES mouse. Snes9x converts the x and
+y values to delta values required by the SNES mouse, so the actual x and y
+values are unimportant, only the change in value since the last call to
+this function is used. 
+
+Graphical windowing systems normally restrict the movement of the pointer on
+the screen, if you're porting to such an environment you might want to make
+a note of the change in position in the mouse since the last time you asked
+the operating system the mouse position, add this change in value to some
+saved x and y value, the reposition the pointer back to the centre of the
+SNES display window. The saved x and y values will be the values returned
+by this function.
+
+The buttons return value is a bit-wise mask of the two SNES mouse buttons,
+bit 0 for button 1 (left) and bit 1 for button 2 (right).
+
+bool8 S9xReadSuperScopePosition (int &x, int &y, uint32 &buttons)
+*****************************************************************
+
+void S9xSetPalette ()
+*********************
+
+void S9xSyncSpeed ()
+S9xUnixProcessSound
+void _makepath(char *, char const *, char const *, char const *, char const *)
+void _splitpath(char const *, char *, char *, char *, char *)
+
+
+Sound Generation
+----------------
+
+Settings
+--------

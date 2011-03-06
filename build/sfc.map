@@ -1,0 +1,35 @@
+
+sfc.elf:     file format elf32-tradlittlemips
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         001e4550  80002000  80002000  00002000  2**4
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         0000deb8  801e6550  801e6550  001e6550  2**4
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .sbss         00000404  801f4408  801f4408  001f4408  2**3
+                  ALLOC
+  3 .bss          001b3f48  801f4810  801f4810  001f4408  2**4
+                  ALLOC
+  4 .pdr          0001c140  00000000  00000000  001f4408  2**2
+                  CONTENTS, READONLY
+  5 .comment      00001d9a  00000000  00000000  00210548  2**0
+                  CONTENTS, READONLY
+  6 .debug_abbrev 00002b34  00000000  00000000  002122e2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_info   00005d77  00000000  00000000  00214e16  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   000013f9  00000000  00000000  0021ab8d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  00000528  00000000  00000000  0021bf88  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    000021c7  00000000  00000000  0021c4b0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_pubnames 00000426  00000000  00000000  0021e677  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_aranges 000003c0  00000000  00000000  0021ea9d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 13 .debug_str    000005cf  00000000  00000000  0021ee5d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 14 .debug_ranges 00000340  00000000  00000000  0021f42c  2**0
+                  CONTENTS, READONLY, DEBUGGING

@@ -1,0 +1,29 @@
+ndssfc
+
+2010.11.09
+
+install
+=======
+This version depend on ds2sdk 0.12beta, also it is an application of ds2sdk.
+To compile the source, Linux operation system are recomended to build the cross-comiling evironment.
+You could see the specified steps in readme.txt of ds2sdk released if you don't know how to do.
+Now Release ndssfc_Vx.x.zip to the work directory you want, then you have to do two things:
+
+1. specify gcc position
+export PATH=$PATH:/opt/mipsel-4.1.2-nopic/bin
+Of course, you can specify anywhere if you like.
+If you have no gcc compiled tools, you can find them in released ds2sdk.
+
+2. specify ds2sdk position
+export DS2SDKPATH=/opt/ndssfc
+The path is the ds2sdk root directory.
+If you don't specify ds2sdk position, the console will give you a notice:
+
+"Please set DS2SDKPATH in your environment: export DS2SDKPATH=<path to>ds2sdk"
+
+Also, you can specify anywhere if you like.
+
+After the two things are ready, you only need to do:
+
+make clean
+make

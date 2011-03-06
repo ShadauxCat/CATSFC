@@ -1,0 +1,167 @@
+i386/cpuexec.o: i386/cpuexec.S i386/asmstruc.h i386/offsets.h i386/asmops.h \
+  i386/spcops.h
+i386/cpuops.o: i386/cpuops.S i386/asmstruc.h i386/offsets.h i386/asmaddr.h \
+  i386/asmops.h i386/getset.S
+i386/getset.o: i386/getset.S
+i386/sa1gs.o: i386/sa1gs.S
+i386/sa1ops.o: i386/sa1ops.S i386/sa1struc.h i386/offsets.h i386/sa1addr.h \
+  i386/sa1ops.h i386/sa1gs.S
+i386/spc700.o: i386/spc700.S i386/asmstruc.h i386/offsets.h i386/spcops.h
+2xsai.o: 2xsai.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h gfx.h
+2xsaiwin.o: 2xsaiwin.cpp snes9x/snes9x.h snes9x/port.h snes9x/gfx.h
+apu.o: apu.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h spc700.h apu.h soundux.h cpuexec.h ppu.h gfx.h memmap.h \
+  snapshot.h
+apudebug.o: apudebug.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h spc700.h apu.h soundux.h cpuexec.h ppu.h gfx.h memmap.h
+c4.o: c4.cpp c4.h port.h pixform.h memmap.h snes9x.h ../language.h \
+  65c816.h messages.h
+c4emu.o: c4emu.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h sar.h memmap.h ppu.h gfx.h c4.h
+cheats.o: cheats.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h cheats.h memmap.h
+cheats2.o: cheats2.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h cheats.h memmap.h
+clip.o: clip.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h ppu.h gfx.h
+cpu.o: cpu.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h ppu.h gfx.h dsp1.h cpuexec.h debug.h apu.h spc700.h \
+  dma.h sa1.h cheats.h srtc.h sdd1.h spc7110.h obc1.h
+cpuexec.o: cpuexec.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h cpuops.h ppu.h gfx.h cpuexec.h debug.h snapshot.h \
+  missing.h apu.h spc700.h dma.h fxemu.h sa1.h spc7110.h
+cpuops.o: cpuops.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h debug.h missing.h apu.h spc700.h sa1.h spc7110.h \
+  cpuexec.h ppu.h gfx.h cpuaddr.h cpuops.h cpumacro.h
+data.o: data.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h
+debug.o: debug.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h cpuops.h cheats.h ppu.h gfx.h cpuexec.h debug.h \
+  missing.h display.h apu.h spc700.h sa1.h spc7110.h
+dma.o: dma.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h ppu.h gfx.h cpuexec.h missing.h dma.h apu.h \
+  spc700.h sa1.h spc7110.h sdd1emu.h
+dsp1.o: dsp1.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h dsp1.h missing.h memmap.h dsp1emu.c dsp2emu.c dsp4emu.cpp \
+  dsp4.h
+dsp1emu.o: dsp1emu.c
+dsp2emu.o: dsp2emu.c
+dsp4emu.o: dsp4emu.cpp dsp4.h
+fxdbg.o: fxdbg.cpp fxemu.h fxinst.h
+fxemu.o: fxemu.cpp fxemu.h fxinst.h
+fxinst.o: fxinst.cpp fxemu.h fxinst.h
+gfx.o: gfx.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h ppu.h gfx.h cpuexec.h display.h apu.h spc700.h \
+  cheats.h screenshot.h font.h
+globals.o: globals.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h ppu.h gfx.h dsp1.h missing.h cpuexec.h debug.h \
+  apu.h spc700.h dma.h fxemu.h soundux.h cheats.h sa1.h netplay.h \
+  spc7110.h
+loadzip.o: loadzip.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h unzip/unzip.h
+memmap.o: memmap.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h cpuexec.h ppu.h gfx.h display.h cheats.h apu.h \
+  spc700.h sa1.h dsp1.h srtc.h sdd1.h spc7110.h seta.h unzip/unzip.h \
+  getset.h obc1.h
+movie.o: movie.cpp movie.h snes9x.h ../language.h port.h pixform.h \
+  65c816.h messages.h cpuexec.h ppu.h gfx.h memmap.h snapshot.h
+netplay.o: netplay.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h cpuexec.h ppu.h gfx.h memmap.h netplay.h snapshot.h \
+  display.h
+obc1.o: obc1.cpp memmap.h snes9x.h ../language.h port.h pixform.h \
+  65c816.h messages.h obc1.h
+offsets.o: offsets.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h ppu.h gfx.h apu.h spc700.h cpuexec.h sa1.h
+ppu.o: ppu.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h ppu.h gfx.h cpuexec.h missing.h apu.h spc700.h \
+  dma.h display.h sa1.h netplay.h sdd1.h srtc.h spc7110.h movie.h
+sa1.o: sa1.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h ppu.h gfx.h memmap.h cpuexec.h sa1.h
+sa1cpu.o: sa1cpu.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h ppu.h gfx.h cpuexec.h sa1.h cpuops.cpp debug.h \
+  missing.h apu.h spc700.h spc7110.h cpuaddr.h cpuops.h cpumacro.h
+screenshot.o: screenshot.cpp snes9x.h ../language.h port.h pixform.h \
+  65c816.h messages.h memmap.h display.h gfx.h ppu.h screenshot.h
+sdd1.o: sdd1.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h ppu.h gfx.h sdd1.h display.h
+sdd1emu.o: sdd1emu.cpp port.h pixform.h sdd1emu.h
+server.o: server.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h netplay.h memmap.h snapshot.h
+seta.o: seta.cpp seta.h port.h pixform.h
+seta010.o: seta010.cpp seta.h port.h pixform.h memmap.h snes9x.h \
+  ../language.h 65c816.h messages.h
+seta011.o: seta011.cpp seta.h port.h pixform.h memmap.h snes9x.h \
+  ../language.h 65c816.h messages.h
+seta018.o: seta018.cpp seta.h port.h pixform.h memmap.h snes9x.h \
+  ../language.h 65c816.h messages.h
+snaporig.o: snaporig.cpp snapshot.h snes9x.h ../language.h port.h \
+  pixform.h 65c816.h messages.h snaporig.h memmap.h ppu.h gfx.h cpuexec.h \
+  display.h apu.h spc700.h soundux.h
+snapshot.o: snapshot.cpp snapshot.h snes9x.h ../language.h port.h \
+  pixform.h 65c816.h messages.h snaporig.h memmap.h ppu.h gfx.h cpuexec.h \
+  display.h apu.h spc700.h soundux.h sa1.h srtc.h sdd1.h spc7110.h \
+  movie.h
+snes9x.o: snes9x.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h display.h cheats.h
+sound.o: sound.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h soundux.h
+soundux.o: soundux.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h soundux.h apu.h spc700.h memmap.h cpuexec.h ppu.h gfx.h
+spc.o: spc.cpp
+spc700.o: spc700.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h spc700.h memmap.h display.h cpuexec.h ppu.h gfx.h apu.h \
+  apumem.h
+spc7110.o: spc7110.cpp spc7110.h port.h pixform.h memmap.h snes9x.h \
+  ../language.h 65c816.h messages.h display.h
+spccycles.o: spccycles.cpp
+spctool.o: spctool.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h spctool/dsp.h spctool/spc700.h spctool/soundmod.h apu.h \
+  spc700.h
+srtc.o: srtc.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h srtc.h memmap.h
+tile.o: tile.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h ppu.h gfx.h display.h tile.h
+win32.o: win32.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h ..\directx.h ..\Render.h memmap.h debug.h cpuexec.h ppu.h \
+  gfx.h snapshot.h apu.h spc700.h display.h soundux.h netplay.h movie.h \
+  ..\AVIOutput.h
+sh/cpuexec.o: sh/cpuexec.S sh/asmstruc.h sh/offsets.h sh/asmops.h \
+  sh/spcops.h
+sh/cpuops.o: sh/cpuops.S sh/asmstruc.h sh/offsets.h sh/asmaddr.h sh/asmops.h \
+  sh/getset.S
+sh/getset.o: sh/getset.S
+sh/sa1gs.o: sh/sa1gs.S
+sh/sa1ops.o: sh/sa1ops.S sh/sa1struc.h sh/offsets.h sh/sa1addr.h sh/sa1ops.h \
+  sh/sa1gs.S
+unix/aido.o: unix/aido.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h gfx.h unix/aido.h
+unix/config.o: unix/config.c snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h
+unix/ggi.o: unix/ggi.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h debug.h ppu.h gfx.h snapshot.h display.h apu.h \
+  spc700.h
+unix/glide.o: unix/glide.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h gfx.h 3d.h
+unix/opengl.o: unix/opengl.cpp snes9x.h ../language.h port.h pixform.h \
+  65c816.h messages.h gfx.h 3d.h
+unix/snes9x_gui.o: unix/snes9x_gui.cpp unix/snes9x_gui.h snes9x.h \
+  ../language.h port.h pixform.h 65c816.h messages.h memmap.h display.h \
+  soundux.h cpuexec.h ppu.h gfx.h filesave.xpm fileopen.xpm fileprint.xpm
+unix/svga.o: unix/svga.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h debug.h ppu.h gfx.h snapshot.h display.h apu.h \
+  spc700.h
+unix/tvmode.o: unix/tvmode.cpp
+unix/unix.o: unix/unix.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h debug.h cpuexec.h ppu.h gfx.h snapshot.h apu.h \
+  spc700.h display.h soundux.h spc7110.h cheats.h
+unix/x11.o: unix/x11.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h debug.h ppu.h gfx.h snapshot.h display.h apu.h \
+  spc700.h soundux.h spc7110.h movie.h
+unix/xf86.o: unix/xf86.cpp snes9x.h ../language.h port.h pixform.h 65c816.h \
+  messages.h memmap.h debug.h ppu.h gfx.h snapshot.h display.h apu.h \
+  spc700.h
+unzip/explode.o: unzip/explode.c unzip/unz.h unzip/unzipP.h unzip/unzip.h
+unzip/unreduce.o: unzip/unreduce.c unzip/unz.h unzip/unzipP.h unzip/unzip.h
+unzip/unshrink.o: unzip/unshrink.c unzip/unz.h
+unzip/unzip.o: unzip/unzip.c unzip/unzip.h unzip/unzipP.h

@@ -1,0 +1,3 @@
+To install:
+
+Place catsfc.plg, catsfc.bmp, and catsfc.ini in the _dstwoplug folder of your DSTWO.  Place the CATSFC folder in your dstwo's root folder (the one that contains _dstwo, _dstwoplug, etc).
