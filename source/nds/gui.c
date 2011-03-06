@@ -4515,29 +4515,29 @@ void gui_init(u32 lang_id)
 	ds2_setCPUclocklevel(11);
 	printf_clock();
 
-    //Find the "BAGSFC" system directory
+    //Find the "CATSFC" system directory
     DIR *current_dir;
 
-    strcpy(main_path, "fat:/BAGSFC");
+    strcpy(main_path, "fat:/CATSFC");
     current_dir = opendir(main_path);
     if(current_dir)
         closedir(current_dir);
     else
     {
-        strcpy(main_path, "fat:/_SYSTEM/PLUGINS/BAGSFC");
+        strcpy(main_path, "fat:/_SYSTEM/PLUGINS/CATSFC");
         current_dir = opendir(main_path);
         if(current_dir)
             closedir(current_dir);
         else
         {
             strcpy(main_path, "fat:");
-            if(search_dir("BAGSFC", main_path) == 0)
+            if(search_dir("CATSFC", main_path) == 0)
             {
                 printf("Dirctory find: %s\n", main_path);
             }
             else
             {
-				err_msg(DOWN_SCREEN, "Can't fine BAGSFC directory, press any key to exit\n");
+				err_msg(DOWN_SCREEN, "Can't fine CATSFC directory, press any key to exit\n");
                 goto gui_init_err;
             }
         }
