@@ -32,10 +32,10 @@ Other
 Exit
 
 #MSG_SUB_MENU_00
-Graphic                %s
+Display Mode           %s
 
 #MSG_SUB_MENU_01
-Game Fast Forward     %s
+Fast-Forward Mode     %s
 
 #MSG_SUB_MENU_02
 Frame Skip Level         %s
@@ -44,16 +44,16 @@ Frame Skip Level         %s
 Frame Skip Level         %d
 
 #MSG_SUB_MENU_04
-Sound Enable             %s
+Enable Sound             %s
 
 #MSG_SUB_MENU_05
 Back
 
 #MSG_SUB_MENU_10
-Write Game State
+Save Game State
 
 #MSG_SUB_MENU_11
-Read Game State    %d
+Load Game State    %d
 
 #MSG_SUB_MENU_12
 Game State Slot
@@ -80,7 +80,7 @@ Load Cheats
 Back
 
 #MSG_SUB_MENU_30
-Screen Snapshot
+Take Screenshot
 
 #MSG_SUB_MENU_31
 Key Pad Remap
@@ -95,7 +95,7 @@ Auto Standby          %s
 Language               %s
 
 #MSG_SUB_MENU_42
-CPU Frequence          %d
+CPU Frequency          %d
 
 #MGS_SUB_MENU_43
 SD Card Capacity
@@ -107,10 +107,10 @@ Restore Default Settings
 Version Information
 
 #MSG_SUB_MENU_300
-Save Screen Snapshot
+Save Screenshot
 
 #MSG_SUB_MENU_301
-Browse Screen Snapshots
+Browse Screenshots
 
 #MSG_SUB_MENU_302
 Time Backward        %s
@@ -306,10 +306,10 @@ Delete Game State %d? \n
 Press A To Confirm, Press B To Cancel
 
 #MSG_DELETE_SAVESTATE_NOTHING
-There Is Nothing To Delete!
+Savestate is already empty!
 
 #MSG_SAVE_SNAPSHOT
-Saving Screen Snapshot...
+Saving Screenshot...
 
 #MSG_SAVE_SNAPSHOT_COMPLETE
 Complete!
@@ -324,7 +324,7 @@ Changing...
 Please Wait...
 
 #MSG_NO_SLIDE
-No Screenshot Found!
+No screenshots found!
 
 #MSG_PLAYING_SLIDE
 Playing...
@@ -354,13 +354,13 @@ Key B     Return To Menu
 Loading Game...
 
 #MSG_EMU_VERSION0
-SNES Emulator
+CATSFC SNES Emulator
 
 #MSG_EMU_VERSION1
 Version
 
 #MSG_LOAD_DEFAULT_WARING,
-Reset SNES Emulator To Default Settings?
+Reset all settings to default?
 
 #MSG_DEFAULT_LOADING
 Please Wait A Moment...
