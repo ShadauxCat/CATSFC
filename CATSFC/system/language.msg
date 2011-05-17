@@ -730,3 +730,362 @@ SFC模拟器
 返回
 
 ENDCHINESESIM
+
+
+STARTFRENCH
+
+#MSG_MAIN_MENU_0
+Video/Audio
+
+#MSG_MAIN_MENU_1
+empl. sauv.
+
+#MSG_MAIN_MENU_2
+Triche
+
+#MSG_MAIN_MENU_3
+Outils
+
+#MSG_MAIN_MENU_4
+Autre
+
+#MSG_MAIN_MENU_5
+Quitter
+
+#MSG_SUB_MENU_00
+Mode d'affichage %s
+
+#MSG_SUB_MENU_01
+Avance rapide %s
+
+#MSG_SUB_MENU_02
+Frame Skip niveau %s
+
+#MSG_SUB_MENU_03
+Frame Skip niveau %d
+
+#MSG_SUB_MENU_04
+Activer son %s
+
+#MSG_SUB_MENU_05
+retour
+
+#MSG_SUB_MENU_10
+Sauver
+
+#MSG_SUB_MENU_11
+Charger empl. %d
+
+#MSG_SUB_MENU_12
+Emplacement
+
+#MSG_SUB_MENU_13
+supprimer empl.
+
+#MSG_SUB_MENU_14
+Retour
+
+#MSG_SUB_MENU_20
+Page de triche : %d
+
+#MSG_SUB_MENU_21
+Charg. fichier triche
+
+#MSG_SUB_MENU_22
+Empl triche
+
+#MSG_SUB_MENU_23
+Charger triche
+
+#MSG_SUB_MENU_24
+retour
+
+#MSG_SUB_MENU_30
+capture d'écran
+
+#MSG_SUB_MENU_31
+Réassigner
+
+#MSG_SUB_MENU_32
+Periode %s sec.
+
+#MSG_SUB_MENU_40
+Auto Standby %s
+
+#MSG_SUB_MENU_41
+Langue %s
+
+#MSG_SUB_MENU_42
+Fréquence CPU %d
+
+#MGS_SUB_MENU_43
+Taille Carte SD
+
+#MSG_SUB_MENU_44
+Paramètres par défaut
+
+#MSG_SUB_MENU_45
+Version
+
+#MSG_SUB_MENU_300
+Sauv. capture
+
+#MSG_SUB_MENU_301
+Parcourir captures
+
+#MSG_SUB_MENU_302
+Retour arrière %s
+
+#MSG_SUB_MENU_310
+SNES touche A %s
+
+#MSG_SUB_MENU_311
+                 B %s
+
+#MSG_SUB_MENU_312
+                 Rapid A %s
+
+#MSG_SUB_MENU_313
+                 Rapid B %s
+
+#MSG_SUB_MENU_314
+Afficher le menu %s
+
+#MSG_SUB_MENU_315
+Touche de retour NDS
+
+#MSG_SUB_MENU_60
+Joués récemment
+
+#MSG_SUB_MENU_61
+Select. jeu
+
+#MSG_SUB_MENU_62
+Charger jeu
+
+#MSG_SCREEN_RATIO_0
+Mode d'affichage 0
+
+#MSG_SCREEN_RATIO_1
+Mode d'affichage 1
+
+#MSG_SCREEN_RATIO_2,
+Mode d'affichage 2
+
+#MSG_SCREEN_RATIO_3,
+Mode d'affichage 3
+
+#MSG_SCREEN_RATIO_4,
+Mode d'affichage 4
+
+#MSG_FRAMESKIP_0
+Aide
+
+#MSG_FRAMESKIP_1
+Automatique
+
+#MSG_ON_OFF_0
+Off
+
+#MSG_ON_OFF_1
+On
+
+#MSG_SOUND_SWITCH_0
+On
+
+#MSG_SOUND_SWITCH_1
+Muet
+
+#MSG_SNAP_FRAME_0
+Frames actuelle
+
+#MSG_SNAP_FRAME_1
+Dernière Frame
+
+#MSG_EN_DIS_ABLE_0
+Désactiver
+
+#MSG_EN_DIS_ABLE_1
+Activer
+
+#MSG_NONE_LOAD_GAME
+Aucun jeu chargé!
+
+#MSG_CHEAT_MENU_NON_LOAD
+Code %d (None Loaded)
+
+#MSG_CHEAT_MENU_0
+Code %d (%s): %%s
+
+#MSG_LOAD_STATE
+Charger
+
+#MSG_LOAD_STATE_END
+Chargé
+
+#MSG_SAVE_STATE
+Sauver
+
+#MSG_SAVE_STATE_END
+Terminé!
+
+#MSG_KEY_MAP_NONE
+Aucun
+
+#MSG_KEY_MAP_A
+A
+
+#MSG_KEY_MAP_B
+B
+
+#MSG_KEY_MAP_SL
+SELECT
+
+#MSG_KEY_MAP_ST
+START
+
+#MSG_KEY_MAP_RT
+?
+
+#MSG_KEY_MAP_LF
+?
+
+#MSG_KEY_MAP_UP
+?
+
+#MSG_KEY_MAP_DW
+?
+
+#MSG_HOME_MAP_R
+R
+
+#MSG_HOME_MAP_L
+L
+
+#MSG_HOME_MAP_X
+X
+
+#MSG_HOME_MAP_Y
+Y
+
+#MSG_HOME_MAP_TOUCH
+Ecran tactile
+
+#MSG_SAVESTATE_EMPTY
+L'empl. est vide!
+
+#MSG_SAVESTATE_FULL
+L'empl. est plein,\n
+Ecraser?\n
+A pour remplacer\n
+B pour annuler
+
+#MSG_SAVESTATE_DOING
+En cours...
+
+#MSG_SAVESTATE_FAILURE
+Echec!\n
+A pour réessayer\n
+B pour annuler
+
+#MSG_SAVESTATE_SUCCESS
+Terminé!
+
+#MSG_SAVESTATE_SLOT_EMPTY
+Aucune capture
+
+#MSG_SAVESTATE_FILE_BAD
+Sauvegarde introuvable ou corrompue
+
+#MSG_LOADSTATE_DOING
+En chargement...
+
+#MSG_LOADSTATE_FAILURE
+Echec!
+
+#MSG_LOADSTATE_SUCCESS
+Terminé!
+
+#MSG_WARING_DIALOG
+Appuyez sur une touche pour continuer
+
+#MSG_TIME_FORMATE
+Date
+
+#MSG_SUB_MENU_130
+Vider tous les emplacements?
+
+#MSG_SUB_MENU_131
+Vider l'emplacement %d ?
+
+#MSG_DELETE_ALL_SAVESTATE_WARING
+Vider tous les empl.? \n
+A pour continuer, B pour annuler
+
+#MSG_DELETE_SINGLE_SAVESTATE_WARING
+Vider l'emplacement %d? \n
+A pour continuer, B pour annuler
+
+#MSG_DELETE_SAVESTATE_NOTHING
+Cet emplacement est déjà vide!
+
+Enregistrement de la capture...
+
+#MSG_SAVE_SNAPSHOT_COMPLETE
+Terminé!
+
+#MSG_SAVE_SNAPSHOT_FAILURE
+Echec!
+
+#MSG_CHANGE_LANGUAGE
+Changement...
+
+#MSG_CHANGE_LANGUAGE_WAITING
+Veuillez patienter...
+
+#MSG_NO_SLIDE
+Aucune capture trouvée!
+
+#MSG_PLAYING_SLIDE
+En cours...
+
+#MSG_PAUSE_SLIDE
+Pause...
+
+#MSG_PLAY_SLIDE1
+Appuyez sur HAUT pour accélérer
+
+#MSG_PLAY_SLIDE2
+Appuyez sur BAS pour ralentir
+
+#MSG_PLAY_SLIDE3
+GAUCHE pour précédent
+
+#MSG_PLAY_SLIDE4
+DROITE pour suivant
+
+#MSG_PLAY_SLIDE5
+A pour Pause
+
+#MSG_PLAY_SLIDE6
+B pour retourner au menu
+
+#MSG_LOADING_GMAE
+Chargement du jeu...
+
+#MSG_EMU_VERSION0
+CATSFC SNES Emulator
+
+#MSG_EMU_VERSION1
+Version
+
+#MSG_LOAD_DEFAULT_WARING,
+Réinitialiser les paramètres?
+
+#MSG_DEFAULT_LOADING
+Veuillez patienter...
+
+#MSG_BACK
+Retour
+
+ENDFRENCH
