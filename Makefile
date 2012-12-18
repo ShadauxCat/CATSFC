@@ -18,12 +18,11 @@ export OUTPUT := $(CURDIR)/$(TARGET)
 #---------------------------------------------------------------------------------
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
-	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	$(MAKE) -C $(BUILD) -f $(CURDIR)/Makefile
  
 #---------------------------------------------------------------------------------
 clean:
-	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).plg
+	rm -fr $(BUILD) $(OUTPUT).plg
  
 #---------------------------------------------------------------------------------
 
@@ -59,8 +58,8 @@ EXTLIBS := $(DS2SDKPATH)/lib/libds2a.a
 
 INC := -I$(DS2SDKPATH)/include -I$(FS_DIR) -I$(CONSOLE_DIR) -I$(KEY_DIR) -I$(ZLIB_DIR)
 
-CFLAGS := -mips32 -O3 -mno-abicalls -fno-pic -fno-builtin \
-	   -fno-exceptions -ffunction-sections -mlong-calls\
+CFLAGS := -mips32 -Os -mno-abicalls -fno-pic -fno-builtin \
+	   -fno-exceptions -fno-function-sections -mlong-calls\
 	   -fomit-frame-pointer -msoft-float -G 4
 
 
@@ -83,11 +82,12 @@ APP	:= sfc.elf
 
 all: $(APP)
 	@echo $(INC)
-	$(OBJCOPY) -O binary $(APP) sfc.dat
-	$(OBJDUMP) -d $(APP) > sfc.dump
-	$(NM) $(APP) | sort > sfc.sym
-	$(OBJDUMP) -h $(APP) > sfc.map
+	$(OBJCOPY) -x -O binary $(APP) sfc.dat
 	$(DS2SDKPATH)/tools/makeplug sfc.dat $(OUTPUT).plg
+# but also, if you want to debug even more
+# $(OBJDUMP) -d $(APP) > sfc.dump
+# $(NM) $(APP) | sort > sfc.sym
+# $(OBJDUMP) -h $(APP) > sfc.map
 
 $(APP): depend $(SOBJS) $(OBJS) $(STARTO) $(LINKS) $(EXTLIBS)
 	$(CC) -nostdlib -static -T $(LINKS) -o $@ $(STARTO) $(SOBJS) $(OBJS) $(EXTLIBS) $(LIBS)
@@ -111,10 +111,13 @@ clean:
 
 # depend:	Makefile $(OBJS:.o=.c) $(SOBJS:.o=.S)
 
-depend:	Makefile
+Makefile: depend
+	touch $@
+
+depend: $(SSRC) $(SRC)
 	$(CC) -MM $(CFLAGS) $(INC) $(SSRC) $(SRC) > $@
 
-sinclude depend
+-include depend
 
 #1-1----------------------------------------------------------------------------
 endif
