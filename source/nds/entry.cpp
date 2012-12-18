@@ -172,12 +172,7 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 			break;
 	}
 
-
-//    memcpy(up_screen_addr, GFX.Screen, 256*192*2);
-//    memcpy(down_screen_addr, GFX.Screen+256*192*2, 256*(224-192)*2);
-
-    ds2_flipScreen(UP_SCREEN, 0);
-//    ds2_flipScreen(DOWN_SCREEN, 0);
+    ds2_flipScreen(UP_SCREEN, 1); // synchronise to vblank to avoid tearing
 
     return (TRUE);
 }
@@ -454,12 +449,12 @@ int load_gamepak(char* file)
 
 	CPU.Flags = 0;
 	S9xReset ();
-	mdelay(50);
+	// mdelay(50); // Delete this delay
 	if (!Memory.LoadROM (file))
 		return -1;
 
 	Memory.LoadSRAM (S9xGetFilename (".srm"));
-	mdelay(50);
+	// mdelay(50); // Delete this delay
 	//S9xLoadCheatFile (S9xGetFilename (".cht"));
 	S9xCheat_Disable();
 
@@ -507,7 +502,7 @@ int load_gamepak(char* file)
     }
 */
 
-	mdelay(50);
+	// mdelay(50); // Delete this delay
     if (!Settings.APUEnabled)
 	    S9xSetSoundMute (FALSE);
 
@@ -602,7 +597,7 @@ int sfc_main (int argc, char **argv)
 		if (Settings.Paused)
 		{
 			S9xSetSoundMute (TRUE);
-			mdelay(50);
+			// mdelay(50); // Delete this delay
 			unsigned short screen[256*192];
 
 			copy_screen((void*)screen, up_screen_addr, 0, 0, 256, 192);

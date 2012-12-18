@@ -1650,7 +1650,7 @@ unsigned int frame_interval;
 --------------------------------------------------------*/
 u32 menu(u16 *screen)
 {
-	mdelay(50);
+	mdelay(50); // to prevent the touch key from being applied too soon?
     gui_action_type gui_action;
     u32 i;
     u32 repeat;
@@ -2059,7 +2059,7 @@ u32 menu(u16 *screen)
 				reorder_latest_file();
 				save_game_config_file();
 
-				mdelay(500);
+				// mdelay(500); // Delete this delay
 			}
 		}
 	}
@@ -2842,7 +2842,7 @@ u32 menu(u16 *screen)
             draw_string_vcenter(up_screen_addr, 0, 80, 256, COLOR_WHITE, msg[MSG_NON_LOAD_GAME]);
 			ds2_flipScreen(UP_SCREEN, 1);
 
-			mdelay(500);
+			// mdelay(500); // Delete this delay
         }
     }
 
@@ -2894,7 +2894,7 @@ u32 menu(u16 *screen)
             }
 
 			save_emu_config_file();
-			mdelay(500);
+			// mdelay(500); // Delete this delay
         }
     }
 
@@ -3617,7 +3617,7 @@ u32 menu(u16 *screen)
 //----------------------------------------------------------------------------//
 //	Menu Start
 	ds2_setCPUclocklevel(0);
-	mdelay(200);
+	// mdelay(200); // Delete this delay
 	ds2_setBacklight(3);
 	
 	
@@ -3647,7 +3647,7 @@ u32 menu(u16 *screen)
 	choose_menu(&main_menu);
 //	Menu loop
 	
-	mdelay(200);
+	// mdelay(50); // Delete this delay, shortened from 200
 	while(repeat)
 	{
 	
@@ -4133,9 +4133,9 @@ u32 menu(u16 *screen)
 		save_game_config_file();
 	}
 	save_emu_config_file();
-	mdelay(100);
+	// mdelay(100); // Delete this delay
 	set_cpu_clock(clock_speed_number);
-	mdelay(200);
+	// mdelay(200); // Delete this delay
 	
 	ds2_clearScreen(DOWN_SCREEN, 0);
 	ds2_flipScreen(DOWN_SCREEN, 1);
