@@ -50,12 +50,11 @@ CPP_SOURCES = source/apu.cpp source/apudebug.cpp source/c4.cpp \
               source/sdd1.cpp source/sdd1emu.cpp source/server.cpp \
               source/seta010.cpp source/seta011.cpp source/seta018.cpp \
               source/seta.cpp source/snaporig.cpp source/snapshot.cpp \
-              source/snes9x.cpp source/soundux.cpp \
+              source/soundux.cpp \
               source/spc700.cpp source/spc7110.cpp \
               source/srtc.cpp \
               source/tile.cpp source/nds/cheats3.cpp \
               source/nds/displaymodes.cpp source/nds/entry.cpp
-# spctool.cpp, sound.cpp, dsp* except dsp1.cpp, spc.cpp, spccycles.cpp have been deleted!
 SOURCES      = $(C_SOURCES) $(CPP_SOURCES)
 C_OBJECTS    = $(C_SOURCES:.c=.o)
 CPP_OBJECTS  = $(CPP_SOURCES:.cpp=.o)
