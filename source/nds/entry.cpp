@@ -385,6 +385,7 @@ void init_sfc_setting(void)
     Settings.NetPlay = FALSE;
     Settings.ServerName [0] = 0;
     Settings.ThreadSound = FALSE;
+	Settings.SoundSync = TRUE;
     Settings.AutoSaveDelay = 0;
 #ifdef _NETPLAY_SUPPORT
     Settings.Port = NP_DEFAULT_PORT;
