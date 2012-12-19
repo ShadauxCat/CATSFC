@@ -3125,7 +3125,7 @@ u32 menu(u16 *screen)
 	/* 01 */ NUMERIC_SELECTION_OPTION(NULL, &msg[MSG_SUB_MENU_42], &clock_speed_number, 6, NULL, 1),
 
 	/* 02 */ STRING_SELECTION_OPTION(language_set, NULL, &msg[MSG_SUB_MENU_41], language_options, 
-        &emu_config.language, 3 /* number of possibilities */, NULL, ACTION_TYPE, 2),
+        &emu_config.language, sizeof(language_options) / sizeof(language_options[0]) /* number of possible languages */, NULL, ACTION_TYPE, 2),
 
 	/* 03 */ STRING_SELECTION_OPTION(NULL, show_card_space, &msg[MSG_SUB_MENU_43], NULL, 
         &desert, 2, NULL, PASSIVE_TYPE | HIDEN_TYPE, 3),
