@@ -1721,7 +1721,7 @@ u32 menu(u16 *screen)
 			game_config.clock_speed_number = clock_speed_number;
 
             reorder_latest_file();
-			//S9xAutoSaveSRAM ();
+			S9xAutoSaveSRAM ();
 			save_game_config_file();
 		}
 		save_emu_config_file();
@@ -1734,7 +1734,7 @@ u32 menu(u16 *screen)
 
 		if(gamepak_name[0] != 0)
 		{
-			//S9xAutoSaveSRAM ();
+			S9xAutoSaveSRAM ();
 			save_game_config_file();
 		}
 
@@ -1748,7 +1748,10 @@ u32 menu(u16 *screen)
 			draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_LOADING_GAME]);
 			ds2_flipScreen(DOWN_SCREEN, 2);
 
-			if(load_gamepak(line_buffer) == -1)
+			ds2_setCPUclocklevel(13);
+			int load_result = load_gamepak(&line_buffer);
+			ds2_setCPUclocklevel(0);
+			if(load_result == -1)
 			{
 				first_load = 1;
 				gamepak_name[0] = '\0';
@@ -1812,8 +1815,12 @@ u32 menu(u16 *screen)
 		draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
 		draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_LOADING_GAME]);
 		ds2_flipScreen(DOWN_SCREEN, 2);
-		
-		if(load_gamepak(args[1]) == -1)
+
+		ds2_setCPUclocklevel(13);
+		int load_result = load_gamepak(args[1]);
+		ds2_setCPUclocklevel(0);
+
+		if(load_result == -1)
 		{
 			first_load = 1;
 			gamepak_name[0] = '\0';
@@ -3495,7 +3502,7 @@ u32 menu(u16 *screen)
 
 		if(gamepak_name[0] != 0)
 		{
-			//S9xAutoSaveSRAM ();
+			S9xAutoSaveSRAM ();
 			save_game_config_file();
 		}
 
@@ -3511,7 +3518,12 @@ u32 menu(u16 *screen)
 		*ext_pos= '/';
 
 		ext_pos = emu_config.latest_file[current_option_num -1];
-		if(load_gamepak(ext_pos) == -1) {
+
+		ds2_setCPUclocklevel(13);
+		int load_result = load_gamepak(ext_pos);
+		ds2_setCPUclocklevel(0);
+
+		if(load_result == -1) {
 			first_load = 1;
 			return;
 		}
@@ -4129,7 +4141,7 @@ u32 menu(u16 *screen)
 		game_config.clock_speed_number = clock_speed_number;
 
 		reorder_latest_file();
-		//S9xAutoSaveSRAM ();
+		S9xAutoSaveSRAM ();
 		save_game_config_file();
 	}
 	save_emu_config_file();
@@ -4308,7 +4320,7 @@ void init_game_config(void)
 {
     u32 i;
 
-	game_config.clock_speed_number = 2;	//360MHz
+	game_config.clock_speed_number = 5;	// 396 MHz by default
 	clock_speed_number = 2;
 	game_config.graphic = 0;
 
