@@ -44,17 +44,17 @@
 
 
 #define PRINT_STRING(screen, str, fg_color, x, y)							   \
-  BDF_render_string(screen, x, y, COLOR_TRANS, fg_color, str)				   \
+  BDF_render_mix(screen, SCREEN_WIDTH, x, y, 0, COLOR_TRANS, fg_color, str)				   \
 
 #define PRINT_STRING_SHADOW(screen, str, fg_color, x, y)                       \
-  BDF_render_string(screen, x+1, y+1, 0, 0, str);             				   \
-  BDF_render_string(screen, x, y, 0, 0, str)                  				   \
+  BDF_render_mix(screen, SCREEN_WIDTH, x+1, y+1, 0, 0, 0, str);             				   \
+  BDF_render_mix(screen, SCREEN_WIDTH, x, y, 0, 0, 0, str)                  				   \
 
 #define PRINT_STRING_BG(screen, str, fg_color, bg_color, x, y)                 \
-  BDF_render_string(screen, x, y, bg_color, fg_color, str)					   \
+  BDF_render_mix(screen, SCREEN_WIDTH, x, y, 0, bg_color, fg_color, str)					   \
 
-#define PRINT_STRING_BG_UTF8(screen, utf8, fg_color, bg_color, x, y)           \
-  BDF_render_mix(screen, SCREEN_WIDTH, x, y, 0, bg_color, fg_color, utf8)	   \
+// #define PRINT_STRING_BG_UTF8(screen, utf8, fg_color, bg_color, x, y)           \
+//   BDF_render_mix(screen, SCREEN_WIDTH, x, y, 0, bg_color, fg_color, utf8)	   \
 
 
 //colors

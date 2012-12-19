@@ -40,10 +40,11 @@ char	rom_path[MAX_PATH];
 char	gamepak_name[MAX_PATH];
 char	gcheat_filename[MAX_PATH];
 
-char *lang[2] =
+char *lang[3] =
 	{ 
 		"English",					// 0
 		"简体中文",					// 1
+		"Français", 				// 2
 	};
 
 /******************************************************************************
@@ -1937,7 +1938,7 @@ u32 menu(u16 *screen)
 			else
 				color= COLOR_INACTIVE_ITEM;
 
-			PRINT_STRING_BG_UTF8(down_screen_addr, line_buffer, color, COLOR_TRANS, 23, 40 + line[i]*27);
+			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 23, 40 + line[i]*27);
         }
 
 		int slot_index;
@@ -1948,7 +1949,7 @@ u32 menu(u16 *screen)
         slot_index= get_savestate_slot();
 
         sprintf(line_buffer, "%d", (slot_index+2) > SAVE_STATE_SLOT_NUM ? SAVE_STATE_SLOT_NUM : (slot_index+2));
-        PRINT_STRING_BG_UTF8(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, 146, 40 + 0*27);
+        PRINT_STRING_BG(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, 146, 40 + 0*27);
 		if(current_option_num == 1)
 			selected = slot_index+1;
 
@@ -2006,7 +2007,7 @@ u32 menu(u16 *screen)
 			else
 				color= COLOR_INACTIVE_ITEM;
 
-			PRINT_STRING_BG_UTF8(down_screen_addr, line_buffer, color, COLOR_TRANS, 23, 40 + line[i]*27);
+			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 23, 40 + line[i]*27);
         }
 
 		if(current_option_num == 2)
@@ -2578,7 +2579,7 @@ u32 menu(u16 *screen)
 		pt = strrchr(tmp_buf, ')');
 		strcat(line_buffer, pt);
 
-		PRINT_STRING_BG_UTF8(down_screen_addr, line_buffer, color, COLOR_TRANS, 26, 40 + display_option-> line_number*27);
+		PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 26, 40 + display_option-> line_number*27);
 	}
 
 	void dynamic_cheat_menu_end()
@@ -2801,7 +2802,7 @@ u32 menu(u16 *screen)
 		mm = *(display_option->current_option);
 		sprintf(line_buffer, *(display_option->display_string), str[mm]);
 		
-        PRINT_STRING_BG_UTF8(down_screen_addr, line_buffer, color, COLOR_TRANS, 27,
+        PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 27,
             38 + (display_option-> line_number)*32);
 	}
 
@@ -2913,7 +2914,7 @@ u32 menu(u16 *screen)
 
         strcpy(line_buffer, *(display_option->display_string));
         line_num= display_option-> line_number;
-        PRINT_STRING_BG_UTF8(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, 27,
+        PRINT_STRING_BG(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, 27,
             40 + (display_option->line_number)*27);
 
 		num_byte = freespace;
@@ -2945,7 +2946,7 @@ u32 menu(u16 *screen)
                 strcat(line_buffer, ".0 GB");
         }
 
-        PRINT_STRING_BG_UTF8(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, 147,
+        PRINT_STRING_BG(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, 147,
             40 + (display_option->line_number)*27);
     }
 
@@ -2965,7 +2966,7 @@ u32 menu(u16 *screen)
 
     char *enable_disable_options[] = { (char*)&msg[MSG_EN_DIS_ABLE_0], (char*)&msg[MSG_EN_DIS_ABLE_1] };
 
-    char *language_options[] = { (char*)&lang[0], (char*)&lang[1] };
+    char *language_options[] = { (char*) &lang[0], (char*) &lang[1], (char*) &lang[2] };
 
     char *keyremap_options[] = {(char*)&msg[MSG_KEY_MAP_NONE], (char*)&msg[MSG_KEY_MAP_A], (char*)&msg[MSG_KEY_MAP_B], 
                                 (char*)&msg[MSG_KEY_MAP_SL], (char*)&msg[MSG_KEY_MAP_ST], (char*)&msg[MSG_KEY_MAP_RT], 
@@ -3124,7 +3125,7 @@ u32 menu(u16 *screen)
 	/* 01 */ NUMERIC_SELECTION_OPTION(NULL, &msg[MSG_SUB_MENU_42], &clock_speed_number, 6, NULL, 1),
 
 	/* 02 */ STRING_SELECTION_OPTION(language_set, NULL, &msg[MSG_SUB_MENU_41], language_options, 
-        &emu_config.language, 2, NULL, ACTION_TYPE, 2),
+        &emu_config.language, 3 /* number of possibilities */, NULL, ACTION_TYPE, 2),
 
 	/* 03 */ STRING_SELECTION_OPTION(NULL, show_card_space, &msg[MSG_SUB_MENU_43], NULL, 
         &desert, 2, NULL, PASSIVE_TYPE | HIDEN_TYPE, 3),
@@ -3582,7 +3583,7 @@ u32 menu(u16 *screen)
         else
             color= COLOR_INACTIVE_ITEM;
     
-        PRINT_STRING_BG_UTF8(down_screen_addr, line_buffer, color, COLOR_TRANS, 26, 37 + line_num*32);
+        PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 26, 37 + line_num*32);
     }
 
     void game_fastforward()
@@ -3758,7 +3759,7 @@ u32 menu(u16 *screen)
 					else
 						color= COLOR_INACTIVE_ITEM;
 	
-					PRINT_STRING_BG_UTF8(down_screen_addr, line_buffer, color, COLOR_TRANS, 23, 40 + i*27);
+					PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 23, 40 + i*27);
 				}
     	    }
     	}
@@ -4204,6 +4205,7 @@ int load_language_msg(char *filename, u32 language)
     switch(language)
     {
     case ENGLISH:
+	default:
         strcpy(start, "STARTENGLISH");
         strcpy(end, "ENDENGLISH");
         cmplen= 12;
@@ -4213,10 +4215,10 @@ int load_language_msg(char *filename, u32 language)
         strcpy(end, "ENDCHINESESIM");
         cmplen= 15;
         break;
-    default:
-        strcpy(start, "STARTENGLISH");
-        strcpy(end, "ENDENGLISH");
-        cmplen= 12;
+	case FRENCH:
+        strcpy(start, "STARTFRENCH");
+        strcpy(end, "ENDFRENCH");
+        cmplen= 11;
         break;
     }
     //find the start flag
@@ -4898,7 +4900,9 @@ void gui_init(u32 lang_id)
 	flag = load_font();
 	if(0 != flag)
 	{
-		err_msg(DOWN_SCREEN, "initial font library error, press any key to exit\n");
+		char message[128];
+		sprintf(message, "Font library initialisation error %d, press any key to exit\n", flag);
+		err_msg(DOWN_SCREEN, message);
 		goto gui_init_err;
 	}
 
