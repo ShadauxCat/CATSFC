@@ -399,7 +399,6 @@ char *CMemory::Safe (const char *s)
 /**********************************************************************************************/
 bool8 CMemory::Init ()
 {
-	// memset? Really? We could just memcpy after the first allocation... [Neb]
     RAM	    = (uint8 *) malloc (0x20000);
     SRAM    = (uint8 *) malloc (0x20000);
     VRAM    = (uint8 *) malloc (0x10000);

@@ -45,7 +45,7 @@ CPP_SOURCES = source/apu.cpp source/apudebug.cpp source/c4.cpp \
               source/fxdbg.cpp source/fxemu.cpp source/fxinst.cpp \
               source/gfx.cpp source/globals.cpp source/loadzip.cpp \
               source/memmap.cpp source/movie.cpp source/netplay.cpp \
-              source/obc1.cpp source/offsets.cpp source/ppu.cpp \
+              source/obc1.cpp source/ppu.cpp \
               source/sa1.cpp source/sa1cpu.cpp source/screenshot.cpp \
               source/sdd1.cpp source/sdd1emu.cpp source/server.cpp \
               source/seta010.cpp source/seta011.cpp source/seta018.cpp \
@@ -100,7 +100,7 @@ makedirs:
 	-mkdir $(PLUGIN_DIR)/gamepic
 
 clean:
-	-rm -rf $(OUTPUT).plg $(OUTPUT).dat $(OUTPUT).elf depend $(OBJECTS)
+	-rm -rf $(OUTPUT).plg $(OUTPUT).dat $(OUTPUT).elf depend $(OBJECTS) $(START_O)
 
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDE) $(DEFS) -o $@ -c $<
