@@ -4321,8 +4321,8 @@ void init_game_config(void)
     u32 i;
 
 	game_config.clock_speed_number = 5;	// 396 MHz by default
-	clock_speed_number = 2;
-	game_config.graphic = 0;
+	clock_speed_number = 5;
+	game_config.graphic = 3; // By default, have a good-looking aspect ratio
 
 	game_config.gamepad_config_menu = BUTTON_ID_TOUCH;
     memcpy(game_config.gamepad_config_map, gamepad_config_map_init, sizeof(gamepad_config_map_init));
