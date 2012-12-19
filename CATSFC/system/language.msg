@@ -14,10 +14,10 @@ ENDCOMMENT
 STARTENGLISH
 
 #MSG_MAIN_MENU_0
-Video/Audio
+Video/audio
 
 #MSG_MAIN_MENU_1
-Save State
+Freezes
 
 #MSG_MAIN_MENU_2
 Cheats
@@ -26,94 +26,94 @@ Cheats
 Tools
 
 #MSG_MAIN_MENU_4
-Other
+Others
 
 #MSG_MAIN_MENU_5
 Exit
 
 #MSG_SUB_MENU_00
-Display Mode           %s
+Aspect ratio    %s
 
 #MSG_SUB_MENU_01
-Fast-Forward Mode     %s
+Fast-forward  %s
 
 #MSG_SUB_MENU_02
-Frame Skip Level         %s
+Frame skipping        %s
 
 #MSG_SUB_MENU_03
-Frame Skip Level         %d
+Frame skipping        %d
 
 #MSG_SUB_MENU_04
-Enable Sound             %s
+Sound            %s
 
 #MSG_SUB_MENU_05
 Back
 
 #MSG_SUB_MENU_10
-Save Game State
+Save frozen state
 
 #MSG_SUB_MENU_11
-Load Game State    %d
+Load frozen state    %d
 
 #MSG_SUB_MENU_12
-Game State Slot
+Select save slot
 
 #MSG_SUB_MENU_13
-Delete Game State
+Delete frozen states...
 
 #MSG_SUB_MENU_14
 Back
 
 #MSG_SUB_MENU_20
-Cheat Page: %d
+Cheat page %d
 
 #MSG_SUB_MENU_21
-Load Cheat File
+Load cheat file
 
 #MSG_SUB_MENU_22
-Cheat Slot
+Cheat slot
 
 #MSG_SUB_MENU_23
-Load Cheats
+Load cheats
 
 #MSG_SUB_MENU_24
 Back
 
 #MSG_SUB_MENU_30
-Take Screenshot
+Screenshots...
 
 #MSG_SUB_MENU_31
-Key Pad Remap
+Remap the joypad
 
 #MSG_SUB_MENU_32
-Period                     %s Second
+Keep information for  %s second(s)
 
 #MSG_SUB_MENU_40
-Auto Standby          %s
+Auto standby          %s
 
 #MSG_SUB_MENU_41
 Language               %s
 
 #MSG_SUB_MENU_42
-CPU Frequency          %d
+CPU frequency         %d
 
 #MGS_SUB_MENU_43
-SD Card Capacity
+Card capacity
 
 #MSG_SUB_MENU_44
-Restore Default Settings
+Restore default settings
 
 #MSG_SUB_MENU_45
-Version Information
+Version information
 
 #MSG_SUB_MENU_300
-Save Screenshot
+Save a screenshot
 
 #MSG_SUB_MENU_301
-Browse Screenshots
+Browse screenshots
 
 #MSG_SUB_MENU_302
-Time Backward        %s
+Rewinding             %s
 
 #MSG_SUB_MENU_310
 SNES Key    A                %s
@@ -134,28 +134,28 @@ Awaken Menu            %s
 Back                           NDS key
 
 #MSG_SUB_MENU_60
-Recently Played Games
+Recently played games
 
 #MSG_SUB_MENU_61
-Select Games
+Select a game from the card
 
 #MSG_SUB_MENU_62
-Loading Game
+Select a game
 
 #MSG_SCREEN_RATIO_0
-Display Mode 0
+[0] Entire screen
 
 #MSG_SCREEN_RATIO_1
-Display Mode 1
+[1] Bottom of screen
 
 #MSG_SCREEN_RATIO_2,
-Display Mode 2
+[2] Top of screen
 
 #MSG_SCREEN_RATIO_3,
-Display Mode 3
+[3] Middle of screen
 
 #MSG_SCREEN_RATIO_4,
-Display Mode 4
+[4] Entire screen
 
 #MSG_FRAMESKIP_0
 Manual
@@ -188,25 +188,25 @@ Disable
 Enable
 
 #MSG_NONE_LOAD_GAME
-No Game Loaded!
+No game is currently loaded
 
 #MSG_CHEAT_MENU_NON_LOAD
-Cheat %d (None Loaded)
+Cheat %d (none loaded)
 
 #MSG_CHEAT_MENU_0
 Cheat %d (%s): %%s
 
 #MSG_LOAD_STATE
-Load Savestate
+Load frozen state
 
 #MSG_LOAD_STATE_END
-Load Savestate
+Load frozen state
 
 #MSG_SAVE_STATE
-Save Savestate
+Save a new state
 
 #MSG_SAVE_STATE_END
-Successful!
+OK!
 
 #MSG_KEY_MAP_NONE
 None
@@ -251,80 +251,78 @@ Y
 Touch Screen
 
 #MSG_SAVESTATE_EMPTY
-Current Slot Is Empty!
+This slot is empty.
 
 #MSG_SAVESTATE_FULL
-Current Slot Is Full,\n
-Do You Want To Overwrite It?\n
-Press A To Overwrite\n
-Press B To Cancel
+The current slot holds a state.\n
+Do you wish to overwrite it?\n
+[A] Overwrite  [B] Cancel
 
 #MSG_SAVESTATE_DOING
-Writing...
+Saving state...
 
 #MSG_SAVESTATE_FAILURE
-Failure!\n
-Press A To Retry\n
-Press B To Cancel
+Failed!\n
+[A] Retry  [B] Cancel
 
 #MSG_SAVESTATE_SUCCESS
-Success!
+OK!
 
 #MSG_SAVESTATE_SLOT_EMPTY
-No Screen Shot
+No saved state
 
 #MSG_SAVESTATE_FILE_BAD
-Game State Could Not Be Found Or Is Corrupt!
+The game state file is not found or corrupt.
 
 #MSG_LOADSTATE_DOING
 Loading...
 
 #MSG_LOADSTATE_FAILURE
-Failure!
+Failed!
 
 #MSG_LOADSTATE_SUCCESS
-Success!
+OK!
 
 #MSG_WARING_DIALOG
-Press Any Key To Return
+Press any key to return.
 
 #MSG_TIME_FORMATE
 Time
 
 #MSG_SUB_MENU_130
-Delete All Game States?
+Delete all save states
 
 #MSG_SUB_MENU_131
-Delete Game State         %d ?
+Delete save state %d
 
 #MSG_DELETE_ALL_SAVESTATE_WARING
-Delete All Game States? \n
-Press A To Confirm, Press B To Cancel
+Really delete all frozen states?\n
+[A] Confirm  [B] Cancel
 
 #MSG_DELETE_SINGLE_SAVESTATE_WARING
-Delete Game State %d? \n
-Press A To Confirm, Press B To Cancel
+Really delete frozen state %d?\n
+[A] Confirm  [B] Cancel
 
 #MSG_DELETE_SAVESTATE_NOTHING
-Savestate is already empty!
+There's already nothing here.
 
 #MSG_SAVE_SNAPSHOT
-Saving Screenshot...
+Saving a screenshot...
 
 #MSG_SAVE_SNAPSHOT_COMPLETE
-Complete!
+OK!
 
 #MSG_SAVE_SNAPSHOT_FAILURE
-Failure!
+Failed!
 
 #MSG_CHANGE_LANGUAGE
-Changing...
+Changing language...
 
 #MSG_CHANGE_LANGUAGE_WAITING
-Please Wait...
+Please wait...
 
 #MSG_NO_SLIDE
-No screenshots found!
+No screenshots found
 
 #MSG_PLAYING_SLIDE
 Playing...
@@ -336,25 +334,25 @@ Pause...
 Key UP    Speed up
 
 #MSG_PLAY_SLIDE2
-Key DOWN  Speed down
+Key DOWN  Slow down
 
 #MSG_PLAY_SLIDE3
-Key LEFT  Last slide
+Key LEFT  Last image
 
 #MSG_PLAY_SLIDE4
-Key RIGHT Next slide
+Key RIGHT Next image
 
 #MSG_PLAY_SLIDE5
 Key A     Pause
 
 #MSG_PLAY_SLIDE6
-Key B     Return To Menu
+Key B     Return to the menu
 
 #MSG_LOADING_GMAE
-Loading Game...
+Loading...
 
 #MSG_EMU_VERSION0
-CATSFC SNES Emulator
+CATSFC SNES emulator
 
 #MSG_EMU_VERSION1
 Version
@@ -363,7 +361,7 @@ Version
 Reset all settings to default?
 
 #MSG_DEFAULT_LOADING
-Please Wait A Moment...
+Please wait...
 
 #MSG_BACK
 Back
