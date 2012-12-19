@@ -100,19 +100,19 @@ typedef enum {
     JUMP = 4
 } AccessMode;
 
-STATIC inline void Immediate8 (AccessMode a)
+void Immediate8 (AccessMode a)
 {
     OpAddress = ICPU.ShiftedPB + CPU.PC - CPU.PCBase;
     CPU.PC++;
 }
 
-STATIC inline void Immediate16 (AccessMode a)
+void Immediate16 (AccessMode a)
 {
     OpAddress = ICPU.ShiftedPB + CPU.PC - CPU.PCBase;
     CPU.PC += 2;
 }
 
-STATIC inline void Relative (AccessMode a)
+void Relative (AccessMode a)
 {
     Int8 = *CPU.PC++;
 #ifndef SA1_OPCODES
@@ -121,7 +121,7 @@ STATIC inline void Relative (AccessMode a)
     OpAddress = ((int) (CPU.PC - CPU.PCBase) + Int8) & 0xffff;
 }
 
-STATIC inline void RelativeLong (AccessMode a)
+void RelativeLong (AccessMode a)
 {
 #ifdef FAST_LSB_WORD_ACCESS
     OpAddress = *(uint16 *) CPU.PC;
@@ -136,7 +136,7 @@ STATIC inline void RelativeLong (AccessMode a)
     OpAddress &= 0xffff;
 }
 
-STATIC inline void AbsoluteIndexedIndirect (AccessMode a)
+void AbsoluteIndexedIndirect (AccessMode a)
 {
 #ifdef FAST_LSB_WORD_ACCESS
     OpAddress = (Registers.X.W + *(uint16 *) CPU.PC) & 0xffff;
@@ -152,7 +152,7 @@ STATIC inline void AbsoluteIndexedIndirect (AccessMode a)
     if(a&READ) OpenBus = (uint8)(OpAddress>>8);
 }
 
-STATIC inline void AbsoluteIndirectLong (AccessMode a)
+void AbsoluteIndirectLong (AccessMode a)
 {
 #ifdef FAST_LSB_WORD_ACCESS
     OpAddress = *(uint16 *) CPU.PC;
@@ -172,7 +172,7 @@ STATIC inline void AbsoluteIndirectLong (AccessMode a)
     }
 }
 
-STATIC inline void AbsoluteIndirect (AccessMode a)
+void AbsoluteIndirect (AccessMode a)
 {
 #ifdef FAST_LSB_WORD_ACCESS
     OpAddress = *(uint16 *) CPU.PC;
@@ -190,7 +190,7 @@ STATIC inline void AbsoluteIndirect (AccessMode a)
     OpAddress += ICPU.ShiftedPB;
 }
 
-STATIC inline void Absolute (AccessMode a)
+void Absolute (AccessMode a)
 {
 #ifdef FAST_LSB_WORD_ACCESS
     OpAddress = *(uint16 *) CPU.PC + ICPU.ShiftedDB;
@@ -204,7 +204,7 @@ STATIC inline void Absolute (AccessMode a)
 #endif
 }
 
-STATIC inline void AbsoluteLong (AccessMode a)
+void AbsoluteLong (AccessMode a)
 {
 #ifdef FAST_LSB_WORD_ACCESS
     OpAddress = (*(uint32 *) CPU.PC) & 0xffffff;
@@ -218,7 +218,7 @@ STATIC inline void AbsoluteLong (AccessMode a)
 #endif
 }
 
-STATIC inline void Direct(AccessMode a)
+void Direct(AccessMode a)
 {
     if(a&READ) OpenBus = *CPU.PC;
     OpAddress = (*CPU.PC++ + Registers.D.W) & 0xffff;
@@ -228,7 +228,7 @@ STATIC inline void Direct(AccessMode a)
 //    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
 }
 
-STATIC inline void DirectIndirectIndexed (AccessMode a)
+void DirectIndirectIndexed (AccessMode a)
 {
     OpenBus = *CPU.PC;
     OpAddress = (*CPU.PC++ + Registers.D.W) & 0xffff;
@@ -245,7 +245,7 @@ STATIC inline void DirectIndirectIndexed (AccessMode a)
     // XXX: else Add one cycle if crosses page boundary
 }
 
-STATIC inline void DirectIndirectIndexedLong (AccessMode a)
+void DirectIndirectIndexedLong (AccessMode a)
 {
     OpenBus = *CPU.PC;
     OpAddress = (*CPU.PC++ + Registers.D.W) & 0xffff;
@@ -261,7 +261,7 @@ STATIC inline void DirectIndirectIndexedLong (AccessMode a)
 //    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
 }
 
-STATIC inline void DirectIndexedIndirect(AccessMode a)
+void DirectIndexedIndirect(AccessMode a)
 {
     OpenBus = *CPU.PC;
     OpAddress = (*CPU.PC++ + Registers.D.W + Registers.X.W) & 0xffff;
@@ -281,7 +281,7 @@ STATIC inline void DirectIndexedIndirect(AccessMode a)
 #endif
 }
 
-STATIC inline void DirectIndexedX (AccessMode a)
+void DirectIndexedX (AccessMode a)
 {
 	if(a&READ) OpenBus = *CPU.PC;
     OpAddress = (*CPU.PC++ + Registers.D.W + Registers.X.W);
@@ -299,7 +299,7 @@ STATIC inline void DirectIndexedX (AccessMode a)
 #endif
 }
 
-STATIC inline void DirectIndexedY (AccessMode a)
+void DirectIndexedY (AccessMode a)
 {
 	if(a&READ) OpenBus = *CPU.PC;
     OpAddress = (*CPU.PC++ + Registers.D.W + Registers.Y.W);
@@ -316,7 +316,7 @@ STATIC inline void DirectIndexedY (AccessMode a)
 #endif
 }
 
-STATIC inline void AbsoluteIndexedX (AccessMode a)
+void AbsoluteIndexedX (AccessMode a)
 {
 #ifdef FAST_LSB_WORD_ACCESS
     OpAddress = ICPU.ShiftedDB + *(uint16 *) CPU.PC + Registers.X.W;
@@ -333,7 +333,7 @@ STATIC inline void AbsoluteIndexedX (AccessMode a)
     // XXX: else is cross page boundary add one cycle
 }
 
-STATIC inline void AbsoluteIndexedY (AccessMode a)
+void AbsoluteIndexedY (AccessMode a)
 {
 #ifdef FAST_LSB_WORD_ACCESS
     OpAddress = ICPU.ShiftedDB + *(uint16 *) CPU.PC + Registers.Y.W;
@@ -350,7 +350,7 @@ STATIC inline void AbsoluteIndexedY (AccessMode a)
     // XXX: else is cross page boundary add one cycle
 }
 
-STATIC inline void AbsoluteLongIndexedX (AccessMode a)
+void AbsoluteLongIndexedX (AccessMode a)
 {
 #ifdef FAST_LSB_WORD_ACCESS
     OpAddress = (*(uint32 *) CPU.PC + Registers.X.W) & 0xffffff;
@@ -364,7 +364,7 @@ STATIC inline void AbsoluteLongIndexedX (AccessMode a)
 #endif
 }
 
-STATIC inline void DirectIndirect (AccessMode a)
+void DirectIndirect (AccessMode a)
 {
     OpenBus = *CPU.PC;
     OpAddress = (*CPU.PC++ + Registers.D.W) & 0xffff;
@@ -378,7 +378,7 @@ STATIC inline void DirectIndirect (AccessMode a)
 //    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
 }
 
-STATIC inline void DirectIndirectLong (AccessMode a)
+void DirectIndirectLong (AccessMode a)
 {
     OpenBus = *CPU.PC;
     OpAddress = (*CPU.PC++ + Registers.D.W) & 0xffff;
@@ -393,7 +393,7 @@ STATIC inline void DirectIndirectLong (AccessMode a)
 //    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
 }
 
-STATIC inline void StackRelative (AccessMode a)
+void StackRelative (AccessMode a)
 {
     if(a&READ) OpenBus = *CPU.PC;
     OpAddress = (*CPU.PC++ + Registers.S.W) & 0xffff;
@@ -403,7 +403,7 @@ STATIC inline void StackRelative (AccessMode a)
 #endif
 }
 
-STATIC inline void StackRelativeIndirectIndexed (AccessMode a)
+void StackRelativeIndirectIndexed (AccessMode a)
 {
     OpenBus = *CPU.PC;
     OpAddress = (*CPU.PC++ + Registers.S.W) & 0xffff;

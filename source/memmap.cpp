@@ -146,7 +146,7 @@ int is_bsx(unsigned char *);
 int bs_name(unsigned char *);
 int check_char(unsigned);
 void S9xDeinterleaveType2 (bool8 reset=TRUE);
-inline uint32 caCRC32(uint8 *array, uint32 size, register uint32 crc32 = 0xFFFFFFFF);
+uint32 caCRC32(uint8 *array, uint32 size, register uint32 crc32 = 0xFFFFFFFF);
 
 extern char *rom_filename;
 
@@ -395,10 +395,11 @@ char *CMemory::Safe (const char *s)
 
 /**********************************************************************************************/
 /* Init()                                                                                     */
-/* This function allocates all the memory needed by the emulator                              */
+/* This function allocates and zeroes all the memory needed by the emulator                   */
 /**********************************************************************************************/
 bool8 CMemory::Init ()
 {
+	// memset? Really? We could just memcpy after the first allocation... [Neb]
     RAM	    = (uint8 *) malloc (0x20000);
     SRAM    = (uint8 *) malloc (0x20000);
     VRAM    = (uint8 *) malloc (0x10000);
@@ -1213,7 +1214,7 @@ void S9xDeinterleaveType2 (bool8 reset)
 }
 
 //CRC32 for char arrays
-inline uint32 caCRC32(uint8 *array, uint32 size, register uint32 crc32)
+uint32 caCRC32(uint8 *array, uint32 size, register uint32 crc32)
 {
   for (register uint32 i = 0; i < size; i++)
   {
