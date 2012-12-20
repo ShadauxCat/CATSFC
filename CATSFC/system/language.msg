@@ -14,10 +14,10 @@ ENDCOMMENT
 STARTENGLISH
 
 #MSG_MAIN_MENU_0
-Video/audio
+Video & audio
 
 #MSG_MAIN_MENU_1
-Freezes
+Saved states
 
 #MSG_MAIN_MENU_2
 Cheats
@@ -26,7 +26,7 @@ Cheats
 Tools
 
 #MSG_MAIN_MENU_4
-Others
+Options
 
 #MSG_MAIN_MENU_5
 Exit
@@ -44,22 +44,22 @@ Frame skipping        %s
 Frame skipping        %d
 
 #MSG_SUB_MENU_04
-Sound            %s
+Sound              %s
 
 #MSG_SUB_MENU_05
 Back
 
 #MSG_SUB_MENU_10
-Save frozen state
+Create saved state
 
 #MSG_SUB_MENU_11
-Load frozen state    %d
+Load saved state          %d
 
 #MSG_SUB_MENU_12
 Select save slot
 
 #MSG_SUB_MENU_13
-Delete frozen states...
+Delete saved states...
 
 #MSG_SUB_MENU_14
 Back
@@ -92,10 +92,10 @@ Keep information for  %s second(s)
 Auto standby          %s
 
 #MSG_SUB_MENU_41
-Language               %s
+Language                          %s
 
 #MSG_SUB_MENU_42
-CPU frequency         %d
+CPU frequency                 %d
 
 #MGS_SUB_MENU_43
 Card capacity
@@ -143,19 +143,19 @@ Select a game from the card
 Select a game
 
 #MSG_SCREEN_RATIO_0
-[0] Entire screen
+[0] Resized, entire screen
 
 #MSG_SCREEN_RATIO_1
-[1] Bottom of screen
+[1] Original, show the bottom
 
 #MSG_SCREEN_RATIO_2,
-[2] Top of screen
+[2] Original, show the top
 
 #MSG_SCREEN_RATIO_3,
-[3] Middle of screen
+[3] Original, show the middle
 
 #MSG_SCREEN_RATIO_4,
-[4] Entire screen
+[4] Resized, entire screen
 
 #MSG_FRAMESKIP_0
 Manual
@@ -197,13 +197,13 @@ Cheat %d (none loaded)
 Cheat %d (%s): %%s
 
 #MSG_LOAD_STATE
-Load frozen state
+Load saved state
 
 #MSG_LOAD_STATE_END
-Load frozen state
+Load saved state
 
 #MSG_SAVE_STATE
-Save a new state
+Create a saved state
 
 #MSG_SAVE_STATE_END
 OK!
@@ -272,7 +272,7 @@ OK!
 No saved state
 
 #MSG_SAVESTATE_FILE_BAD
-The game state file is not found or corrupt.
+The game state file is not found or is corrupt.
 
 #MSG_LOADSTATE_DOING
 Loading...
@@ -290,17 +290,17 @@ Press any key to return.
 Time
 
 #MSG_SUB_MENU_130
-Delete all save states
+Delete all saved states
 
 #MSG_SUB_MENU_131
-Delete save state %d
+Delete saved state %d
 
 #MSG_DELETE_ALL_SAVESTATE_WARING
-Really delete all frozen states?\n
+Really delete all saved states?\n
 [A] Confirm  [B] Cancel
 
 #MSG_DELETE_SINGLE_SAVESTATE_WARING
-Really delete frozen state %d?\n
+Really delete saved state %d?\n
 [A] Confirm  [B] Cancel
 
 #MSG_DELETE_SAVESTATE_NOTHING
@@ -358,7 +358,7 @@ CATSFC SNES emulator
 Version
 
 #MSG_LOAD_DEFAULT_WARING,
-Reset all settings to default?
+Reset all settings to defaults?
 
 #MSG_DEFAULT_LOADING
 Please wait...
@@ -391,7 +391,7 @@ STARTCHINESESIM
 退出模拟器
 
 #MSG_SUB_MENU_00
-画面                 %s
+画面                       %s
 
 #MSG_SUB_MENU_01
 游戏快进                 %s
@@ -412,7 +412,7 @@ STARTCHINESESIM
 写入存档
 
 #MSG_SUB_MENU_11
-读取存档                   %d
+读取存档                        %d
 
 #MSG_SUB_MENU_12
 存档槽选择
@@ -451,13 +451,13 @@ STARTCHINESESIM
 自动待机                  %s
 
 #MSG_SUB_MENU_41
-语言                       %s
+语言                               %s
 
 #MSG_SUB_MENU_42
-CPU主频                  %d
+CPU主频                          %d
 
 #MGS_SUB_MENU_43
-SD卡容量
+卡容量
 
 #MSG_SUB_MENU_44
 缺省设置
@@ -733,10 +733,10 @@ ENDCHINESESIM
 STARTFRENCH
 
 #MSG_MAIN_MENU_0
-Video/Audio
+Vidéo & audio
 
 #MSG_MAIN_MENU_1
-empl. sauv.
+Sauvegardes
 
 #MSG_MAIN_MENU_2
 Triche
@@ -745,94 +745,94 @@ Triche
 Outils
 
 #MSG_MAIN_MENU_4
-Autre
+Options
 
 #MSG_MAIN_MENU_5
 Quitter
 
 #MSG_SUB_MENU_00
-Mode d'affichage %s
+Format d'image      %s
 
 #MSG_SUB_MENU_01
-Avance rapide %s
+Avance rapide       %s
 
 #MSG_SUB_MENU_02
-Frame Skip niveau %s
+Omission d'images  %s
 
 #MSG_SUB_MENU_03
-Frame Skip niveau %d
+Images omises      %d
 
 #MSG_SUB_MENU_04
-Activer son %s
+Son                         %s
 
 #MSG_SUB_MENU_05
-retour
+Retour
 
 #MSG_SUB_MENU_10
-Sauver
+Créer une sauvegarde
 
 #MSG_SUB_MENU_11
-Charger empl. %d
+Charger la sauvegarde   %d
 
 #MSG_SUB_MENU_12
-Emplacement
+Sélectionner l'emplacement
 
 #MSG_SUB_MENU_13
-supprimer empl.
+Supprimer une/des sauvegardes...
 
 #MSG_SUB_MENU_14
 Retour
 
 #MSG_SUB_MENU_20
-Page de triche : %d
+Page de codes de triche : %d
 
 #MSG_SUB_MENU_21
-Charg. fichier triche
+Charger un fichier de triche
 
 #MSG_SUB_MENU_22
-Empl triche
+Emplacement de triche
 
 #MSG_SUB_MENU_23
-Charger triche
+Charger la triche
 
 #MSG_SUB_MENU_24
-retour
+Retour
 
 #MSG_SUB_MENU_30
-capture d'écran
+Captures d'écran...
 
 #MSG_SUB_MENU_31
-Réassigner
+Réassigner les contrôles
 
 #MSG_SUB_MENU_32
-Periode %s sec.
+Gardes les informations pour  %s seconde(s)
 
 #MSG_SUB_MENU_40
-Auto Standby %s
+Mise en veille automatique     %s
 
 #MSG_SUB_MENU_41
-Langue %s
+Langue                              %s
 
 #MSG_SUB_MENU_42
-Fréquence CPU %d
+Fréquence CPU                  %d
 
 #MGS_SUB_MENU_43
-Taille Carte SD
+Capacité de la carte
 
 #MSG_SUB_MENU_44
-Paramètres par défaut
+Remettre les paramètres à zéro
 
 #MSG_SUB_MENU_45
 Version
 
 #MSG_SUB_MENU_300
-Sauv. capture
+Créer une capture d'écran
 
 #MSG_SUB_MENU_301
-Parcourir captures
+Parcourir les captures d'écran
 
 #MSG_SUB_MENU_302
-Retour arrière %s
+Marche arrière             %s
 
 #MSG_SUB_MENU_310
 SNES touche A %s
@@ -853,49 +853,49 @@ Afficher le menu %s
 Touche de retour NDS
 
 #MSG_SUB_MENU_60
-Joués récemment
+Jeux joués récemment
 
 #MSG_SUB_MENU_61
-Select. jeu
+Sélectionner un jeu de la carte
 
 #MSG_SUB_MENU_62
-Charger jeu
+Sélectionner un jeu
 
 #MSG_SCREEN_RATIO_0
-Mode d'affichage 0
+[0] Écran entier
 
 #MSG_SCREEN_RATIO_1
-Mode d'affichage 1
+[1] Couper le haut
 
 #MSG_SCREEN_RATIO_2,
-Mode d'affichage 2
+[2] Couper le bas
 
 #MSG_SCREEN_RATIO_3,
-Mode d'affichage 3
+[3] Montrer le milieu
 
 #MSG_SCREEN_RATIO_4,
-Mode d'affichage 4
+[4] Écran entier
 
 #MSG_FRAMESKIP_0
-Aide
+Manuelle
 
 #MSG_FRAMESKIP_1
 Automatique
 
 #MSG_ON_OFF_0
-Off
+Hors fonction
 
 #MSG_ON_OFF_1
-On
+En fonction
 
 #MSG_SOUND_SWITCH_0
-On
+Activé
 
 #MSG_SOUND_SWITCH_1
 Muet
 
 #MSG_SNAP_FRAME_0
-Frames actuelle
+Frame actuelle
 
 #MSG_SNAP_FRAME_1
 Dernière Frame
@@ -907,10 +907,10 @@ Désactiver
 Activer
 
 #MSG_NONE_LOAD_GAME
-Aucun jeu chargé!
+Aucun jeu n'est actuellement chargé
 
 #MSG_CHEAT_MENU_NON_LOAD
-Code %d (None Loaded)
+Code de triche %d (aucun chargé)
 
 #MSG_CHEAT_MENU_0
 Code %d (%s): %%s
@@ -922,7 +922,7 @@ Charger
 Chargé
 
 #MSG_SAVE_STATE
-Sauver
+Sauvegarder
 
 #MSG_SAVE_STATE_END
 Terminé!
@@ -943,16 +943,16 @@ SELECT
 START
 
 #MSG_KEY_MAP_RT
-?
+→
 
 #MSG_KEY_MAP_LF
-?
+←
 
 #MSG_KEY_MAP_UP
-?
+↑
 
 #MSG_KEY_MAP_DW
-?
+↓
 
 #MSG_HOME_MAP_R
 R
@@ -967,82 +967,81 @@ X
 Y
 
 #MSG_HOME_MAP_TOUCH
-Ecran tactile
+Écran tactile
 
 #MSG_SAVESTATE_EMPTY
-L'empl. est vide!
+Cet emplacement est vide.
 
 #MSG_SAVESTATE_FULL
-L'empl. est plein,\n
-Ecraser?\n
-A pour remplacer\n
-B pour annuler
+Il y a une sauvegarde dans cet emplacement.\n
+Voulez-vous l'écraser?\n
+[A] Écraser  [B] Annuler
 
 #MSG_SAVESTATE_DOING
-En cours...
+Sauvegarde en cours...
 
 #MSG_SAVESTATE_FAILURE
-Echec!\n
-A pour réessayer\n
-B pour annuler
+Échec!\n
+[A] Réessayer  [B] Annuler
 
 #MSG_SAVESTATE_SUCCESS
 Terminé!
 
 #MSG_SAVESTATE_SLOT_EMPTY
-Aucune capture
+Aucune sauvegarde
 
 #MSG_SAVESTATE_FILE_BAD
-Sauvegarde introuvable ou corrompue
+Le fichier de sauvegarde est introuvable ou corrompu.
 
 #MSG_LOADSTATE_DOING
-En chargement...
+Chargement en cours...
 
 #MSG_LOADSTATE_FAILURE
-Echec!
+Échec!
 
 #MSG_LOADSTATE_SUCCESS
 Terminé!
 
 #MSG_WARING_DIALOG
-Appuyez sur une touche pour continuer
+Appuyez sur une touche pour continuer.
 
 #MSG_TIME_FORMATE
 Date
 
 #MSG_SUB_MENU_130
-Vider tous les emplacements?
+Supprimer toutes les sauvegardes
 
 #MSG_SUB_MENU_131
-Vider l'emplacement %d ?
+Supprimer l'emplacement %d
 
 #MSG_DELETE_ALL_SAVESTATE_WARING
-Vider tous les empl.? \n
-A pour continuer, B pour annuler
+Supprimer toutes les sauvegardes?\n
+[A] Confirmer  [B] Annuler
 
 #MSG_DELETE_SINGLE_SAVESTATE_WARING
-Vider l'emplacement %d? \n
-A pour continuer, B pour annuler
+Supprimer l'emplacement %d?\n
+[A] Confirmer  [B] Annuler
 
 #MSG_DELETE_SAVESTATE_NOTHING
-Cet emplacement est déjà vide!
+Cet emplacement est déjà vide.
 
-Enregistrement de la capture...
+#MSG_SAVE_SNAPSHOT
+Capture de l'écran...
 
 #MSG_SAVE_SNAPSHOT_COMPLETE
 Terminé!
 
 #MSG_SAVE_SNAPSHOT_FAILURE
-Echec!
+Échec!
 
 #MSG_CHANGE_LANGUAGE
-Changement...
+Changement de la langue...
 
 #MSG_CHANGE_LANGUAGE_WAITING
 Veuillez patienter...
 
 #MSG_NO_SLIDE
-Aucune capture trouvée!
+Aucune capture d'écran trouvée
 
 #MSG_PLAYING_SLIDE
 En cours...
@@ -1051,34 +1050,34 @@ En cours...
 Pause...
 
 #MSG_PLAY_SLIDE1
-Appuyez sur HAUT pour accélérer
+HAUT     Accélérer
 
 #MSG_PLAY_SLIDE2
-Appuyez sur BAS pour ralentir
+BAS       Ralentir
 
 #MSG_PLAY_SLIDE3
-GAUCHE pour précédent
+GAUCHE  Précédente
 
 #MSG_PLAY_SLIDE4
-DROITE pour suivant
+DROITE  Suivante
 
 #MSG_PLAY_SLIDE5
-A pour Pause
+A           Pause
 
 #MSG_PLAY_SLIDE6
-B pour retourner au menu
+B           Retour au menu
 
 #MSG_LOADING_GMAE
-Chargement du jeu...
+Chargement...
 
 #MSG_EMU_VERSION0
-CATSFC SNES Emulator
+Émulateur SNES CATSFC
 
 #MSG_EMU_VERSION1
 Version
 
 #MSG_LOAD_DEFAULT_WARING,
-Réinitialiser les paramètres?
+Remettre tous les paramètres à zéro?
 
 #MSG_DEFAULT_LOADING
 Veuillez patienter...
