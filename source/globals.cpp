@@ -157,7 +157,9 @@ uint32 Work32 = 0;
 signed char Int8 = 0;
 short Int16 = 0;
 long Int32 = 0;
-unsigned char OpenBus = 0;
+#ifndef NO_OPEN_BUS
+uint8 OpenBus = 0;
+#endif
 
 
 END_EXTERN_C

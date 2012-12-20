@@ -40,6 +40,8 @@ char	rom_path[MAX_PATH];
 char	gamepak_name[MAX_PATH];
 char	gcheat_filename[MAX_PATH];
 
+// If adding a language, make sure you update the size of the array in
+// message.h too.
 char *lang[3] =
 	{ 
 		"English",					// 0
@@ -2966,8 +2968,6 @@ u32 menu(u16 *screen)
 
     char *enable_disable_options[] = { (char*)&msg[MSG_EN_DIS_ABLE_0], (char*)&msg[MSG_EN_DIS_ABLE_1] };
 
-    char *language_options[] = { (char*) &lang[0], (char*) &lang[1], (char*) &lang[2] };
-
     char *keyremap_options[] = {(char*)&msg[MSG_KEY_MAP_NONE], (char*)&msg[MSG_KEY_MAP_A], (char*)&msg[MSG_KEY_MAP_B], 
                                 (char*)&msg[MSG_KEY_MAP_SL], (char*)&msg[MSG_KEY_MAP_ST], (char*)&msg[MSG_KEY_MAP_RT], 
                                 (char*)&msg[MSG_KEY_MAP_LF], (char*)&msg[MSG_KEY_MAP_UP], (char*)&msg[MSG_KEY_MAP_DW], 
@@ -3124,8 +3124,8 @@ u32 menu(u16 *screen)
 	//CPU speed
 	/* 01 */ NUMERIC_SELECTION_OPTION(NULL, &msg[MSG_SUB_MENU_42], &clock_speed_number, 6, NULL, 1),
 
-	/* 02 */ STRING_SELECTION_OPTION(language_set, NULL, &msg[MSG_SUB_MENU_41], language_options, 
-        &emu_config.language, sizeof(language_options) / sizeof(language_options[0]) /* number of possible languages */, NULL, ACTION_TYPE, 2),
+	/* 02 */ STRING_SELECTION_OPTION(language_set, NULL, &msg[MSG_SUB_MENU_41], lang, 
+        &emu_config.language, sizeof(lang) / sizeof(lang[0]) /* number of possible languages */, NULL, ACTION_TYPE, 2),
 
 	/* 03 */ STRING_SELECTION_OPTION(NULL, show_card_space, &msg[MSG_SUB_MENU_43], NULL, 
         &desert, 2, NULL, PASSIVE_TYPE | HIDEN_TYPE, 3),

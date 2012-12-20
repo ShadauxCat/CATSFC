@@ -3556,7 +3556,9 @@ static void Op00 (void)
 	PushW (CPU.PC - CPU.PCBase + 1);
 	S9xPackStatus ();
 	PushB (Registers.PL);
+#ifndef NO_OPEN_BUS
 	OpenBus = Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
@@ -3572,7 +3574,9 @@ static void Op00 (void)
 	PushW (CPU.PC - CPU.PCBase);
 	S9xPackStatus ();
 	PushB (Registers.PL);
+#ifndef NO_OPEN_BUS
 	OpenBus = Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
@@ -3607,7 +3611,9 @@ void S9xOpcode_IRQ (void)
 	PushW (CPU.PC - CPU.PCBase);
 	S9xPackStatus ();
 	PushB (Registers.PL);
+#ifndef NO_OPEN_BUS
 	OpenBus = Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
@@ -3632,7 +3638,9 @@ void S9xOpcode_IRQ (void)
 	PushW (CPU.PC - CPU.PCBase);
 	S9xPackStatus ();
 	PushB (Registers.PL);
+#ifndef NO_OPEN_BUS
 	OpenBus = Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
@@ -3669,7 +3677,9 @@ void S9xOpcode_NMI (void)
 	PushW (CPU.PC - CPU.PCBase);
 	S9xPackStatus ();
 	PushB (Registers.PL);
+#ifndef NO_OPEN_BUS
 	OpenBus = Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
@@ -3694,7 +3704,9 @@ void S9xOpcode_NMI (void)
 	PushW (CPU.PC - CPU.PCBase);
 	S9xPackStatus ();
 	PushB (Registers.PL);
+#ifndef NO_OPEN_BUS
 	OpenBus = Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
@@ -3730,7 +3742,9 @@ static void Op02 (void)
 	PushW (CPU.PC - CPU.PCBase + 1);
 	S9xPackStatus ();
 	PushB (Registers.PL);
+#ifndef NO_OPEN_BUS
 	OpenBus = Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
@@ -3746,7 +3760,9 @@ static void Op02 (void)
 	PushW (CPU.PC - CPU.PCBase);
 	S9xPackStatus ();
 	PushB (Registers.PL);
+#ifndef NO_OPEN_BUS
 	OpenBus = Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
@@ -3905,7 +3921,10 @@ static void Op54X1 (void)
     
     Registers.DB = *CPU.PC++;
     ICPU.ShiftedDB = Registers.DB << 16;
-    OpenBus = SrcBank = *CPU.PC++;
+#ifndef NO_OPEN_BUS
+    OpenBus =
+#endif
+		SrcBank = *CPU.PC++;
 
     S9xSetByte (S9xGetByte ((SrcBank << 16) + Registers.X.W), 
 	     ICPU.ShiftedDB + Registers.Y.W);
@@ -3927,7 +3946,10 @@ static void Op54X0 (void)
     
     Registers.DB = *CPU.PC++;
     ICPU.ShiftedDB = Registers.DB << 16;
-    OpenBus = SrcBank = *CPU.PC++;
+#ifndef NO_OPEN_BUS
+    OpenBus =
+#endif
+		SrcBank = *CPU.PC++;
 
     S9xSetByte (S9xGetByte ((SrcBank << 16) + Registers.X.W), 
 	     ICPU.ShiftedDB + Registers.Y.W);
@@ -3948,7 +3970,10 @@ static void Op44X1 (void)
 #endif    
     Registers.DB = *CPU.PC++;
     ICPU.ShiftedDB = Registers.DB << 16;
-    OpenBus = SrcBank = *CPU.PC++;
+#ifndef NO_OPEN_BUS
+    OpenBus =
+#endif
+		SrcBank = *CPU.PC++;
     S9xSetByte (S9xGetByte ((SrcBank << 16) + Registers.X.W), 
 	     ICPU.ShiftedDB + Registers.Y.W);
 
@@ -3968,7 +3993,10 @@ static void Op44X0 (void)
 #endif    
     Registers.DB = *CPU.PC++;
     ICPU.ShiftedDB = Registers.DB << 16;
-    OpenBus = SrcBank = *CPU.PC++;
+#ifndef NO_OPEN_BUS
+    OpenBus =
+#endif
+		SrcBank = *CPU.PC++;
     S9xSetByte (S9xGetByte ((SrcBank << 16) + Registers.X.W), 
 	     ICPU.ShiftedDB + Registers.Y.W);
 

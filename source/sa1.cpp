@@ -228,14 +228,23 @@ uint8 S9xSA1GetByte (uint32 address)
 #ifdef DEBUGGER
 //	printf ("R(B) %06x\n", address);
 #endif
+#ifndef NO_OPEN_BUS
         return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
     }
 }
 
 uint16 S9xSA1GetWord (uint32 address)
 {
+#ifndef NO_OPEN_BUS
     OpenBus = S9xSA1GetByte (address);
     return (OpenBus | (S9xSA1GetByte (address + 1) << 8));
+#else
+	uint8 Split = S9xSA1GetByte (address);
+	return (Split | (S9xSA1GetByte (address + 1) << 8));
+#endif
 }
 
 void S9xSA1SetByte (uint8 byte, uint32 address)

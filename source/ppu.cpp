@@ -1071,10 +1071,17 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 /******************************************************************************/
 uint8 S9xGetPPU (uint16 Address)
 {
+#ifndef NO_OPEN_BUS
  	uint8 byte = OpenBus;
-
+#else
+	uint8 byte = 0; // Arbitrarily chosen value [Neb]
+#endif
 	if(Address<0x2100)//not a real PPU reg
+#ifndef NO_OPEN_BUS
 		return OpenBus; //treat as unmapped memory returning last byte on the bus
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
     if (Address <= 0x2190)
     {
  	switch (Address)
@@ -1086,18 +1093,34 @@ uint8 S9xGetPPU (uint16 Address)
   #ifdef DEBUGGER
   	    missing.oam_address_read = 1;
   #endif
-			return OpenBus;
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	case 0x2104:
 	case 0x2105:
 	case 0x2106:
+#ifndef NO_OPEN_BUS
 		return PPU.OpenBus1;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 	case 0x2107:
+#ifndef NO_OPEN_BUS
 		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 	case 0x2108:
 	case 0x2109:
 	case 0x210a:
+#ifndef NO_OPEN_BUS
 		return PPU.OpenBus1;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 	case 0x210b:
 	case 0x210c:
 	case 0x210d:
@@ -1107,8 +1130,14 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2111:
 	case 0x2112:
 	case 0x2113:
-			missing.bg_offset_read = 1;
-			return OpenBus;
+#ifdef DEBUGGER
+		missing.bg_offset_read = 1;
+#endif
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	case 0x2114:
 #ifdef DEBUGGER
@@ -1116,15 +1145,27 @@ uint8 S9xGetPPU (uint16 Address)
 #endif
 	case 0x2115:
 	case 0x2116:
-			return PPU.OpenBus1;
+#ifndef NO_OPEN_BUS
+		return PPU.OpenBus1;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	case 0x2117:
-			return OpenBus;
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	case 0x2118:
 	case 0x2119:
 	case 0x211a:
-			return PPU.OpenBus1;
+#ifndef NO_OPEN_BUS
+		return PPU.OpenBus1;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	case 0x211b:
 	case 0x211c:
@@ -1135,25 +1176,45 @@ uint8 S9xGetPPU (uint16 Address)
 #ifdef DEBUGGER
 	    missing.matrix_read = 1;
 #endif
-			return OpenBus;
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	case 0x2121:
 	case 0x2122:
 	case 0x2123:
-			return OpenBus;
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	case 0x2124:
 	case 0x2125:
 	case 0x2126:
-			return PPU.OpenBus1;
+#ifndef NO_OPEN_BUS
+		return PPU.OpenBus1;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	case 0x2127:
-			return OpenBus;
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	case 0x2128:
 	case 0x2129:
 	case 0x212a:
-			return PPU.OpenBus1;
+#ifndef NO_OPEN_BUS
+		return PPU.OpenBus1;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	case 0x212b:
 	case 0x212c:
@@ -1164,7 +1225,11 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2131:
 	case 0x2132:
 	case 0x2133:
-			return OpenBus;
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	case 0x2134:
 	case 0x2135:
@@ -1182,10 +1247,18 @@ uint8 S9xGetPPU (uint16 Address)
 #ifdef DEBUGGER
 	    missing.matrix_multiply = 1;
 #endif
-		return (PPU.OpenBus1 = Memory.FillRAM[Address]);
+		return (
+#ifndef NO_OPEN_BUS
+			PPU.OpenBus1 =
+#endif
+			Memory.FillRAM[Address]);
 	case 0x2137:
 		S9xLatchCounters(0);
+#ifndef NO_OPEN_BUS
 		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	case 0x2138:
 		// Read OAM (sprite) control data
@@ -1230,7 +1303,11 @@ uint8 S9xGetPPU (uint16 Address)
 #ifdef DEBUGGER
 	    missing.oam_read = 1;
 #endif
-		return (PPU.OpenBus1 = byte);
+		return (
+#ifndef NO_OPEN_BUS
+			PPU.OpenBus1 =
+#endif
+			byte);
 
 	case 0x2139:
 		// Read vram low byte
@@ -1275,7 +1352,9 @@ uint8 S9xGetPPU (uint16 Address)
 				IPPU.FirstVRAMRead = FALSE;
 			}
 #endif
+#ifndef NO_OPEN_BUS
 			PPU.OpenBus1 = byte;
+#endif
 			break;
 	case 0x213A:
 		// Read vram high byte
@@ -1319,7 +1398,9 @@ uint8 S9xGetPPU (uint16 Address)
 				IPPU.FirstVRAMRead = FALSE;
 			}
 #endif
+#ifndef NO_OPEN_BUS
 			PPU.OpenBus1 = byte;
+#endif
 			break;
 
 	case 0x213B:
@@ -1333,7 +1414,11 @@ uint8 S9xGetPPU (uint16 Address)
 		byte = PPU.CGDATA [PPU.CGADD] & 0xff;
 
 	    PPU.CGFLIPRead ^= 1;
-	    return (PPU.OpenBus2 = byte);
+	    return (
+#ifndef NO_OPEN_BUS
+		PPU.OpenBus2 =
+#endif
+		byte);
 	    
 	case 0x213C:
 	    // Horizontal counter value 0-339
@@ -1341,10 +1426,19 @@ uint8 S9xGetPPU (uint16 Address)
 	    missing.h_counter_read = 1;
 #endif
 	    if (PPU.HBeamFlip)
-		byte = (PPU.OpenBus2 & 0xfe) | ((PPU.HBeamPosLatched >> 8) & 0x01);
+		byte =
+#ifndef NO_OPEN_BUS
+			(PPU.OpenBus2 & 0xfe)
+#else
+			0 // Arbitrarily chosen value [Neb]
+#endif
+			| ((PPU.HBeamPosLatched >> 8) & 0x01);
+
 	    else
 		byte = (uint8)PPU.HBeamPosLatched;
+#ifndef NO_OPEN_BUS
             PPU.OpenBus2 = byte;
+#endif
 	    PPU.HBeamFlip ^= 1;
 	    break;
 
@@ -1354,10 +1448,18 @@ uint8 S9xGetPPU (uint16 Address)
 	    missing.v_counter_read = 1;
 #endif
 	    if (PPU.VBeamFlip)
-                byte = (PPU.OpenBus2 & 0xfe) | ((PPU.VBeamPosLatched >> 8) & 0x01);
+                byte =
+#ifndef NO_OPEN_BUS
+			(PPU.OpenBus2 & 0xfe)
+#else
+			0 // Arbitrarily chosen value [Neb]
+#endif
+			| ((PPU.VBeamPosLatched >> 8) & 0x01);
 	    else
                 byte = (uint8)PPU.VBeamPosLatched;
+#ifndef NO_OPEN_BUS
             PPU.OpenBus2 = byte;
+#endif
 	    PPU.VBeamFlip ^= 1;
 	    break;
 
@@ -1366,14 +1468,22 @@ uint8 S9xGetPPU (uint16 Address)
 	    FLUSH_REDRAW ();
 
 	    //so far, 5c77 version is always 1.
-		return (PPU.OpenBus1 = (Model->_5C77 | PPU.RangeTimeOver));
+		return (
+#ifndef NO_OPEN_BUS
+			PPU.OpenBus1 =
+#endif
+			(Model->_5C77 | PPU.RangeTimeOver));
 
 	case 0x213F:
 	    // NTSC/PAL and which field flags
 	    PPU.VBeamFlip = PPU.HBeamFlip = 0;
             //neviksti found a 2 and a 3 here. SNEeSe uses a 3.
             //XXX: field flags not emulated
-	    return ((Settings.PAL ? 0x10 : 0) | (Memory.FillRAM[0x213f] & 0xc0)| Model->_5C78) | (~PPU.OpenBus2 & 0x20);
+	    return ((Settings.PAL ? 0x10 : 0) | (Memory.FillRAM[0x213f] & 0xc0)| Model->_5C78)
+#ifndef NO_OPEN_BUS
+			| (~PPU.OpenBus2 & 0x20)
+#endif
+			;
 
 	case 0x2140: case 0x2141: case 0x2142: case 0x2143:
 	case 0x2144: case 0x2145: case 0x2146: case 0x2147:
@@ -1403,7 +1513,7 @@ uint8 S9xGetPPU (uint16 Address)
 	    {
 #ifdef CPU_SHUTDOWN
 //		CPU.WaitAddress = CPU.PCAtOpcodeStart;
-#endif	
+#endif
 		if (SNESGameFixes.APU_OutPorts_ReturnValueFix &&
 		    Address >= 0x2140 && Address <= 0x2143 && !CPU.V_Counter)
 		{
@@ -1457,10 +1567,18 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2181:
 	case 0x2182:
 	case 0x2183:
-			return OpenBus;
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
-		  default:
-			return OpenBus;
+	default:
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 	}
     }
     else
@@ -1474,15 +1592,23 @@ uint8 S9xGetPPU (uint16 Address)
 	    {
 	    case 0x21c2:
 			if(Model->_5C77 ==2)
-		        return (0x20);
+		        	return (0x20);
 
 			//	fprintf(stderr, "Read from $21c2!\n");
-				return OpenBus;
+#ifndef NO_OPEN_BUS
+			return OpenBus;
+#else
+			return 0; // Arbitrarily chosen value [Neb]
+#endif
 	    case 0x21c3:
-				if(Model->_5C77 ==2)
+			if(Model->_5C77 ==2)
 			        return (0);
 			//	fprintf(stderr, "Read from $21c3!\n");
-				return OpenBus;
+#ifndef NO_OPEN_BUS
+			return OpenBus;
+#else
+			return 0; // Arbitrarily chosen value [Neb]
+#endif
 	    case 0x2800:
 		// For Dai Kaijyu Monogatari II
 		if (Settings.SRTC)
@@ -1498,12 +1624,20 @@ uint8 S9xGetPPU (uint16 Address)
 		    S9xMessage (S9X_TRACE, S9X_PPU_TRACE, String);
 		}
 #endif
-				return OpenBus;
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 	    }
 	}
 	
 	if (!Settings.SuperFX)
-			return OpenBus;
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 #ifdef ZSNES_FX
 	if (Address < 0x3040)
 	    byte = S9xSuperFXReadReg (Address);
@@ -2165,7 +2299,11 @@ uint8 S9xGetCPU (uint16 Address)
 				S9xMessage (S9X_TRACE, S9X_PPU_TRACE, String);
 			}
 #endif
-			return OpenBus;
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 		}
 //		return (Memory.FillRAM [Address]);
@@ -2189,7 +2327,11 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x420d:
 	  case 0x420e:
 	  case 0x420f:
+#ifndef NO_OPEN_BUS
 		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 	  case 0x4210:
 #ifdef CPU_SHUTDOWN
@@ -2198,7 +2340,11 @@ uint8 S9xGetCPU (uint16 Address)
 		byte = Memory.FillRAM[0x4210];
 		Memory.FillRAM[0x4210] = Model->_5A22;
 		//SNEeSe returns 2 for 5A22 version.
-		return ((byte&0x80)|(OpenBus&0x70)|Model->_5A22);
+		return ((byte&0x80)
+#ifndef NO_OPEN_BUS
+			|(OpenBus&0x70)
+#endif
+			|Model->_5A22);
 
 	  case 0x4211:
 		byte = (CPU.IRQActive & (PPU_V_BEAM_IRQ_SOURCE | PPU_H_BEAM_IRQ_SOURCE)) ? 0x80 : 0;
@@ -2207,7 +2353,9 @@ uint8 S9xGetCPU (uint16 Address)
 		CLEAR_IRQ_SOURCE (PPU_V_BEAM_IRQ_SOURCE | PPU_H_BEAM_IRQ_SOURCE);
 
 		// Maybe? Register Scan indicated open bus...
+#ifndef NO_OPEN_BUS
 		byte |= OpenBus&0x3f;
+#endif
 
 		return (byte);
 
@@ -2216,7 +2364,11 @@ uint8 S9xGetCPU (uint16 Address)
 #ifdef CPU_SHUTDOWN
 		CPU.WaitAddress = CPU.PCAtOpcodeStart;
 #endif
-		return (REGISTER_4212()|(OpenBus&0x3E));
+		return (REGISTER_4212()
+#ifndef NO_OPEN_BUS
+			|(OpenBus&0x3E)
+#endif
+			);
 
 	  case 0x4213:
 		// I/O port input - returns 0 wherever $4201 is 0, and 1 elsewhere
@@ -2401,7 +2553,11 @@ uint8 S9xGetCPU (uint16 Address)
 			return Memory.FillRAM[Address];
 		}
 
+#ifndef NO_OPEN_BUS
 		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
     }
 //    return (Memory.FillRAM[Address]);
 }
@@ -2469,8 +2625,10 @@ void S9xResetPPU ()
 	PPU.OAMPriorityRotation = 0;
 	PPU.OAMWriteRegister = 0;
 	PPU.RangeTimeOver = 0;
+#ifndef NO_OPEN_BUS
 	PPU.OpenBus1 = 0;
 	PPU.OpenBus2 = 0;
+#endif
 
 	PPU.OAMFlip = 0;
 	PPU.OAMTileAddress = 0;
@@ -2665,8 +2823,10 @@ void S9xSoftResetPPU ()
 	PPU.OAMPriorityRotation = 0;
 	PPU.OAMWriteRegister = 0;
 	PPU.RangeTimeOver = 0;
+#ifndef NO_OPEN_BUS
 	PPU.OpenBus1 = 0;
 	PPU.OpenBus2 = 0;
+#endif
 
 	PPU.OAMFlip = 0;
 	PPU.OAMTileAddress = 0;
