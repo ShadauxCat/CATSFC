@@ -62,7 +62,7 @@ OBJECTS      = $(C_OBJECTS) $(CPP_OBJECTS)
 
 # - - - Compilation flags - - -
 CFLAGS := -mips32 -Os -mno-abicalls -fno-pic -fno-builtin \
-	      -fno-exceptions -ffunction-sections -mlong-calls \
+	      -fno-exceptions -ffunction-sections -mno-long-calls \
 	      -fomit-frame-pointer -msoft-float -G 4 \
           -fno-inline -fno-early-inlining \
           -fgcse-sm -fgcse-las -fgcse-after-reload \
