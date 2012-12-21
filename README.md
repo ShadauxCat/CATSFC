@@ -81,7 +81,7 @@ need to do the following:
   before the `}`. Change the language name and tags, and update the `cmplen`
   to be the length of the `START` tag. For the example of German, you would
   use `cmplen= 11;`, because that's the length of `STARTGERMAN`:
-  ```C
+  ```
 	case GERMAN:
 		strcpy(start, "STARTGERMAN");
 		strcpy(end, "ENDGERMAN");
