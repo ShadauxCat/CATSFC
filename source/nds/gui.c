@@ -3802,9 +3802,9 @@ u32 menu(u16 *screen)
 						break;
 					// ___ 33        This screen has 6 possible rows. Touches
 					// ___ 60        above or below these are ignored.
-					// . . . (+27)
+					// . . . (+27)   The row between 33 and 60 is [1], though!
 					// ___ 192
-					current_option_num = (inputdata.y - 33) / 27;
+					current_option_num = (inputdata.y - 33) / 27 + 1;
 
 					current_option = current_menu->options + current_option_num;
 
