@@ -42,8 +42,6 @@ void ddump_mem(unsigned char* addr, unsigned int len)
 }
 #endif
 
-
-
 void ds2_main(void)
 {
 	int err;

@@ -3202,12 +3202,45 @@ void S9xUpdateJustifiers()
 
 void S9xUpdateJoypads ()
 {
-    int i;
+    uint32 i;
 
+#ifdef SYNC_JOYPAD_AT_HBLANK
+	uint32 j, k, KeyValue;
+	bool8 StartedPressed;
+
+	// For each joypad
+	for (i = 0; i < 5; i++)
+	{
+		IPPU.Joypads [i] = 0;
+		// Sync each key
+		for (k = 1; k != 0x80000000; k <<= 1)
+		{
+			KeyValue = IPPU.JoypadsAtHBlanks[i][0] & k;
+			StartedPressed = KeyValue != 0;
+			// from each line.
+			// If, initially, the key is NOT pressed, one line of it being
+			// pressed means that the key MUST be pressed.
+			// Otherwise, the key MUST be pressed if it doesn't start as such.
+			for (j = 1; j < (Settings.PAL ? SNES_MAX_PAL_VCOUNTER : SNES_MAX_NTSC_VCOUNTER); j++)
+			{
+				if ((StartedPressed) && ((IPPU.JoypadsAtHBlanks[i][j] & k) == 0)) {
+					KeyValue = 0;
+					break;
+				}
+				else if ((!StartedPressed) && ((IPPU.JoypadsAtHBlanks[i][j] & k) != 0)) {
+					KeyValue = k;
+					break;
+				}
+			}
+			IPPU.Joypads [i] |= KeyValue;
+		}
+	}
+#else
 	for (i = 0; i < 5; i++)
 	{
 		IPPU.Joypads [i] = S9xReadJoypad (i);
 	}
+#endif
 
 //	S9xMovieUpdate();
 

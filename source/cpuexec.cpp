@@ -105,6 +105,10 @@
 #include "sa1.h"
 #include "spc7110.h"
 
+#ifdef SYNC_JOYPAD_AT_HBLANK
+#include "display.h"
+#endif
+
 extern void S9xProcessSound (unsigned int);
 
 void S9xMainLoop (void)
@@ -226,6 +230,16 @@ void S9xDoHBlankProcessing ()
     switch (CPU.WhichEvent)
     {
 		case HBLANK_START_EVENT:
+#ifdef SYNC_JOYPAD_AT_HBLANK
+		// Re-get the controls every hblank. A resolution algorithm in
+		// ppu.cpp will determine with greater accuracy whether a key was
+		// pressed or released during the frame.
+		uint32 i;
+   		for (i = 0; i < 5; i++)
+   		{
+	        IPPU.JoypadsAtHBlanks [i][CPU.V_Counter] = S9xReadJoypad (i);
+    	}
+#endif
 		if (IPPU.HDMA && CPU.V_Counter <= PPU.ScreenHeight)
 			IPPU.HDMA = S9xDoHDMA (IPPU.HDMA);
 

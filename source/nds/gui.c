@@ -1714,6 +1714,7 @@ u32 menu(u16 *screen)
 
 	void menu_exit()
 	{
+		ds2_setCPUclocklevel(13); // Crank it up, leave quickly
         if(gamepak_name[0] != 0)
         {
 			game_config.clock_speed_number = clock_speed_number;

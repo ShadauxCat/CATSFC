@@ -151,6 +151,9 @@ struct InternalPPU {
     int	   CurrentLine;
     int	   Controller;
     uint32 Joypads[5];
+#ifdef SYNC_JOYPAD_AT_HBLANK
+	uint32 JoypadsAtHBlanks[5][SNES_MAX_PAL_VCOUNTER];
+#endif
     uint32 SuperScope;
     uint32 Mouse[2];
     int    PrevMouseX[2];

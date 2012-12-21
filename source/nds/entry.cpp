@@ -90,6 +90,7 @@ void S9xParseDisplayArg (char **argv, int &ind, int)
 
 void S9xExit ()
 {
+  ds2_setCPUclocklevel(13); // Crank it up to exit quickly
   if(Settings.SPC7110)
     (*CleanUp7110)();
 
@@ -382,15 +383,15 @@ void init_sfc_setting(void)
     Settings.SixteenBit = TRUE;
 
     Settings.SupportHiRes = FALSE;
-    Settings.NetPlay = FALSE;
-    Settings.ServerName [0] = 0;
     Settings.ThreadSound = FALSE;
 	Settings.SoundSync = TRUE;
     Settings.AutoSaveDelay = 0;
 #ifdef _NETPLAY_SUPPORT
+    Settings.NetPlay = FALSE;
+    Settings.ServerName [0] = 0;
     Settings.Port = NP_DEFAULT_PORT;
 #endif
-    Settings.ApplyCheats =FALSE;
+    Settings.ApplyCheats = FALSE;
     Settings.TurboMode = FALSE;
     Settings.TurboSkipFrames = 40;
     Settings.StretchScreenshots = 1;
@@ -1009,7 +1010,8 @@ unsigned int S9xReadJoypad (int which1)
 			key |= (inputdata.key & (1<<i)) ? keymap[i] : 0;
 		}
 
-		return (key | 0x80000000);
+		// return (key | 0x80000000);
+		return key; // ??? [Neb]
 	}
 	else
 		return 0;
