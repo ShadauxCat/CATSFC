@@ -54,7 +54,7 @@ char *lang[3] =
  ******************************************************************************/
 #define SUBMENU_ROW_NUM	6
 
-#define NDSSFC_VERSION "1.07"
+#define NDSSFC_VERSION "1.08"
 
 #define SAVE_STATE_SLOT_NUM		10
 
