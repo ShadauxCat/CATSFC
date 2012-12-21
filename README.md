@@ -76,6 +76,10 @@ need to do the following:
 	,
 	"Deutsch"
   ```
+* Still in `source/nds/gui.c`, find `char* language_options[]`, which is below
+  the language names. Add an entry similar to the others, with the last number
+  plus 1. For example, if the last entry is `, (char *) &lang[2]`, yours would
+  be `, (char *) &lang[3]`.
 * Still in `source/nds/gui.c`, find `case CHINESE_SIMPLIFIED`. Copy the lines
   starting at the `case` and ending with `break`, inclusively. Paste them
   before the `}`. Change the language name and tags, and update the `cmplen`

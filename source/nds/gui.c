@@ -49,6 +49,8 @@ char *lang[3] =
 		"Français", 				// 2
 	};
 
+char *language_options[] = { (char *) &lang[0], (char *) &lang[1], (char *) &lang[2] };
+
 /******************************************************************************
 *	Macro definition
  ******************************************************************************/
@@ -3117,8 +3119,8 @@ u32 menu(u16 *screen)
 	//CPU speed
 	/* 01 */ NUMERIC_SELECTION_OPTION(NULL, &msg[MSG_SUB_MENU_42], &clock_speed_number, 6, NULL, 1),
 
-	/* 02 */ STRING_SELECTION_OPTION(language_set, NULL, &msg[MSG_SUB_MENU_41], lang, 
-        &emu_config.language, sizeof(lang) / sizeof(lang[0]) /* number of possible languages */, NULL, ACTION_TYPE, 2),
+	/* 02 */ STRING_SELECTION_OPTION(language_set, NULL, &msg[MSG_SUB_MENU_41], language_options, 
+        &emu_config.language, sizeof(language_options) / sizeof(language_options[0]) /* number of possible languages */, NULL, ACTION_TYPE, 2),
 
 	/* 03 */ STRING_SELECTION_OPTION(NULL, show_card_space, &msg[MSG_SUB_MENU_43], NULL, 
         &desert, 2, NULL, PASSIVE_TYPE | HIDEN_TYPE, 3),
