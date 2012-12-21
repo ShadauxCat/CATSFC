@@ -3246,9 +3246,9 @@ void S9xUpdateJoypads ()
 
 	for (i = 0; i < 5; i++)
 	{
-		if (IPPU.Joypads [i] & (SNES_LEFT_MASK | SNES_RIGHT_MASK))
+		if ((IPPU.Joypads [i] & (SNES_LEFT_MASK | SNES_RIGHT_MASK)) == (SNES_LEFT_MASK | SNES_RIGHT_MASK))
 			IPPU.Joypads [i] &= ~SNES_RIGHT_MASK;
-		if (IPPU.Joypads [i] & (SNES_UP_MASK | SNES_DOWN_MASK))
+		if ((IPPU.Joypads [i] & (SNES_UP_MASK | SNES_DOWN_MASK)) == (SNES_UP_MASK | SNES_DOWN_MASK))
 			IPPU.Joypads [i] &= ~SNES_DOWN_MASK;
 	}
 	
