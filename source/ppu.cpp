@@ -3213,7 +3213,7 @@ void S9xUpdateJoypads ()
 	{
 		IPPU.Joypads [i] = 0;
 		// Sync each key
-		for (k = 1; k != 0x80000000; k <<= 1)
+		for (k = SNES_TR_MASK /* lowest value */; k != SNES_B_MASK << 1 /* one bit past the highest value */; k <<= 1)
 		{
 			KeyValue = IPPU.JoypadsAtHBlanks[i][0] & k;
 			StartedPressed = KeyValue != 0;
@@ -3246,9 +3246,9 @@ void S9xUpdateJoypads ()
 
 	for (i = 0; i < 5; i++)
 	{
-		if (IPPU.Joypads [i] & SNES_LEFT_MASK)
+		if (IPPU.Joypads [i] & (SNES_LEFT_MASK | SNES_RIGHT_MASK))
 			IPPU.Joypads [i] &= ~SNES_RIGHT_MASK;
-		if (IPPU.Joypads [i] & SNES_UP_MASK)
+		if (IPPU.Joypads [i] & (SNES_UP_MASK | SNES_DOWN_MASK))
 			IPPU.Joypads [i] &= ~SNES_DOWN_MASK;
 	}
 	
