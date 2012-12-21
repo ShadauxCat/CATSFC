@@ -403,13 +403,14 @@ static int sort_function(const void *dest_str_ptr, const void *src_str_ptr)
 	char *dest_str = *((char **)dest_str_ptr);
 	char *src_str = *((char **)src_str_ptr);
 
+	// For files and directories, . and .. sort first.
 	if(src_str[0] == '.')
 		return 1;
 
 	if(dest_str[0] == '.')
 		return -1;
 
-	return strcasecmp(dest_str, src_str); 
+	return strcasecmp(dest_str, src_str);
 }
 
 static int my_array_partion(void *array, int left, int right)
@@ -464,9 +465,9 @@ static void strupr(char *str)
     }
 }
 
-//******************************************************************************
+// ******************************************************************************
 //	get file list
-//******************************************************************************
+// ******************************************************************************
 #define FILE_LIST_MAX  512
 #define DIR_LIST_MAX   64
 #define NAME_MEM_SIZE  (320*64)
@@ -628,7 +629,7 @@ static int load_file_list(struct FILE_LIST_INFO *filelist_infop)
 
     strcpy(current_dir_name, filelist_infop -> current_path);
 
-	//*	path formate should be: "fat:/" or "fat:/dir0" or "fat:", not "fat:/dir0/"
+	//	path formate should be: "fat:/" or "fat:/dir0" or "fat:", not "fat:/dir0/"
     current_dir = opendir(current_dir_name);
 	//Open directory faiure
 	if(current_dir == NULL) {
@@ -792,31 +793,23 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 		{
 			case CURSOR_TOUCH:
 				ds2_getrawInput(&inputdata);
-				if(inputdata.y <= 33)
+				// ___ 33        This screen has 6 possible rows. Touches
+				// ___ 60        above or below these are ignored.
+				// . . . (+27)
+				// ___ 192
+				if(inputdata.y <= 33 || inputdata.y > 192)
 					break;
-				else if(inputdata.y <= 60)
-					mod = 0;
-				else if(inputdata.y <= 87)
-					mod = 1;
-				else if(inputdata.y <= 114)
-					mod = 2;
-				else if(inputdata.y <= 141)
-					mod = 3;
-				else if(inputdata.y <= 168)
-					mod = 4;
-				else if(inputdata.y <= 192)
-					mod = 5;
 				else
-					break;
-				
+					mod = (inputdata.y - 33) / 27;
+
 				if(selected_item_on_list - selected_item_on_screen + mod >= total_items_num)
 					break;
-					
+
 				selected_item_on_list = selected_item_on_list - selected_item_on_screen + mod;
-				
+
 				if(selected_item_on_list + 1 <= num_files)
 				{
-					//The ".." directory
+					//The ".." directory is the parent
 					if(!strcasecmp(file_list[selected_item_on_list], ".."))
 					{
 						char *ext_pos;
@@ -852,7 +845,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			case CURSOR_UP:
 				redraw = 1;
 				if(selected_item_on_screen > 0)
-				{	
+				{
 					//Not the first item on list
 					selected_item_on_list -= 1;
 					//Selected item on screen center
@@ -2868,7 +2861,7 @@ u32 menu(u16 *screen)
 
         draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
         draw_string_vcenter(down_screen_addr, 36, 80, 190, COLOR_MSSG, msg[MSG_EMU_VERSION0]);
-        sprintf(line_buffer, "%s  %s", msg[MSG_EMU_VERSION1], NDSSFC_VERSION);
+        sprintf(line_buffer, "%s %s", msg[MSG_EMU_VERSION1], NDSSFC_VERSION);
         draw_string_vcenter(down_screen_addr, 36, 95, 190, COLOR_MSSG, line_buffer);
         ds2_flipScreen(DOWN_SCREEN, 2);
 
@@ -3461,7 +3454,7 @@ u32 menu(u16 *screen)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, 26, 35 + (current_option_num-1)*27, 200, 
+                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200, 
                 	    COLOR_TRANS, COLOR_INACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3780,26 +3773,13 @@ u32 menu(u16 *screen)
 				/* Main menu */
 				if(current_menu == &main_menu)
 				{
-					if(inputdata.x <= 86 && inputdata.y <= 80)
-						current_option_num = 0;
-					else if(inputdata.x <= 172 && inputdata.y <= 80)
-						current_option_num = 1;
-					else if(inputdata.x <= 256 && inputdata.y <= 80)
-						current_option_num = 2;
-					else if(inputdata.x <= 86 && inputdata.y <= 160)
-						current_option_num = 3;
-					else if(inputdata.x <= 172 && inputdata.y <= 160)
-						current_option_num = 4;
-					else if(inputdata.x <= 256 && inputdata.y <= 160)
-						current_option_num = 5;
-					else if(inputdata.x <= 86 && inputdata.y <= 192)
-						current_option_num = 6;
-					else if(inputdata.x <= 172 && inputdata.y <= 192)
-						current_option_num = 7;
-					else if(inputdata.x <= 256 && inputdata.y <= 192)
-						current_option_num = 8;
-					else
-						break;
+					// 0     86    172   256
+					//  _____ _____ _____  0
+					// |0VID_|1SAV_|2CHT_| 80
+					// |3TLS_|4OPT_|5EXI_| 160
+					// |6NEW_|7RET_|8RST_| 192
+
+					current_option_num = (inputdata.y / 80) * 3 + (inputdata.x / 86);
 					current_option = current_menu->options + current_option_num;
 					
 					if(current_option -> option_type & HIDEN_TYPE)
@@ -3818,31 +3798,22 @@ u32 menu(u16 *screen)
 				&& current_menu != (main_menu.options +6)->sub_menu
 				&& current_menu != ((main_menu.options +6)->sub_menu->options + 2)->sub_menu)
 				{
-					if(inputdata.y <= 33)
+					if (inputdata.y <= 33 || inputdata.y > 192)
 						break;
-					else if(inputdata.y <= 60)
-						current_option_num = 1;
-					else if(inputdata.y <= 87)
-						current_option_num = 2;
-					else if(inputdata.y <= 114)
-						current_option_num = 3;
-					else if(inputdata.y <= 141)
-						current_option_num = 4;
-					else if(inputdata.y <= 168)
-						current_option_num = 5;
-					else if(inputdata.y <= 192)
-						current_option_num = 6;
-					else
-						break;
-						
+					// ___ 33        This screen has 6 possible rows. Touches
+					// ___ 60        above or below these are ignored.
+					// . . . (+27)
+					// ___ 192
+					current_option_num = (inputdata.y - 33) / 27;
+
 					current_option = current_menu->options + current_option_num;
-					
+
 					if(current_option -> option_type & HIDEN_TYPE)
 						break;
-						
+
 					if(!current_option)
 						break;
-					
+
 					if(current_menu->key_function)
 					{
 						gui_action = CURSOR_RIGHT;
@@ -3885,33 +3856,16 @@ u32 menu(u16 *screen)
 						u32 current_option_val = *(current_option->current_option);
 						u32 old_option_val = current_option_val;
 
-						if(inputdata.x <= 25)
+						if(inputdata.x <= 23 || inputdata.x > 233)
 							break;
-						else if(inputdata.x <= 45)
-							current_option_val = 0;
-						else if(inputdata.x <= 65)
-							current_option_val = 1;
-						else if(inputdata.x <= 86)
-							current_option_val = 2;
-						else if(inputdata.x <= 107)
-							current_option_val = 3;
-						else if(inputdata.x <= 128)
-							current_option_val = 4;
-						else if(inputdata.x <= 149)
-							current_option_val = 5;
-						else if(inputdata.x <= 170)
-							current_option_val = 6;
-						else if(inputdata.x <= 191)
-							current_option_val = 7;
-						else if(inputdata.x <= 212)
-							current_option_val = 8;
-						else if(inputdata.x <= 233)
-							current_option_val = 9;
-						else
-							break;
-						
+						// |  |  |  |  |  |  |  |  |  |  |
+						// 23 44 65 86 ... (+21)         233
+						// This row has 10 cells for save states, each 21
+						// pixels wide.
+						current_option_val = (inputdata.x - 23) / 21;
+
 						*(current_option->current_option) = current_option_val;
-						
+
 						if(current_option_val == old_option_val)
 						{
 							gui_action = CURSOR_SELECT;
@@ -3952,33 +3906,16 @@ u32 menu(u16 *screen)
 						u32 current_option_val = *(current_option->current_option);
 						u32 old_option_val = current_option_val;
 
-						if(inputdata.x <= 25)
+						if(inputdata.x <= 23 || inputdata.x > 233)
 							break;
-						else if(inputdata.x <= 45)
-							current_option_val = 0;
-						else if(inputdata.x <= 65)
-							current_option_val = 1;
-						else if(inputdata.x <= 86)
-							current_option_val = 2;
-						else if(inputdata.x <= 107)
-							current_option_val = 3;
-						else if(inputdata.x <= 128)
-							current_option_val = 4;
-						else if(inputdata.x <= 149)
-							current_option_val = 5;
-						else if(inputdata.x <= 170)
-							current_option_val = 6;
-						else if(inputdata.x <= 191)
-							current_option_val = 7;
-						else if(inputdata.x <= 212)
-							current_option_val = 8;
-						else if(inputdata.x <= 233)
-							current_option_val = 9;
-						else
-							break;
-						
+						// |  |  |  |  |  |  |  |  |  |  |
+						// 23 44 65 86 ... (+21)         233
+						// This row has 10 cells for save states, each 21
+						// pixels wide.
+						current_option_val = (inputdata.x - 23) / 21;
+
 						*(current_option->current_option) = current_option_val;
-						
+
 						if(current_option_val == old_option_val)
 						{
 							gui_action = CURSOR_SELECT;
@@ -4004,25 +3941,16 @@ u32 menu(u16 *screen)
 				|| current_menu == (main_menu.options + 6)->sub_menu
 				|| current_menu == ((main_menu.options +6)->sub_menu->options + 2)->sub_menu)
 				{
-					if(inputdata.y <= 33)
+					if (inputdata.y <= 33 || inputdata.y > 192)
 						break;
-					else if(inputdata.y <= 60)
-						current_option_num = 1;
-					else if(inputdata.y <= 87)
-						current_option_num = 2;
-					else if(inputdata.y <= 114)
-						current_option_num = 3;
-					else if(inputdata.y <= 141)
-						current_option_num = 4;
-					else if(inputdata.y <= 168)
-						current_option_num = 5;
-					else if(inputdata.y <= 192)
-						current_option_num = 6;
-					else
-						break;
-					
+					// ___ 33        This screen has 6 possible rows. Touches
+					// ___ 60        above or below these are ignored.
+					// . . . (+27)   The row between 33 and 60 is [1], though!
+					// ___ 192
+					current_option_num = (inputdata.y - 33) / 27 + 1;
+
 					current_option = current_menu->options + current_option_num;
-					
+
 					if(current_option -> option_type & HIDEN_TYPE)
 						break;
 					else if(current_option->option_type & ACTION_TYPE)
@@ -4150,12 +4078,9 @@ u32 menu(u16 *screen)
 	set_cpu_clock(clock_speed_number);
 	// mdelay(200); // Delete this delay
 	
-	ds2_clearScreen(DOWN_SCREEN, 0);
-	ds2_flipScreen(DOWN_SCREEN, 1);
-	ds2_clearScreen(UP_SCREEN, 0);
-	ds2_flipScreen(UP_SCREEN, 1);
-	ds2_clearScreen(UP_SCREEN, 0);
-	ds2_flipScreen(UP_SCREEN, 1);
+	ds2_clearScreen(DUAL_SCREEN, 0);
+	ds2_flipScreen(DUAL_SCREEN, 1);
+	ds2_flipScreen(UP_SCREEN, 1); // Flip again because otherwise it flickers
 	ds2_setBacklight(2);
 
 //save game config
@@ -4855,7 +4780,7 @@ void gui_init(u32 lang_id)
 {
 	int flag;
 
-	ds2_setCPUclocklevel(11);
+	ds2_setCPUclocklevel(13); // Crank it up. When the menu starts, -> 0.
 	printf_clock();
 
     //Find the "CATSFC" system directory
@@ -4876,11 +4801,11 @@ void gui_init(u32 lang_id)
             strcpy(main_path, "fat:");
             if(search_dir("CATSFC", main_path) == 0)
             {
-                printf("Dirctory find: %s\n", main_path);
+                printf("Found CATSFC directory\r\nDossier CATSFC trouve\r\n\r\n%s\r\n", main_path);
             }
             else
             {
-				err_msg(DOWN_SCREEN, "Can't fine CATSFC directory, press any key to exit\n");
+				err_msg(DOWN_SCREEN, "/CATSFC: Directory missing\r\nPress any key to return to\r\nthe menu\r\n\r\n/CATSFC: Dossier manquant\r\nAppuyer sur une touche pour\r\nretourner au menu");
                 goto gui_init_err;
             }
         }
@@ -4892,7 +4817,7 @@ void gui_init(u32 lang_id)
 	flag = icon_init(lang_id);
 	if(0 != flag)
 	{
-		err_msg(DOWN_SCREEN, "some icon can't open when initial GUI, press any key to exit\n");
+		err_msg(DOWN_SCREEN, "Some icons are missing\r\nLoad them onto your card\r\nPress any key to return to\r\nthe menu\r\n\r\nDes icones sont manquantes\r\nChargez-les sur votre carte\r\nAppuyer sur une touche pour\r\nretourner au menu");
 		goto gui_init_err;
 	}
 
@@ -4900,8 +4825,8 @@ void gui_init(u32 lang_id)
 	flag = load_font();
 	if(0 != flag)
 	{
-		char message[128];
-		sprintf(message, "Font library initialisation error %d, press any key to exit\n", flag);
+		char message[512];
+		sprintf(message, "Font library initialisation\r\nerror (%d)\r\nPress any key to return to\r\nthe menu\r\n\r\nErreur d'initalisation de la\r\npolice de caracteres (%d)\r\nAppuyer sur une touche pour\r\nretourner au menu", flag, flag);
 		err_msg(DOWN_SCREEN, message);
 		goto gui_init_err;
 	}
@@ -4912,12 +4837,13 @@ void gui_init(u32 lang_id)
 	flag = load_language_msg(LANGUAGE_PACK, lang_id);
 	if(0 != flag)
 	{
-		err_msg(DOWN_SCREEN, "initial language package error, press any key to exit\n");
+		char message[512];
+		sprintf(message, "Language pack initialisation\r\nerror (%d)\r\nPress any key to return to\r\nthe menu\r\n\r\nErreur d'initalisation du\r\npack de langue (%d)\r\nAppuyer sur une touche pour\r\nretourner au menu", flag, flag);
+		err_msg(DOWN_SCREEN, message);
 		goto gui_init_err;
 	}
 
 	initial_path_config();
-
 
 	return;
 
@@ -4927,6 +4853,3 @@ gui_init_err:
 	quit();
 	while(1);
 }
-
-
-
