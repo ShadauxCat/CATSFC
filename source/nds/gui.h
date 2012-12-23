@@ -51,10 +51,6 @@ struct _GAME_CONFIG
 	u32 backward_time;
 	u32	reserve[32];
 	u32 gamepad_config_map[MAX_GAMEPAD_MAP];
-	GCHEAT_STRUCT cheats_flag[MAX_CHEATS];
-	char cheat_filename[MAX_PATH];
-	unsigned int cheat_str_num;
-	unsigned int cheat_str_size;
 };
 
 typedef enum

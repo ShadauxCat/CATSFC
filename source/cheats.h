@@ -93,21 +93,17 @@
 extern "C" {
 #endif
 
-#define MAX_SFCCHEAT_NAME 24
-#define MAX_CHEATS_T 200
+#define MAX_SFCCHEAT_NAME 48
+#define MAX_CHEATS_T 800
 
 struct SCheat
 {
     uint32  address;
     uint8   byte;
     uint8   saved_byte;
-    bool8   enabled;
+    // bool8   enabled;
+	uint32	enabled; // THIS IS A TOTAL HACK FOR THE NDSSFC GUI, YOU HAVE BEEN WARNED [Neb]
     bool8   saved;
-	uint8	total_part;
-	uint8	part_id;
-	uint8	part_len;
-	uint8	cheat_type;
-	uint32	name_id;
     char    name[MAX_SFCCHEAT_NAME];
 };
 
@@ -140,10 +136,10 @@ typedef enum
 
 void S9xInitCheatData ();
 
-const char *S9xGameGenieToRaw (const char *code, uint32 &address, uint8 &byte);
-const char *S9xProActionReplayToRaw (const char *code, uint32 &address, uint8 &byte);
-const char *S9xGoldFingerToRaw (const char *code, uint32 &address, bool8 &sram,
-				uint8 &num_bytes, uint8 bytes[3]);
+const char *S9xGameGenieToRaw (const char *code, uint32 *address, uint8 *byte);
+const char *S9xProActionReplayToRaw (const char *code, uint32 *address, uint8 *byte);
+const char *S9xGoldFingerToRaw (const char *code, uint32 *address, bool8 *sram,
+				uint8 *num_bytes, uint8 bytes[3]);
 void S9xApplyCheats ();
 void S9xApplyCheat (uint32 which1);
 void S9xRemoveCheats ();
@@ -158,25 +154,13 @@ void S9xDeleteCheat (uint32 which1);
 bool8 S9xLoadCheatFile (const char *filename);
 bool8 S9xSaveCheatFile (const char *filename);
 
-void S9xStartCheatSearch (SCheatData *);
-void S9xSearchForChange (SCheatData *, S9xCheatComparisonType cmp,
+void S9xStartCheatSearch (struct SCheatData *cheats);
+void S9xSearchForChange (struct SCheatData *cheats, S9xCheatComparisonType cmp,
                          S9xCheatDataSize size, bool8 is_signed, bool8 update);
-void S9xSearchForValue (SCheatData *, S9xCheatComparisonType cmp,
+void S9xSearchForValue (struct SCheatData *cheats, S9xCheatComparisonType cmp,
                         S9xCheatDataSize size, uint32 value,
                         bool8 is_signed, bool8 update);
-void S9xOutputCheatSearchResults (SCheatData *);
-
-
-int S9xAddCheat_ex (unsigned int address, unsigned char* cheat_dat, unsigned int cheat_dat_len, 
-		unsigned int cheat_cell_num, unsigned int part_id, unsigned int str_num);
-void S9xAddCheat_ov(unsigned int cheat_cell_num, unsigned int total_part);
-unsigned int S9xGetCheat_nameid(unsigned int start, unsigned int part);
-void S9xCheat_switch(unsigned int start, unsigned int sub_part, unsigned int enable);
-void S9xApplyCheats_ex(void);
-void S9xCheat_Disable(void);
-void S9xCheat_Enable(void);
-
-void S9x_dumpcheat(unsigned int id);
+void S9xOutputCheatSearchResults (struct SCheatData *cheats);
 
 #ifdef __cplusplus
 }

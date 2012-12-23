@@ -277,5 +277,3 @@ bool8 S9xSaveCheatFile (const char *filename)
     fclose (fs);
     return (TRUE);
 }
-
-

@@ -22,6 +22,7 @@
  * draw.cpp
  * basic program to draw some graphic
  ******************************************************************************/
+#include "port.h"
 #include <string.h>
 #include <stdio.h>
 #include "ds2_malloc.h"

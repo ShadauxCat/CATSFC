@@ -24,39 +24,12 @@
 extern "C" {
 #endif
 
-#define CHEAT_NAME_LENGTH (32)
-#define MAX_CHEATS_PAGE 10
+#include "cheats.h"
+
 #define CHEATS_PER_PAGE 4
-#define MAX_CHEATS (MAX_CHEATS_PAGE * CHEATS_PER_PAGE)
+#define MAX_CHEATS_PAGE (MAX_CHEATS_T / CHEATS_PER_PAGE)
 
-//Support EMU Cheat(emulator cheat) code
-typedef struct
-{
-	u32 name_id;	//name ID in another table
-	u32 active;		//status
-	u16 item_num;	//sub-item number
-	u16 sub_active;
-	u32 item_id;	//There is another struct array to store the cheat data
-	char name_shot[CHEAT_NAME_LENGTH];
-	u32	reserved;
-} GCHEAT_STRUCT;
-
-typedef struct
-{
-	unsigned char** msg_index;
-	unsigned char* msg_pool;
-	unsigned int msg_num;
-} MSG_TABLE;
-
-extern GCHEAT_STRUCT gcheat[MAX_CHEATS];
-extern unsigned int g_cheat_cell_num;
-extern unsigned int g_cheat_num;
-
-extern int load_cheatfile(const char* filename, unsigned int *string_num, 
-	unsigned int *string_len, GCHEAT_STRUCT *gcheat);
-extern int load_cheatname(const char* filename, unsigned int string_num, 
-	unsigned int string_len, MSG_TABLE* mssg_table);
-extern void gcheat_Managment(GCHEAT_STRUCT *gcheat);
+extern int NDSSFCLoadCheatFile(const char* filename);
 
 #ifdef __cplusplus
 }
