@@ -4083,6 +4083,7 @@ u32 menu(u16 *screen)
 	
 	ds2_clearScreen(DUAL_SCREEN, 0);
 	ds2_flipScreen(DUAL_SCREEN, 1);
+	copy_screen(up_screen_addr, (void*) screen, 0, 0, 256, 192);
 	ds2_flipScreen(UP_SCREEN, 1); // Flip again because otherwise it flickers
 	ds2_setBacklight(2);
 
