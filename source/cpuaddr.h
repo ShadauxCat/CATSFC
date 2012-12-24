@@ -134,7 +134,7 @@ static void Immediate16 (AccessMode a, InternalOp op)
 
 static void Relative (AccessMode a, InternalOp op)
 {
-    Int8 = *CPU.PC++;
+    int8 Int8 = *CPU.PC++;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif    

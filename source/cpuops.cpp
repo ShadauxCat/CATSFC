@@ -100,19 +100,6 @@
 #include "sa1.h"
 #include "spc7110.h"
 
-START_EXTERN_C
-extern uint8 A1, A2, A3, A4, W1, W2, W3, W4;
-extern uint8 Ans8;
-extern uint16 Ans16;
-extern uint32 Ans32;
-extern uint8 Work8;
-extern uint16 Work16;
-extern uint32 Work32;
-extern signed char Int8;
-extern short Int16;
-extern long Int32;
-END_EXTERN_C
-
 #include "cpuexec.h"
 #include "cpuaddr.h"
 #include "cpuops.h"
@@ -561,7 +548,7 @@ static void Op3CM0 (void)
 /* CMP *************************************************************************************** */
 static void OpC9M1 (void)
 {
-    Int32 = (int) Registers.AL - (int) *CPU.PC++;
+    int32 Int32 = (int) Registers.AL - (int) *CPU.PC++;
     ICPU._Carry = Int32 >= 0;
     SetZN8 ((uint8) Int32);
 #ifndef SA1_OPCODES
@@ -571,6 +558,7 @@ static void OpC9M1 (void)
 
 static void OpC9M0 (void)
 {
+    int32 Int32;
 #ifdef FAST_LSB_WORD_ACCESS    
     Int32 = (long) Registers.A.W - (long) *(uint16 *) CPU.PC;
 #else
@@ -730,7 +718,7 @@ static void OpD3M0 (void)
 /* CMX *************************************************************************************** */
 static void OpE0X1 (void)
 {
-    Int32 = (int) Registers.XL - (int) *CPU.PC++;
+    int32 Int32 = (int) Registers.XL - (int) *CPU.PC++;
     ICPU._Carry = Int32 >= 0;
     SetZN8 ((uint8) Int32);
 #ifndef SA1_OPCODES
@@ -740,6 +728,7 @@ static void OpE0X1 (void)
 
 static void OpE0X0 (void)
 {
+    int32 Int32;
 #ifdef FAST_LSB_WORD_ACCESS    
     Int32 = (long) Registers.X.W - (long) *(uint16 *) CPU.PC;
 #else
@@ -779,7 +768,7 @@ static void OpECX0 (void)
 /* CMY *************************************************************************************** */
 static void OpC0X1 (void)
 {
-    Int32 = (int) Registers.YL - (int) *CPU.PC++;
+    int32 Int32 = (int) Registers.YL - (int) *CPU.PC++;
     ICPU._Carry = Int32 >= 0;
     SetZN8 ((uint8) Int32);
 #ifndef SA1_OPCODES
@@ -789,6 +778,7 @@ static void OpC0X1 (void)
 
 static void OpC0X0 (void)
 {
+    int32 Int32;
 #ifdef FAST_LSB_WORD_ACCESS    
     Int32 = (long) Registers.Y.W - (long) *(uint16 *) CPU.PC;
 #else
@@ -3188,8 +3178,8 @@ static void OpFB (void)
     CPU.Cycles += ONE_CYCLE;
 #endif
 
-    A1 = ICPU._Carry;
-    A2 = Registers.PH;
+    uint8 A1 = ICPU._Carry;
+    uint8 A2 = Registers.PH;
     ICPU._Carry = A2 & 1;
     Registers.PH = A1;
 
@@ -3682,7 +3672,7 @@ static void Op44X0 (void)
 /* REP/SEP *********************************************************************************** */
 static void OpC2 (void)
 {
-    Work8 = ~*CPU.PC++;
+    uint8 Work8 = ~*CPU.PC++;
     Registers.PL &= Work8;
     ICPU._Carry &= Work8;
     ICPU._Overflow &= (Work8 >> 6);
@@ -3708,7 +3698,7 @@ static void OpC2 (void)
 
 static void OpE2 (void)
 {
-    Work8 = *CPU.PC++;
+    uint8 Work8 = *CPU.PC++;
     Registers.PL |= Work8;
     ICPU._Carry |= Work8 & 1;
     ICPU._Overflow |= (Work8 >> 6) & 1;
@@ -3735,7 +3725,7 @@ static void OpE2 (void)
 /* XBA *************************************************************************************** */
 static void OpEB (void)
 {
-    Work8 = Registers.AL;
+    uint8 Work8 = Registers.AL;
     Registers.AL = Registers.AH;
     Registers.AH = Work8;
 

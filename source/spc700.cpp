@@ -107,19 +107,6 @@ void S9xAPUSetByte (uint8, uint32 address);
 #include "apumem.h"
 #endif
 
-START_EXTERN_C
-extern uint8 Work8;
-extern uint16 Work16;
-extern uint32 Work32;
-extern signed char Int8;
-extern short Int16;
-extern long Int32;
-extern short Int16;
-extern uint8 W1;
-extern uint8 W2;
-
-END_EXTERN_C
-
 #define OP1 (*(IAPU.PC + 1))
 #define OP2 (*(IAPU.PC + 2))
 
@@ -179,7 +166,7 @@ void STOP (char *s)
 
 // XXX: HalfCarry - BJ fixed?
 #define SBC(a,b)\
-Int16 = (short) (a) - (short) (b) + (short) (APUCheckCarry ()) - 1;\
+int16 Int16 = (short) (a) - (short) (b) + (short) (APUCheckCarry ()) - 1;\
 IAPU._Carry = Int16 >= 0;\
 if ((((a) ^ (b)) & 0x80) && (((a) ^ (uint8) Int16) & 0x80))\
     APUSetOverflow ();\
@@ -192,21 +179,22 @@ if(((a) ^ (b) ^ (uint8) Int16) & 0x10)\
 APUSetZN8 ((uint8) Int16);
 
 // XXX: HalfCarry - BJ fixed?
+// XXX: HalfCarry used Int16 before; trying to fix it with Work16 [Neb]
 #define ADC(a,b)\
-Work16 = (a) + (b) + APUCheckCarry();\
+uint16 Work16 = (a) + (b) + APUCheckCarry();\
 IAPU._Carry = Work16 >= 0x100; \
 if (~((a) ^ (b)) & ((b) ^ (uint8) Work16) & 0x80)\
     APUSetOverflow ();\
 else \
     APUClearOverflow (); \
 APUClearHalfCarry ();\
-if(((a) ^ (b) ^ (uint8) Int16) & 0x10)\
+if(((a) ^ (b) ^ (uint8) Work16) & 0x10)\
     APUSetHalfCarry ();\
 (a) = (uint8) Work16;\
 APUSetZN8 ((uint8) Work16);
 
 #define CMP(a,b)\
-Int16 = (short) (a) - (short) (b);\
+int16 Int16 = (short) (a) - (short) (b);\
 IAPU._Carry = Int16 >= 0;\
 APUSetZN8 ((uint8) Int16);
 
@@ -219,12 +207,12 @@ APUSetZN8 ((uint8) Int16);
     (b) >>= 1;\
     APUSetZN8 (b);
 #define ROL(b)\
-    Work16 = ((b) << 1) | APUCheckCarry (); \
+    uint16 Work16 = ((b) << 1) | APUCheckCarry (); \
     IAPU._Carry = Work16 >= 0x100; \
     (b) = (uint8) Work16; \
     APUSetZN8 (b);
 #define ROR(b)\
-    Work16 = (b) | ((uint16) APUCheckCarry () << 8); \
+    uint16 Work16 = (b) | ((uint16) APUCheckCarry () << 8); \
     IAPU._Carry = (uint8) Work16 & 1; \
     Work16 >>= 1; \
     (b) = (uint8) Work16; \
@@ -256,12 +244,12 @@ APUSetZN8 ((uint8) Int16);
 #endif
 
 #define Relative()\
-    Int8 = OP1;\
-    Int16 = (int) (IAPU.PC + 2 - IAPU.RAM) + Int8;
+    int8 Int8 = OP1;\
+    int16 Int16 = (int) (IAPU.PC + 2 - IAPU.RAM) + Int8;
 
 #define Relative2()\
-    Int8 = OP2;\
-    Int16 = (int) (IAPU.PC + 3 - IAPU.RAM) + Int8;
+    int8 Int8 = OP2;\
+    int16 Int16 = (int) (IAPU.PC + 3 - IAPU.RAM) + Int8;
 
 #ifdef FAST_LSB_WORD_ACCESS
 #define IndexedXIndirect()\
@@ -355,7 +343,7 @@ void Apu3F () // CALL absolute
 
 void Apu4F () // PCALL $XX
 {
-    Work8 = OP1;
+    uint8 Work8 = OP1;
     PushW (IAPU.PC + 2 - IAPU.RAM);
     IAPU.PC = IAPU.RAM + 0xff00 + Work8;
 }
@@ -449,7 +437,7 @@ void ApuF2 ()
 }
 
 #define BBS(b) \
-Work8 = OP1; \
+uint8 Work8 = OP1; \
 Relative2 (); \
 if (S9xAPUGetByteZ (Work8) & (1 << (b))) \
 { \
@@ -500,7 +488,7 @@ void ApuE3 ()
 }
 
 #define BBC(b) \
-Work8 = OP1; \
+uint8 Work8 = OP1; \
 Relative2 (); \
 if (!(S9xAPUGetByteZ (Work8) & (1 << (b)))) \
 { \
@@ -595,7 +583,7 @@ void Apu08 ()
 void Apu09 ()
 {
 // OR dp(dest),dp(src)
-    Work8 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
     Work8 |= S9xAPUGetByteZ (OP2);
     S9xAPUSetByteZ (Work8, OP2);
     APUSetZN8 (Work8);
@@ -640,7 +628,7 @@ void Apu17 ()
 void Apu18 ()
 {
 // OR dp,#00
-    Work8 = OP1;
+    uint8 Work8 = OP1;
     Work8 |= S9xAPUGetByteZ (OP2);
     S9xAPUSetByteZ (Work8, OP2);
     APUSetZN8 (Work8);
@@ -650,7 +638,7 @@ void Apu18 ()
 void Apu19 ()
 {
 // OR (X),(Y)
-    Work8 = S9xAPUGetByteZ (APURegisters.X) | S9xAPUGetByteZ (APURegisters.YA.B.Y);
+    uint8 Work8 = S9xAPUGetByteZ (APURegisters.X) | S9xAPUGetByteZ (APURegisters.YA.B.Y);
     APUSetZN8 (Work8);
     S9xAPUSetByteZ (Work8, APURegisters.X);
     IAPU.PC++;
@@ -758,7 +746,7 @@ void ApuEA ()
 void Apu0B ()
 {
 // ASL dp
-    Work8 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
     ASL (Work8);
     S9xAPUSetByteZ (Work8, OP1);
     IAPU.PC += 2;
@@ -768,7 +756,7 @@ void Apu0C ()
 {
 // ASL abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     ASL (Work8);
     S9xAPUSetByte (Work8, IAPU.Address);
     IAPU.PC += 3;
@@ -777,7 +765,7 @@ void Apu0C ()
 void Apu1B ()
 {
 // ASL dp+X
-    Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
     ASL (Work8);
     S9xAPUSetByteZ (Work8, OP1 + APURegisters.X);
     IAPU.PC += 2;
@@ -856,7 +844,7 @@ void Apu0E ()
 {
 // TSET1 abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     S9xAPUSetByte (Work8 | APURegisters.YA.B.A, IAPU.Address);
     Work8 &= APURegisters.YA.B.A;
     APUSetZN8 (Work8);
@@ -867,7 +855,7 @@ void Apu4E ()
 {
 // TCLR1 abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     S9xAPUSetByte (Work8 & ~APURegisters.YA.B.A, IAPU.Address);
     Work8 &= APURegisters.YA.B.A;
     APUSetZN8 (Work8);
@@ -1050,7 +1038,7 @@ void Apu40 ()
 void Apu1A ()
 {
 // DECW dp
-    Work16 = S9xAPUGetByteZ (OP1) + (S9xAPUGetByteZ (OP1 + 1) << 8);
+    uint16 Work16 = S9xAPUGetByteZ (OP1) + (S9xAPUGetByteZ (OP1 + 1) << 8);
     Work16--;
     S9xAPUSetByteZ ((uint8) Work16, OP1);
     S9xAPUSetByteZ (Work16 >> 8, OP1 + 1);
@@ -1061,8 +1049,8 @@ void Apu1A ()
 void Apu5A ()
 {
 // CMPW YA,dp
-    Work16 = S9xAPUGetByteZ (OP1) + (S9xAPUGetByteZ (OP1 + 1) << 8);
-    Int32 = (long) APURegisters.YA.W - (long) Work16;
+    uint16 Work16 = S9xAPUGetByteZ (OP1) + (S9xAPUGetByteZ (OP1 + 1) << 8);
+    int32 Int32 = (long) APURegisters.YA.W - (long) Work16;
     IAPU._Carry = Int32 >= 0;
     APUSetZN16 ((uint16) Int32);
     IAPU.PC += 2;
@@ -1071,7 +1059,7 @@ void Apu5A ()
 void Apu3A ()
 {
 // INCW dp
-    Work16 = S9xAPUGetByteZ (OP1) + (S9xAPUGetByteZ (OP1 + 1) << 8);
+    uint16 Work16 = S9xAPUGetByteZ (OP1) + (S9xAPUGetByteZ (OP1 + 1) << 8);
     Work16++;
     S9xAPUSetByteZ ((uint8) Work16, OP1);
     S9xAPUSetByteZ (Work16 >> 8, OP1 + 1);
@@ -1083,8 +1071,8 @@ void Apu3A ()
 void Apu7A ()
 {
 // ADDW YA,dp
-    Work16 = S9xAPUGetByteZ (OP1) + (S9xAPUGetByteZ (OP1 + 1) << 8);
-    Work32 = (uint32) APURegisters.YA.W + Work16;
+    uint16 Work16 = S9xAPUGetByteZ (OP1) + (S9xAPUGetByteZ (OP1 + 1) << 8);
+    uint32 Work32 = (uint32) APURegisters.YA.W + Work16;
     IAPU._Carry = Work32 >= 0x10000;
     if (~(APURegisters.YA.W ^ Work16) & (Work16 ^ (uint16) Work32) & 0x8000)
 	APUSetOverflow ();
@@ -1100,11 +1088,12 @@ void Apu7A ()
 
 // XXX: BJ: i think the old HalfCarry behavior was wrong...
 // XXX: Or is it between bits 7 and 8 for ADDW/SUBW?
+// XXX: Used Work32 instead of Int32 before. Fixed? [Neb]
 void Apu9A ()
 {
 // SUBW YA,dp
-    Work16 = S9xAPUGetByteZ (OP1) + (S9xAPUGetByteZ (OP1 + 1) << 8);
-    Int32 = (long) APURegisters.YA.W - (long) Work16;
+    uint16 Work16 = S9xAPUGetByteZ (OP1) + (S9xAPUGetByteZ (OP1 + 1) << 8);
+    int32 Int32 = (long) APURegisters.YA.W - (long) Work16;
     APUClearHalfCarry ();
     IAPU._Carry = Int32 >= 0;
     if (((APURegisters.YA.W ^ Work16) & 0x8000) &&
@@ -1116,7 +1105,7 @@ void Apu9A ()
 	    ((APURegisters.YA.W ^ (uint16) Int32) & 0x0080))
 	APUSetHalfCarry ();
     APUSetHalfCarry ();
-    if((APURegisters.YA.W ^ Work16 ^ (uint16) Work32) & 0x10)
+    if((APURegisters.YA.W ^ Work16 ^ (uint16) Int32) & 0x10)
         APUClearHalfCarry ();
     APURegisters.YA.W = (uint16) Int32;
     APUSetZN16 (APURegisters.YA.W);
@@ -1143,7 +1132,7 @@ void ApuDA ()
 void Apu64 ()
 {
 // CMP A,dp
-    Work8 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
     CMP (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -1152,7 +1141,7 @@ void Apu65 ()
 {
 // CMP A,abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     CMP (APURegisters.YA.B.A, Work8);
     IAPU.PC += 3;
 }
@@ -1160,7 +1149,7 @@ void Apu65 ()
 void Apu66 ()
 {
 // CMP A,(X)
-    Work8 = S9xAPUGetByteZ (APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (APURegisters.X);
     CMP (APURegisters.YA.B.A, Work8);
     IAPU.PC++;
 }
@@ -1169,7 +1158,7 @@ void Apu67 ()
 {
 // CMP A,(dp+X)
     IndexedXIndirect ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     CMP (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -1177,7 +1166,7 @@ void Apu67 ()
 void Apu68 ()
 {
 // CMP A,#00
-    Work8 = OP1;
+    uint8 Work8 = OP1;
     CMP (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -1185,8 +1174,8 @@ void Apu68 ()
 void Apu69 ()
 {
 // CMP dp(dest), dp(src)
-    W1 = S9xAPUGetByteZ (OP1);
-    Work8 = S9xAPUGetByteZ (OP2);
+    uint8 W1 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP2);
     CMP (Work8, W1);
     IAPU.PC += 3;
 }
@@ -1194,7 +1183,7 @@ void Apu69 ()
 void Apu74 ()
 {
 // CMP A, dp+X
-    Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
     CMP (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -1203,7 +1192,7 @@ void Apu75 ()
 {
 // CMP A,abs+X
     AbsoluteX ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     CMP (APURegisters.YA.B.A, Work8);
     IAPU.PC += 3;
 }
@@ -1212,7 +1201,7 @@ void Apu76 ()
 {
 // CMP A, abs+Y
     AbsoluteY ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     CMP (APURegisters.YA.B.A, Work8);
     IAPU.PC += 3;
 }
@@ -1221,7 +1210,7 @@ void Apu77 ()
 {
 // CMP A,(dp)+Y
     IndirectIndexedY ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     CMP (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -1229,8 +1218,8 @@ void Apu77 ()
 void Apu78 ()
 {
 // CMP dp,#00
-    Work8 = OP1;
-    W1 = S9xAPUGetByteZ (OP2);
+    uint8 Work8 = OP1;
+    uint8 W1 = S9xAPUGetByteZ (OP2);
     CMP (W1, Work8);
     IAPU.PC += 3;
 }
@@ -1238,8 +1227,8 @@ void Apu78 ()
 void Apu79 ()
 {
 // CMP (X),(Y)
-    W1 = S9xAPUGetByteZ (APURegisters.X);
-    Work8 = S9xAPUGetByteZ (APURegisters.YA.B.Y);
+    uint8 W1 = S9xAPUGetByteZ (APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (APURegisters.YA.B.Y);
     CMP (W1, Work8);
     IAPU.PC++;
 }
@@ -1248,7 +1237,7 @@ void Apu1E ()
 {
 // CMP X,abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     CMP (APURegisters.X, Work8);
     IAPU.PC += 3;
 }
@@ -1256,7 +1245,7 @@ void Apu1E ()
 void Apu3E ()
 {
 // CMP X,dp
-    Work8 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
     CMP (APURegisters.X, Work8);
     IAPU.PC += 2;
 }
@@ -1272,7 +1261,7 @@ void Apu5E ()
 {
 // CMP Y,abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     CMP (APURegisters.YA.B.Y, Work8);
     IAPU.PC += 3;
 }
@@ -1280,7 +1269,7 @@ void Apu5E ()
 void Apu7E ()
 {
 // CMP Y,dp
-    Work8 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
     CMP (APURegisters.YA.B.Y, Work8);
     IAPU.PC += 2;
 }
@@ -1288,7 +1277,7 @@ void Apu7E ()
 void ApuAD ()
 {
 // CMP Y,#00
-    Work8 = OP1;
+    uint8 Work8 = OP1;
     CMP (APURegisters.YA.B.Y, Work8);
     IAPU.PC += 2;
 }
@@ -1378,7 +1367,7 @@ void Apu28 ()
 void Apu29 ()
 {
 // AND dp(dest),dp(src)
-    Work8 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
     Work8 &= S9xAPUGetByteZ (OP2);
     S9xAPUSetByteZ (Work8, OP2);
     APUSetZN8 (Work8);
@@ -1423,7 +1412,7 @@ void Apu37 ()
 void Apu38 ()
 {
 // AND dp,#00
-    Work8 = OP1;
+    uint8 Work8 = OP1;
     Work8 &= S9xAPUGetByteZ (OP2);
     S9xAPUSetByteZ (Work8, OP2);
     APUSetZN8 (Work8);
@@ -1433,7 +1422,7 @@ void Apu38 ()
 void Apu39 ()
 {
 // AND (X),(Y)
-    Work8 = S9xAPUGetByteZ (APURegisters.X) & S9xAPUGetByteZ (APURegisters.YA.B.Y);
+    uint8 Work8 = S9xAPUGetByteZ (APURegisters.X) & S9xAPUGetByteZ (APURegisters.YA.B.Y);
     APUSetZN8 (Work8);
     S9xAPUSetByteZ (Work8, APURegisters.X);
     IAPU.PC++;
@@ -1442,7 +1431,7 @@ void Apu39 ()
 void Apu2B ()
 {
 // ROL dp
-    Work8 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
     ROL (Work8);
     S9xAPUSetByteZ (Work8, OP1);
     IAPU.PC += 2;
@@ -1452,7 +1441,7 @@ void Apu2C ()
 {
 // ROL abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     ROL (Work8);
     S9xAPUSetByte (Work8, IAPU.Address);
     IAPU.PC += 3;
@@ -1461,7 +1450,7 @@ void Apu2C ()
 void Apu3B ()
 {
 // ROL dp+X
-    Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
     ROL (Work8);
     S9xAPUSetByteZ (Work8, OP1 + APURegisters.X);
     IAPU.PC += 2;
@@ -1477,7 +1466,7 @@ void Apu3C ()
 void Apu2E ()
 {
 // CBNE dp,rel
-    Work8 = OP1;
+    uint8 Work8 = OP1;
     Relative2 ();
     
     if (S9xAPUGetByteZ (Work8) != APURegisters.YA.B.A)
@@ -1493,7 +1482,7 @@ void Apu2E ()
 void ApuDE ()
 {
 // CBNE dp+X,rel
-    Work8 = OP1 + APURegisters.X;
+    uint8 Work8 = OP1 + APURegisters.X;
     Relative2 ();
 
     if (S9xAPUGetByteZ (Work8) != APURegisters.YA.B.A)
@@ -1561,7 +1550,7 @@ void ApuDC ()
 void ApuAB ()
 {
 // INC dp
-    Work8 = S9xAPUGetByteZ (OP1) + 1;
+    uint8 Work8 = S9xAPUGetByteZ (OP1) + 1;
     S9xAPUSetByteZ (Work8, OP1);
     APUSetZN8 (Work8);
 
@@ -1576,7 +1565,7 @@ void ApuAC ()
 {
 // INC abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address) + 1;
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address) + 1;
     S9xAPUSetByte (Work8, IAPU.Address);
     APUSetZN8 (Work8);
 
@@ -1590,7 +1579,7 @@ void ApuAC ()
 void ApuBB ()
 {
 // INC dp+X
-    Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X) + 1;
+    uint8 Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X) + 1;
     S9xAPUSetByteZ (Work8, OP1 + APURegisters.X);
     APUSetZN8 (Work8);
 
@@ -1617,7 +1606,7 @@ void ApuBC ()
 void Apu8B ()
 {
 // DEC dp
-    Work8 = S9xAPUGetByteZ (OP1) - 1;
+    uint8 Work8 = S9xAPUGetByteZ (OP1) - 1;
     S9xAPUSetByteZ (Work8, OP1);
     APUSetZN8 (Work8);
 
@@ -1632,7 +1621,7 @@ void Apu8C ()
 {
 // DEC abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address) - 1;
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address) - 1;
     S9xAPUSetByte (Work8, IAPU.Address);
     APUSetZN8 (Work8);
 
@@ -1646,7 +1635,7 @@ void Apu8C ()
 void Apu9B ()
 {
 // DEC dp+X
-    Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X) - 1;
+    uint8 Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X) - 1;
     S9xAPUSetByteZ (Work8, OP1 + APURegisters.X);
     APUSetZN8 (Work8);
 
@@ -1715,7 +1704,7 @@ void Apu48 ()
 void Apu49 ()
 {
 // EOR dp(dest),dp(src)
-    Work8 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
     Work8 ^= S9xAPUGetByteZ (OP2);
     S9xAPUSetByteZ (Work8, OP2);
     APUSetZN8 (Work8);
@@ -1760,7 +1749,7 @@ void Apu57 ()
 void Apu58 ()
 {
 // EOR dp,#00
-    Work8 = OP1;
+    uint8 Work8 = OP1;
     Work8 ^= S9xAPUGetByteZ (OP2);
     S9xAPUSetByteZ (Work8, OP2);
     APUSetZN8 (Work8);
@@ -1770,7 +1759,7 @@ void Apu58 ()
 void Apu59 ()
 {
 // EOR (X),(Y)
-    Work8 = S9xAPUGetByteZ (APURegisters.X) ^ S9xAPUGetByteZ (APURegisters.YA.B.Y);
+    uint8 Work8 = S9xAPUGetByteZ (APURegisters.X) ^ S9xAPUGetByteZ (APURegisters.YA.B.Y);
     APUSetZN8 (Work8);
     S9xAPUSetByteZ (Work8, APURegisters.X);
     IAPU.PC++;
@@ -1779,7 +1768,7 @@ void Apu59 ()
 void Apu4B ()
 {
 // LSR dp
-    Work8 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
     LSR (Work8);
     S9xAPUSetByteZ (Work8, OP1);
     IAPU.PC += 2;
@@ -1789,7 +1778,7 @@ void Apu4C ()
 {
 // LSR abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     LSR (Work8);
     S9xAPUSetByte (Work8, IAPU.Address);
     IAPU.PC += 3;
@@ -1798,7 +1787,7 @@ void Apu4C ()
 void Apu5B ()
 {
 // LSR dp+X
-    Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
     LSR (Work8);
     S9xAPUSetByteZ (Work8, OP1 + APURegisters.X);
     IAPU.PC += 2;
@@ -1861,7 +1850,7 @@ void ApuBD ()
 void Apu6B ()
 {
 // ROR dp
-    Work8 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
     ROR (Work8);
     S9xAPUSetByteZ (Work8, OP1);
     IAPU.PC += 2;
@@ -1871,7 +1860,7 @@ void Apu6C ()
 {
 // ROR abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     ROR (Work8);
     S9xAPUSetByte (Work8, IAPU.Address);
     IAPU.PC += 3;
@@ -1880,7 +1869,7 @@ void Apu6C ()
 void Apu7B ()
 {
 // ROR dp+X
-    Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
     ROR (Work8);
     S9xAPUSetByteZ (Work8, OP1 + APURegisters.X);
     IAPU.PC += 2;
@@ -1896,9 +1885,9 @@ void Apu7C ()
 void Apu6E ()
 {
 // DBNZ dp,rel
-    Work8 = OP1;
+    uint8 Work8 = OP1;
     Relative2 ();
-    W1 = S9xAPUGetByteZ (Work8) - 1;
+    uint8 W1 = S9xAPUGetByteZ (Work8) - 1;
     S9xAPUSetByteZ (W1, Work8);
     if (W1 != 0)
     {
@@ -1943,7 +1932,7 @@ void Apu7F ()
 void Apu84 ()
 {
 // ADC A,dp
-    Work8 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
     ADC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -1952,7 +1941,7 @@ void Apu85 ()
 {
 // ADC A, abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     ADC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 3;
 }
@@ -1960,7 +1949,7 @@ void Apu85 ()
 void Apu86 ()
 {
 // ADC A,(X)
-    Work8 = S9xAPUGetByteZ (APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (APURegisters.X);
     ADC (APURegisters.YA.B.A, Work8);
     IAPU.PC++;
 }
@@ -1969,7 +1958,7 @@ void Apu87 ()
 {
 // ADC A,(dp+X)
     IndexedXIndirect ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     ADC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -1977,7 +1966,7 @@ void Apu87 ()
 void Apu88 ()
 {
 // ADC A,#00
-    Work8 = OP1;
+    uint8 Work8 = OP1;
     ADC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -1985,8 +1974,8 @@ void Apu88 ()
 void Apu89 ()
 {
 // ADC dp(dest),dp(src)
-    Work8 = S9xAPUGetByteZ (OP1);
-    W1 = S9xAPUGetByteZ (OP2);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
+    uint8 W1 = S9xAPUGetByteZ (OP2);
     ADC (W1, Work8);
     S9xAPUSetByteZ (W1, OP2);
     IAPU.PC += 3;
@@ -1995,7 +1984,7 @@ void Apu89 ()
 void Apu94 ()
 {
 // ADC A,dp+X
-    Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
     ADC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -2004,7 +1993,7 @@ void Apu95 ()
 {
 // ADC A, abs+X
     AbsoluteX ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     ADC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 3;
 }
@@ -2013,7 +2002,7 @@ void Apu96 ()
 {
 // ADC A, abs+Y
     AbsoluteY ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     ADC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 3;
 }
@@ -2022,7 +2011,7 @@ void Apu97 ()
 {
 // ADC A, (dp)+Y
     IndirectIndexedY ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     ADC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -2030,8 +2019,8 @@ void Apu97 ()
 void Apu98 ()
 {
 // ADC dp,#00
-    Work8 = OP1;
-    W1 = S9xAPUGetByteZ (OP2);
+    uint8 Work8 = OP1;
+    uint8 W1 = S9xAPUGetByteZ (OP2);
     ADC (W1, Work8);
     S9xAPUSetByteZ (W1, OP2);
     IAPU.PC += 3;
@@ -2040,8 +2029,8 @@ void Apu98 ()
 void Apu99 ()
 {
 // ADC (X),(Y)
-    W1 = S9xAPUGetByteZ (APURegisters.X);
-    Work8 = S9xAPUGetByteZ (APURegisters.YA.B.Y);
+    uint8 W1 = S9xAPUGetByteZ (APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (APURegisters.YA.B.Y);
     ADC (W1, Work8);
     S9xAPUSetByteZ (W1, APURegisters.X);
     IAPU.PC++;
@@ -2058,7 +2047,7 @@ void Apu8D ()
 void Apu8F ()
 {
 // MOV dp,#00
-    Work8 = OP1;
+    uint8 Work8 = OP1;
     S9xAPUSetByteZ (Work8, OP2);
     IAPU.PC += 3;
 }
@@ -2075,7 +2064,7 @@ void Apu9E ()
     else
     {
 	APUClearOverflow ();
-	Work8 = APURegisters.YA.W / APURegisters.X;
+	uint8 Work8 = APURegisters.YA.W / APURegisters.X;
 	APURegisters.YA.B.Y = APURegisters.YA.W % APURegisters.X;
 	APURegisters.YA.B.A = Work8;
     }
@@ -2096,7 +2085,7 @@ void Apu9F ()
 void ApuA4 ()
 {
 // SBC A, dp
-    Work8 = S9xAPUGetByteZ (OP1);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
     SBC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -2105,7 +2094,7 @@ void ApuA5 ()
 {
 // SBC A, abs
     Absolute ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     SBC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 3;
 }
@@ -2113,7 +2102,7 @@ void ApuA5 ()
 void ApuA6 ()
 {
 // SBC A, (X)
-    Work8 = S9xAPUGetByteZ (APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (APURegisters.X);
     SBC (APURegisters.YA.B.A, Work8);
     IAPU.PC++;
 }
@@ -2122,7 +2111,7 @@ void ApuA7 ()
 {
 // SBC A,(dp+X)
     IndexedXIndirect ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     SBC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -2130,7 +2119,7 @@ void ApuA7 ()
 void ApuA8 ()
 {
 // SBC A,#00
-    Work8 = OP1;
+    uint8 Work8 = OP1;
     SBC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -2138,8 +2127,8 @@ void ApuA8 ()
 void ApuA9 ()
 {
 // SBC dp(dest), dp(src)
-    Work8 = S9xAPUGetByteZ (OP1);
-    W1 = S9xAPUGetByteZ (OP2);
+    uint8 Work8 = S9xAPUGetByteZ (OP1);
+    uint8 W1 = S9xAPUGetByteZ (OP2);
     SBC (W1, Work8);
     S9xAPUSetByteZ (W1, OP2);
     IAPU.PC += 3;
@@ -2148,7 +2137,7 @@ void ApuA9 ()
 void ApuB4 ()
 {
 // SBC A, dp+X
-    Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (OP1 + APURegisters.X);
     SBC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -2157,7 +2146,7 @@ void ApuB5 ()
 {
 // SBC A,abs+X
     AbsoluteX ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     SBC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 3;
 }
@@ -2166,7 +2155,7 @@ void ApuB6 ()
 {
 // SBC A,abs+Y
     AbsoluteY ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     SBC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 3;
 }
@@ -2175,7 +2164,7 @@ void ApuB7 ()
 {
 // SBC A,(dp)+Y
     IndirectIndexedY ();
-    Work8 = S9xAPUGetByte (IAPU.Address);
+    uint8 Work8 = S9xAPUGetByte (IAPU.Address);
     SBC (APURegisters.YA.B.A, Work8);
     IAPU.PC += 2;
 }
@@ -2183,8 +2172,8 @@ void ApuB7 ()
 void ApuB8 ()
 {
 // SBC dp,#00
-    Work8 = OP1;
-    W1 = S9xAPUGetByteZ (OP2);
+    uint8 Work8 = OP1;
+    uint8 W1 = S9xAPUGetByteZ (OP2);
     SBC (W1, Work8);
     S9xAPUSetByteZ (W1, OP2);
     IAPU.PC += 3;
@@ -2193,8 +2182,8 @@ void ApuB8 ()
 void ApuB9 ()
 {
 // SBC (X),(Y)
-    W1 = S9xAPUGetByteZ (APURegisters.X);
-    Work8 = S9xAPUGetByteZ (APURegisters.YA.B.Y);
+    uint8 W1 = S9xAPUGetByteZ (APURegisters.X);
+    uint8 Work8 = S9xAPUGetByteZ (APURegisters.YA.B.Y);
     SBC (W1, Work8);
     S9xAPUSetByteZ (W1, APURegisters.X);
     IAPU.PC++;
