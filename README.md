@@ -1,4 +1,4 @@
-CATSFC version 1.08, 2012-12-20
+CATSFC version 1.09, 2012-12-24
 
 A Super Nintendo emulator for the Supercard DSTWO.
 
@@ -10,6 +10,9 @@ Based on:
 * CATSFC, by ShadauxCat (improving over BAGSFC)
 
 # Compiling
+
+(If you downloaded the plugin ready-made, you can safely skip this section.
+ In this case, go to `# Installing`.)
 
 Compiling CATSFC is best done on Linux. Make sure you have access to a Linux
 system to perform these steps.
@@ -41,6 +44,30 @@ To install the plugin to your storage card after compiling it, copy
 `catsfc.plg`, `catsfc.ini` and `catsfc.bmp` to the card's `_dstwoplug`
 directory. Then, copy the source directory's CATSFC subdirectory to the
 root of the card.
+
+# Cheats
+
+The format accepted by the "Load a cheat file" function is equivalent to the
+old format used in Mightymo's BSNES Cheat Code Pack.
+
+1. Download the BSNES Cheat Code Pack at
+   <http://www.mightymo.net/downloads.html>. It will be a zip archive.
+2. Open the zip file, with WinZip, WinRAR or the built-in zip extension in
+   the operating system on your computer.
+3. In the zip file, open the folder called *BSNES Cheat Code Pack*, then
+   the one called *BSNES v0.51-0.74 Cheat Code Pack*.
+4. Open your microSD card's CATSFC folder, then descend into gamecht.
+5. Drag the cheat code files from the zip archive to the card's gamecht
+   folder.
+6. In the card's gamecht directory, create two folders. Name the first one
+   *a-m* and the second one *n-z*. Drag the cheat files from the games whose
+   name starts with A to M into *a-m* and the rest into *n-z*.
+
+This is because the directory display does not handle more than 512 files.
+
+To add cheats to the menu in a game, first load the game, then use the Cheats
+menu's "Load a cheat file" option. The option can be touched using the
+Touch Screen, but does not activate the menu. So press A.
 
 # The font
 
