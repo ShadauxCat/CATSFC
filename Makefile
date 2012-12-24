@@ -64,7 +64,7 @@ OBJECTS      = $(C_OBJECTS) $(CPP_OBJECTS)
 CFLAGS := -mips32 -Os -mno-abicalls -fno-pic -fno-builtin \
 	      -fno-exceptions -ffunction-sections -mno-long-calls \
 	      -fomit-frame-pointer -msoft-float -G 4 \
-          -fno-inline -fno-early-inlining \
+          -fno-early-inlining \
           -fgcse-sm -fgcse-las -fgcse-after-reload \
           -fsched-spec-load -fsched-stalled-insns=0 -fweb
 
