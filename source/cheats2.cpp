@@ -105,17 +105,19 @@ void S9xInitCheatData ()
 void S9xAddCheat (bool8 enable, bool8 save_current_value, 
 		  uint32 address, uint8 byte)
 {
-    if (Cheat.num_cheats < sizeof (Cheat.c) / sizeof (Cheat. c [0]))
+    if (Cheat.num_cheats < sizeof (Cheat.c) / sizeof (Cheat.c [0]))
     {
 	Cheat.c [Cheat.num_cheats].address = address;
 	Cheat.c [Cheat.num_cheats].byte = byte;
-	Cheat.c [Cheat.num_cheats].enabled = TRUE;
+	Cheat.c [Cheat.num_cheats].enabled = enable;
 	if (save_current_value)
 	{
 	    Cheat.c [Cheat.num_cheats].saved_byte = S9xGetByte (address);
 	    Cheat.c [Cheat.num_cheats].saved = TRUE;
 	}
 	Cheat.num_cheats++;
+	if (enable)
+		S9xApplyCheat(Cheat.num_cheats - 1);
     }
 }
 

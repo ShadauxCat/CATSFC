@@ -72,8 +72,8 @@ int NDSSFCLoadCheatFile(const char* filename)
 			fclose(fp);
 			return -2;
 		}
+		*ptr = '\0'; // End the codes there
 		*ptr++; // Past the comma
-		*(ptr - 1) = '\0'; // End the codes there
 
 		uint32 i = 0;
 		description = ptr; // Skip starting " in description
@@ -86,19 +86,21 @@ int NDSSFCLoadCheatFile(const char* filename)
 		}
 		*ptr = '\0';
 
-		uint32 n = 0, c;
+		uint32 c;
 		// n is the number of cheat codes. Beware of MAX_CHEATS_T.
 
 		// List of cheat codes having the same description.
 		ptr = codes_ptr;
 		while (*ptr && !(*ptr == ',' || *ptr == '"')) {
-			if (n >= MAX_CHEATS_T) {
+			if (Cheat.num_cheats >= MAX_CHEATS_T) {
 				fclose(fp);
 				return 0;
 			}
 			i = 0;
-			while (*ptr && *ptr != '+' && i < sizeof(code) - 1)
+			while (*ptr && !(*ptr == '+' || *ptr == ',' || *ptr == '"') && i < sizeof(code) - 1)
 				code[i++] = *ptr++;
+			if (*ptr)
+				ptr++; // Go past the + , or "
 			code[i] = '\0';
 			if (!S9xGameGenieToRaw (code, &address, &byte)) {
 				S9xAddCheat (FALSE, TRUE, address, byte);
@@ -112,7 +114,7 @@ int NDSSFCLoadCheatFile(const char* filename)
 			{
 				for (c = 0; c < num_bytes; c++) {
 					S9xAddCheat (FALSE, TRUE, address + c, bytes[c]);
-					strncpy (Cheat.c[Cheat.num_cheats - 1].name, description, 22);
+					strncpy (Cheat.c[Cheat.num_cheats - 1].name, description, MAX_SFCCHEAT_NAME);
 				}
 			}
 			else {

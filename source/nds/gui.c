@@ -2618,10 +2618,12 @@ u32 menu(u16 *screen)
 
 		if(load_file(file_ext, tmp_filename, DEFAULT_CHEAT_DIR) != -1)
 		{
-			strcpy(line_buffer, DEFAULT_CHEAT_DIR);
-			strcat(line_buffer, "/");
-			strcat(line_buffer, tmp_filename);
+			sprintf(line_buffer, "%s/%s", DEFAULT_CHEAT_DIR, tmp_filename);
 			flag = NDSSFCLoadCheatFile(line_buffer);
+
+			strcpy(line_buffer, (char *) S9xGetFilename (".chb"));
+			S9xSaveCheatFile (line_buffer); // cheat binary
+
 			if(0 != flag)
 			{	//load cheat file failure
 				S9xDeleteCheats();
@@ -2630,12 +2632,9 @@ u32 menu(u16 *screen)
 				return;
 			}
 
-			strcpy(line_buffer, (char *) S9xGetFilename (".chb"));
-
-			S9xSaveCheatFile (line_buffer); // cheat binary
-
 			menu_cheat_page = 0;
 			cheat_menu_init();
+
 		}
     }
 
