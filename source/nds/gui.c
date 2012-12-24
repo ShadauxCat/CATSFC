@@ -23,6 +23,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include "port.h"
 #include "ds2_types.h"
 #include "ds2io.h"
 #include "ds2_malloc.h"
@@ -34,6 +35,8 @@
 #include "message.h"
 #include "bitmap.h"
 #include "gcheat.h"
+
+extern struct SCheatData Cheat;
 
 char	main_path[MAX_PATH];
 char	rom_path[MAX_PATH];
@@ -69,7 +72,7 @@ char *language_options[] = { (char *) &lang[0], (char *) &lang[1], (char *) &lan
 EMU_CONFIG emu_config;
 
 //game configure file's header
-#define GAME_CONFIG_HEADER     "GSFC1.0"
+#define GAME_CONFIG_HEADER     "GSFC1.1" // 1.1 removed cheat names
 #define GAME_CONFIG_HEADER_SIZE 7
 GAME_CONFIG game_config;
 
@@ -108,9 +111,9 @@ static unsigned int savestate_index;
   action_function,                                                            \
   passive_function,                                                           \
   NULL,                                                                       \
-  &cheat_format_ptr[number],                                                  \
+  &cheat_data_ptr[number],                                                    \
   enable_disable_options,                                                     \
-  &(game_config.cheats_flag[number].active),                            	  \
+  &(Cheat.c[number].enabled),				                            	  \
   2,                                                                          \
   NULL,                                                                       \
   line_number,                                                                \
@@ -1656,8 +1659,9 @@ u32 menu(u16 *screen)
     u32 first_load = 0;
     char tmp_filename[MAX_FILE];
     char line_buffer[512];
-    char cheat_format_str[MAX_CHEATS][41*4];
-    char *cheat_format_ptr[MAX_CHEATS];
+    char cheat_data_str[MAX_CHEATS_T][5];
+    // ^ Holds the index inside Cheat, as a number in an ASCIIZ string
+    char* cheat_data_ptr[MAX_CHEATS_T];
 
     MENU_TYPE *current_menu;
     MENU_OPTION_TYPE *current_option;
@@ -2214,22 +2218,13 @@ u32 menu(u16 *screen)
 	unsigned char **dynamic_cheat_pt = NULL;
 	unsigned int dynamic_cheat_active;
 	int dynamic_cheat_scroll_value= 0;
-	MSG_TABLE cheat_msg= {NULL, NULL};
 
 	void cheat_menu_init()
 	{
-	    for(i = 0; i < MAX_CHEATS; i++)
+	    for(i = 0; i < MAX_CHEATS_T; i++)
 		{
-			if(i >= g_cheat_num)
-			{
-				sprintf(cheat_format_str[i], msg[MSG_CHEAT_MENU_NON_LOAD], i);
-			}
-			else
-			{
-				sprintf(cheat_format_str[i], msg[MSG_CHEAT_MENU_LOADED], i, game_config.cheats_flag[i].name_shot);
-			}
-
-			cheat_format_ptr[i]= cheat_format_str[i];
+			sprintf(cheat_data_str[i], "%d", i);
+			cheat_data_ptr[i] = &cheat_data_str[i][0];
 		}
 
 		reload_cheats_page();
@@ -2237,13 +2232,22 @@ u32 menu(u16 *screen)
 
 	void cheat_menu_end()
 	{
-		if(!first_load)
-			gcheat_Managment(game_config.cheats_flag);
+		// Honour current cheat selections.
+		uint32 i;
+		for (i = 0; i < Cheat.num_cheats; i++) {
+			if (Cheat.c[i].enabled)
+				S9xApplyCheat(i);
+			else
+				S9xRemoveCheat(i);
+		}
+		// Save current cheat selections to the cheat binary file.
+		strcpy(line_buffer, (char *) S9xGetFilename (".chb"));
+		S9xSaveCheatFile (line_buffer); // cheat binary
 	}
 
 	void dynamic_cheat_key()
 	{
-		unsigned int m, n; 
+		unsigned int m, n;
 
 		switch(gui_action)
 		{
@@ -2452,96 +2456,12 @@ u32 menu(u16 *screen)
 
 	void cheat_option_action()
 	{
-		unsigned int nums;
-
-		nums = (CHEATS_PER_PAGE * menu_cheat_page) + current_option_num -1;
-		if(gui_action == CURSOR_SELECT && nums < g_cheat_num)
-		{
-			unsigned int m;
-
-			nums = game_config.cheats_flag[(CHEATS_PER_PAGE * menu_cheat_page) + current_option_num -1].item_num;
-
-			if(dynamic_cheat_options)
-			{
-				free((void*)dynamic_cheat_options);
-				dynamic_cheat_options = NULL;
-			}
-
-			if(dynamic_cheat_menu)
-			{
-				free((void*)dynamic_cheat_menu);
-				dynamic_cheat_menu = NULL;
-			}
-
-			dynamic_cheat_options = (MENU_OPTION_TYPE*)malloc(sizeof(MENU_OPTION_TYPE)*(nums+1));
-			if(dynamic_cheat_options == NULL)	return;
-
-			dynamic_cheat_menu = (MENU_TYPE*)malloc(sizeof(MENU_TYPE));
-			if(dynamic_cheat_menu == NULL)
-			{
-				free((void*)dynamic_cheat_options);
-				dynamic_cheat_options = NULL;
-				return;
-			}
-
-			//menu
-		    dynamic_cheat_menu->init_function = NULL;
-		    dynamic_cheat_menu->passive_function = dynamic_cheat_menu_passive;
-			dynamic_cheat_menu->key_function = dynamic_cheat_key;
-			dynamic_cheat_menu->end_function = dynamic_cheat_menu_end;
-		    dynamic_cheat_menu->options = dynamic_cheat_options;
-		    dynamic_cheat_menu->num_options = nums+1;
-			dynamic_cheat_menu->focus_option = 0;
-			dynamic_cheat_menu->screen_focus = 0;
-			//back option
-			dynamic_cheat_options[0].action_function = NULL;
-			dynamic_cheat_options[0].passive_function = NULL;
-			dynamic_cheat_options[0].sub_menu = &cheats_menu;
-			dynamic_cheat_options[0].display_string = (char**)(dynamic_cheat_pt + game_config.cheats_flag[(CHEATS_PER_PAGE * menu_cheat_page) + current_option_num -1].name_id);
-			dynamic_cheat_options[0].options = NULL;
-			dynamic_cheat_options[0].current_option = NULL;
-			dynamic_cheat_options[0].num_options = 0;
-			dynamic_cheat_options[0].help_string = NULL;
-			dynamic_cheat_options[0].line_number = 0;
-			dynamic_cheat_options[0].option_type = SUBMENU_TYPE;
-
-			m = game_config.cheats_flag[(CHEATS_PER_PAGE * menu_cheat_page) + current_option_num -1].item_id;
-			for(i= 0; i < nums; i++)
-			{
-				dynamic_cheat_options[i+1].action_function = dynamic_cheat_action;
-				dynamic_cheat_options[i+1].passive_function = NULL;
-				dynamic_cheat_options[i+1].sub_menu = NULL;
-				dynamic_cheat_options[i+1].display_string = (char**)(dynamic_cheat_pt + S9xGetCheat_nameid(m, i, g_cheat_cell_num));
-				dynamic_cheat_options[i+1].options = NULL;
-				dynamic_cheat_options[i+1].current_option = NULL;
-				dynamic_cheat_options[i+1].num_options = 2;
-				dynamic_cheat_options[i+1].help_string = NULL;
-				dynamic_cheat_options[i+1].line_number = i+1;
-				dynamic_cheat_options[i+1].option_type = ACTION_TYPE;
-			}
-
-			dynamic_cheat_active = game_config.cheats_flag[(CHEATS_PER_PAGE * menu_cheat_page) + 
-				current_option_num -1].active & 0x1;
-			dynamic_cheat_active |= game_config.cheats_flag[(CHEATS_PER_PAGE * menu_cheat_page) + 
-				current_option_num -1].sub_active << 16;
-
-			//Initial srollable options
-			int k;
-
-			draw_hscroll_init(down_screen_addr, 50, 9, 180, COLOR_TRANS, 
-				COLOR_ACTIVE_ITEM, *dynamic_cheat_options[0].display_string);
-
-			if(nums>5) nums = SUBMENU_ROW_NUM;
-			for(k= 0; k < nums; k++)
-			{
-				draw_hscroll_init(down_screen_addr, 23, 40 + k*27, 200, 
-					COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[k+1].display_string);
-			}
-			dynamic_cheat_scroll_value= 0;
-
-			choose_menu(dynamic_cheat_menu);
-		}
 	}
+
+#define CHEAT_NUMBER_X 26
+#define CHEAT_DESC_X   52
+#define CHEAT_DESC_SX  163
+#define CHEAT_ACTIVE_X 225
 
 	void cheat_option_passive()
 	{
@@ -2557,27 +2477,33 @@ u32 menu(u16 *screen)
 
 		//sprintf("%A") will have problem ?
 		strcpy(tmp_buf, *(display_option->display_string));
-		pt = strrchr(tmp_buf, ':');
-		if(pt != NULL)
-			sprintf(pt+1, "%s",	*((u32*)(((u32 *)display_option->options)[*(display_option->current_option)])));
+		// This is the number of the cheat to display
 
-		strcpy(line_buffer, tmp_buf);
-		pt = strrchr(line_buffer, ')');
-		*pt = '\0';
-		pt = strchr(line_buffer, '(');
+		int i = atoi(tmp_buf);
 
-		len = BDF_cut_string(pt+1, 0, 2);
-		if(len > 90)
-		{
-			len = BDF_cut_string(pt+1, 90, 1);
-			*(pt+1+len) = '\0';
-			strcat(line_buffer, "...");
+		sprintf(line_buffer, "%d.", i + 1);
+		PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, CHEAT_NUMBER_X, 40 + display_option-> line_number*27);
+
+		if (i >= Cheat.num_cheats) {
+			PRINT_STRING_BG(down_screen_addr, msg[MSG_CHEAT_MENU_NON_LOAD], color, COLOR_TRANS, CHEAT_DESC_X, 40 + display_option-> line_number*27);
 		}
+		else {
+			strcpy(line_buffer, Cheat.c[i].name);
+			len = BDF_cut_string(line_buffer, 0, 2);
+			if(len > CHEAT_DESC_SX)
+			{
+				len = BDF_cut_string(line_buffer, CHEAT_DESC_SX, 1);
+				line_buffer[len] = '\0';
+				strcat(line_buffer, "...");
+			}
+			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, CHEAT_DESC_X, 40 + display_option-> line_number*27);
 
-		pt = strrchr(tmp_buf, ')');
-		strcat(line_buffer, pt);
-
-		PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 26, 40 + display_option-> line_number*27);
+			if (Cheat.c[i].enabled)
+				strcpy(line_buffer, "+");
+			else
+				strcpy(line_buffer, "-");
+			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, CHEAT_ACTIVE_X, 40 + display_option-> line_number*27);
+		}
 	}
 
 	void dynamic_cheat_menu_end()
@@ -2585,7 +2511,8 @@ u32 menu(u16 *screen)
 		unsigned int m, k;
 
 		m = cheats_menu.focus_option-1;
-		game_config.cheats_flag[(CHEATS_PER_PAGE * menu_cheat_page) + m].sub_active = dynamic_cheat_active >> 16;
+		// game_config.cheats_flag[(CHEATS_PER_PAGE * menu_cheat_page) + m].sub_active = dynamic_cheat_active >> 16;
+		// REVISIT [Neb]
 
 		k = SUBMENU_ROW_NUM +1;
 		for(m= 0; m<k; m++)
@@ -2612,44 +2539,24 @@ u32 menu(u16 *screen)
 
 		if(load_file(file_ext, tmp_filename, DEFAULT_CHEAT_DIR) != -1)
 		{
-			if(NULL != cheat_msg.msg_index) free((void*)cheat_msg.msg_index);
-			if(NULL != cheat_msg.msg_pool) free((void*)cheat_msg.msg_pool);
-
 			sprintf(line_buffer, "%s/%s", DEFAULT_CHEAT_DIR, tmp_filename);
+			flag = NDSSFCLoadCheatFile(line_buffer);
 
-			flag = load_cheatfile(line_buffer, &string_num, &string_len, game_config.cheats_flag);
+			strcpy(line_buffer, (char *) S9xGetFilename (".chb"));
+			S9xSaveCheatFile (line_buffer); // cheat binary
+
 			if(0 != flag)
 			{	//load cheat file failure
-				game_config.cheat_str_num = 0;
-				game_config.cheat_str_size = 0;
-				game_config.cheat_filename[0] = '\0';
-				g_cheat_num = 0;
+				S9xDeleteCheats();
 
 				cheat_menu_init();
 				return;
 			}
 
-			flag = load_cheatname(line_buffer, string_num, string_len, &cheat_msg);
-			if(0 != flag)
-			{	//load cheat string information failure
-				game_config.cheat_str_num = 0;
-				game_config.cheat_str_size = 0;
-				game_config.cheat_filename[0] = '\0';
-				g_cheat_num = 0;
-
-				cheat_menu_init();
-				return;
-			}
-
-			game_config.cheat_str_num = string_num;
-			game_config.cheat_str_size = string_len;
-			strcpy(game_config.cheat_filename, line_buffer);
-
-			dynamic_cheat_msg = cheat_msg.msg_pool;
-			dynamic_cheat_pt = cheat_msg.msg_index;;
 			menu_cheat_page = 0;
 			cheat_menu_init();
-        }
+
+		}
     }
 
     void save_screen_snapshot()
@@ -3592,8 +3499,8 @@ u32 menu(u16 *screen)
 	{
 		for(i = 0; i < CHEATS_PER_PAGE; i++)
 		{
-			cheats_options[i+1].display_string = &cheat_format_ptr[(CHEATS_PER_PAGE * menu_cheat_page) + i];
-			cheats_options[i+1].current_option = &(game_config.cheats_flag[(CHEATS_PER_PAGE * menu_cheat_page) + i].active);
+			cheats_options[i+1].display_string = &cheat_data_ptr[(CHEATS_PER_PAGE * menu_cheat_page) + i];
+			cheats_options[i+1].current_option = &(Cheat.c[(CHEATS_PER_PAGE * menu_cheat_page) + i].enabled);
 		}
 	}
 
@@ -4257,14 +4164,6 @@ void init_game_config(void)
 
 	game_config.gamepad_config_menu = BUTTON_ID_TOUCH;
     memcpy(game_config.gamepad_config_map, gamepad_config_map_init, sizeof(gamepad_config_map_init));
-
-    for(i = 0; i < MAX_CHEATS; i++)
-    {
-        game_config.cheats_flag[i].active = 0;
-        game_config.cheats_flag[i].name_shot[0] = '\0';
-    }
-
-	memset(game_config.cheat_filename, 0x0, MAX_PATH);
 
 	game_config.backward = 0;	//time backward disable
 	game_config.backward_time = 2;	//time backward granularity 1s

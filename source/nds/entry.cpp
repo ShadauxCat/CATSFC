@@ -97,7 +97,8 @@ void S9xExit ()
 	S9xSetSoundMute (TRUE);
     S9xDeinitDisplay ();
     Memory.SaveSRAM (S9xGetFilename (".srm"));
-    S9xSaveCheatFile (S9xGetFilename (".cht"));
+    // S9xSaveCheatFile (S9xGetFilename (".chb")); // cheat binary file
+	// Do this when loading a cheat file!
     Memory.Deinit ();
     S9xDeinitAPU ();
 
@@ -258,7 +259,6 @@ const char *S9xGetSnapshotDirectory ()
     return ((const char*)DEFAULT_RTS_DIR);
 }
 
-
 const char *S9xGetFilename (const char *ex)
 {
     static char filename [PATH_MAX + 1];
@@ -391,7 +391,7 @@ void init_sfc_setting(void)
     Settings.ServerName [0] = 0;
     Settings.Port = NP_DEFAULT_PORT;
 #endif
-    Settings.ApplyCheats = FALSE;
+    Settings.ApplyCheats = TRUE;
     Settings.TurboMode = FALSE;
     Settings.TurboSkipFrames = 40;
     Settings.StretchScreenshots = 1;
@@ -457,8 +457,7 @@ int load_gamepak(char* file)
 
 	Memory.LoadSRAM (S9xGetFilename (".srm"));
 	// mdelay(50); // Delete this delay
-	//S9xLoadCheatFile (S9xGetFilename (".cht"));
-	S9xCheat_Disable();
+	S9xLoadCheatFile (S9xGetFilename (".chb")); // cheat binary file, as opposed to text
 
 #ifdef _NETPLAY_SUPPORT
     if (strlen (Settings.ServerName) == 0)

@@ -771,8 +771,7 @@ void S9xEndScreenRefresh ()
 			Settings.SixteenBit);
     }
 
-    //S9xApplyCheats ();
-	S9xApplyCheats_ex ();
+    S9xApplyCheats ();
 #ifdef DEBUGGER
     if (CPU.Flags & FRAME_ADVANCE_FLAG)
     {

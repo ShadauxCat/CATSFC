@@ -18,6 +18,7 @@
  */
 //v1.1
 
+#include "port.h"
 #include <string.h>
 #include "ds2_types.h"
 #include "ds2_malloc.h"
