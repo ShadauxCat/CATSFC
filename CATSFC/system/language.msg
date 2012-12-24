@@ -191,10 +191,10 @@ Enable
 No game is currently loaded
 
 #MSG_CHEAT_MENU_NON_LOAD
-Cheat %d (none loaded)
+<None loaded here>
 
 #MSG_CHEAT_MENU_0
-Cheat %d (%s): %%s
+-Unused message-
 
 #MSG_LOAD_STATE
 Load saved state
@@ -547,10 +547,10 @@ SFC 按键    A               %s
 没有加载游戏
 
 #MSG_CHEAT_MENU_NON_LOAD
-作弊代码  %d  (没有加载)
+<没有加载>
 
 #MSG_CHEAT_MENU_LOADED
-作弊代码  %d  (%s): %%s
+-UNUSED MESSAGE-
 
 #MSG_LOAD_STATE
 装载即时存档
@@ -910,10 +910,10 @@ Activer
 Aucun jeu n'est actuellement chargé
 
 #MSG_CHEAT_MENU_NON_LOAD
-Code de triche %d (aucun chargé)
+<Aucun chargé ici>
 
 #MSG_CHEAT_MENU_0
-Code %d (%s): %%s
+-Unused message-
 
 #MSG_LOAD_STATE
 Charger

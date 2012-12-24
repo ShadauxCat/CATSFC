@@ -103,17 +103,17 @@ int NDSSFCLoadCheatFile(const char* filename)
 				ptr++; // Go past the + , or "
 			code[i] = '\0';
 			if (!S9xGameGenieToRaw (code, &address, &byte)) {
-				S9xAddCheat (FALSE, TRUE, address, byte);
+				S9xAddCheat (FALSE, FALSE, address, byte);
 				strncpy (Cheat.c[Cheat.num_cheats - 1].name, description, MAX_SFCCHEAT_NAME);
 			}
 			else if (!S9xProActionReplayToRaw (code, &address, &byte)) {
-				S9xAddCheat (FALSE, TRUE, address, byte);
+				S9xAddCheat (FALSE, FALSE, address, byte);
 				strncpy (Cheat.c[Cheat.num_cheats - 1].name, description, MAX_SFCCHEAT_NAME);
 			}
 			else if (!S9xGoldFingerToRaw (code, &address, &sram, &num_bytes, bytes))
 			{
 				for (c = 0; c < num_bytes; c++) {
-					S9xAddCheat (FALSE, TRUE, address + c, bytes[c]);
+					S9xAddCheat (FALSE, FALSE, address + c, bytes[c]);
 					strncpy (Cheat.c[Cheat.num_cheats - 1].name, description, MAX_SFCCHEAT_NAME);
 				}
 			}
