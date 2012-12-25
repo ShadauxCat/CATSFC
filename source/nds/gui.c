@@ -2170,6 +2170,7 @@ u32 menu(u16 *screen)
 				{
 					if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes(A)", "No(B)"))
 					{
+						wait_Allkey_release(0);
 						for(i= 0; i < SAVE_STATE_SLOT_NUM; i++)
 						{
 							get_savestate_filename(i, tmp_filename);
@@ -2198,8 +2199,10 @@ u32 menu(u16 *screen)
 					sprintf(line_buffer, msg[MSG_DELETTE_SINGLE_SAVESTATE_WARING], delette_savestate_num);
 					draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, line_buffer);
 
-					if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes(A)", "No(B)"))
+					if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes(A)", "No(B)")) {
+						wait_Allkey_release(0);
 						clear_savestate_slot(delette_savestate_num);
+}
 				}
 				else
 				{
@@ -2740,6 +2743,7 @@ u32 menu(u16 *screen)
 
         if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes", "No"))
         {
+			wait_Allkey_release(0);
             draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
             draw_string_vcenter(down_screen_addr, 36, 80, 190, COLOR_MSSG, msg[MSG_DEFAULT_LOADING]);
             ds2_flipScreen(DOWN_SCREEN, 2);
@@ -2803,11 +2807,10 @@ u32 menu(u16 *screen)
 				ds2_clearScreen(UP_SCREEN, 0);
                 draw_string_vcenter(up_screen_addr, 0, 80, 256, COLOR_WHITE, msg[MSG_NON_LOAD_GAME]);
 				ds2_flipScreen(UP_SCREEN, 1);
-				mdelay(10);	//FIXME: Stranger?
             }
 
 			save_emu_config_file();
-			// mdelay(500); // Delete this delay
+			wait_Allkey_release(0);
         }
     }
 
@@ -3556,6 +3559,11 @@ u32 menu(u16 *screen)
 	}
 	else
 	{
+		/*
+		 * It's pretty complicated. These two flips are needed because,
+		 * otherwise, the menu freezes if S9xAutoSaveSRAM was called after
+		 * loading from a save state.
+		 */
 		ds2_flipScreen(UP_SCREEN, 1);
 		ds2_flipScreen(UP_SCREEN, 1);
 	}
@@ -3563,7 +3571,6 @@ u32 menu(u16 *screen)
 	choose_menu(&main_menu);
 //	Menu loop
 	
-	// mdelay(50); // Delete this delay, shortened from 200
 	while(repeat)
 	{
 	
