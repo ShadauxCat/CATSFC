@@ -1114,7 +1114,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			}
 
 			redraw = 0;
-			ds2_flipScreen(DOWN_SCREEN, 2);		//not switch down screen buffer
+			ds2_flipScreen(DOWN_SCREEN, 2);
 		} //end if(0 != redraw)
 		else if(0 != redraw) {
 			unsigned int m, n;
@@ -1142,7 +1142,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			}
 
 			draw_hscroll(m+1, redraw);
-			ds2_flipScreen(DOWN_SCREEN, 2);		//not switch down screen buffer
+			ds2_flipScreen(DOWN_SCREEN, 2);
 			redraw = 0;
 		}
 
@@ -1162,7 +1162,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			{
 				if(draw_hscroll(0, 1) <= 1) path_scroll = 0x8000; //scroll left
 			}
-			ds2_flipScreen(DOWN_SCREEN, 2);		//not switch down screen buffer
+			ds2_flipScreen(DOWN_SCREEN, 2);
 		}
 
 		mdelay(50);			//about 50ms
@@ -1176,7 +1176,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 	manage_filelist_info(&filelist_info, -1);
 
 	ds2_clearScreen(DOWN_SCREEN, COLOR_BLACK);
-	ds2_flipScreen(DOWN_SCREEN, 2);				//not switch down screen buffer
+	ds2_flipScreen(DOWN_SCREEN, 2);
 
 	return return_value;
 }
@@ -3991,22 +3991,14 @@ u32 menu(u16 *screen)
 		save_game_config_file();
 	}
 	save_emu_config_file();
-	// mdelay(100); // Delete this delay
 	set_cpu_clock(clock_speed_number);
-	// mdelay(200); // Delete this delay
 	
-	ds2_clearScreen(DUAL_SCREEN, 0);
-	ds2_flipScreen(DUAL_SCREEN, 1);
+	ds2_clearScreen(DOWN_SCREEN, 0);
+	ds2_flipScreen(DOWN_SCREEN, 1);
 	copy_screen(up_screen_addr, (void*) screen, 0, 0, 256, 192);
-	ds2_flipScreen(UP_SCREEN, 1); // Flip again because otherwise it flickers
+	ds2_flipScreen(UP_SCREEN, 0);
 	ds2_setBacklight(2);
 
-//save game config
-//	save_game_config_file();
-//	save_emu_config_file();
-
-
-//	ds2_setCPUclocklevel(12);
 	wait_Allkey_release(0);
 
 	return return_value;
@@ -4722,7 +4714,7 @@ void gui_init(u32 lang_id)
     }
 
 	show_log(down_screen_addr);
-	ds2_flipScreen(DOWN_SCREEN, 1);
+	ds2_flipScreen(DOWN_SCREEN, 2);
 
 	flag = icon_init(lang_id);
 	if(0 != flag)
@@ -4758,8 +4750,7 @@ void gui_init(u32 lang_id)
 	return;
 
 gui_init_err:
-	ds2_flipScreen(DOWN_SCREEN, 1);
+	ds2_flipScreen(DOWN_SCREEN, 2);
 	wait_Anykey_press(0);
 	quit();
-	while(1);
 }

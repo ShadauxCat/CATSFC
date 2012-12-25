@@ -174,7 +174,10 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 			break;
 	}
 
-    ds2_flipScreen(UP_SCREEN, 1); // synchronise to vblank to avoid tearing
+    ds2_flipScreen(UP_SCREEN, 0);
+	// A problem with update method 1 (wait, double buffer) means that, after
+	// about 15 minutes of play time, the screen starts to half-redraw every
+	// frame. With update method 0, this is mitigated. (Method 2 is too slow.)
 
     return (TRUE);
 }
@@ -598,7 +601,6 @@ int sfc_main (int argc, char **argv)
 		if (Settings.Paused)
 		{
 			S9xSetSoundMute (TRUE);
-			// mdelay(50); // Delete this delay
 			unsigned short screen[256*192];
 
 			copy_screen((void*)screen, up_screen_addr, 0, 0, 256, 192);
