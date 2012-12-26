@@ -230,7 +230,7 @@ static int ReadOrigSnapshot (STREAM snap)
     if ((result = ReadBlock ("REG:", &OrigRegisters, sizeof (OrigRegisters), snap)) != SUCCESS)
 	return (result);
 
-    Registers = *(struct SRegisters *) &OrigRegisters;
+    ICPU.Registers = *(struct SRegisters *) &OrigRegisters;
 
     if ((result = ReadBlock ("PPU:", &OrigPPU, sizeof (OrigPPU), snap)) != SUCCESS)
 	return (result);
@@ -379,7 +379,7 @@ static int ReadOrigSnapshot (STREAM snap)
 	if ((result = ReadBlock ("ARE:", &OrigAPURegisters,
 				 sizeof (OrigAPURegisters), snap)) != SUCCESS)
 	    return (result);
-	APURegisters = *(struct SAPURegisters *) &OrigAPURegisters;
+	IAPU.Registers = *(struct SAPURegisters *) &OrigAPURegisters;
 	if ((result = ReadBlock ("ARA:", IAPU.RAM, 0x10000, snap)) != SUCCESS)
 	    return (result);
 	if ((result = ReadBlock ("SOU:", &OrigSoundData,
@@ -437,7 +437,7 @@ static int ReadOrigSnapshot (STREAM snap)
 	}
 
 	S9xSetSoundMute (FALSE);
-	IAPU.PC = IAPU.RAM + APURegisters.PC;
+	IAPU.PC = IAPU.RAM + IAPU.Registers.PC;
 	S9xAPUUnpackStatus ();
 	if (APUCheckDirectPage ())
 	    IAPU.DirectPage = IAPU.RAM + 0x100;
@@ -453,9 +453,9 @@ static int ReadOrigSnapshot (STREAM snap)
 	S9xSetSoundMute (TRUE);
     }
     S9xFixSoundAfterSnapshotLoad ();
-    ICPU.ShiftedPB = Registers.PB << 16;
-    ICPU.ShiftedDB = Registers.DB << 16;
-    S9xSetPCBase (ICPU.ShiftedPB + Registers.PC);
+    ICPU.ShiftedPB = ICPU.Registers.PB << 16;
+    ICPU.ShiftedDB = ICPU.Registers.DB << 16;
+    S9xSetPCBase (ICPU.ShiftedPB + ICPU.Registers.PC);
     S9xUnpackStatus ();
     S9xFixCycles ();
     S9xReschedule ();

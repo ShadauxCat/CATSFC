@@ -109,6 +109,7 @@ struct SICPU
 {
     uint8  *Speed;
     struct SOpcodes *S9xOpcodes;
+    struct SRegisters Registers;
     uint8  _Carry;
     uint8  _Zero;
     uint8  _Negative;
@@ -140,16 +141,16 @@ END_EXTERN_C
 
 STATIC inline void S9xUnpackStatus()
 {
-    ICPU._Zero = (Registers.PL & Zero) == 0;
-    ICPU._Negative = (Registers.PL & Negative);
-    ICPU._Carry = (Registers.PL & Carry);
-    ICPU._Overflow = (Registers.PL & Overflow) >> 6;
+    ICPU._Zero = (ICPU.Registers.PL & Zero) == 0;
+    ICPU._Negative = (ICPU.Registers.PL & Negative);
+    ICPU._Carry = (ICPU.Registers.PL & Carry);
+    ICPU._Overflow = (ICPU.Registers.PL & Overflow) >> 6;
 }
 
 STATIC inline void S9xPackStatus()
 {
-    Registers.PL &= ~(Zero | Negative | Carry | Overflow);
-    Registers.PL |= ICPU._Carry | ((ICPU._Zero == 0) << 1) |
+    ICPU.Registers.PL &= ~(Zero | Negative | Carry | Overflow);
+    ICPU.Registers.PL |= ICPU._Carry | ((ICPU._Zero == 0) << 1) |
 		    (ICPU._Negative & 0x80) | (ICPU._Overflow << 6);
 }
 

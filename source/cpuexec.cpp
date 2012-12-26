@@ -171,9 +171,9 @@ void S9xMainLoop (void)
     	DO_HBLANK_CHECK();
     }
 
-    Registers.PC = CPU.PC - CPU.PCBase;
+    ICPU.Registers.PC = CPU.PC - CPU.PCBase;
     S9xPackStatus ();
-    APURegisters.PC = IAPU.PC - IAPU.RAM;
+    IAPU.Registers.PC = IAPU.PC - IAPU.RAM;
     S9xAPUPackStatus ();
     if (CPU.Flags & SCAN_KEYS_FLAG)
     {
@@ -235,10 +235,10 @@ void S9xDoHBlankProcessing ()
 		// ppu.cpp will determine with greater accuracy whether a key was
 		// pressed or released during the frame.
 		uint32 i;
-   		for (i = 0; i < 5; i++)
-   		{
-	        IPPU.JoypadsAtHBlanks [i][CPU.V_Counter] = S9xReadJoypad (i);
-    	}
+		for (i = 0; i < 5; i++)
+		{
+			IPPU.JoypadsAtHBlanks [i][CPU.V_Counter] = S9xReadJoypad (i);
+		}
 #endif
 		if (IPPU.HDMA && CPU.V_Counter <= PPU.ScreenHeight)
 			IPPU.HDMA = S9xDoHDMA (IPPU.HDMA);

@@ -163,9 +163,9 @@ static void AbsoluteIndexedIndirect (AccessMode a, InternalOp op)
 {
     long Addr;
 #ifdef FAST_LSB_WORD_ACCESS
-    Addr = (Registers.X.W + *(uint16 *) CPU.PC) & 0xffff;
+    Addr = (ICPU.Registers.X.W + *(uint16 *) CPU.PC) & 0xffff;
 #else
-    Addr = (Registers.X.W + *CPU.PC + (*(CPU.PC + 1) << 8)) & 0xffff;
+    Addr = (ICPU.Registers.X.W + *CPU.PC + (*(CPU.PC + 1) << 8)) & 0xffff;
 #endif
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeedx2;
@@ -274,11 +274,11 @@ static void Direct(AccessMode a, InternalOp op)
 #ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = *CPU.PC;
 #endif
-    long Addr = (*CPU.PC++ + Registers.D.W) & 0xffff;
+    long Addr = (*CPU.PC++ + ICPU.Registers.D.W) & 0xffff;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
-//    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
+//    if (ICPU.Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
     (*op)(Addr);
 }
 
@@ -287,7 +287,7 @@ static void DirectIndirectIndexed (AccessMode a, InternalOp op)
 #ifndef NO_OPEN_BUS
     OpenBus = *CPU.PC;
 #endif
-    long Addr = (*CPU.PC++ + Registers.D.W) & 0xffff;
+    long Addr = (*CPU.PC++ + ICPU.Registers.D.W) & 0xffff;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
@@ -296,9 +296,9 @@ static void DirectIndirectIndexed (AccessMode a, InternalOp op)
 #ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = (uint8)(Addr>>8);
 #endif
-    Addr += ICPU.ShiftedDB + Registers.Y.W;
+    Addr += ICPU.ShiftedDB + ICPU.Registers.Y.W;
 
-//    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
+//    if (ICPU.Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
     // XXX: always add one if STA
     // XXX: else Add one cycle if crosses page boundary
     (*op)(Addr);
@@ -309,21 +309,21 @@ static void DirectIndirectIndexedLong (AccessMode a, InternalOp op)
 #ifndef NO_OPEN_BUS
     OpenBus = *CPU.PC;
 #endif
-    long Addr = (*CPU.PC++ + Registers.D.W) & 0xffff;
+    long Addr = (*CPU.PC++ + ICPU.Registers.D.W) & 0xffff;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
 
 #ifndef NO_OPEN_BUS
     if(a&READ){
-	Addr = S9xGetWord (Addr) + ((OpenBus = S9xGetByte (Addr + 2)) << 16) + Registers.Y.W;
+	Addr = S9xGetWord (Addr) + ((OpenBus = S9xGetByte (Addr + 2)) << 16) + ICPU.Registers.Y.W;
     } else {
 #endif
-	Addr = S9xGetWord (Addr) + (S9xGetByte (Addr + 2) << 16) + Registers.Y.W;
+	Addr = S9xGetWord (Addr) + (S9xGetByte (Addr + 2) << 16) + ICPU.Registers.Y.W;
 #ifndef NO_OPEN_BUS
     }
 #endif
-//    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
+//    if (ICPU.Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
     (*op)(Addr);
 }
 
@@ -332,7 +332,7 @@ static void DirectIndexedIndirect(AccessMode a, InternalOp op)
 #ifndef NO_OPEN_BUS
     OpenBus = *CPU.PC;
 #endif
-    long Addr = (*CPU.PC++ + Registers.D.W + Registers.X.W) & 0xffff;
+    long Addr = (*CPU.PC++ + ICPU.Registers.D.W + ICPU.Registers.X.W) & 0xffff;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
@@ -344,7 +344,7 @@ static void DirectIndexedIndirect(AccessMode a, InternalOp op)
     Addr += ICPU.ShiftedDB;
 
 #ifndef SA1_OPCODES
-//    if (Registers.DL != 0)
+//    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
 	CPU.Cycles += ONE_CYCLE;
@@ -357,12 +357,12 @@ static void DirectIndexedX (AccessMode a, InternalOp op)
 #ifndef NO_OPEN_BUS
 	if(a&READ) OpenBus = *CPU.PC;
 #endif
-    long Addr = (*CPU.PC++ + Registers.D.W + Registers.X.W);
+    long Addr = (*CPU.PC++ + ICPU.Registers.D.W + ICPU.Registers.X.W);
     Addr &= CheckEmulation() ? 0xff : 0xffff;
 
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
-//    if (Registers.DL != 0)
+//    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
 //	CPU.Cycles += ONE_CYCLE;
@@ -375,11 +375,11 @@ static void DirectIndexedY (AccessMode a, InternalOp op)
 #ifndef NO_OPEN_BUS
 	if(a&READ) OpenBus = *CPU.PC;
 #endif
-    long Addr = (*CPU.PC++ + Registers.D.W + Registers.Y.W);
+    long Addr = (*CPU.PC++ + ICPU.Registers.D.W + ICPU.Registers.Y.W);
     Addr &= CheckEmulation() ? 0xff : 0xffff;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
-//    if (Registers.DL != 0)
+//    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
 //	CPU.Cycles += ONE_CYCLE;
@@ -391,10 +391,10 @@ static void AbsoluteIndexedX (AccessMode a, InternalOp op)
 {
     long Addr;
 #ifdef FAST_LSB_WORD_ACCESS
-    Addr = ICPU.ShiftedDB + *(uint16 *) CPU.PC + Registers.X.W;
+    Addr = ICPU.ShiftedDB + *(uint16 *) CPU.PC + ICPU.Registers.X.W;
 #else
     Addr = ICPU.ShiftedDB + *CPU.PC + (*(CPU.PC + 1) << 8) +
-		Registers.X.W;
+		ICPU.Registers.X.W;
 #endif
 #ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = *(CPU.PC+1);
@@ -412,10 +412,10 @@ static void AbsoluteIndexedY (AccessMode a, InternalOp op)
 {
     long Addr;
 #ifdef FAST_LSB_WORD_ACCESS
-    Addr = ICPU.ShiftedDB + *(uint16 *) CPU.PC + Registers.Y.W;
+    Addr = ICPU.ShiftedDB + *(uint16 *) CPU.PC + ICPU.Registers.Y.W;
 #else
     Addr = ICPU.ShiftedDB + *CPU.PC + (*(CPU.PC + 1) << 8) +
-		Registers.Y.W;
+		ICPU.Registers.Y.W;
 #endif    
 #ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = *(CPU.PC+1);
@@ -433,9 +433,9 @@ static void AbsoluteLongIndexedX (AccessMode a, InternalOp op)
 {
     long Addr;
 #ifdef FAST_LSB_WORD_ACCESS
-    Addr = (*(uint32 *) CPU.PC + Registers.X.W) & 0xffffff;
+    Addr = (*(uint32 *) CPU.PC + ICPU.Registers.X.W) & 0xffffff;
 #else
-    Addr = (*CPU.PC + (*(CPU.PC + 1) << 8) + (*(CPU.PC + 2) << 16) + Registers.X.W) & 0xffffff;
+    Addr = (*CPU.PC + (*(CPU.PC + 1) << 8) + (*(CPU.PC + 2) << 16) + ICPU.Registers.X.W) & 0xffffff;
 #endif
 #ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = *(CPU.PC+2);
@@ -452,7 +452,7 @@ static void DirectIndirect (AccessMode a, InternalOp op)
 #ifndef NO_OPEN_BUS
     OpenBus = *CPU.PC;
 #endif
-    long Addr = (*CPU.PC++ + Registers.D.W) & 0xffff;
+    long Addr = (*CPU.PC++ + ICPU.Registers.D.W) & 0xffff;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
@@ -462,7 +462,7 @@ static void DirectIndirect (AccessMode a, InternalOp op)
 #endif
     Addr += ICPU.ShiftedDB;
 
-//    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
+//    if (ICPU.Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
     (*op)(Addr);
 }
 
@@ -471,7 +471,7 @@ static void DirectIndirectLong (AccessMode a, InternalOp op)
 #ifndef NO_OPEN_BUS
     OpenBus = *CPU.PC;
 #endif
-    long Addr = (*CPU.PC++ + Registers.D.W) & 0xffff;
+    long Addr = (*CPU.PC++ + ICPU.Registers.D.W) & 0xffff;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
@@ -484,7 +484,7 @@ static void DirectIndirectLong (AccessMode a, InternalOp op)
 #ifndef NO_OPEN_BUS
     }
 #endif
-//    if (Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
+//    if (ICPU.Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
     (*op)(Addr);
 }
 
@@ -493,7 +493,7 @@ static void StackRelative (AccessMode a, InternalOp op)
 #ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = *CPU.PC;
 #endif
-    long Addr = (*CPU.PC++ + Registers.S.W) & 0xffff;
+    long Addr = (*CPU.PC++ + ICPU.Registers.S.W) & 0xffff;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
 #endif
@@ -505,7 +505,7 @@ static void StackRelativeIndirectIndexed (AccessMode a, InternalOp op)
 #ifndef NO_OPEN_BUS
     OpenBus = *CPU.PC;
 #endif
-    long Addr = (*CPU.PC++ + Registers.S.W) & 0xffff;
+    long Addr = (*CPU.PC++ + ICPU.Registers.S.W) & 0xffff;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed + TWO_CYCLES;
 #endif
@@ -514,7 +514,7 @@ static void StackRelativeIndirectIndexed (AccessMode a, InternalOp op)
     if(a&READ) OpenBus = (uint8)(Addr>>8);
 #endif
     Addr = (Addr + ICPU.ShiftedDB +
-		 Registers.Y.W) & 0xffffff;
+		 ICPU.Registers.Y.W) & 0xffffff;
     (*op)(Addr);
 }
 #endif

@@ -113,19 +113,13 @@ struct SICPU ICPU;
 
 struct SCPUState CPU;
 
-struct SRegisters Registers;
-
 struct SAPU APU;
 
 struct SIAPU IAPU;
 
-struct SAPURegisters APURegisters;
-
 struct SSettings Settings;
 
 struct SDSP1 DSP1;
-
-struct SSA1Registers SA1Registers;
 
 struct SSA1 SA1;
 
@@ -361,7 +355,7 @@ struct SNetPlay NetPlay;
 #endif
 
 // Raw SPC700 instruction cycle lengths
-int32 S9xAPUCycleLengths [256] = 
+uint16 S9xAPUCycleLengths [256] = 
 {
     /*        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f, */
     /* 00 */  2, 8, 4, 5, 3, 4, 3, 6, 2, 6, 5, 4, 5, 4, 6, 8, 
@@ -384,7 +378,7 @@ int32 S9xAPUCycleLengths [256] =
 
 // Actual data used by CPU emulation, will be scaled by APUReset routine
 // to be relative to the 65c816 instruction lengths.
-int32 S9xAPUCycles [256] =
+uint16 S9xAPUCycles [256] =
 {
     /*        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f, */
     /* 00 */  2, 8, 4, 5, 3, 4, 3, 6, 2, 6, 5, 4, 5, 4, 6, 8, 

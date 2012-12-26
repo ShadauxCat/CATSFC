@@ -95,7 +95,6 @@
 #include "sa1.h"
 #define CPU SA1
 #define ICPU SA1
-#define Registers SA1Registers
 #define S9xGetByte S9xSA1GetByte
 #define S9xGetWord S9xSA1GetWord
 #define S9xSetByte S9xSA1SetByte
