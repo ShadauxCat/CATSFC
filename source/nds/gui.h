@@ -24,6 +24,9 @@
 #include "fs_api.h"
 #include "gcheat.h"
 
+#define UP_SCREEN_UPDATE_METHOD   0
+#define DOWN_SCREEN_UPDATE_METHOD 2
+
 #define MAX_GAMEPAD_MAP 16
 
 #ifdef __cplusplus
@@ -96,7 +99,8 @@ extern char rom_path[MAX_PATH];
 extern u32 game_enable_audio;
 
 /******************************************************************************
- ******************************************************************************/extern char g_default_rom_dir[MAX_PATH];
+ ******************************************************************************/
+extern char g_default_rom_dir[MAX_PATH];
 extern char DEFAULT_RTS_DIR[MAX_PATH];
 extern char DEFAULT_CFG_DIR[MAX_PATH];
 extern char DEFAULT_SS_DIR[MAX_PATH];

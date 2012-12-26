@@ -175,7 +175,7 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 			break;
 	}
 
-    ds2_flipScreen(UP_SCREEN, 0);
+    ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 	// A problem with update method 1 (wait, double buffer) means that, after
 	// about 15 minutes of play time, the screen starts to half-redraw every
 	// frame. With update method 0, this is mitigated. (Method 2 is too slow.)
@@ -586,9 +586,9 @@ int sfc_main (int argc, char **argv)
     {
 		if (!Settings.Paused
 #ifdef DEBUGGER
-			|| (CPU.Flags & (DEBUG_MODE_FLAG | SINGLE_STEP_FLAG))
+			|| (CPU.Flags & (DEBUG_MODE_FLAG | SINGLE_STEP_FLAG)
 #endif
-           )
+			)
 			S9xMainLoop ();
 
 

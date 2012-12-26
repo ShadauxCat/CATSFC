@@ -1114,7 +1114,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			}
 
 			redraw = 0;
-			ds2_flipScreen(DOWN_SCREEN, 2);
+			ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 		} //end if(0 != redraw)
 		else if(0 != redraw) {
 			unsigned int m, n;
@@ -1142,7 +1142,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			}
 
 			draw_hscroll(m+1, redraw);
-			ds2_flipScreen(DOWN_SCREEN, 2);
+			ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 			redraw = 0;
 		}
 
@@ -1162,7 +1162,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			{
 				if(draw_hscroll(0, 1) <= 1) path_scroll = 0x8000; //scroll left
 			}
-			ds2_flipScreen(DOWN_SCREEN, 2);
+			ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 		}
 
 		mdelay(50);			//about 50ms
@@ -1176,7 +1176,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 	manage_filelist_info(&filelist_info, -1);
 
 	ds2_clearScreen(DOWN_SCREEN, COLOR_BLACK);
-	ds2_flipScreen(DOWN_SCREEN, 2);
+	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 	return return_value;
 }
@@ -1233,7 +1233,7 @@ u32 play_screen_snapshot(void)
     {
         draw_message(down_screen_addr, screenp, 28, 31, 227, 165, color_bg);
         draw_string_vcenter(down_screen_addr, 36, 55, 190, COLOR_MSSG, msg[MSG_NO_SLIDE]);
-        ds2_flipScreen(DOWN_SCREEN, 2);
+        ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
         if(screenp) free((void*)screenp);
         //construct filelist_info struct
@@ -1260,7 +1260,7 @@ u32 play_screen_snapshot(void)
     draw_string_vcenter(down_screen_addr, 36, 115, 190, COLOR_MSSG, msg[MSG_PLAY_SLIDE4]);
     draw_string_vcenter(down_screen_addr, 36, 130, 190, COLOR_MSSG, msg[MSG_PLAY_SLIDE5]);
     draw_string_vcenter(down_screen_addr, 36, 145, 190, COLOR_MSSG, msg[MSG_PLAY_SLIDE6]);
-    ds2_flipScreen(DOWN_SCREEN, 2);
+    ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
     repeat= 1;
     i= 0;
@@ -1749,7 +1749,7 @@ u32 menu(u16 *screen)
 
 			draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
 			draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_LOADING_GAME]);
-			ds2_flipScreen(DOWN_SCREEN, 2);
+			ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 			ds2_setCPUclocklevel(13);
 			int load_result = load_gamepak(&line_buffer);
@@ -1817,7 +1817,7 @@ u32 menu(u16 *screen)
 	
 		draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
 		draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_LOADING_GAME]);
-		ds2_flipScreen(DOWN_SCREEN, 2);
+		ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 		ds2_setCPUclocklevel(13);
 		int load_result = load_gamepak(args[1]);
@@ -2047,7 +2047,7 @@ u32 menu(u16 *screen)
 
 				draw_message(down_screen_addr, NULL, 28, 31, 227, 165, 0);
 				draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_SAVESTATE_DOING]);
-				ds2_flipScreen(DOWN_SCREEN, 2);
+				ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 				int flag = save_state(tmp_filename, (void*)screen);
 				//clear message
@@ -2063,7 +2063,7 @@ u32 menu(u16 *screen)
 					savestate_index = slot_index;
 				}
 
-				ds2_flipScreen(DOWN_SCREEN, 2);
+				ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 				//save game config
 				reorder_latest_file();
@@ -2100,7 +2100,7 @@ u32 menu(u16 *screen)
 				{
 					draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
 					draw_string_vcenter(down_screen_addr, 36, 80, 190, COLOR_MSSG, msg[MSG_SAVESTATE_FILE_BAD]);
-					ds2_flipScreen(DOWN_SCREEN, 2);
+					ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 					wait_Allkey_release(0);
 					if(gui_action == CURSOR_SELECT)
@@ -2186,7 +2186,7 @@ u32 menu(u16 *screen)
 				{
 					draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
 					draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_DELETTE_SAVESTATE_NOTHING]);
-					ds2_flipScreen(DOWN_SCREEN, 2);
+					ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 					mdelay(500);
 				}
 			}
@@ -2207,7 +2207,7 @@ u32 menu(u16 *screen)
 				else
 				{
 					draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_DELETTE_SAVESTATE_NOTHING]);
-					ds2_flipScreen(DOWN_SCREEN, 2);
+					ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 					mdelay(500);
 				}
 			}
@@ -2578,18 +2578,18 @@ u32 menu(u16 *screen)
             if(!first_load)
             {
                 draw_string_vcenter(down_screen_addr, 36, 70, 190, COLOR_MSSG, msg[MSG_SAVE_SNAPSHOT]);
-                ds2_flipScreen(DOWN_SCREEN, 2);
+                ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
                 if(save_ss_bmp(screen))
                     draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_SAVE_SNAPSHOT_COMPLETE]);
                 else
                     draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_SAVE_SNAPSHOT_FAILURE]);
-                ds2_flipScreen(DOWN_SCREEN, 2);
+                ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 				mdelay(500);
             }
             else
             {
                 draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_SAVESTATE_SLOT_EMPTY]);
-                ds2_flipScreen(DOWN_SCREEN, 2);
+                ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 				mdelay(500);
             }
         }
@@ -2746,7 +2746,7 @@ u32 menu(u16 *screen)
 			wait_Allkey_release(0);
             draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
             draw_string_vcenter(down_screen_addr, 36, 80, 190, COLOR_MSSG, msg[MSG_DEFAULT_LOADING]);
-            ds2_flipScreen(DOWN_SCREEN, 2);
+            ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
             sprintf(line_buffer, "%s/%s", main_path, EMU_CONFIG_FILENAME);
             remove(line_buffer);
@@ -2777,7 +2777,7 @@ u32 menu(u16 *screen)
         draw_string_vcenter(down_screen_addr, 36, 80, 190, COLOR_MSSG, msg[MSG_EMU_VERSION0]);
         sprintf(line_buffer, "%s %s", msg[MSG_EMU_VERSION1], NDSSFC_VERSION);
         draw_string_vcenter(down_screen_addr, 36, 95, 190, COLOR_MSSG, line_buffer);
-        ds2_flipScreen(DOWN_SCREEN, 2);
+        ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 		wait_Anykey_press(0);
     }
@@ -2797,7 +2797,7 @@ u32 menu(u16 *screen)
             draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
             draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_CHANGE_LANGUAGE]);
             draw_string_vcenter(down_screen_addr, 36, 95, 190, COLOR_MSSG, msg[MSG_CHANGE_LANGUAGE_WAITING]);
-            ds2_flipScreen(DOWN_SCREEN, 2);
+            ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
             load_language_msg(LANGUAGE_PACK, emu_config.language);    
             gui_change_icon(emu_config.language);
@@ -3405,7 +3405,7 @@ u32 menu(u16 *screen)
 
 		draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, 0);
 		draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_LOADING_GAME]);
-		ds2_flipScreen(DOWN_SCREEN, 2);
+		ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 		if(gamepak_name[0] != 0)
 		{
@@ -3977,7 +3977,7 @@ u32 menu(u16 *screen)
 				break;
 		} // end swith
 
-		ds2_flipScreen(DOWN_SCREEN, 2);
+		ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 	} // end while
 	destroy_dynamic_cheats();
 	if(bg_screenp != NULL) free((void*)bg_screenp);
@@ -3996,7 +3996,7 @@ u32 menu(u16 *screen)
 	ds2_clearScreen(DOWN_SCREEN, 0);
 	ds2_flipScreen(DOWN_SCREEN, 1);
 	copy_screen(up_screen_addr, (void*) screen, 0, 0, 256, 192);
-	ds2_flipScreen(UP_SCREEN, 0);
+	ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 	ds2_setBacklight(2);
 
 	wait_Allkey_release(0);
@@ -4714,7 +4714,7 @@ void gui_init(u32 lang_id)
     }
 
 	show_log(down_screen_addr);
-	ds2_flipScreen(DOWN_SCREEN, 2);
+	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 	flag = icon_init(lang_id);
 	if(0 != flag)
@@ -4750,7 +4750,7 @@ void gui_init(u32 lang_id)
 	return;
 
 gui_init_err:
-	ds2_flipScreen(DOWN_SCREEN, 2);
+	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 	wait_Anykey_press(0);
 	quit();
 }
