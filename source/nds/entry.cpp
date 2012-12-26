@@ -20,6 +20,7 @@
 
 #include "draw.h"
 #include "gui.h"
+#include "ds2sound.h"
 
 void S9xProcessSound (unsigned int);
 
@@ -359,9 +360,9 @@ void init_sfc_setting(void)
     Settings.JoystickEnabled = FALSE;
 #endif
 
-    Settings.SoundPlaybackRate = 4;	//2 = 11025, 4 = 22050, 6 = 44100
+    Settings.SoundPlaybackRate = SNES9X_SRATE_ID;	// -> ds2sound.h for defs
     Settings.Stereo = TRUE;
-    Settings.SoundBufferSize = 0;
+    Settings.SoundBufferSize = DS2_BUFFER_SIZE;
     Settings.CyclesPercentage = 100;
     Settings.DisableSoundEcho = FALSE;
 	//sound settings
@@ -767,28 +768,15 @@ void S9xSyncSpeed ()
 #endif
 }
 
-/*
-*   Open sound device
-*/
-static int Rates[8] =
-{
-    0, 8000, 11025, 16000, 22050, 32000, 44100, 48000
-};
-
-static int BufferSizes [8] =
-{
-    0, 256, 256, 256, 512, 512, 1024, 1024
-};
-
 bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
 {
 	so.sixteen_bit = TRUE;
     so.stereo = stereo;
-    so.playback_rate = Rates[mode & 0x07];
+    so.playback_rate = SND_SAMPLE_RATE;
     S9xSetPlaybackRate (so.playback_rate);
 
     if (buffer_size == 0)
-	    buffer_size = BufferSizes [mode & 7];
+	    buffer_size = DS2_BUFFER_SIZE;
 
     if (buffer_size > MAX_BUFFER_SIZE / 4)
 	    buffer_size = MAX_BUFFER_SIZE / 4;
@@ -936,7 +924,7 @@ void S9xProcessSound (unsigned int)
 //		block_generate_sound = FALSE;
 
 		unsigned short *dst_pt = audiobuff;
-		unsigned short *dst_pt1 = dst_pt + 512;
+		unsigned short *dst_pt1 = dst_pt + DS2_BUFFER_SIZE;
 
 		/* Feed the samples to the soundcard until nothing is left */
 		for(;;)
