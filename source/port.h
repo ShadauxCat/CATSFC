@@ -112,6 +112,10 @@
 
 /* #define PIXEL_FORMAT RGB565 */
 #define PIXEL_FORMAT BGR555
+#define FOREVER_16_BIT
+// The above is used to disable the 16-bit graphics mode checks sprinkled
+// throughout the code, if the pixel format is always 16-bit.
+
 // #define GFX_MULTI_FORMAT
 
 #if defined(TARGET_OS_MAC) && TARGET_OS_MAC

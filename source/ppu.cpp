@@ -204,8 +204,10 @@ void S9xUpdateHTimer ()
 void S9xFixColourBrightness ()
 {
     IPPU.XB = mul_brightness [PPU.Brightness];
+#ifndef FOREVER_16_BIT
     if (Settings.SixteenBit)
 	{
+#endif
 		for (int i = 0; i < 256; i++)
 		{
 			IPPU.Red [i] = IPPU.XB [PPU.CGDATA [i] & 0x1f];
@@ -214,7 +216,9 @@ void S9xFixColourBrightness ()
 			IPPU.ScreenColors [i] = BUILD_PIXEL (IPPU.Red [i], IPPU.Green [i],
 												 IPPU.Blue [i]);
 		}
+#ifndef FOREVER_16_BIT
 	}
+#endif
 }
 
 /******************************************************************************/
@@ -472,8 +476,6 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				PPU.VMA.Increment = 32;
 				break;
 			  case 2:
-				PPU.VMA.Increment = 128;
-				break;
 			  case 3:
 				PPU.VMA.Increment = 128;
 				break;
@@ -882,28 +884,20 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 		  case 0x2135:
 		  case 0x2136:
 			// Matrix 16bit x 8bit multiply result (read-only)
-			return;
-
 		  case 0x2137:
 			// Software latch for horizontal and vertical timers (read-only)
-			return;
 		  case 0x2138:
 			// OAM read data (read-only)
-			return;
 		  case 0x2139:
 		  case 0x213a:
 			// VRAM read data (read-only)
-			return;
 		  case 0x213b:
 			// CG-RAM read data (read-only)
-			return;
 		  case 0x213c:
 		  case 0x213d:
 			// Horizontal and vertical (low/high) read counter (read-only)
-			return;
 		  case 0x213e:
 			// PPU status (time over and range over)
-			return;
 		  case 0x213f:
 			// NTSC/PAL select and field (read-only)
 			return;
@@ -969,7 +963,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			if (Address == 0x2801 && Settings.SRTC)
 				S9xSetSRTC (Byte, Address);
 			else
-				if (Address < 0x3000 || Address >= 0x3000 + 768)
+				if (Address < 0x3000 || Address >= 0x3300)
 				{
 #ifdef DEBUGGER
 					missing.unknownppu_write = Address;
@@ -1010,38 +1004,26 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 						break;
 
 					  case 0x3031:
-						Memory.FillRAM [Address] = Byte;
-						break;
 					  case 0x3033:
+					  case 0x3037:
+					  case 0x3039:
+					  case 0x303a:
+					  case 0x303f:
 						Memory.FillRAM [Address] = Byte;
 						break;
 					  case 0x3034:
-						Memory.FillRAM [Address] = Byte & 0x7f;
-						break;
 					  case 0x3036:
 						Memory.FillRAM [Address] = Byte & 0x7f;
-						break;
-					  case 0x3037:
-						Memory.FillRAM [Address] = Byte;
 						break;
 					  case 0x3038:
 						Memory.FillRAM [Address] = Byte;
 						fx_dirtySCBR();
-						break;
-					  case 0x3039:
-						Memory.FillRAM [Address] = Byte;
-						break;
-					  case 0x303a:
-						Memory.FillRAM [Address] = Byte;
 						break;
 					  case 0x303b:
 						break;
 					  case 0x303c:
 						Memory.FillRAM [Address] = Byte;
 						fx_updateRamBank(Byte);
-						break;
-					  case 0x303f:
-						Memory.FillRAM [Address] = Byte;
 						break;
 					  case 0x301f:
 						Memory.FillRAM [Address] = Byte;
@@ -1185,37 +1167,7 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2121:
 	case 0x2122:
 	case 0x2123:
-#ifndef NO_OPEN_BUS
-		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
-
-	case 0x2124:
-	case 0x2125:
-	case 0x2126:
-#ifndef NO_OPEN_BUS
-		return PPU.OpenBus1;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
-
 	case 0x2127:
-#ifndef NO_OPEN_BUS
-		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
-
-	case 0x2128:
-	case 0x2129:
-	case 0x212a:
-#ifndef NO_OPEN_BUS
-		return PPU.OpenBus1;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
-
 	case 0x212b:
 	case 0x212c:
 	case 0x212d:
@@ -1227,6 +1179,18 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2133:
 #ifndef NO_OPEN_BUS
 		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
+
+	case 0x2124:
+	case 0x2125:
+	case 0x2126:
+	case 0x2128:
+	case 0x2129:
+	case 0x212a:
+#ifndef NO_OPEN_BUS
+		return PPU.OpenBus1;
 #else
 		return 0; // Arbitrarily chosen value [Neb]
 #endif
@@ -1528,12 +1492,10 @@ uint8 S9xGetPPU (uint16 Address)
 	    {
 	    case 0:
 	    case 1:
+	    case 3:
 		CPU.BranchSkip = TRUE;
 		break;
 	    case 2:
-		break;
-	    case 3:
-		CPU.BranchSkip = TRUE;
 		break;
 	    }
 	    if ((Address & 3) < 2)
@@ -1567,12 +1529,6 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2181:
 	case 0x2182:
 	case 0x2183:
-#ifndef NO_OPEN_BUS
-		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
-
 	default:
 #ifndef NO_OPEN_BUS
 		return OpenBus;
@@ -1938,7 +1894,6 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 		  case 0x4216:
 		  case 0x4217:
 			// Multiply product (read-only)
-			return;
 		  case 0x4218:
 		  case 0x4219:
 		  case 0x421a:
@@ -2382,7 +2337,6 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4217:
 		// Multiplcation result (for multiply) or remainder of
 		// divison.
-		return (Memory.FillRAM[Address]);
 	  case 0x4218:
 	  case 0x4219:
 	  case 0x421a:
@@ -2392,7 +2346,6 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x421e:
 	  case 0x421f:
 		// Joypads 1-4 button and direction state.
-		return (Memory.FillRAM [Address]);
 
 	  case 0x4300:
 	  case 0x4310:
@@ -2403,7 +2356,6 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4360:
 	  case 0x4370:
 		// DMA direction, address type, fixed flag,
-		return (Memory.FillRAM[Address]);
 
 	  case 0x4301:
 	  case 0x4311:
@@ -2413,7 +2365,6 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4351:
 	  case 0x4361:
 	  case 0x4371:
-		return (Memory.FillRAM[Address]);
 
 	  case 0x4302:
 	  case 0x4312:
@@ -2423,7 +2374,6 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4352:
 	  case 0x4362:
 	  case 0x4372:
-		return (Memory.FillRAM[Address]);
 
 	  case 0x4303:
 	  case 0x4313:
@@ -2433,7 +2383,6 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4353:
 	  case 0x4363:
 	  case 0x4373:
-		return (Memory.FillRAM[Address]);
 
 	  case 0x4304:
 	  case 0x4314:
@@ -2443,7 +2392,6 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4354:
 	  case 0x4364:
 	  case 0x4374:
-		return (Memory.FillRAM[Address]);
 
 	  case 0x4305:
 	  case 0x4315:
@@ -2453,7 +2401,6 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4355:
 	  case 0x4365:
 	  case 0x4375:
-		return (Memory.FillRAM[Address]);
 
 	  case 0x4306:
 	  case 0x4316:
@@ -2463,6 +2410,24 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4356:
 	  case 0x4366:
 	  case 0x4376:
+
+	  case 0x4308:
+	  case 0x4318:
+	  case 0x4328:
+	  case 0x4338:
+	  case 0x4348:
+	  case 0x4358:
+	  case 0x4368:
+	  case 0x4378:
+
+	  case 0x4309:
+	  case 0x4319:
+	  case 0x4329:
+	  case 0x4339:
+	  case 0x4349:
+	  case 0x4359:
+	  case 0x4369:
+	  case 0x4379:
 		return (Memory.FillRAM[Address]);
 
 	  case 0x4307:
@@ -2474,26 +2439,6 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4367:
 	  case 0x4377:
 		return (DMA[(Address >> 4) & 7].IndirectBank);
-
-	  case 0x4308:
-	  case 0x4318:
-	  case 0x4328:
-	  case 0x4338:
-	  case 0x4348:
-	  case 0x4358:
-	  case 0x4368:
-	  case 0x4378:
-		return (Memory.FillRAM[Address]);
-
-	  case 0x4309:
-	  case 0x4319:
-	  case 0x4329:
-	  case 0x4339:
-	  case 0x4349:
-	  case 0x4359:
-	  case 0x4369:
-	  case 0x4379:
-		return (Memory.FillRAM[Address]);
 
 	  case 0x430A:
 	  case 0x431A:
@@ -2562,7 +2507,7 @@ uint8 S9xGetCPU (uint16 Address)
 //    return (Memory.FillRAM[Address]);
 }
 
-void S9xResetPPU ()
+static void CommonPPUReset ()
 {
 	PPU.BGMode = 0;
 	PPU.BG3Priority = 0;
@@ -2570,6 +2515,7 @@ void S9xResetPPU ()
 	PPU.VMA.High = 0;
 	PPU.VMA.Increment = 1;
 	PPU.VMA.Address = 0;
+
 	PPU.VMA.FullGraphicCount = 0;
 	PPU.VMA.Shift = 0;
 
@@ -2593,13 +2539,11 @@ void S9xResetPPU ()
 	PPU.ClipCounts[4] = 0;
 	PPU.ClipCounts[5] = 0;
 	PPU.ClipWindowOverlapLogic[4] = PPU.ClipWindowOverlapLogic[5] = CLIP_OR;
-	PPU.ClipWindow1Enable[4] = PPU.ClipWindow1Enable[5] = FALSE;
-	PPU.ClipWindow2Enable[4] = PPU.ClipWindow2Enable[5] = FALSE;
-	PPU.ClipWindow1Inside[4] = PPU.ClipWindow1Inside[5] = TRUE;
-	PPU.ClipWindow2Inside[4] = PPU.ClipWindow2Inside[5] = TRUE;
+	PPU.ClipWindow1Enable[4] = PPU.ClipWindow1Enable[5] = PPU.ClipWindow2Enable[4] = PPU.ClipWindow2Enable[5] = FALSE;
+	PPU.ClipWindow1Inside[4] = PPU.ClipWindow1Inside[5] = PPU.ClipWindow2Inside[4] = PPU.ClipWindow2Inside[5] = TRUE;
 
 	PPU.CGFLIP = 0;
-	int c;
+	uint16 c;
 	for (c = 0; c < 256; c++)
 	{
 		IPPU.Red [c] = (c & 7) << 2;
@@ -2644,9 +2588,6 @@ void S9xResetPPU ()
 
 	PPU.MatrixA = PPU.MatrixB = PPU.MatrixC = PPU.MatrixD = 0;
 	PPU.CentreX = PPU.CentreY = 0;
-	PPU.Joypad1ButtonReadPos = 0;
-	PPU.Joypad2ButtonReadPos = 0;
-	PPU.Joypad3ButtonReadPos = 0;
 
 	PPU.CGADD = 0;
 	PPU.FixedColourRed = PPU.FixedColourGreen = PPU.FixedColourBlue = 0;
@@ -2668,9 +2609,9 @@ void S9xResetPPU ()
 	PPU.VTimerEnabled = FALSE;
 	PPU.HTimerEnabled = FALSE;
 	PPU.HTimerPosition = Settings.H_Max + 1;
+
 	PPU.Mosaic = 0;
-	PPU.BGMosaic [0] = PPU.BGMosaic [1] = FALSE;
-	PPU.BGMosaic [2] = PPU.BGMosaic [3] = FALSE;
+	PPU.BGMosaic [0] = PPU.BGMosaic [1] = PPU.BGMosaic [2] = PPU.BGMosaic [3] = FALSE;
 	PPU.Mode7HFlip = FALSE;
 	PPU.Mode7VFlip = FALSE;
 	PPU.Mode7Repeat = 0;
@@ -2679,6 +2620,7 @@ void S9xResetPPU ()
 	PPU.Window2Left = 1;
 	PPU.Window2Right = 0;
 	PPU.RecomputeClipWindows = TRUE;
+
 	PPU.CGFLIPRead = 0;
 	PPU.Need16x8Mulitply = FALSE;
 	PPU.MouseSpeed[0] = PPU.MouseSpeed[1] = 0;
@@ -2696,6 +2638,7 @@ void S9xResetPPU ()
 	IPPU.DisplayedRenderedFrameCount = 0;
 	IPPU.SkippedFrames = 0;
 	IPPU.FrameSkip = 0;
+
 	ZeroMemory (IPPU.TileCached [TILE_2BIT], MAX_2BIT_TILES);
 	ZeroMemory (IPPU.TileCached [TILE_4BIT], MAX_4BIT_TILES);
 	ZeroMemory (IPPU.TileCached [TILE_8BIT], MAX_8BIT_TILES);
@@ -2711,16 +2654,11 @@ void S9xResetPPU ()
 	IPPU.RenderedScreenWidth = SNES_WIDTH;
 	IPPU.RenderedScreenHeight = SNES_HEIGHT;
 	IPPU.XB = NULL;
+
 	for (c = 0; c < 256; c++)
 		IPPU.ScreenColors [c] = c;
 	S9xFixColourBrightness ();
 	IPPU.PreviousLine = IPPU.CurrentLine = 0;
-	IPPU.Joypads[0] = IPPU.Joypads[1] = IPPU.Joypads[2] = 0;
-	IPPU.Joypads[3] = IPPU.Joypads[4] = 0;
-	IPPU.SuperScope = 0;
-	IPPU.Mouse[0] = IPPU.Mouse[1] = 0;
-	IPPU.PrevMouseX[0] = IPPU.PrevMouseX[1] = 256 / 2;
-	IPPU.PrevMouseY[0] = IPPU.PrevMouseY[1] = 224 / 2;
 
 	if (Settings.ControllerOption == 0)
 		IPPU.Controller = SNES_MAX_CONTROLLER_OPTIONS - 1;
@@ -2736,7 +2674,31 @@ void S9xResetPPU ()
 		S9xProcessMouse (0);
 		S9xProcessMouse (1);
 	}
-	for (c = 0; c < 0x8000; c += 0x100)
+
+	ZeroMemory (&Memory.FillRAM [0x2100], 0x100);
+	ZeroMemory (&Memory.FillRAM [0x4200], 0x100);
+	ZeroMemory (&Memory.FillRAM [0x4000], 0x100);
+	// For BS Suttehakkun 2...
+	ZeroMemory (&Memory.FillRAM [0x1000], 0x1000);
+
+	Memory.FillRAM[0x4201]=Memory.FillRAM[0x4213]=0xFF;
+}
+
+void S9xResetPPU ()
+{
+	CommonPPUReset ();
+	PPU.Joypad1ButtonReadPos = 0;
+	PPU.Joypad2ButtonReadPos = 0;
+	PPU.Joypad3ButtonReadPos = 0;
+
+	IPPU.Joypads[0] = IPPU.Joypads[1] = IPPU.Joypads[2] = 0;
+	IPPU.Joypads[3] = IPPU.Joypads[4] = 0;
+	IPPU.SuperScope = 0;
+	IPPU.Mouse[0] = IPPU.Mouse[1] = 0;
+	IPPU.PrevMouseX[0] = IPPU.PrevMouseX[1] = 256 / 2;
+	IPPU.PrevMouseY[0] = IPPU.PrevMouseY[1] = 224 / 2;
+
+	for (uint16 c = 0; c < 0x8000; c += 0x100)
 	{
 		if ( !Settings.SuperFX )
 		{
@@ -2750,168 +2712,15 @@ void S9xResetPPU ()
 			memset (&Memory.FillRAM [c], c >> 8, 0x100);
 		}
 	}
-
-	ZeroMemory (&Memory.FillRAM [0x2100], 0x100);
-	ZeroMemory (&Memory.FillRAM [0x4200], 0x100);
-	ZeroMemory (&Memory.FillRAM [0x4000], 0x100);
-	// For BS Suttehakkun 2...
-	ZeroMemory (&Memory.FillRAM [0x1000], 0x1000);
-
-	Memory.FillRAM[0x4201]=Memory.FillRAM[0x4213]=0xFF;
 }
 
 void S9xSoftResetPPU ()
 {
-	PPU.BGMode = 0;
-	PPU.BG3Priority = 0;
-	PPU.Brightness = 0;
-	PPU.VMA.High = 0;
-	PPU.VMA.Increment = 1;
-	PPU.VMA.Address = 0;
-	PPU.VMA.FullGraphicCount = 0;
-	PPU.VMA.Shift = 0;
-
-	for (uint8 B = 0; B != 4; B++)
-	{
-		PPU.BG[B].SCBase = 0;
-		PPU.BG[B].VOffset = 0;
-		PPU.BG[B].HOffset = 0;
-		PPU.BG[B].BGSize = 0;
-		PPU.BG[B].NameBase = 0;
-		PPU.BG[B].SCSize = 0;
-
-		PPU.ClipCounts[B] = 0;
-		PPU.ClipWindowOverlapLogic [B] = CLIP_OR;
-		PPU.ClipWindow1Enable[B] = FALSE;
-		PPU.ClipWindow2Enable[B] = FALSE;
-		PPU.ClipWindow1Inside[B] = TRUE;
-		PPU.ClipWindow2Inside[B] = TRUE;
-	}
-
-	PPU.ClipCounts[4] = 0;
-	PPU.ClipCounts[5] = 0;
-	PPU.ClipWindowOverlapLogic[4] = PPU.ClipWindowOverlapLogic[5] = CLIP_OR;
-	PPU.ClipWindow1Enable[4] = PPU.ClipWindow1Enable[5] = FALSE;
-	PPU.ClipWindow2Enable[4] = PPU.ClipWindow2Enable[5] = FALSE;
-	PPU.ClipWindow1Inside[4] = PPU.ClipWindow1Inside[5] = TRUE;
-	PPU.ClipWindow2Inside[4] = PPU.ClipWindow2Inside[5] = TRUE;
-
-	PPU.CGFLIP = 0;
-	int c;
-	for (c = 0; c < 256; c++)
-	{
-		IPPU.Red [c] = (c & 7) << 2;
-		IPPU.Green [c] = ((c >> 3) & 7) << 2;
-		IPPU.Blue [c] = ((c >> 6) & 2) << 3;
-		PPU.CGDATA [c] = IPPU.Red [c] | (IPPU.Green [c] << 5) |
-			(IPPU.Blue [c] << 10);
-	}
-
-	PPU.FirstSprite = 0;
-	PPU.LastSprite = 127;
-	for (int Sprite = 0; Sprite < 128; Sprite++)
-	{
-		PPU.OBJ[Sprite].HPos = 0;
-		PPU.OBJ[Sprite].VPos = 0;
-		PPU.OBJ[Sprite].VFlip = 0;
-		PPU.OBJ[Sprite].HFlip = 0;
-		PPU.OBJ[Sprite].Priority = 0;
-		PPU.OBJ[Sprite].Palette = 0;
-		PPU.OBJ[Sprite].Name = 0;
-		PPU.OBJ[Sprite].Size = 0;
-	}
-	PPU.OAMPriorityRotation = 0;
-	PPU.OAMWriteRegister = 0;
-	PPU.RangeTimeOver = 0;
-#ifndef NO_OPEN_BUS
-	PPU.OpenBus1 = 0;
-	PPU.OpenBus2 = 0;
-#endif
-
-	PPU.OAMFlip = 0;
-	PPU.OAMTileAddress = 0;
-	PPU.OAMAddr = 0;
-	PPU.IRQVBeamPos = 0;
-	PPU.IRQHBeamPos = 0;
-	PPU.VBeamPosLatched = 0;
-	PPU.HBeamPosLatched = 0;
-
-	PPU.HBeamFlip = 0;
-	PPU.VBeamFlip = 0;
-	PPU.HVBeamCounterLatched = 0;
-
-	PPU.MatrixA = PPU.MatrixB = PPU.MatrixC = PPU.MatrixD = 0;
-	PPU.CentreX = PPU.CentreY = 0;
+	CommonPPUReset ();
 //	PPU.Joypad1ButtonReadPos = 0;
 //	PPU.Joypad2ButtonReadPos = 0;
 //	PPU.Joypad3ButtonReadPos = 0;
-	PPU.CGADD = 0;
-	PPU.FixedColourRed = PPU.FixedColourGreen = PPU.FixedColourBlue = 0;
-	PPU.SavedOAMAddr = 0;
-	PPU.ScreenHeight = SNES_HEIGHT;
-	PPU.WRAM = 0;
-	PPU.BG_Forced = 0;
-	PPU.ForcedBlanking = TRUE;
-	PPU.OBJThroughMain = FALSE;
-	PPU.OBJThroughSub = FALSE;
-	PPU.OBJSizeSelect = 0;
-	PPU.OBJNameSelect = 0;
-	PPU.OBJNameBase = 0;
-	PPU.OBJAddition = FALSE;
-	PPU.OAMReadFlip = 0;
-	PPU.BGnxOFSbyte = 0;
-	ZeroMemory (PPU.OAMData, 512 + 32);
 
-	PPU.VTimerEnabled = FALSE;
-	PPU.HTimerEnabled = FALSE;
-	PPU.HTimerPosition = Settings.H_Max + 1;
-	PPU.Mosaic = 0;
-	PPU.BGMosaic [0] = PPU.BGMosaic [1] = FALSE;
-	PPU.BGMosaic [2] = PPU.BGMosaic [3] = FALSE;
-	PPU.Mode7HFlip = FALSE;
-	PPU.Mode7VFlip = FALSE;
-	PPU.Mode7Repeat = 0;
-	PPU.Window1Left = 1;
-	PPU.Window1Right = 0;
-	PPU.Window2Left = 1;
-	PPU.Window2Right = 0;
-	PPU.RecomputeClipWindows = TRUE;
-	PPU.CGFLIPRead = 0;
-	PPU.Need16x8Mulitply = FALSE;
-	PPU.MouseSpeed[0] = PPU.MouseSpeed[1] = 0;
-
-	IPPU.ColorsChanged = TRUE;
-	IPPU.HDMA = 0;
-	IPPU.HDMAStarted = FALSE;
-	IPPU.MaxBrightness = 0;
-	IPPU.LatchedBlanking = 0;
-	IPPU.OBJChanged = TRUE;
-	IPPU.RenderThisFrame = TRUE;
-	IPPU.DirectColourMapsNeedRebuild = TRUE;
-	IPPU.FrameCount = 0;
-	IPPU.RenderedFramesCount = 0;
-	IPPU.DisplayedRenderedFrameCount = 0;
-	IPPU.SkippedFrames = 0;
-	IPPU.FrameSkip = 0;
-	ZeroMemory (IPPU.TileCached [TILE_2BIT], MAX_2BIT_TILES);
-	ZeroMemory (IPPU.TileCached [TILE_4BIT], MAX_4BIT_TILES);
-	ZeroMemory (IPPU.TileCached [TILE_8BIT], MAX_8BIT_TILES);
-#ifdef CORRECT_VRAM_READS
-	IPPU.VRAMReadBuffer = 0; // XXX: FIXME: anything better?
-#else
-	IPPU.FirstVRAMRead = FALSE;
-#endif
-	IPPU.Interlace = FALSE;
-	IPPU.InterlaceSprites = FALSE;
-	IPPU.DoubleWidthPixels = FALSE;
-	IPPU.DoubleHeightPixels = FALSE;
-	IPPU.RenderedScreenWidth = SNES_WIDTH;
-	IPPU.RenderedScreenHeight = SNES_HEIGHT;
-	IPPU.XB = NULL;
-	for (c = 0; c < 256; c++)
-		IPPU.ScreenColors [c] = c;
-	S9xFixColourBrightness ();
-	IPPU.PreviousLine = IPPU.CurrentLine = 0;
 //	IPPU.Joypads[0] = IPPU.Joypads[1] = IPPU.Joypads[2] = 0;
 //	IPPU.Joypads[3] = IPPU.Joypads[4] = 0;
 //	IPPU.SuperScope = 0;
@@ -2919,30 +2728,8 @@ void S9xSoftResetPPU ()
 //	IPPU.PrevMouseX[0] = IPPU.PrevMouseX[1] = 256 / 2;
 //	IPPU.PrevMouseY[0] = IPPU.PrevMouseY[1] = 224 / 2;
 
-	if (Settings.ControllerOption == 0)
-		IPPU.Controller = SNES_MAX_CONTROLLER_OPTIONS - 1;
-	else
-		IPPU.Controller = Settings.ControllerOption - 1;
-	S9xNextController ();
-
-	for (c = 0; c < 2; c++)
-		memset (&IPPU.Clip [c], 0, sizeof (struct ClipData));
-
-	if (Settings.MouseMaster)
-	{
-		S9xProcessMouse (0);
-		S9xProcessMouse (1);
-	}
-	for (c = 0; c < 0x8000; c += 0x100)
+	for (uint16 c = 0; c < 0x8000; c += 0x100)
 		memset (&Memory.FillRAM [c], c >> 8, 0x100);
-
-	ZeroMemory (&Memory.FillRAM [0x2100], 0x100);
-	ZeroMemory (&Memory.FillRAM [0x4200], 0x100);
-	ZeroMemory (&Memory.FillRAM [0x4000], 0x100);
-	// For BS Suttehakkun 2...
-	ZeroMemory (&Memory.FillRAM [0x1000], 0x1000);
-
-	Memory.FillRAM[0x4201]=Memory.FillRAM[0x4213]=0xFF;
 }
 
 void S9xProcessMouse (int which1)
@@ -3494,7 +3281,7 @@ printf ("%06x: %d\n", t, FxEmulate (2000000));
 
 uint8 REGISTER_4212()
 {
-    GetBank = 0;
+    uint8 GetBank = 0;
     if (CPU.V_Counter >= PPU.ScreenHeight + FIRST_VISIBLE_LINE &&
     CPU.V_Counter < PPU.ScreenHeight + FIRST_VISIBLE_LINE + 3)
     GetBank = 1;
@@ -3508,8 +3295,8 @@ uint8 REGISTER_4212()
 
 void FLUSH_REDRAW ()
 {
-    if (IPPU.PreviousLine != IPPU.CurrentLine)
-    S9xUpdateScreen ();
+	if (IPPU.PreviousLine != IPPU.CurrentLine)
+		S9xUpdateScreen ();
 }
 
 void REGISTER_2104 (uint8 byte)
@@ -3728,19 +3515,25 @@ void REGISTER_2122(uint8 Byte)
     {
     if ((Byte & 0x7f) != (PPU.CGDATA[PPU.CGADD] >> 8))
     {
+#ifndef FOREVER_16_BIT
         if (Settings.SixteenBit)
-        FLUSH_REDRAW ();
+#endif
+        	FLUSH_REDRAW ();
         PPU.CGDATA[PPU.CGADD] &= 0x00FF;
         PPU.CGDATA[PPU.CGADD] |= (Byte & 0x7f) << 8;
         IPPU.ColorsChanged = TRUE;
+#ifndef FOREVER_16_BIT
         if (Settings.SixteenBit)
         {
+#endif
         IPPU.Blue [PPU.CGADD] = IPPU.XB [(Byte >> 2) & 0x1f];
         IPPU.Green [PPU.CGADD] = IPPU.XB [(PPU.CGDATA[PPU.CGADD] >> 5) & 0x1f];
         IPPU.ScreenColors [PPU.CGADD] = (uint16) BUILD_PIXEL (IPPU.Red [PPU.CGADD],
                                  IPPU.Green [PPU.CGADD],
                                  IPPU.Blue [PPU.CGADD]);
+#ifndef FOREVER_16_BIT
         }
+#endif
     }
     PPU.CGADD++;
     }
@@ -3748,19 +3541,25 @@ void REGISTER_2122(uint8 Byte)
     {
     if (Byte != (uint8) (PPU.CGDATA[PPU.CGADD] & 0xff))
     {
+#ifndef FOREVER_16_BIT
         if (Settings.SixteenBit)
-        FLUSH_REDRAW ();
+#endif
+        	FLUSH_REDRAW ();
         PPU.CGDATA[PPU.CGADD] &= 0x7F00;
         PPU.CGDATA[PPU.CGADD] |= Byte;
         IPPU.ColorsChanged = TRUE;
+#ifndef FOREVER_16_BIT
         if (Settings.SixteenBit)
         {
+#endif
         IPPU.Red [PPU.CGADD] = IPPU.XB [Byte & 0x1f];
         IPPU.Green [PPU.CGADD] = IPPU.XB [(PPU.CGDATA[PPU.CGADD] >> 5) & 0x1f];
         IPPU.ScreenColors [PPU.CGADD] = (uint16) BUILD_PIXEL (IPPU.Red [PPU.CGADD],
                                  IPPU.Green [PPU.CGADD],
                                  IPPU.Blue [PPU.CGADD]);
+#ifndef FOREVER_16_BIT
         }
+#endif
     }
     }
     PPU.CGFLIP ^= 1;
