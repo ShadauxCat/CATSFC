@@ -3823,8 +3823,8 @@ static void OpCB (void)
 #ifndef SA1_OPCODES
             CPU.Cycles += TWO_CYCLES;
 #endif
-#endif
     }
+#endif
     }
 #endif // SA1_OPCODES
 }
