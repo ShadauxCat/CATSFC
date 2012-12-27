@@ -794,7 +794,6 @@ bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
 
 void S9xGenerateSound ()
 {
-#if 0
     int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
 			so.samples_mixed_so_far;
 
@@ -856,12 +855,10 @@ void S9xGenerateSound ()
 		S9xProcessSound (0);
 		pending_signal = FALSE;
     }
-#endif
 }
 
 void S9xProcessSound (unsigned int)
 {
-#if 0
 	unsigned short *audiobuff;
 
 	if (!Settings.APUEnabled || so.mute_sound )
@@ -962,7 +959,6 @@ void S9xProcessSound (unsigned int)
 	}
 
 	so.samples_mixed_so_far -= sample_count;
-#endif
 }
 
 void Init_Timer (void)
