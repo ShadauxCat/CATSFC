@@ -181,12 +181,12 @@ void S9xResetAPU ()
     memmove (APU.ExtraRAM, APUROM, sizeof (APUROM));
     IAPU.PC = IAPU.RAM + IAPU.RAM [0xfffe] + (IAPU.RAM [0xffff] << 8);
     APU.Cycles = 0;
-    APURegisters.YA.W = 0;
-    APURegisters.X = 0;
-    APURegisters.S = 0xff;
-    APURegisters.P = 0;
+    IAPU.Registers.YA.W = 0;
+    IAPU.Registers.X = 0;
+    IAPU.Registers.S = 0xff;
+    IAPU.Registers.P = 0;
     S9xAPUUnpackStatus ();
-    APURegisters.PC = 0;
+    IAPU.Registers.PC = 0;
     IAPU.APUExecuting = Settings.APUEnabled;
 #ifdef SPC700_SHUTDOWN
     IAPU.WaitAddress1 = NULL;
@@ -419,7 +419,7 @@ void S9xSetAPUDSP (uint8 byte)
 		{
 			if (byte & ~spc_is_dumping_temp)
 			{
-				APURegisters.PC = IAPU.PC - IAPU.RAM;
+				IAPU.Registers.PC = IAPU.PC - IAPU.RAM;
 				S9xAPUPackStatus();
 				S9xSPCDump (S9xGetFilenameInc (".spc"));
 				spc_is_dumping = 0;

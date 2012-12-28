@@ -22,6 +22,7 @@
  * draw.cpp
  * basic program to draw some graphic
  ******************************************************************************/
+#include "port.h"
 #include <string.h>
 #include <stdio.h>
 #include "ds2_malloc.h"
@@ -810,7 +811,7 @@ u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
 //    draw_string_vcenter(screen_address, i+1, sy+1, box_width, COLOR_WHITE, no);
     draw_string_vcenter((unsigned short*)screen_addr, 138, 130, 58, COLOR_WHITE, no);
 
-	ds2_flipScreen(screen, 1);
+	ds2_flipScreen(screen, 2);
 
     gui_action_type gui_action = CURSOR_NONE;
     while((gui_action != CURSOR_SELECT)  && (gui_action != CURSOR_BACK))
@@ -859,7 +860,7 @@ void init_progress(enum SCREEN_ID screen, u32 total, char *text)
     drawboxfill((unsigned short*)screen_addr, progress_sx, progress_sy, progress_ex, 
 		progress_ey, COLOR16(15, 15, 15));
 
-	ds2_flipScreen(_progress_screen_id, 1);
+	ds2_flipScreen(_progress_screen_id, 2);
 }
 
 //	update progress bar
@@ -882,7 +883,7 @@ void update_progress(void)
 
 	drawboxfill(screen_addr, progress_sx, progress_sy, progress_sx+width, progress_ey, COLOR16(30, 19, 7));
 
-	ds2_flipScreen(_progress_screen_id, 1);
+	ds2_flipScreen(_progress_screen_id, 2);
 }
 
 //	display progress string
@@ -907,7 +908,7 @@ void show_progress(char *text)
 //  if (text[0] != '\0')
 //    print_string_center(progress_sy - 21, COLOR_PROGRESS_TEXT, COLOR_DIALOG, text);
 
-	ds2_flipScreen(_progress_screen_id, 1);
+	ds2_flipScreen(_progress_screen_id, 2);
 
 //  OSTimeDly(progress_wait);
 	mdelay(500);
@@ -1273,57 +1274,11 @@ void show_log(void* screen_addr)
 }
 
 /*************************************************************/
-extern const unsigned char font_map[128][8];
-
-//font size 8*8
-static inline void drawfont(unsigned short *addr, unsigned short f_color, unsigned short b_color, unsigned char ch)
-{
-	unsigned char *dot_map;
-	unsigned int j, k;
-	unsigned char dot;
-	unsigned short *dst;
-
-	dot_map = (unsigned char*)font_map[ch&0x7F];
-
-	for(j= 0; j < 8; j++)
-	{
-		dot = *dot_map++;
-		dst = addr + j*SCREEN_WIDTH;
-		for(k = 0; k < 8; k++)
-			*dst++ = (dot & (0x80>>k)) ? f_color : b_color;
-	}
-}
-
-static void drawstring(unsigned int x, unsigned int y, enum SCREEN_ID screen, char *string,
-	unsigned short f_color, unsigned short b_color)
-{
-	unsigned short *scr_addr, *dst;
-
-	if(screen & UP_MASK)
-		scr_addr = up_screen_addr;
-	else 
-		scr_addr = down_screen_addr;
-
-	if(x>= 32 || y>= 24) return;
-
-	while(*string)
-	{
-		dst = scr_addr + (y*8)*SCREEN_WIDTH + x*8;
-		drawfont(dst, f_color, b_color, *string++);
-
-		x += 1;
-		if(x>= 32)
-		{
-			x = 0;
-			y+= 1;
-			if(y >= 24) break;
-		}
-	}
-}
-
 void err_msg(enum SCREEN_ID screen, char *msg)
 {
-	drawstring(0, 0, screen, msg, COLOR16(16, 16, 16), COLOR16(0, 0, 0));
+	// A wild console appeared!
+	ConsoleInit(RGB15(31, 31, 31), RGB15(0, 0, 0), UP_SCREEN, 512);
+	printf(msg);
 }
 
 /*
@@ -1372,5 +1327,3 @@ void blit_to_screen(void* screen_addr, u16 *src, u32 w, u32 h, u32 dest_x, u32 d
             *dst++ = *src++;
     }
 }
-
-

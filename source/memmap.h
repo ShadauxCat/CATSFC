@@ -276,7 +276,7 @@ bool8 LoadZip(const char* zipname,
 END_EXTERN_C
 
 extern "C" {
-void S9xAutoSaveSRAM ();
+	void S9xAutoSaveSRAM ();
 }
 
 #ifdef NO_INLINE_SET_GET
@@ -288,9 +288,12 @@ void S9xSetPCBase (uint32 Address);
 uint8 *S9xGetMemPointer (uint32 Address);
 uint8 *GetBasePointer (uint32 Address);
 
-extern "C"{
-extern uint8 OpenBus;
+#ifndef NO_OPEN_BUS
+extern "C" {
+	extern uint8 OpenBus;
 }
+#endif
+
 #else
 #define INLINE inline
 #include "getset.h"

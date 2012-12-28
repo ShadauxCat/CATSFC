@@ -117,14 +117,14 @@
 #define SetCarry() (ICPU._Carry = 1)
 #define SetZero() (ICPU._Zero = 0)
 #define ClearZero() (ICPU._Zero = 1)
-#define SetIRQ() (Registers.PL |= IRQ)
-#define ClearIRQ() (Registers.PL &= ~IRQ)
-#define SetDecimal() (Registers.PL |= Decimal)
-#define ClearDecimal() (Registers.PL &= ~Decimal)
-#define SetIndex() (Registers.PL |= IndexFlag)
-#define ClearIndex() (Registers.PL &= ~IndexFlag)
-#define SetMemory() (Registers.PL |= MemoryFlag)
-#define ClearMemory() (Registers.PL &= ~MemoryFlag)
+#define SetIRQ() (ICPU.Registers.PL |= IRQ)
+#define ClearIRQ() (ICPU.Registers.PL &= ~IRQ)
+#define SetDecimal() (ICPU.Registers.PL |= Decimal)
+#define ClearDecimal() (ICPU.Registers.PL &= ~Decimal)
+#define SetIndex() (ICPU.Registers.PL |= IndexFlag)
+#define ClearIndex() (ICPU.Registers.PL &= ~IndexFlag)
+#define SetMemory() (ICPU.Registers.PL |= MemoryFlag)
+#define ClearMemory() (ICPU.Registers.PL &= ~MemoryFlag)
 #define SetOverflow() (ICPU._Overflow = 1)
 #define ClearOverflow() (ICPU._Overflow = 0)
 #define SetNegative() (ICPU._Negative = 0x80)
@@ -132,17 +132,17 @@
 
 #define CheckZero() (ICPU._Zero == 0)
 #define CheckCarry() (ICPU._Carry)
-#define CheckIRQ() (Registers.PL & IRQ)
-#define CheckDecimal() (Registers.PL & Decimal)
-#define CheckIndex() (Registers.PL & IndexFlag)
-#define CheckMemory() (Registers.PL & MemoryFlag)
+#define CheckIRQ() (ICPU.Registers.PL & IRQ)
+#define CheckDecimal() (ICPU.Registers.PL & Decimal)
+#define CheckIndex() (ICPU.Registers.PL & IndexFlag)
+#define CheckMemory() (ICPU.Registers.PL & MemoryFlag)
 #define CheckOverflow() (ICPU._Overflow)
 #define CheckNegative() (ICPU._Negative & 0x80)
-#define CheckEmulation() (Registers.P.W & Emulation)
+#define CheckEmulation() (ICPU.Registers.P.W & Emulation)
 
-#define ClearFlags(f) (Registers.P.W &= ~(f))
-#define SetFlags(f)   (Registers.P.W |=  (f))
-#define CheckFlag(f)  (Registers.PL & (f))
+#define ClearFlags(f) (ICPU.Registers.P.W &= ~(f))
+#define SetFlags(f)   (ICPU.Registers.P.W |=  (f))
+#define CheckFlag(f)  (ICPU.Registers.PL & (f))
 
 typedef union
 {
@@ -165,8 +165,6 @@ struct SRegisters{
     pair   Y;
     uint16 PC;
 };
-
-EXTERN_C struct SRegisters Registers;
 
 #endif
 

@@ -98,12 +98,14 @@
 #include "obc1.h"
 #include "seta.h"
 
+#ifndef NO_OPEN_BUS
 extern "C"
 {
 	extern uint8 OpenBus;
 }
+#endif
 
-INLINE uint8 S9xGetByte (uint32 Address)
+uint8 S9xGetByte (uint32 Address)
 {
     int block;
     uint8 *GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
@@ -178,8 +180,11 @@ INLINE uint8 S9xGetByte (uint32 Address)
  #ifdef DEBUGGER
  		printf ("DEBUG R(B) %06x\n", Address);
  #endif
- 		return OpenBus;
- 
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
 
 	default:
@@ -193,16 +198,25 @@ INLINE uint8 S9xGetByte (uint32 Address)
 #ifdef DEBUGGER
 		printf ("R(B) %06x\n", Address);
 #endif
+#ifndef NO_OPEN_BUS
 		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
     }
 }
 
-INLINE uint16 S9xGetWord (uint32 Address)
+uint16 S9xGetWord (uint32 Address)
 {
     if ((Address & 0x0fff) == 0x0fff)
     {
-		OpenBus=S9xGetByte (Address);
+#ifndef NO_OPEN_BUS
+		OpenBus = S9xGetByte (Address);
 		return (OpenBus | (S9xGetByte (Address + 1) << 8));
+#else
+		uint8 Split = S9xGetByte (Address);
+		return (Split | (S9xGetByte (Address + 1) << 8));
+#endif
     }
     int block;
     uint8 *GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
@@ -302,8 +316,11 @@ INLINE uint16 S9xGetWord (uint32 Address)
  #ifdef DEBUGGER
  		printf ("DEBUG R(W) %06x\n", Address);
  #endif
- 		return (OpenBus | (OpenBus<<8));
-
+#ifndef NO_OPEN_BUS
+		return (OpenBus | (OpenBus<<8));
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
 
     default:
     case CMemory::MAP_NONE:
@@ -316,11 +333,15 @@ INLINE uint16 S9xGetWord (uint32 Address)
 #ifdef DEBUGGER
 		printf ("R(W) %06x\n", Address);
 #endif
+#ifndef NO_OPEN_BUS
 		return (OpenBus | (OpenBus<<8));
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
     }
 }
 
-INLINE void S9xSetByte (uint8 Byte, uint32 Address)
+void S9xSetByte (uint8 Byte, uint32 Address)
 {
 #if defined(CPU_SHUTDOWN)
     CPU.WaitAddress = NULL;
@@ -436,7 +457,7 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
     }
 }
 
-INLINE void S9xSetWord (uint16 Word, uint32 Address)
+void S9xSetWord (uint16 Word, uint32 Address)
 {
 	if((Address & 0x0FFF)==0x0FFF)
 	{
@@ -594,7 +615,7 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
     }
 }
 
-INLINE uint8 *GetBasePointer (uint32 Address)
+uint8 *GetBasePointer (uint32 Address)
 {
     uint8 *GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
     if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
@@ -660,7 +681,7 @@ INLINE uint8 *GetBasePointer (uint32 Address)
     }
 }
 
-INLINE uint8 *S9xGetMemPointer (uint32 Address)
+uint8 *S9xGetMemPointer (uint32 Address)
 {
     uint8 *GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
     if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
@@ -714,7 +735,7 @@ INLINE uint8 *S9xGetMemPointer (uint32 Address)
     }
 }
 
-INLINE void S9xSetPCBase (uint32 Address)
+void S9xSetPCBase (uint32 Address)
 {
     int block;
     uint8 *GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK];

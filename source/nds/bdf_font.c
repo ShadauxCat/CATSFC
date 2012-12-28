@@ -18,6 +18,7 @@
  */
 //v1.1
 
+#include "port.h"
 #include <string.h>
 #include "ds2_types.h"
 #include "ds2_malloc.h"
@@ -27,13 +28,13 @@
 #include "gui.h"
 
 
-#define BDF_VERDANA "SYSTEM/verdana.bdf"
+#define BDF_PICTOCHAT "SYSTEM/Pictochat-16.bdf"
 #define BDF_SONG "SYSTEM/song.bdf"
-#define ODF_VERDANA "SYSTEM/verdana.odf"
+#define ODF_PICTOCHAT "SYSTEM/Pictochat-16.odf"
 #define ODF_SONG "SYSTEM/song.odf"
 
-#define HAVE_ODF 
-//#define DUMP_ODF
+#define HAVE_ODF // Define this if you have generated Pictochat-16.odf [Neb]
+// #define DUMP_ODF // Define this if you want to regenerate Pictochat-16.odf [Neb]
 
 #define BDF_LIB_NUM 2
 #define ODF_VERSION "1.0"
@@ -49,21 +50,24 @@ static u32 fonts_max_height;
 static u32 bitmap_code(unsigned char *code, unsigned char *bitmap)
 {
     unsigned char *map;
-    u32 a, b, len;
+    u8 a, b;
+	u32 len;
 
     len= 0;
     map= (unsigned char*)bitmap;
     while(*map)
     {
-        //character to number, we assume the character can convert to number!
+        // One hex character represents the state of 4 successive pixels
         if(*map != 0x0A)
         {
-            if(*map <= 0x39) a= *map - 0x30;
-            else             a= *map - 0x37;
+            if      (*map <= '9') a= *map - '0';
+            else if (*map <= 'F') a= *map - 'A' + 10;
+			else if (*map <= 'f') a= *map - 'a' + 10;
             map++;
 
-            if(*map <= 0x39) b= *map - 0x30;
-            else             b= *map - 0x37;
+            if      (*map <= '9') b= *map - '0';
+            else if (*map <= 'F') b= *map - 'A' + 10;
+			else if (*map <= 'f') b= *map - 'a' + 10;
 
             *code++ = (a << 4) | b;
             len++;
@@ -108,7 +112,7 @@ static u32 hatoi(char *string)
 /*
 * example
 *
-* STARTCHAR 2264
+* STARTCHAR <arbitrary number or name>
 * ENCODING 8804
 * SWIDTH 840 0
 * DWIDTH 14 0
@@ -202,8 +206,17 @@ static int parse_bdf(char *filename, u32 start, u32 span, struct bdflibinfo *bdf
     pt += 6;
     ret= atoi(pt);
 
-    bdflibinfop -> start= start;
-    bdflibinfop -> span= span;
+	if (method == 1)
+    	bdflibinfop -> start= start;
+    switch (method) {
+	case 0:
+	default:
+		bdflibinfop -> span= span + start;
+		break;
+	case 1:
+		bdflibinfop -> span= span;
+		break;
+	}
 
     //construct bdf font information
     bdffontp= (struct bdffont*)malloc(span * sizeof(struct bdffont));
@@ -241,14 +254,7 @@ static int parse_bdf(char *filename, u32 start, u32 span, struct bdflibinfo *bdf
         }
         if(!(strncasecmp(string, "STARTCHAR ", 10)))
         {
-            i= hatoi(pt +10);
-            if(i < start) continue;
-            else if(i < end) break;
-            else    //Not found the start
-            {
-                ret= -7;
-                goto parse_bdf_error;
-            }
+			break;
         }
     }
 
@@ -266,7 +272,7 @@ static int parse_bdf(char *filename, u32 start, u32 span, struct bdflibinfo *bdf
 
         pt= string + 9;
         index= atoi(pt);
-        if(index >= end) break;
+        if(index < start || index >= end) break;
 
         if(method == 0) i= index;
         else if(method == 1) i= index-start;
@@ -534,15 +540,15 @@ int BDF_font_init(void)
 
     fonts_max_height= 0;
 #ifndef HAVE_ODF
-    sprintf(tmp_path, "%s/%s", main_path, BDF_VERDANA);
-    err= parse_bdf(tmp_path, 0, 128, &bdflib_info[0], 0);
+    sprintf(tmp_path, "%s/%s", main_path, BDF_PICTOCHAT);
+    err= parse_bdf(tmp_path, 32 /* from SPACE */, 8564 /* to one past the last character, "DOWNWARDS ARROW" */, &bdflib_info[0], 1);
     if(err < 0)
     {
         printf("BDF 0 initial error: %d\n", err);
         return -1;
     }
 #else
-    sprintf(tmp_path, "%s/%s", main_path, ODF_VERDANA);
+    sprintf(tmp_path, "%s/%s", main_path, ODF_PICTOCHAT);
     err= init_from_odf(tmp_path, &bdflib_info[0]);
     if(err < 0)
     {
@@ -556,7 +562,7 @@ int BDF_font_init(void)
         fonts_max_height = bdflib_info[0].height;
 
 #ifdef DUMP_ODF
-    sprintf(tmp_path, "%s/%s", main_path, BDF_VERDANA);
+    sprintf(tmp_path, "%s/%s", main_path, BDF_PICTOCHAT);
     err= dump2odf(tmp_path, &bdflib_info[0]);
     if(err < 0)
     {
@@ -613,7 +619,7 @@ void BDF_font_release(void)
     }
 }
 
-/*-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------
 //16-bit color
 // Unicode Character
 // back is background, 0x8000 is transparence, other are visable colors
@@ -626,26 +632,25 @@ u32 BDF_render16_ucs(void* screen_address, u32 screen_w, u32 v_align, u32 back, 
     unsigned char cc;
     struct bdffont *bdffontp;
 
-    if(ch < 128)
-    {
-        bdffontp= bdflib_info[0].fonts;
-        fonts_height= bdflib_info[0].height;
-    }
-    else if(bdflib_info[1].fonts != NULL)
-    {
-        k= bdflib_info[1].start;
-        m= k + bdflib_info[1].span;
-        if(ch >= k && ch < m)
-        {
+	int font_num;
+	bool found = 0;
+	for (font_num = 0; font_num < BDF_LIB_NUM && !found; font_num++) {
+    	if(bdflib_info[font_num].fonts != NULL)
+    	{
+			k = bdflib_info[font_num].start;
+			if (ch < k)
+				continue;
+			m = k + bdflib_info[font_num].span;
+	        if (ch >= m)
+				continue;
             ch -= k;
-            bdffontp= bdflib_info[1].fonts;
-            fonts_height= bdflib_info[0].height;
-        }
-        else
-            return 8;
-    }
-    else 
-        return 8;
+           	bdffontp= bdflib_info[font_num].fonts;
+           	fonts_height= bdflib_info[font_num].height;
+			found = 1;
+	    }
+	}
+	if (!found)
+		return 8; // the width of an undefined character, not an error code
 
     width= bdffontp[ch].dwidth >> 16;
     ret= width;
@@ -713,6 +718,27 @@ u32 BDF_render16_ucs(void* screen_address, u32 screen_w, u32 v_align, u32 back, 
     }
 
     return ret;
+}
+
+/* Returns the width, in pixels, of a character given its UCS-16 codepoint. */
+u32 BDF_width16_ucs(u16 ch)
+{
+    u32 k, ret;
+
+	int font_num;
+	for (font_num = 0; font_num < BDF_LIB_NUM; font_num++) {
+    	if(bdflib_info[font_num].fonts != NULL)
+    	{
+			k = bdflib_info[font_num].start;
+			if (ch < k)
+				continue;
+			if (ch > k + bdflib_info[font_num].span)
+				continue;
+            ch -= k;
+           	return bdflib_info[font_num].fonts[ch].dwidth >> 16;
+	    }
+	}
+	return 8; // the width of an undefined character, not an error code
 }
 
 /*-----------------------------------------------------------------------------
@@ -971,10 +997,9 @@ void BDF_render_mix(void* screen_address, u32 screen_w, u32 x, u32 y, u32 v_alig
             continue;
         }
 
-		if(unicode < 128)
-			cmp = bdf_fontp[0][unicode].dwidth>>16;
-		else if(unicode >= start && unicode < end)
-			cmp = bdf_fontp[1][unicode -start].dwidth>>16;
+		/* If the text would go beyond the end of the line, go back to the
+		 * start instead. */
+		cmp = BDF_width16_ucs(unicode);
 
         if((screenp+cmp) >= line_start)
         {
@@ -1074,10 +1099,7 @@ u32 BDF_cut_unicode(u16 *unicodes, u32 len, u32 width, u32 direction)
 		while(len > 0)
 		{
 			unicode= unicodes[i];
-			if(unicode < 128)
-				xw += bdf_fontp[0][unicode].dwidth>>16;
-			else if(unicode >= start && unicode < end)
-				xw += bdf_fontp[1][unicode -start].dwidth>>16;
+			xw += BDF_width16_ucs(unicode);
 
 			if(xw >= width) break;
 			i += direction;
@@ -1096,10 +1118,7 @@ u32 BDF_cut_unicode(u16 *unicodes, u32 len, u32 width, u32 direction)
         while(len-- > 0)
         {
             unicode= unicodes[i];
-            if(unicode < 128)
-                xw += bdf_fontp[0][unicode].dwidth>>16;
-            else if(unicode >= start && unicode < end)
-                xw += bdf_fontp[1][unicode -start].dwidth>>16;
+			xw += BDF_width16_ucs(unicode);
             i += direction;
         }
 

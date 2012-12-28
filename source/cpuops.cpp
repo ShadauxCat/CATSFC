@@ -100,204 +100,167 @@
 #include "sa1.h"
 #include "spc7110.h"
 
-START_EXTERN_C
-extern uint8 A1, A2, A3, A4, W1, W2, W3, W4;
-extern uint8 Ans8;
-extern uint16 Ans16;
-extern uint32 Ans32;
-extern uint8 Work8;
-extern uint16 Work16;
-extern uint32 Work32;
-extern signed char Int8;
-extern short Int16;
-extern long Int32;
-END_EXTERN_C
-
 #include "cpuexec.h"
 #include "cpuaddr.h"
 #include "cpuops.h"
 #include "cpumacro.h"
 #include "apu.h"
 
+// For use with the opcodes whose functions here examine the OpAddress.
+static void OpAddressPassthrough (long Addr)
+{
+    OpAddress = Addr;
+}
+
 /* ADC *************************************************************************************** */
 static void Op69M1 (void)
 {
-    Immediate8 (READ);
-    ADC8 ();
+    Immediate8 (READ, ADC8);
 }
 
 static void Op69M0 (void)
 {
-    Immediate16 (READ);
-    ADC16 ();
+    Immediate16 (READ, ADC16);
 }
 
 static void Op65M1 (void)
 {
-    Direct (READ);
-    ADC8 ();
+    Direct (READ, ADC8);
 }
 
 static void Op65M0 (void)
 {
-    Direct (READ);
-    ADC16 ();
+    Direct (READ, ADC16);
 }
 
 static void Op75M1 (void)
 {
-    DirectIndexedX (READ);
-    ADC8 ();
+    DirectIndexedX (READ, ADC8);
 }
 
 static void Op75M0 (void)
 {
-    DirectIndexedX (READ);
-    ADC16 ();
+    DirectIndexedX (READ, ADC16);
 }
 
 static void Op72M1 (void)
 {
-    DirectIndirect (READ);
-    ADC8 ();
+    DirectIndirect (READ, ADC8);
 }
 
 static void Op72M0 (void)
 {
-    DirectIndirect (READ);
-    ADC16 ();
+    DirectIndirect (READ, ADC16);
 }
 
 static void Op61M1 (void)
 {
-    DirectIndexedIndirect (READ);
-    ADC8 ();
+    DirectIndexedIndirect (READ, ADC8);
 }
 
 static void Op61M0 (void)
 {
-    DirectIndexedIndirect (READ);
-    ADC16 ();
+    DirectIndexedIndirect (READ, ADC16);
 }
 
 static void Op71M1 (void)
 {
-    DirectIndirectIndexed (READ);
-    ADC8 ();
+    DirectIndirectIndexed (READ, ADC8);
 }
 
 static void Op71M0 (void)
 {
-    DirectIndirectIndexed (READ);
-    ADC16 ();
+    DirectIndirectIndexed (READ, ADC16);
 }
 
 static void Op67M1 (void)
 {
-    DirectIndirectLong (READ);
-    ADC8 ();
+    DirectIndirectLong (READ, ADC8);
 }
 
 static void Op67M0 (void)
 {
-    DirectIndirectLong (READ);
-    ADC16 ();
+    DirectIndirectLong (READ, ADC16);
 }
 
 static void Op77M1 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    ADC8 ();
+    DirectIndirectIndexedLong (READ, ADC8);
 }
 
 static void Op77M0 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    ADC16 ();
+    DirectIndirectIndexedLong (READ, ADC16);
 }
 
 static void Op6DM1 (void)
 {
-    Absolute (READ);
-    ADC8 ();
+    Absolute (READ, ADC8);
 }
 
 static void Op6DM0 (void)
 {
-    Absolute (READ);
-    ADC16 ();
+    Absolute (READ, ADC16);
 }
 
 static void Op7DM1 (void)
 {
-    AbsoluteIndexedX (READ);
-    ADC8 ();
+    AbsoluteIndexedX (READ, ADC8);
 }
 
 static void Op7DM0 (void)
 {
-    AbsoluteIndexedX (READ);
-    ADC16 ();
+    AbsoluteIndexedX (READ, ADC16);
 }
 
 static void Op79M1 (void)
 {
-    AbsoluteIndexedY (READ);
-    ADC8 ();
+    AbsoluteIndexedY (READ, ADC8);
 }
 
 static void Op79M0 (void)
 {
-    AbsoluteIndexedY (READ);
-    ADC16 ();
+    AbsoluteIndexedY (READ, ADC16);
 }
 
 static void Op6FM1 (void)
 {
-    AbsoluteLong (READ);
-    ADC8 ();
+    AbsoluteLong (READ, ADC8);
 }
 
 static void Op6FM0 (void)
 {
-    AbsoluteLong (READ);
-    ADC16 ();
+    AbsoluteLong (READ, ADC16);
 }
 
 static void Op7FM1 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    ADC8 ();
+    AbsoluteLongIndexedX (READ, ADC8);
 }
 
 static void Op7FM0 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    ADC16 ();
+    AbsoluteLongIndexedX (READ, ADC16);
 }
 
 static void Op63M1 (void)
 {
-    StackRelative (READ);
-    ADC8 ();
+    StackRelative (READ, ADC8);
 }
 
 static void Op63M0 (void)
 {
-    StackRelative (READ);
-    ADC16 ();
+    StackRelative (READ, ADC16);
 }
 
 static void Op73M1 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    ADC8 ();
+    StackRelativeIndirectIndexed (READ, ADC8);
 }
 
 static void Op73M0 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    ADC16 ();
+    StackRelativeIndirectIndexed (READ, ADC16);
 }
 
 /**********************************************************************************************/
@@ -305,193 +268,165 @@ static void Op73M0 (void)
 /* AND *************************************************************************************** */
 static void Op29M1 (void)
 {
-    Registers.AL &= *CPU.PC++;
+    ICPU.Registers.AL &= *CPU.PC++;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
-    SetZN8 (Registers.AL);
+    SetZN8 (ICPU.Registers.AL);
 }
 
 static void Op29M0 (void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-    Registers.A.W &= *(uint16 *) CPU.PC;
+    ICPU.Registers.A.W &= *(uint16 *) CPU.PC;
 #else
-    Registers.A.W &= *CPU.PC + (*(CPU.PC + 1) << 8);
+    ICPU.Registers.A.W &= *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
     CPU.PC += 2;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeedx2;
 #endif
-    SetZN16 (Registers.A.W);
+    SetZN16 (ICPU.Registers.A.W);
 }
 
 static void Op25M1 (void)
 {
-    Direct (READ);
-    AND8 ();
+    Direct (READ, AND8);
 }
 
 static void Op25M0 (void)
 {
-    Direct (READ);
-    AND16 ();
+    Direct (READ, AND16);
 }
 
 static void Op35M1 (void)
 {
-    DirectIndexedX (READ);
-    AND8 ();
+    DirectIndexedX (READ, AND8);
 }
 
 static void Op35M0 (void)
 {
-    DirectIndexedX (READ);
-    AND16 ();
+    DirectIndexedX (READ, AND16);
 }
 
 static void Op32M1 (void)
 {
-    DirectIndirect (READ);
-    AND8 ();
+    DirectIndirect (READ, AND8);
 }
 
 static void Op32M0 (void)
 {
-    DirectIndirect (READ);
-    AND16 ();
+    DirectIndirect (READ, AND16);
 }
 
 static void Op21M1 (void)
 {
-    DirectIndexedIndirect (READ);
-    AND8 ();
+    DirectIndexedIndirect (READ, AND8);
 }
 
 static void Op21M0 (void)
 {
-    DirectIndexedIndirect (READ);
-    AND16 ();
+    DirectIndexedIndirect (READ, AND16);
 }
 
 static void Op31M1 (void)
 {
-    DirectIndirectIndexed (READ);
-    AND8 ();
+    DirectIndirectIndexed (READ, AND8);
 }
 
 static void Op31M0 (void)
 {
-    DirectIndirectIndexed (READ);
-    AND16 ();
+    DirectIndirectIndexed (READ, AND16);
 }
 
 static void Op27M1 (void)
 {
-    DirectIndirectLong (READ);
-    AND8 ();
+    DirectIndirectLong (READ, AND8);
 }
 
 static void Op27M0 (void)
 {
-    DirectIndirectLong (READ);
-    AND16 ();
+    DirectIndirectLong (READ, AND16);
 }
 
 static void Op37M1 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    AND8 ();
+    DirectIndirectIndexedLong (READ, AND8);
 }
 
 static void Op37M0 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    AND16 ();
+    DirectIndirectIndexedLong (READ, AND16);
 }
 
 static void Op2DM1 (void)
 {
-    Absolute (READ);
-    AND8 ();
+    Absolute (READ, AND8);
 }
 
 static void Op2DM0 (void)
 {
-    Absolute (READ);
-    AND16 ();
+    Absolute (READ, AND16);
 }
 
 static void Op3DM1 (void)
 {
-    AbsoluteIndexedX (READ);
-    AND8 ();
+    AbsoluteIndexedX (READ, AND8);
 }
 
 static void Op3DM0 (void)
 {
-    AbsoluteIndexedX (READ);
-    AND16 ();
+    AbsoluteIndexedX (READ, AND16);
 }
 
 static void Op39M1 (void)
 {
-    AbsoluteIndexedY (READ);
-    AND8 ();
+    AbsoluteIndexedY (READ, AND8);
 }
 
 static void Op39M0 (void)
 {
-    AbsoluteIndexedY (READ);
-    AND16 ();
+    AbsoluteIndexedY (READ, AND16);
 }
 
 static void Op2FM1 (void)
 {
-    AbsoluteLong (READ);
-    AND8 ();
+    AbsoluteLong (READ, AND8);
 }
 
 static void Op2FM0 (void)
 {
-    AbsoluteLong (READ);
-    AND16 ();
+    AbsoluteLong (READ, AND16);
 }
 
 static void Op3FM1 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    AND8 ();
+    AbsoluteLongIndexedX (READ, AND8);
 }
 
 static void Op3FM0 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    AND16 ();
+    AbsoluteLongIndexedX (READ, AND16);
 }
 
 static void Op23M1 (void)
 {
-    StackRelative (READ);
-    AND8 ();
+    StackRelative (READ, AND8);
 }
 
 static void Op23M0 (void)
 {
-    StackRelative (READ);
-    AND16 ();
+    StackRelative (READ, AND16);
 }
 
 static void Op33M1 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    AND8 ();
+    StackRelativeIndirectIndexed (READ, AND8);
 }
 
 static void Op33M0 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    AND16 ();
+    StackRelativeIndirectIndexed (READ, AND16);
 }
 /**********************************************************************************************/
 
@@ -508,57 +443,49 @@ static void Op0AM0 (void)
 
 static void Op06M1 (void)
 {
-    Direct (MODIFY);
-    ASL8 ();
+    Direct (MODIFY, ASL8);
 }
 
 static void Op06M0 (void)
 {
-    Direct (MODIFY);
-    ASL16 ();
+    Direct (MODIFY, ASL16);
 }
 
 static void Op16M1 (void)
 {
-    DirectIndexedX (MODIFY);
-    ASL8 ();
+    DirectIndexedX (MODIFY, ASL8);
 }
 
 static void Op16M0 (void)
 {
-    DirectIndexedX (MODIFY);
-    ASL16 ();
+    DirectIndexedX (MODIFY, ASL16);
 }
 
 static void Op0EM1 (void)
 {
-    Absolute (MODIFY);
-    ASL8 ();
+    Absolute (MODIFY, ASL8);
 }
 
 static void Op0EM0 (void)
 {
-    Absolute (MODIFY);
-    ASL16 ();
+    Absolute (MODIFY, ASL16);
 }
 
 static void Op1EM1 (void)
 {
-    AbsoluteIndexedX (MODIFY);
-    ASL8 ();
+    AbsoluteIndexedX (MODIFY, ASL8);
 }
 
 static void Op1EM0 (void)
 {
-    AbsoluteIndexedX (MODIFY);
-    ASL16 ();
+    AbsoluteIndexedX (MODIFY, ASL16);
 }
 /**********************************************************************************************/
 
 /* BIT *************************************************************************************** */
 static void Op89M1 (void)
 {
-    ICPU._Zero = Registers.AL & *CPU.PC++;
+    ICPU._Zero = ICPU.Registers.AL & *CPU.PC++;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
@@ -567,9 +494,9 @@ static void Op89M1 (void)
 static void Op89M0 (void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-    ICPU._Zero = (Registers.A.W & *(uint16 *) CPU.PC) != 0;
+    ICPU._Zero = (ICPU.Registers.A.W & *(uint16 *) CPU.PC) != 0;
 #else
-    ICPU._Zero = (Registers.A.W & (*CPU.PC + (*(CPU.PC + 1) << 8))) != 0;
+    ICPU._Zero = (ICPU.Registers.A.W & (*CPU.PC + (*(CPU.PC + 1) << 8))) != 0;
 #endif	
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeedx2;
@@ -579,57 +506,49 @@ static void Op89M0 (void)
 
 static void Op24M1 (void)
 {
-    Direct (READ);
-    BIT8 ();
+    Direct (READ, BIT8);
 }
 
 static void Op24M0 (void)
 {
-    Direct (READ);
-    BIT16 ();
+    Direct (READ, BIT16);
 }
 
 static void Op34M1 (void)
 {
-    DirectIndexedX (READ);
-    BIT8 ();
+    DirectIndexedX (READ, BIT8);
 }
 
 static void Op34M0 (void)
 {
-    DirectIndexedX (READ);
-    BIT16 ();
+    DirectIndexedX (READ, BIT16);
 }
 
 static void Op2CM1 (void)
 {
-    Absolute (READ);
-    BIT8 ();
+    Absolute (READ, BIT8);
 }
 
 static void Op2CM0 (void)
 {
-    Absolute (READ);
-    BIT16 ();
+    Absolute (READ, BIT16);
 }
 
 static void Op3CM1 (void)
 {
-    AbsoluteIndexedX (READ);
-    BIT8 ();
+    AbsoluteIndexedX (READ, BIT8);
 }
 
 static void Op3CM0 (void)
 {
-    AbsoluteIndexedX (READ);
-    BIT16 ();
+    AbsoluteIndexedX (READ, BIT16);
 }
 /**********************************************************************************************/
 
 /* CMP *************************************************************************************** */
 static void OpC9M1 (void)
 {
-    Int32 = (int) Registers.AL - (int) *CPU.PC++;
+    int32 Int32 = (int) ICPU.Registers.AL - (int) *CPU.PC++;
     ICPU._Carry = Int32 >= 0;
     SetZN8 ((uint8) Int32);
 #ifndef SA1_OPCODES
@@ -639,10 +558,11 @@ static void OpC9M1 (void)
 
 static void OpC9M0 (void)
 {
+    int32 Int32;
 #ifdef FAST_LSB_WORD_ACCESS    
-    Int32 = (long) Registers.A.W - (long) *(uint16 *) CPU.PC;
+    Int32 = (long) ICPU.Registers.A.W - (long) *(uint16 *) CPU.PC;
 #else
-    Int32 = (long) Registers.A.W -
+    Int32 = (long) ICPU.Registers.A.W -
 	    (long) (*CPU.PC + (*(CPU.PC + 1) << 8));
 #endif
     ICPU._Carry = Int32 >= 0;
@@ -655,170 +575,142 @@ static void OpC9M0 (void)
 
 static void OpC5M1 (void)
 {
-    Direct (READ);
-    CMP8 ();
+    Direct (READ, CMP8);
 }
 
 static void OpC5M0 (void)
 {
-    Direct (READ);
-    CMP16 ();
+    Direct (READ, CMP16);
 }
 
 static void OpD5M1 (void)
 {
-    DirectIndexedX (READ);
-    CMP8 ();
+    DirectIndexedX (READ, CMP8);
 }
 
 static void OpD5M0 (void)
 {
-    DirectIndexedX (READ);
-    CMP16 ();
+    DirectIndexedX (READ, CMP16);
 }
 
 static void OpD2M1 (void)
 {
-    DirectIndirect (READ);
-    CMP8 ();
+    DirectIndirect (READ, CMP8);
 }
 
 static void OpD2M0 (void)
 {
-    DirectIndirect (READ);
-    CMP16 ();
+    DirectIndirect (READ, CMP16);
 }
 
 static void OpC1M1 (void)
 {
-    DirectIndexedIndirect (READ);
-    CMP8 ();
+    DirectIndexedIndirect (READ, CMP8);
 }
 
 static void OpC1M0 (void)
 {
-    DirectIndexedIndirect (READ);
-    CMP16 ();
+    DirectIndexedIndirect (READ, CMP16);
 }
 
 static void OpD1M1 (void)
 {
-    DirectIndirectIndexed (READ);
-    CMP8 ();
+    DirectIndirectIndexed (READ, CMP8);
 }
 
 static void OpD1M0 (void)
 {
-    DirectIndirectIndexed (READ);
-    CMP16 ();
+    DirectIndirectIndexed (READ, CMP16);
 }
 
 static void OpC7M1 (void)
 {
-    DirectIndirectLong (READ);
-    CMP8 ();
+    DirectIndirectLong (READ, CMP8);
 }
 
 static void OpC7M0 (void)
 {
-    DirectIndirectLong (READ);
-    CMP16 ();
+    DirectIndirectLong (READ, CMP16);
 }
 
 static void OpD7M1 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    CMP8 ();
+    DirectIndirectIndexedLong (READ, CMP8);
 }
 
 static void OpD7M0 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    CMP16 ();
+    DirectIndirectIndexedLong (READ, CMP16);
 }
 
 static void OpCDM1 (void)
 {
-    Absolute (READ);
-    CMP8 ();
+    Absolute (READ, CMP8);
 }
 
 static void OpCDM0 (void)
 {
-    Absolute (READ);
-    CMP16 ();
+    Absolute (READ, CMP16);
 }
 
 static void OpDDM1 (void)
 {
-    AbsoluteIndexedX (READ);
-    CMP8 ();
+    AbsoluteIndexedX (READ, CMP8);
 }
 
 static void OpDDM0 (void)
 {
-    AbsoluteIndexedX (READ);
-    CMP16 ();
+    AbsoluteIndexedX (READ, CMP16);
 }
 
 static void OpD9M1 (void)
 {
-    AbsoluteIndexedY (READ);
-    CMP8 ();
+    AbsoluteIndexedY (READ, CMP8);
 }
 
 static void OpD9M0 (void)
 {
-    AbsoluteIndexedY (READ);
-    CMP16 ();
+    AbsoluteIndexedY (READ, CMP16);
 }
 
 static void OpCFM1 (void)
 {
-    AbsoluteLong (READ);
-    CMP8 ();
+    AbsoluteLong (READ, CMP8);
 }
 
 static void OpCFM0 (void)
 {
-    AbsoluteLong (READ);
-    CMP16 ();
+    AbsoluteLong (READ, CMP16);
 }
 
 static void OpDFM1 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    CMP8 ();
+    AbsoluteLongIndexedX (READ, CMP8);
 }
 
 static void OpDFM0 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    CMP16 ();
+    AbsoluteLongIndexedX (READ, CMP16);
 }
 
 static void OpC3M1 (void)
 {
-    StackRelative (READ);
-    CMP8 ();
+    StackRelative (READ, CMP8);
 }
 
 static void OpC3M0 (void)
 {
-    StackRelative (READ);
-    CMP16 ();
+    StackRelative (READ, CMP16);
 }
 
 static void OpD3M1 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    CMP8 ();
+    StackRelativeIndirectIndexed (READ, CMP8);
 }
 
 static void OpD3M0 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    CMP16 ();
+    StackRelativeIndirectIndexed (READ, CMP16);
 }
 
 /**********************************************************************************************/
@@ -826,7 +718,7 @@ static void OpD3M0 (void)
 /* CMX *************************************************************************************** */
 static void OpE0X1 (void)
 {
-    Int32 = (int) Registers.XL - (int) *CPU.PC++;
+    int32 Int32 = (int) ICPU.Registers.XL - (int) *CPU.PC++;
     ICPU._Carry = Int32 >= 0;
     SetZN8 ((uint8) Int32);
 #ifndef SA1_OPCODES
@@ -836,10 +728,11 @@ static void OpE0X1 (void)
 
 static void OpE0X0 (void)
 {
+    int32 Int32;
 #ifdef FAST_LSB_WORD_ACCESS    
-    Int32 = (long) Registers.X.W - (long) *(uint16 *) CPU.PC;
+    Int32 = (long) ICPU.Registers.X.W - (long) *(uint16 *) CPU.PC;
 #else
-    Int32 = (long) Registers.X.W -
+    Int32 = (long) ICPU.Registers.X.W -
 	    (long) (*CPU.PC + (*(CPU.PC + 1) << 8));
 #endif
     ICPU._Carry = Int32 >= 0;
@@ -852,26 +745,22 @@ static void OpE0X0 (void)
 
 static void OpE4X1 (void)
 {
-    Direct (READ);
-    CMX8 ();
+    Direct (READ, CMX8);
 }
 
 static void OpE4X0 (void)
 {
-    Direct (READ);
-    CMX16 ();
+    Direct (READ, CMX16);
 }
 
 static void OpECX1 (void)
 {
-    Absolute (READ);
-    CMX8 ();
+    Absolute (READ, CMX8);
 }
 
 static void OpECX0 (void)
 {
-    Absolute (READ);
-    CMX16 ();
+    Absolute (READ, CMX16);
 }
 
 /**********************************************************************************************/
@@ -879,7 +768,7 @@ static void OpECX0 (void)
 /* CMY *************************************************************************************** */
 static void OpC0X1 (void)
 {
-    Int32 = (int) Registers.YL - (int) *CPU.PC++;
+    int32 Int32 = (int) ICPU.Registers.YL - (int) *CPU.PC++;
     ICPU._Carry = Int32 >= 0;
     SetZN8 ((uint8) Int32);
 #ifndef SA1_OPCODES
@@ -889,10 +778,11 @@ static void OpC0X1 (void)
 
 static void OpC0X0 (void)
 {
+    int32 Int32;
 #ifdef FAST_LSB_WORD_ACCESS    
-    Int32 = (long) Registers.Y.W - (long) *(uint16 *) CPU.PC;
+    Int32 = (long) ICPU.Registers.Y.W - (long) *(uint16 *) CPU.PC;
 #else
-    Int32 = (long) Registers.Y.W -
+    Int32 = (long) ICPU.Registers.Y.W -
 	    (long) (*CPU.PC + (*(CPU.PC + 1) << 8));
 #endif
     ICPU._Carry = Int32 >= 0;
@@ -905,26 +795,22 @@ static void OpC0X0 (void)
 
 static void OpC4X1 (void)
 {
-    Direct (READ);
-    CMY8 ();
+    Direct (READ, CMY8);
 }
 
 static void OpC4X0 (void)
 {
-    Direct (READ);
-    CMY16 ();
+    Direct (READ, CMY16);
 }
 
 static void OpCCX1 (void)
 {
-    Absolute (READ);
-    CMY8 ();
+    Absolute (READ, CMY8);
 }
 
 static void OpCCX0 (void)
 {
-    Absolute (READ);
-    CMY16 ();
+    Absolute (READ, CMY16);
 }
 
 /**********************************************************************************************/
@@ -942,50 +828,42 @@ static void Op3AM0 (void)
 
 static void OpC6M1 (void)
 {
-    Direct (MODIFY);
-    DEC8 ();
+    Direct (MODIFY, DEC8);
 }
 
 static void OpC6M0 (void)
 {
-    Direct (MODIFY);
-    DEC16 ();
+    Direct (MODIFY, DEC16);
 }
 
 static void OpD6M1 (void)
 {
-    DirectIndexedX (MODIFY);
-    DEC8 ();
+    DirectIndexedX (MODIFY, DEC8);
 }
 
 static void OpD6M0 (void)
 {
-    DirectIndexedX (MODIFY);
-    DEC16 ();
+    DirectIndexedX (MODIFY, DEC16);
 }
 
 static void OpCEM1 (void)
 {
-    Absolute (MODIFY);
-    DEC8 ();
+    Absolute (MODIFY, DEC8);
 }
 
 static void OpCEM0 (void)
 {
-    Absolute (MODIFY);
-    DEC16 ();
+    Absolute (MODIFY, DEC16);
 }
 
 static void OpDEM1 (void)
 {
-    AbsoluteIndexedX (MODIFY);
-    DEC8 ();
+    AbsoluteIndexedX (MODIFY, DEC8);
 }
 
 static void OpDEM0 (void)
 {
-    AbsoluteIndexedX (MODIFY);
-    DEC16 ();
+    AbsoluteIndexedX (MODIFY, DEC16);
 }
 
 /**********************************************************************************************/
@@ -993,193 +871,165 @@ static void OpDEM0 (void)
 /* EOR *************************************************************************************** */
 static void Op49M1 (void)
 {
-    Registers.AL ^= *CPU.PC++;
+    ICPU.Registers.AL ^= *CPU.PC++;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
-    SetZN8 (Registers.AL);
+    SetZN8 (ICPU.Registers.AL);
 }
 
 static void Op49M0 (void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-    Registers.A.W ^= *(uint16 *) CPU.PC;
+    ICPU.Registers.A.W ^= *(uint16 *) CPU.PC;
 #else
-    Registers.A.W ^= *CPU.PC + (*(CPU.PC + 1) << 8);
+    ICPU.Registers.A.W ^= *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
     CPU.PC += 2;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeedx2;
 #endif
-    SetZN16 (Registers.A.W);
+    SetZN16 (ICPU.Registers.A.W);
 }
 
 static void Op45M1 (void)
 {
-    Direct (READ);
-    EOR8 ();
+    Direct (READ, EOR8);
 }
 
 static void Op45M0 (void)
 {
-    Direct (READ);
-    EOR16 ();
+    Direct (READ, EOR16);
 }
 
 static void Op55M1 (void)
 {
-    DirectIndexedX (READ);
-    EOR8 ();
+    DirectIndexedX (READ, EOR8);
 }
 
 static void Op55M0 (void)
 {
-    DirectIndexedX (READ);
-    EOR16 ();
+    DirectIndexedX (READ, EOR16);
 }
 
 static void Op52M1 (void)
 {
-    DirectIndirect (READ);
-    EOR8 ();
+    DirectIndirect (READ, EOR8);
 }
 
 static void Op52M0 (void)
 {
-    DirectIndirect (READ);
-    EOR16 ();
+    DirectIndirect (READ, EOR16);
 }
 
 static void Op41M1 (void)
 {
-    DirectIndexedIndirect (READ);
-    EOR8 ();
+    DirectIndexedIndirect (READ, EOR8);
 }
 
 static void Op41M0 (void)
 {
-    DirectIndexedIndirect (READ);
-    EOR16 ();
+    DirectIndexedIndirect (READ, EOR16);
 }
 
 static void Op51M1 (void)
 {
-    DirectIndirectIndexed (READ);
-    EOR8 ();
+    DirectIndirectIndexed (READ, EOR8);
 }
 
 static void Op51M0 (void)
 {
-    DirectIndirectIndexed (READ);
-    EOR16 ();
+    DirectIndirectIndexed (READ, EOR16);
 }
 
 static void Op47M1 (void)
 {
-    DirectIndirectLong (READ);
-    EOR8 ();
+    DirectIndirectLong (READ, EOR8);
 }
 
 static void Op47M0 (void)
 {
-    DirectIndirectLong (READ);
-    EOR16 ();
+    DirectIndirectLong (READ, EOR16);
 }
 
 static void Op57M1 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    EOR8 ();
+    DirectIndirectIndexedLong (READ, EOR8);
 }
 
 static void Op57M0 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    EOR16 ();
+    DirectIndirectIndexedLong (READ, EOR16);
 }
 
 static void Op4DM1 (void)
 {
-    Absolute (READ);
-    EOR8 ();
+    Absolute (READ, EOR8);
 }
 
 static void Op4DM0 (void)
 {
-    Absolute (READ);
-    EOR16 ();
+    Absolute (READ, EOR16);
 }
 
 static void Op5DM1 (void)
 {
-    AbsoluteIndexedX (READ);
-    EOR8 ();
+    AbsoluteIndexedX (READ, EOR8);
 }
 
 static void Op5DM0 (void)
 {
-    AbsoluteIndexedX (READ);
-    EOR16 ();
+    AbsoluteIndexedX (READ, EOR16);
 }
 
 static void Op59M1 (void)
 {
-    AbsoluteIndexedY (READ);
-    EOR8 ();
+    AbsoluteIndexedY (READ, EOR8);
 }
 
 static void Op59M0 (void)
 {
-    AbsoluteIndexedY (READ);
-    EOR16 ();
+    AbsoluteIndexedY (READ, EOR16);
 }
 
 static void Op4FM1 (void)
 {
-    AbsoluteLong (READ);
-    EOR8 ();
+    AbsoluteLong (READ, EOR8);
 }
 
 static void Op4FM0 (void)
 {
-    AbsoluteLong (READ);
-    EOR16 ();
+    AbsoluteLong (READ, EOR16);
 }
 
 static void Op5FM1 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    EOR8 ();
+    AbsoluteLongIndexedX (READ, EOR8);
 }
 
 static void Op5FM0 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    EOR16 ();
+    AbsoluteLongIndexedX (READ, EOR16);
 }
 
 static void Op43M1 (void)
 {
-    StackRelative (READ);
-    EOR8 ();
+    StackRelative (READ, EOR8);
 }
 
 static void Op43M0 (void)
 {
-    StackRelative (READ);
-    EOR16 ();
+    StackRelative (READ, EOR16);
 }
 
 static void Op53M1 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    EOR8 ();
+    StackRelativeIndirectIndexed (READ, EOR8);
 }
 
 static void Op53M0 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    EOR16 ();
+    StackRelativeIndirectIndexed (READ, EOR16);
 }
 
 /**********************************************************************************************/
@@ -1197,244 +1047,208 @@ static void Op1AM0 (void)
 
 static void OpE6M1 (void)
 {
-    Direct (MODIFY);
-    INC8 ();
+    Direct (MODIFY, INC8);
 }
 
 static void OpE6M0 (void)
 {
-    Direct (MODIFY);
-    INC16 ();
+    Direct (MODIFY, INC16);
 }
 
 static void OpF6M1 (void)
 {
-    DirectIndexedX (MODIFY);
-    INC8 ();
+    DirectIndexedX (MODIFY, INC8);
 }
 
 static void OpF6M0 (void)
 {
-    DirectIndexedX (MODIFY);
-    INC16 ();
+    DirectIndexedX (MODIFY, INC16);
 }
 
 static void OpEEM1 (void)
 {
-    Absolute (MODIFY);
-    INC8 ();
+    Absolute (MODIFY, INC8);
 }
 
 static void OpEEM0 (void)
 {
-    Absolute (MODIFY);
-    INC16 ();
+    Absolute (MODIFY, INC16);
 }
 
 static void OpFEM1 (void)
 {
-    AbsoluteIndexedX (MODIFY);
-    INC8 ();
+    AbsoluteIndexedX (MODIFY, INC8);
 }
 
 static void OpFEM0 (void)
 {
-    AbsoluteIndexedX (MODIFY);
-    INC16 ();
+    AbsoluteIndexedX (MODIFY, INC16);
 }
 
 /**********************************************************************************************/
 /* LDA *************************************************************************************** */
 static void OpA9M1 (void)
 {
-    Registers.AL = *CPU.PC++;
+    ICPU.Registers.AL = *CPU.PC++;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
-    SetZN8 (Registers.AL);
+    SetZN8 (ICPU.Registers.AL);
 }
 
 static void OpA9M0 (void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-    Registers.A.W = *(uint16 *) CPU.PC;
+    ICPU.Registers.A.W = *(uint16 *) CPU.PC;
 #else
-    Registers.A.W = *CPU.PC + (*(CPU.PC + 1) << 8);
+    ICPU.Registers.A.W = *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
 
     CPU.PC += 2;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeedx2;
 #endif
-    SetZN16 (Registers.A.W);
+    SetZN16 (ICPU.Registers.A.W);
 }
 
 static void OpA5M1 (void)
 {
-    Direct (READ);
-    LDA8 ();
+    Direct (READ, LDA8);
 }
 
 static void OpA5M0 (void)
 {
-    Direct (READ);
-    LDA16 ();
+    Direct (READ, LDA16);
 }
 
 static void OpB5M1 (void)
 {
-    DirectIndexedX (READ);
-    LDA8 ();
+    DirectIndexedX (READ, LDA8);
 }
 
 static void OpB5M0 (void)
 {
-    DirectIndexedX (READ);
-    LDA16 ();
+    DirectIndexedX (READ, LDA16);
 }
 
 static void OpB2M1 (void)
 {
-    DirectIndirect (READ);
-    LDA8 ();
+    DirectIndirect (READ, LDA8);
 }
 
 static void OpB2M0 (void)
 {
-    DirectIndirect (READ);
-    LDA16 ();
+    DirectIndirect (READ, LDA16);
 }
 
 static void OpA1M1 (void)
 {
-    DirectIndexedIndirect (READ);
-    LDA8 ();
+    DirectIndexedIndirect (READ, LDA8);
 }
 
 static void OpA1M0 (void)
 {
-    DirectIndexedIndirect (READ);
-    LDA16 ();
+    DirectIndexedIndirect (READ, LDA16);
 }
 
 static void OpB1M1 (void)
 {
-    DirectIndirectIndexed (READ);
-    LDA8 ();
+    DirectIndirectIndexed (READ, LDA8);
 }
 
 static void OpB1M0 (void)
 {
-    DirectIndirectIndexed (READ);
-    LDA16 ();
+    DirectIndirectIndexed (READ, LDA16);
 }
 
 static void OpA7M1 (void)
 {
-    DirectIndirectLong (READ);
-    LDA8 ();
+    DirectIndirectLong (READ, LDA8);
 }
 
 static void OpA7M0 (void)
 {
-    DirectIndirectLong (READ);
-    LDA16 ();
+    DirectIndirectLong (READ, LDA16);
 }
 
 static void OpB7M1 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    LDA8 ();
+    DirectIndirectIndexedLong (READ, LDA8);
 }
 
 static void OpB7M0 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    LDA16 ();
+    DirectIndirectIndexedLong (READ, LDA16);
 }
 
 static void OpADM1 (void)
 {
-    Absolute (READ);
-    LDA8 ();
+    Absolute (READ, LDA8);
 }
 
 static void OpADM0 (void)
 {
-    Absolute (READ);
-    LDA16 ();
+    Absolute (READ, LDA16);
 }
 
 static void OpBDM1 (void)
 {
-    AbsoluteIndexedX (READ);
-    LDA8 ();
+    AbsoluteIndexedX (READ, LDA8);
 }
 
 static void OpBDM0 (void)
 {
-    AbsoluteIndexedX (READ);
-    LDA16 ();
+    AbsoluteIndexedX (READ, LDA16);
 }
 
 static void OpB9M1 (void)
 {
-    AbsoluteIndexedY (READ);
-    LDA8 ();
+    AbsoluteIndexedY (READ, LDA8);
 }
 
 static void OpB9M0 (void)
 {
-    AbsoluteIndexedY (READ);
-    LDA16 ();
+    AbsoluteIndexedY (READ, LDA16);
 }
 
 static void OpAFM1 (void)
 {
-    AbsoluteLong (READ);
-    LDA8 ();
+    AbsoluteLong (READ, LDA8);
 }
 
 static void OpAFM0 (void)
 {
-    AbsoluteLong (READ);
-    LDA16 ();
+    AbsoluteLong (READ, LDA16);
 }
 
 static void OpBFM1 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    LDA8 ();
+    AbsoluteLongIndexedX (READ, LDA8);
 }
 
 static void OpBFM0 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    LDA16 ();
+    AbsoluteLongIndexedX (READ, LDA16);
 }
 
 static void OpA3M1 (void)
 {
-    StackRelative (READ);
-    LDA8 ();
+    StackRelative (READ, LDA8);
 }
 
 static void OpA3M0 (void)
 {
-    StackRelative (READ);
-    LDA16 ();
+    StackRelative (READ, LDA16);
 }
 
 static void OpB3M1 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    LDA8 ();
+    StackRelativeIndirectIndexed (READ, LDA8);
 }
 
 static void OpB3M0 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    LDA16 ();
+    StackRelativeIndirectIndexed (READ, LDA16);
 }
 
 /**********************************************************************************************/
@@ -1442,147 +1256,131 @@ static void OpB3M0 (void)
 /* LDX *************************************************************************************** */
 static void OpA2X1 (void)
 {
-    Registers.XL = *CPU.PC++;
+    ICPU.Registers.XL = *CPU.PC++;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
-    SetZN8 (Registers.XL);
+    SetZN8 (ICPU.Registers.XL);
 }
 
 static void OpA2X0 (void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-    Registers.X.W = *(uint16 *) CPU.PC;
+    ICPU.Registers.X.W = *(uint16 *) CPU.PC;
 #else
-    Registers.X.W = *CPU.PC + (*(CPU.PC + 1) << 8);
+    ICPU.Registers.X.W = *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
     CPU.PC += 2;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeedx2;
 #endif
-    SetZN16 (Registers.X.W);
+    SetZN16 (ICPU.Registers.X.W);
 }
 
 static void OpA6X1 (void)
 {
-    Direct (READ);
-    LDX8 ();
+    Direct (READ, LDX8);
 }
 
 static void OpA6X0 (void)
 {
-    Direct (READ);
-    LDX16 ();
+    Direct (READ, LDX16);
 }
 
 static void OpB6X1 (void)
 {
-    DirectIndexedY (READ);
-    LDX8 ();
+    DirectIndexedY (READ, LDX8);
 }
 
 static void OpB6X0 (void)
 {
-    DirectIndexedY (READ);
-    LDX16 ();
+    DirectIndexedY (READ, LDX16);
 }
 
 static void OpAEX1 (void)
 {
-    Absolute (READ);
-    LDX8 ();
+    Absolute (READ, LDX8);
 }
 
 static void OpAEX0 (void)
 {
-    Absolute (READ);
-    LDX16 ();
+    Absolute (READ, LDX16);
 }
 
 static void OpBEX1 (void)
 {
-    AbsoluteIndexedY (READ);
-    LDX8 ();
+    AbsoluteIndexedY (READ, LDX8);
 }
 
 static void OpBEX0 (void)
 {
-    AbsoluteIndexedY (READ);
-    LDX16 ();
+    AbsoluteIndexedY (READ, LDX16);
 }
 /**********************************************************************************************/
 
 /* LDY *************************************************************************************** */
 static void OpA0X1 (void)
 {
-    Registers.YL = *CPU.PC++;
+    ICPU.Registers.YL = *CPU.PC++;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
-    SetZN8 (Registers.YL);
+    SetZN8 (ICPU.Registers.YL);
 }
 
 static void OpA0X0 (void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-    Registers.Y.W = *(uint16 *) CPU.PC;
+    ICPU.Registers.Y.W = *(uint16 *) CPU.PC;
 #else
-    Registers.Y.W = *CPU.PC + (*(CPU.PC + 1) << 8);
+    ICPU.Registers.Y.W = *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
 
     CPU.PC += 2;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeedx2;
 #endif
-    SetZN16 (Registers.Y.W);
+    SetZN16 (ICPU.Registers.Y.W);
 }
 
 static void OpA4X1 (void)
 {
-    Direct (READ);
-    LDY8 ();
+    Direct (READ, LDY8);
 }
 
 static void OpA4X0 (void)
 {
-    Direct (READ);
-    LDY16 ();
+    Direct (READ, LDY16);
 }
 
 static void OpB4X1 (void)
 {
-    DirectIndexedX (READ);
-    LDY8 ();
+    DirectIndexedX (READ, LDY8);
 }
 
 static void OpB4X0 (void)
 {
-    DirectIndexedX (READ);
-    LDY16 ();
+    DirectIndexedX (READ, LDY16);
 }
 
 static void OpACX1 (void)
 {
-    Absolute (READ);
-    LDY8 ();
+    Absolute (READ, LDY8);
 }
 
 static void OpACX0 (void)
 {
-    Absolute (READ);
-    LDY16 ();
+    Absolute (READ, LDY16);
 }
 
 static void OpBCX1 (void)
 {
-    AbsoluteIndexedX (READ);
-    LDY8 ();
+    AbsoluteIndexedX (READ, LDY8);
 }
 
 static void OpBCX0 (void)
 {
-    AbsoluteIndexedX (READ);
-    LDY16 ();
+    AbsoluteIndexedX (READ, LDY16);
 }
 /**********************************************************************************************/
 
@@ -1599,50 +1397,42 @@ static void Op4AM0 (void)
 
 static void Op46M1 (void)
 {
-    Direct (MODIFY);
-    LSR8 ();
+    Direct (MODIFY, LSR8);
 }
 
 static void Op46M0 (void)
 {
-    Direct (MODIFY);
-    LSR16 ();
+    Direct (MODIFY, LSR16);
 }
 
 static void Op56M1 (void)
 {
-    DirectIndexedX (MODIFY);
-    LSR8 ();
+    DirectIndexedX (MODIFY, LSR8);
 }
 
 static void Op56M0 (void)
 {
-    DirectIndexedX (MODIFY);
-    LSR16 ();
+    DirectIndexedX (MODIFY, LSR16);
 }
 
 static void Op4EM1 (void)
 {
-    Absolute (MODIFY);
-    LSR8 ();
+    Absolute (MODIFY, LSR8);
 }
 
 static void Op4EM0 (void)
 {
-    Absolute (MODIFY);
-    LSR16 ();
+    Absolute (MODIFY, LSR16);
 }
 
 static void Op5EM1 (void)
 {
-    AbsoluteIndexedX (MODIFY);
-    LSR8 ();
+    AbsoluteIndexedX (MODIFY, LSR8);
 }
 
 static void Op5EM0 (void)
 {
-    AbsoluteIndexedX (MODIFY);
-    LSR16 ();
+    AbsoluteIndexedX (MODIFY, LSR16);
 }
 
 /**********************************************************************************************/
@@ -1650,193 +1440,165 @@ static void Op5EM0 (void)
 /* ORA *************************************************************************************** */
 static void Op09M1 (void)
 {
-    Registers.AL |= *CPU.PC++;
+    ICPU.Registers.AL |= *CPU.PC++;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeed;
 #endif
-    SetZN8 (Registers.AL);
+    SetZN8 (ICPU.Registers.AL);
 }
 
 static void Op09M0 (void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-    Registers.A.W |= *(uint16 *) CPU.PC;
+    ICPU.Registers.A.W |= *(uint16 *) CPU.PC;
 #else
-    Registers.A.W |= *CPU.PC + (*(CPU.PC + 1) << 8);
+    ICPU.Registers.A.W |= *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
     CPU.PC += 2;
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeedx2;
 #endif
-    SetZN16 (Registers.A.W);
+    SetZN16 (ICPU.Registers.A.W);
 }
 
 static void Op05M1 (void)
 {
-    Direct (READ);
-    ORA8 ();
+    Direct (READ, ORA8);
 }
 
 static void Op05M0 (void)
 {
-    Direct (READ);
-    ORA16 ();
+    Direct (READ, ORA16);
 }
 
 static void Op15M1 (void)
 {
-    DirectIndexedX (READ);
-    ORA8 ();
+    DirectIndexedX (READ, ORA8);
 }
 
 static void Op15M0 (void)
 {
-    DirectIndexedX (READ);
-    ORA16 ();
+    DirectIndexedX (READ, ORA16);
 }
 
 static void Op12M1 (void)
 {
-    DirectIndirect (READ);
-    ORA8 ();
+    DirectIndirect (READ, ORA8);
 }
 
 static void Op12M0 (void)
 {
-    DirectIndirect (READ);
-    ORA16 ();
+    DirectIndirect (READ, ORA16);
 }
 
 static void Op01M1 (void)
 {
-    DirectIndexedIndirect (READ);
-    ORA8 ();
+    DirectIndexedIndirect (READ, ORA8);
 }
 
 static void Op01M0 (void)
 {
-    DirectIndexedIndirect (READ);
-    ORA16 ();
+    DirectIndexedIndirect (READ, ORA16);
 }
 
 static void Op11M1 (void)
 {
-    DirectIndirectIndexed (READ);
-    ORA8 ();
+    DirectIndirectIndexed (READ, ORA8);
 }
 
 static void Op11M0 (void)
 {
-    DirectIndirectIndexed (READ);
-    ORA16 ();
+    DirectIndirectIndexed (READ, ORA16);
 }
 
 static void Op07M1 (void)
 {
-    DirectIndirectLong (READ);
-    ORA8 ();
+    DirectIndirectLong (READ, ORA8);
 }
 
 static void Op07M0 (void)
 {
-    DirectIndirectLong (READ);
-    ORA16 ();
+    DirectIndirectLong (READ, ORA16);
 }
 
 static void Op17M1 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    ORA8 ();
+    DirectIndirectIndexedLong (READ, ORA8);
 }
 
 static void Op17M0 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    ORA16 ();
+    DirectIndirectIndexedLong (READ, ORA16);
 }
 
 static void Op0DM1 (void)
 {
-    Absolute (READ);
-    ORA8 ();
+    Absolute (READ, ORA8);
 }
 
 static void Op0DM0 (void)
 {
-    Absolute (READ);
-    ORA16 ();
+    Absolute (READ, ORA16);
 }
 
 static void Op1DM1 (void)
 {
-    AbsoluteIndexedX (READ);
-    ORA8 ();
+    AbsoluteIndexedX (READ, ORA8);
 }
 
 static void Op1DM0 (void)
 {
-    AbsoluteIndexedX (READ);
-    ORA16 ();
+    AbsoluteIndexedX (READ, ORA16);
 }
 
 static void Op19M1 (void)
 {
-    AbsoluteIndexedY (READ);
-    ORA8 ();
+    AbsoluteIndexedY (READ, ORA8);
 }
 
 static void Op19M0 (void)
 {
-    AbsoluteIndexedY (READ);
-    ORA16 ();
+    AbsoluteIndexedY (READ, ORA16);
 }
 
 static void Op0FM1 (void)
 {
-    AbsoluteLong (READ);
-    ORA8 ();
+    AbsoluteLong (READ, ORA8);
 }
 
 static void Op0FM0 (void)
 {
-    AbsoluteLong (READ);
-    ORA16 ();
+    AbsoluteLong (READ, ORA16);
 }
 
 static void Op1FM1 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    ORA8 ();
+    AbsoluteLongIndexedX (READ, ORA8);
 }
 
 static void Op1FM0 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    ORA16 ();
+    AbsoluteLongIndexedX (READ, ORA16);
 }
 
 static void Op03M1 (void)
 {
-    StackRelative (READ);
-    ORA8 ();
+    StackRelative (READ, ORA8);
 }
 
 static void Op03M0 (void)
 {
-    StackRelative (READ);
-    ORA16 ();
+    StackRelative (READ, ORA16);
 }
 
 static void Op13M1 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    ORA8 ();
+    StackRelativeIndirectIndexed (READ, ORA8);
 }
 
 static void Op13M0 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    ORA16 ();
+    StackRelativeIndirectIndexed (READ, ORA16);
 }
 
 /**********************************************************************************************/
@@ -1854,50 +1616,42 @@ static void Op2AM0 (void)
 
 static void Op26M1 (void)
 {
-    Direct (MODIFY);
-    ROL8 ();
+    Direct (MODIFY, ROL8);
 }
 
 static void Op26M0 (void)
 {
-    Direct (MODIFY);
-    ROL16 ();
+    Direct (MODIFY, ROL16);
 }
 
 static void Op36M1 (void)
 {
-    DirectIndexedX (MODIFY);
-    ROL8 ();
+    DirectIndexedX (MODIFY, ROL8);
 }
 
 static void Op36M0 (void)
 {
-    DirectIndexedX (MODIFY);
-    ROL16 ();
+    DirectIndexedX (MODIFY, ROL16);
 }
 
 static void Op2EM1 (void)
 {
-    Absolute (MODIFY);
-    ROL8 ();
+    Absolute (MODIFY, ROL8);
 }
 
 static void Op2EM0 (void)
 {
-    Absolute (MODIFY);
-    ROL16 ();
+    Absolute (MODIFY, ROL16);
 }
 
 static void Op3EM1 (void)
 {
-    AbsoluteIndexedX (MODIFY);
-    ROL8 ();
+    AbsoluteIndexedX (MODIFY, ROL8);
 }
 
 static void Op3EM0 (void)
 {
-    AbsoluteIndexedX (MODIFY);
-    ROL16 ();
+    AbsoluteIndexedX (MODIFY, ROL16);
 }
 /**********************************************************************************************/
 
@@ -1914,276 +1668,231 @@ static void Op6AM0 (void)
 
 static void Op66M1 (void)
 {
-    Direct (MODIFY);
-    ROR8 ();
+    Direct (MODIFY, ROR8);
 }
 
 static void Op66M0 (void)
 {
-    Direct (MODIFY);
-    ROR16 ();
+    Direct (MODIFY, ROR16);
 }
 
 static void Op76M1 (void)
 {
-    DirectIndexedX (MODIFY);
-    ROR8 ();
+    DirectIndexedX (MODIFY, ROR8);
 }
 
 static void Op76M0 (void)
 {
-    DirectIndexedX (MODIFY);
-    ROR16 ();
+    DirectIndexedX (MODIFY, ROR16);
 }
 
 static void Op6EM1 (void)
 {
-    Absolute (MODIFY);
-    ROR8 ();
+    Absolute (MODIFY, ROR8);
 }
 
 static void Op6EM0 (void)
 {
-    Absolute (MODIFY);
-    ROR16 ();
+    Absolute (MODIFY, ROR16);
 }
 
 static void Op7EM1 (void)
 {
-    AbsoluteIndexedX (MODIFY);
-    ROR8 ();
+    AbsoluteIndexedX (MODIFY, ROR8);
 }
 
 static void Op7EM0 (void)
 {
-    AbsoluteIndexedX (MODIFY);
-    ROR16 ();
+    AbsoluteIndexedX (MODIFY, ROR16);
 }
 /**********************************************************************************************/
 
 /* SBC *************************************************************************************** */
 static void OpE9M1 (void)
 {
-    Immediate8 (READ);
-    SBC8 ();
+    Immediate8 (READ, SBC8);
 }
 
 static void OpE9M0 (void)
 {
-    Immediate16 (READ);
-    SBC16 ();
+    Immediate16 (READ, SBC16);
 }
 
 static void OpE5M1 (void)
 {
-    Direct (READ);
-    SBC8 ();
+    Direct (READ, SBC8);
 }
 
 static void OpE5M0 (void)
 {
-    Direct (READ);
-    SBC16 ();
+    Direct (READ, SBC16);
 }
 
 static void OpF5M1 (void)
 {
-    DirectIndexedX (READ);
-    SBC8 ();
+    DirectIndexedX (READ, SBC8);
 }
 
 static void OpF5M0 (void)
 {
-    DirectIndexedX (READ);
-    SBC16 ();
+    DirectIndexedX (READ, SBC16);
 }
 
 static void OpF2M1 (void)
 {
-    DirectIndirect (READ);
-    SBC8 ();
+    DirectIndirect (READ, SBC8);
 }
 
 static void OpF2M0 (void)
 {
-    DirectIndirect (READ);
-    SBC16 ();
+    DirectIndirect (READ, SBC16);
 }
 
 static void OpE1M1 (void)
 {
-    DirectIndexedIndirect (READ);
-    SBC8 ();
+    DirectIndexedIndirect (READ, SBC8);
 }
 
 static void OpE1M0 (void)
 {
-    DirectIndexedIndirect (READ);
-    SBC16 ();
+    DirectIndexedIndirect (READ, SBC16);
 }
 
 static void OpF1M1 (void)
 {
-    DirectIndirectIndexed (READ);
-    SBC8 ();
+    DirectIndirectIndexed (READ, SBC8);
 }
 
 static void OpF1M0 (void)
 {
-    DirectIndirectIndexed (READ);
-    SBC16 ();
+    DirectIndirectIndexed (READ, SBC16);
 }
 
 static void OpE7M1 (void)
 {
-    DirectIndirectLong (READ);
-    SBC8 ();
+    DirectIndirectLong (READ, SBC8);
 }
 
 static void OpE7M0 (void)
 {
-    DirectIndirectLong (READ);
-    SBC16 ();
+    DirectIndirectLong (READ, SBC16);
 }
 
 static void OpF7M1 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    SBC8 ();
+    DirectIndirectIndexedLong (READ, SBC8);
 }
 
 static void OpF7M0 (void)
 {
-    DirectIndirectIndexedLong (READ);
-    SBC16 ();
+    DirectIndirectIndexedLong (READ, SBC16);
 }
 
 static void OpEDM1 (void)
 {
-    Absolute (READ);
-    SBC8 ();
+    Absolute (READ, SBC8);
 }
 
 static void OpEDM0 (void)
 {
-    Absolute (READ);
-    SBC16 ();
+    Absolute (READ, SBC16);
 }
 
 static void OpFDM1 (void)
 {
-    AbsoluteIndexedX (READ);
-    SBC8 ();
+    AbsoluteIndexedX (READ, SBC8);
 }
 
 static void OpFDM0 (void)
 {
-    AbsoluteIndexedX (READ);
-    SBC16 ();
+    AbsoluteIndexedX (READ, SBC16);
 }
 
 static void OpF9M1 (void)
 {
-    AbsoluteIndexedY (READ);
-    SBC8 ();
+    AbsoluteIndexedY (READ, SBC8);
 }
 
 static void OpF9M0 (void)
 {
-    AbsoluteIndexedY (READ);
-    SBC16 ();
+    AbsoluteIndexedY (READ, SBC16);
 }
 
 static void OpEFM1 (void)
 {
-    AbsoluteLong (READ);
-    SBC8 ();
+    AbsoluteLong (READ, SBC8);
 }
 
 static void OpEFM0 (void)
 {
-    AbsoluteLong (READ);
-    SBC16 ();
+    AbsoluteLong (READ, SBC16);
 }
 
 static void OpFFM1 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    SBC8 ();
+    AbsoluteLongIndexedX (READ, SBC8);
 }
 
 static void OpFFM0 (void)
 {
-    AbsoluteLongIndexedX (READ);
-    SBC16 ();
+    AbsoluteLongIndexedX (READ, SBC16);
 }
 
 static void OpE3M1 (void)
 {
-    StackRelative (READ);
-    SBC8 ();
+    StackRelative (READ, SBC8);
 }
 
 static void OpE3M0 (void)
 {
-    StackRelative (READ);
-    SBC16 ();
+    StackRelative (READ, SBC16);
 }
 
 static void OpF3M1 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    SBC8 ();
+    StackRelativeIndirectIndexed (READ, SBC8);
 }
 
 static void OpF3M0 (void)
 {
-    StackRelativeIndirectIndexed (READ);
-    SBC16 ();
+    StackRelativeIndirectIndexed (READ, SBC16);
 }
 /**********************************************************************************************/
 
 /* STA *************************************************************************************** */
 static void Op85M1 (void)
 {
-    Direct (WRITE);
-    STA8 ();
+    Direct (WRITE, STA8);
 }
 
 static void Op85M0 (void)
 {
-    Direct (WRITE);
-    STA16 ();
+    Direct (WRITE, STA16);
 }
 
 static void Op95M1 (void)
 {
-    DirectIndexedX (WRITE);
-    STA8 ();
+    DirectIndexedX (WRITE, STA8);
 }
 
 static void Op95M0 (void)
 {
-    DirectIndexedX (WRITE);
-    STA16 ();
+    DirectIndexedX (WRITE, STA16);
 }
 
 static void Op92M1 (void)
 {
-    DirectIndirect (WRITE);
-    STA8 ();
+    DirectIndirect (WRITE, STA8);
 }
 
 static void Op92M0 (void)
 {
-    DirectIndirect (WRITE);
-    STA16 ();
+    DirectIndirect (WRITE, STA16);
 }
 
 static void Op81M1 (void)
 {
-    DirectIndexedIndirect (WRITE);
-    STA8 ();
+    DirectIndexedIndirect (WRITE, STA8);
 #ifdef noVAR_CYCLES
     if (CheckIndex ())
 	CPU.Cycles += ONE_CYCLE;
@@ -2192,8 +1901,7 @@ static void Op81M1 (void)
 
 static void Op81M0 (void)
 {
-    DirectIndexedIndirect (WRITE);
-    STA16 ();
+    DirectIndexedIndirect (WRITE, STA16);
 #ifdef noVAR_CYCLES
     if (CheckIndex ())
 	CPU.Cycles += ONE_CYCLE;
@@ -2202,248 +1910,208 @@ static void Op81M0 (void)
 
 static void Op91M1 (void)
 {
-    DirectIndirectIndexed (WRITE);
-    STA8 ();
+    DirectIndirectIndexed (WRITE, STA8);
 }
 
 static void Op91M0 (void)
 {
-    DirectIndirectIndexed (WRITE);
-    STA16 ();
+    DirectIndirectIndexed (WRITE, STA16);
 }
 
 static void Op87M1 (void)
 {
-    DirectIndirectLong (WRITE);
-    STA8 ();
+    DirectIndirectLong (WRITE, STA8);
 }
 
 static void Op87M0 (void)
 {
-    DirectIndirectLong (WRITE);
-    STA16 ();
+    DirectIndirectLong (WRITE, STA16);
 }
 
 static void Op97M1 (void)
 {
-    DirectIndirectIndexedLong (WRITE);
-    STA8 ();
+    DirectIndirectIndexedLong (WRITE, STA8);
 }
 
 static void Op97M0 (void)
 {
-    DirectIndirectIndexedLong (WRITE);
-    STA16 ();
+    DirectIndirectIndexedLong (WRITE, STA16);
 }
 
 static void Op8DM1 (void)
 {
-    Absolute (WRITE);
-    STA8 ();
+    Absolute (WRITE, STA8);
 }
 
 static void Op8DM0 (void)
 {
-    Absolute (WRITE);
-    STA16 ();
+    Absolute (WRITE, STA16);
 }
 
 static void Op9DM1 (void)
 {
-    AbsoluteIndexedX (WRITE);
-    STA8 ();
+    AbsoluteIndexedX (WRITE, STA8);
 }
 
 static void Op9DM0 (void)
 {
-    AbsoluteIndexedX (WRITE);
-    STA16 ();
+    AbsoluteIndexedX (WRITE, STA16);
 }
 
 static void Op99M1 (void)
 {
-    AbsoluteIndexedY (WRITE);
-    STA8 ();
+    AbsoluteIndexedY (WRITE, STA8);
 }
 
 static void Op99M0 (void)
 {
-    AbsoluteIndexedY (WRITE);
-    STA16 ();
+    AbsoluteIndexedY (WRITE, STA16);
 }
 
 static void Op8FM1 (void)
 {
-    AbsoluteLong (WRITE);
-    STA8 ();
+    AbsoluteLong (WRITE, STA8);
 }
 
 static void Op8FM0 (void)
 {
-    AbsoluteLong (WRITE);
-    STA16 ();
+    AbsoluteLong (WRITE, STA16);
 }
 
 static void Op9FM1 (void)
 {
-    AbsoluteLongIndexedX (WRITE);
-    STA8 ();
+    AbsoluteLongIndexedX (WRITE, STA8);
 }
 
 static void Op9FM0 (void)
 {
-    AbsoluteLongIndexedX (WRITE);
-    STA16 ();
+    AbsoluteLongIndexedX (WRITE, STA16);
 }
 
 static void Op83M1 (void)
 {
-    StackRelative (WRITE);
-    STA8 ();
+    StackRelative (WRITE, STA8);
 }
 
 static void Op83M0 (void)
 {
-    StackRelative (WRITE);
-    STA16 ();
+    StackRelative (WRITE, STA16);
 }
 
 static void Op93M1 (void)
 {
-    StackRelativeIndirectIndexed (WRITE);
-    STA8 ();
+    StackRelativeIndirectIndexed (WRITE, STA8);
 }
 
 static void Op93M0 (void)
 {
-    StackRelativeIndirectIndexed (WRITE);
-    STA16 ();
+    StackRelativeIndirectIndexed (WRITE, STA16);
 }
 /**********************************************************************************************/
 
 /* STX *************************************************************************************** */
 static void Op86X1 (void)
 {
-    Direct (WRITE);
-    STX8 ();
+    Direct (WRITE, STX8);
 }
 
 static void Op86X0 (void)
 {
-    Direct (WRITE);
-    STX16 ();
+    Direct (WRITE, STX16);
 }
 
 static void Op96X1 (void)
 {
-    DirectIndexedY (WRITE);
-    STX8 ();
+    DirectIndexedY (WRITE, STX8);
 }
 
 static void Op96X0 (void)
 {
-    DirectIndexedY (WRITE);
-    STX16 ();
+    DirectIndexedY (WRITE, STX16);
 }
 
 static void Op8EX1 (void)
 {
-    Absolute (WRITE);
-    STX8 ();
+    Absolute (WRITE, STX8);
 }
 
 static void Op8EX0 (void)
 {
-    Absolute (WRITE);
-    STX16 ();
+    Absolute (WRITE, STX16);
 }
 /**********************************************************************************************/
 
 /* STY *************************************************************************************** */
 static void Op84X1 (void)
 {
-    Direct (WRITE);
-    STY8 ();
+    Direct (WRITE, STY8);
 }
 
 static void Op84X0 (void)
 {
-    Direct (WRITE);
-    STY16 ();
+    Direct (WRITE, STY16);
 }
 
 static void Op94X1 (void)
 {
-    DirectIndexedX (WRITE);
-    STY8 ();
+    DirectIndexedX (WRITE, STY8);
 }
 
 static void Op94X0 (void)
 {
-    DirectIndexedX (WRITE);
-    STY16 ();
+    DirectIndexedX (WRITE, STY16);
 }
 
 static void Op8CX1 (void)
 {
-    Absolute (WRITE);
-    STY8 ();
+    Absolute (WRITE, STY8);
 }
 
 static void Op8CX0 (void)
 {
-    Absolute (WRITE);
-    STY16 ();
+    Absolute (WRITE, STY16);
 }
 /**********************************************************************************************/
 
 /* STZ *************************************************************************************** */
 static void Op64M1 (void)
 {
-    Direct (WRITE);
-    STZ8 ();
+    Direct (WRITE, STZ8);
 }
 
 static void Op64M0 (void)
 {
-    Direct (WRITE);
-    STZ16 ();
+    Direct (WRITE, STZ16);
 }
 
 static void Op74M1 (void)
 {
-    DirectIndexedX (WRITE);
-    STZ8 ();
+    DirectIndexedX (WRITE, STZ8);
 }
 
 static void Op74M0 (void)
 {
-    DirectIndexedX (WRITE);
-    STZ16 ();
+    DirectIndexedX (WRITE, STZ16);
 }
 
 static void Op9CM1 (void)
 {
-    Absolute (WRITE);
-    STZ8 ();
+    Absolute (WRITE, STZ8);
 }
 
 static void Op9CM0 (void)
 {
-    Absolute (WRITE);
-    STZ16 ();
+    Absolute (WRITE, STZ16);
 }
 
 static void Op9EM1 (void)
 {
-    AbsoluteIndexedX (WRITE);
-    STZ8 ();
+    AbsoluteIndexedX (WRITE, STZ8);
 }
 
 static void Op9EM0 (void)
 {
-    AbsoluteIndexedX (WRITE);
-    STZ16 ();
+    AbsoluteIndexedX (WRITE, STZ16);
 }
 
 /**********************************************************************************************/
@@ -2451,52 +2119,44 @@ static void Op9EM0 (void)
 /* TRB *************************************************************************************** */
 static void Op14M1 (void)
 {
-    Direct (MODIFY);
-    TRB8 ();
+    Direct (MODIFY, TRB8);
 }
 
 static void Op14M0 (void)
 {
-    Direct (MODIFY);
-    TRB16 ();
+    Direct (MODIFY, TRB16);
 }
 
 static void Op1CM1 (void)
 {
-    Absolute (MODIFY);
-    TRB8 ();
+    Absolute (MODIFY, TRB8);
 }
 
 static void Op1CM0 (void)
 {
-    Absolute (MODIFY);
-    TRB16 ();
+    Absolute (MODIFY, TRB16);
 }
 /**********************************************************************************************/
 
 /* TSB *************************************************************************************** */
 static void Op04M1 (void)
 {
-    Direct (MODIFY);
-    TSB8 ();
+    Direct (MODIFY, TSB8);
 }
 
 static void Op04M0 (void)
 {
-    Direct (MODIFY);
-    TSB16 ();
+    Direct (MODIFY, TSB16);
 }
 
 static void Op0CM1 (void)
 {
-    Absolute (MODIFY);
-    TSB8 ();
+    Absolute (MODIFY, TSB8);
 }
 
 static void Op0CM0 (void)
 {
-    Absolute (MODIFY);
-    TSB16 ();
+    Absolute (MODIFY, TSB16);
 }
 
 /**********************************************************************************************/
@@ -2608,7 +2268,7 @@ inline void CPUShutdown()
 /* BCC */
 static void Op90 (void)
 {
-    Relative (JUMP);
+    Relative (JUMP, OpAddressPassthrough);
     BranchCheck0 ();
     if (!CheckCarry ())
     {
@@ -2616,14 +2276,14 @@ static void Op90 (void)
 #ifndef SA1_OPCODES
 	CPU.Cycles += ONE_CYCLE;
 #endif
-	CPUShutdown ();
+	CPUShutdown();
     }
 }
 
 /* BCS */
 static void OpB0 (void)
 {
-    Relative (JUMP);
+    Relative (JUMP, OpAddressPassthrough);
     BranchCheck0 ();
     if (CheckCarry ())
     {
@@ -2638,7 +2298,7 @@ static void OpB0 (void)
 /* BEQ */
 static void OpF0 (void)
 {
-    Relative (JUMP);
+    Relative (JUMP, OpAddressPassthrough);
     BranchCheck2 ();
     if (CheckZero ())
     {
@@ -2653,7 +2313,7 @@ static void OpF0 (void)
 /* BMI */
 static void Op30 (void)
 {
-    Relative (JUMP);
+    Relative (JUMP, OpAddressPassthrough);
     BranchCheck1 ();
     if (CheckNegative ())
     {
@@ -2668,7 +2328,7 @@ static void Op30 (void)
 /* BNE */
 static void OpD0 (void)
 {
-    Relative (JUMP);
+    Relative (JUMP, OpAddressPassthrough);
     BranchCheck1 ();
     if (!CheckZero ())
     {
@@ -2684,7 +2344,7 @@ static void OpD0 (void)
 /* BPL */
 static void Op10 (void)
 {
-    Relative (JUMP);
+    Relative (JUMP, OpAddressPassthrough);
     BranchCheck1 ();
     if (!CheckNegative ())
     {
@@ -2699,7 +2359,7 @@ static void Op10 (void)
 /* BRA */
 static void Op80 (void)
 {
-    Relative (JUMP);
+    Relative (JUMP, OpAddressPassthrough);
     CPU.PC = CPU.PCBase + OpAddress;
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
@@ -2710,7 +2370,7 @@ static void Op80 (void)
 /* BVC */
 static void Op50 (void)
 {
-    Relative (JUMP);
+    Relative (JUMP, OpAddressPassthrough);
     BranchCheck0 ();
     if (!CheckOverflow ())
     {
@@ -2725,7 +2385,7 @@ static void Op50 (void)
 /* BVS */
 static void Op70 (void)
 {
-    Relative (JUMP);
+    Relative (JUMP, OpAddressPassthrough);
     BranchCheck0 ();
     if (CheckOverflow ())
     {
@@ -2787,8 +2447,8 @@ static void OpCAX1 (void)
     CPU.WaitAddress = NULL;
 #endif
 
-    Registers.XL--;
-    SetZN8 (Registers.XL);
+    ICPU.Registers.XL--;
+    SetZN8 (ICPU.Registers.XL);
 }
 
 static void OpCAX0 (void)
@@ -2800,8 +2460,8 @@ static void OpCAX0 (void)
     CPU.WaitAddress = NULL;
 #endif
 
-    Registers.X.W--;
-    SetZN16 (Registers.X.W);
+    ICPU.Registers.X.W--;
+    SetZN16 (ICPU.Registers.X.W);
 }
 
 static void Op88X1 (void)
@@ -2813,8 +2473,8 @@ static void Op88X1 (void)
     CPU.WaitAddress = NULL;
 #endif
 
-    Registers.YL--;
-    SetZN8 (Registers.YL);
+    ICPU.Registers.YL--;
+    SetZN8 (ICPU.Registers.YL);
 }
 
 static void Op88X0 (void)
@@ -2826,8 +2486,8 @@ static void Op88X0 (void)
     CPU.WaitAddress = NULL;
 #endif
 
-    Registers.Y.W--;
-    SetZN16 (Registers.Y.W);
+    ICPU.Registers.Y.W--;
+    SetZN16 (ICPU.Registers.Y.W);
 }
 /**********************************************************************************************/
 
@@ -2841,8 +2501,8 @@ static void OpE8X1 (void)
     CPU.WaitAddress = NULL;
 #endif
 
-    Registers.XL++;
-    SetZN8 (Registers.XL);
+    ICPU.Registers.XL++;
+    SetZN8 (ICPU.Registers.XL);
 }
 
 static void OpE8X0 (void)
@@ -2854,8 +2514,8 @@ static void OpE8X0 (void)
     CPU.WaitAddress = NULL;
 #endif
 
-    Registers.X.W++;
-    SetZN16 (Registers.X.W);
+    ICPU.Registers.X.W++;
+    SetZN16 (ICPU.Registers.X.W);
 }
 
 static void OpC8X1 (void)
@@ -2867,8 +2527,8 @@ static void OpC8X1 (void)
     CPU.WaitAddress = NULL;
 #endif
 
-    Registers.YL++;
-    SetZN8 (Registers.YL);
+    ICPU.Registers.YL++;
+    SetZN8 (ICPU.Registers.YL);
 }
 
 static void OpC8X0 (void)
@@ -2880,8 +2540,8 @@ static void OpC8X0 (void)
     CPU.WaitAddress = NULL;
 #endif
 
-    Registers.Y.W++;
-    SetZN16 (Registers.Y.W);
+    ICPU.Registers.Y.W++;
+    SetZN16 (ICPU.Registers.Y.W);
 }
 
 /**********************************************************************************************/
@@ -2898,69 +2558,69 @@ static void OpEA (void)
 
 /* PUSH Instructions ************************************************************************* */
 /* #define PushW(w) \
- *    S9xSetWord (w, Registers.S.W - 1);\
- *    Registers.S.W -= 2;                 
+ *    S9xSetWord (w, ICPU.Registers.S.W - 1);\
+ *    ICPU.Registers.S.W -= 2;                 
  */
 #define PushB(b)\
-    S9xSetByte (b, Registers.S.W--);
+    S9xSetByte (b, ICPU.Registers.S.W--);
 
 #define PushBE(b)\
-	S9xSetByte (b, Registers.S.W--);\
-	Registers.SH=0x01;
+	S9xSetByte (b, ICPU.Registers.S.W--);\
+	ICPU.Registers.SH=0x01;
 
 
 #define PushW(w) \
-    S9xSetByte ((w)>>8, Registers.S.W);\
-	S9xSetByte ((w)&0xff, (Registers.S.W - 1)&0xFFFF);\
-    Registers.S.W -= 2;
+    S9xSetByte ((w)>>8, ICPU.Registers.S.W);\
+	S9xSetByte ((w)&0xff, (ICPU.Registers.S.W - 1)&0xFFFF);\
+    ICPU.Registers.S.W -= 2;
 
 #define PushWE(w) \
-    S9xSetByte ((w)>>8, Registers.S.W--);\
-	Registers.SH=0x01;\
-	S9xSetByte ((w)&0xff, (Registers.S.W--)&0xFFFF);\
-    Registers.SH = 0x01;
+    S9xSetByte ((w)>>8, ICPU.Registers.S.W--);\
+	ICPU.Registers.SH=0x01;\
+	S9xSetByte ((w)&0xff, (ICPU.Registers.S.W--)&0xFFFF);\
+    ICPU.Registers.SH = 0x01;
 
 #define PushWENew(w) \
-    S9xSetByte ((w)>>8, Registers.S.W--);\
-	S9xSetByte ((w)&0xff, (Registers.S.W--)&0xFFFF);\
-    Registers.SH = 0x01;
+    S9xSetByte ((w)>>8, ICPU.Registers.S.W--);\
+	S9xSetByte ((w)&0xff, (ICPU.Registers.S.W--)&0xFFFF);\
+    ICPU.Registers.SH = 0x01;
 
 //PEA NL
 static void OpF4E1 (void)
 {
-    Absolute (NONE);
+    Absolute (NONE, OpAddressPassthrough);
     PushWENew ((unsigned short)OpAddress);
 }
 
 static void OpF4 (void)
 {
-    Absolute (NONE);
+    Absolute (NONE, OpAddressPassthrough);
     PushW ((unsigned short)OpAddress);
 }
 
 //PEI NL
 static void OpD4E1 (void)
 {
-    DirectIndirect (NONE);
+    DirectIndirect (NONE, OpAddressPassthrough);
     PushWENew ((unsigned short)OpAddress);
 }
 
 static void OpD4 (void)
 {
-    DirectIndirect (NONE);
+    DirectIndirect (NONE, OpAddressPassthrough);
     PushW ((unsigned short)OpAddress);
 }
 
 //PER NL
 static void Op62E1 (void)
 {
-    RelativeLong (NONE);
+    RelativeLong (NONE, OpAddressPassthrough);
     PushWENew ((unsigned short)OpAddress);
 }
 
 static void Op62 (void)
 {
-    RelativeLong (NONE);
+    RelativeLong (NONE, OpAddressPassthrough);
     PushW ((unsigned short)OpAddress);
 }
 
@@ -2968,7 +2628,7 @@ static void Op62 (void)
 //PHA
 static void Op48E1 (void)
 {
-    PushBE (Registers.AL);
+    PushBE (ICPU.Registers.AL);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -2976,7 +2636,7 @@ static void Op48E1 (void)
 
 static void Op48M1 (void)
 {
-    PushB (Registers.AL);
+    PushB (ICPU.Registers.AL);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -2984,7 +2644,7 @@ static void Op48M1 (void)
 
 static void Op48M0 (void)
 {
-    PushW (Registers.A.W);
+    PushW (ICPU.Registers.A.W);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -2993,14 +2653,14 @@ static void Op48M0 (void)
 //PHB
 static void Op8BE1 (void)
 {
-    PushBE (Registers.DB);
+    PushBE (ICPU.Registers.DB);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
 }
 static void Op8B (void)
 {
-    PushB (Registers.DB);
+    PushB (ICPU.Registers.DB);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3009,7 +2669,7 @@ static void Op8B (void)
 //PHD NL
 static void Op0BE1 (void)
 {
-    PushWENew (Registers.D.W);
+    PushWENew (ICPU.Registers.D.W);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3017,7 +2677,7 @@ static void Op0BE1 (void)
 
 static void Op0B (void)
 {
-    PushW (Registers.D.W);
+    PushW (ICPU.Registers.D.W);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3026,7 +2686,7 @@ static void Op0B (void)
 //PHK
 static void Op4BE1 (void)
 {
-    PushBE (Registers.PB);
+    PushBE (ICPU.Registers.PB);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3034,7 +2694,7 @@ static void Op4BE1 (void)
 
 static void Op4B (void)
 {
-    PushB (Registers.PB);
+    PushB (ICPU.Registers.PB);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3044,7 +2704,7 @@ static void Op4B (void)
 static void Op08E1 (void)
 {
     S9xPackStatus ();
-    PushBE (Registers.PL);
+    PushBE (ICPU.Registers.PL);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3053,7 +2713,7 @@ static void Op08E1 (void)
 static void Op08 (void)
 {
     S9xPackStatus ();
-    PushB (Registers.PL);
+    PushB (ICPU.Registers.PL);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3062,7 +2722,7 @@ static void Op08 (void)
 //PHX
 static void OpDAE1 (void)
 {
-    PushBE (Registers.XL);
+    PushBE (ICPU.Registers.XL);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3070,7 +2730,7 @@ static void OpDAE1 (void)
 
 static void OpDAX1 (void)
 {
-    PushB (Registers.XL);
+    PushB (ICPU.Registers.XL);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3078,7 +2738,7 @@ static void OpDAX1 (void)
 
 static void OpDAX0 (void)
 {
-    PushW (Registers.X.W);
+    PushW (ICPU.Registers.X.W);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3087,7 +2747,7 @@ static void OpDAX0 (void)
 //PHY
 static void Op5AE1 (void)
 {
-    PushBE (Registers.YL);
+    PushBE (ICPU.Registers.YL);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3095,7 +2755,7 @@ static void Op5AE1 (void)
 
 static void Op5AX1 (void)
 {
-    PushB (Registers.YL);
+    PushB (ICPU.Registers.YL);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3103,7 +2763,7 @@ static void Op5AX1 (void)
 
 static void Op5AX0 (void)
 {
-    PushW (Registers.Y.W);
+    PushW (ICPU.Registers.Y.W);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
@@ -3112,32 +2772,32 @@ static void Op5AX0 (void)
 
 /* PULL Instructions ************************************************************************* */
 #define PullW(w) \
-	w = S9xGetByte (++Registers.S.W); \
-	w |= (S9xGetByte (++Registers.S.W)<<8);
+	w = S9xGetByte (++ICPU.Registers.S.W); \
+	w |= (S9xGetByte (++ICPU.Registers.S.W)<<8);
 
-/*	w = S9xGetWord (Registers.S.W + 1); \
-	Registers.S.W += 2;
+/*	w = S9xGetWord (ICPU.Registers.S.W + 1); \
+	ICPU.Registers.S.W += 2;
 */
 
 #define PullB(b)\
-	b = S9xGetByte (++Registers.S.W);
+	b = S9xGetByte (++ICPU.Registers.S.W);
 
 #define PullBE(b)\
-	Registers.S.W++;\
-	Registers.SH=0x01;\
-	b = S9xGetByte (Registers.S.W);
+	ICPU.Registers.S.W++;\
+	ICPU.Registers.SH=0x01;\
+	b = S9xGetByte (ICPU.Registers.S.W);
 
 #define PullWE(w) \
-	Registers.S.W++;\
-	Registers.SH=0x01;\
-	w = S9xGetByte (Registers.S.W); \
-	Registers.S.W++; \
-	Registers.SH=0x01;\
-	w |= (S9xGetByte (Registers.S.W)<<8);
+	ICPU.Registers.S.W++;\
+	ICPU.Registers.SH=0x01;\
+	w = S9xGetByte (ICPU.Registers.S.W); \
+	ICPU.Registers.S.W++; \
+	ICPU.Registers.SH=0x01;\
+	w |= (S9xGetByte (ICPU.Registers.S.W)<<8);
 
 #define PullWENew(w) \
 	PullW(w);\
-	Registers.SH=0x01;	
+	ICPU.Registers.SH=0x01;	
 
 //PLA
 static void Op68E1 (void)
@@ -3145,8 +2805,8 @@ static void Op68E1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullBE (Registers.AL);
-    SetZN8 (Registers.AL);
+    PullBE (ICPU.Registers.AL);
+    SetZN8 (ICPU.Registers.AL);
 }
 
 static void Op68M1 (void)
@@ -3154,8 +2814,8 @@ static void Op68M1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullB (Registers.AL);
-    SetZN8 (Registers.AL);
+    PullB (ICPU.Registers.AL);
+    SetZN8 (ICPU.Registers.AL);
 }
 
 static void Op68M0 (void)
@@ -3163,8 +2823,8 @@ static void Op68M0 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullW (Registers.A.W);
-    SetZN16 (Registers.A.W);
+    PullW (ICPU.Registers.A.W);
+    SetZN16 (ICPU.Registers.A.W);
 }
 
 //PLB
@@ -3173,9 +2833,9 @@ static void OpABE1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullBE (Registers.DB);
-    SetZN8 (Registers.DB);
-    ICPU.ShiftedDB = Registers.DB << 16;
+    PullBE (ICPU.Registers.DB);
+    SetZN8 (ICPU.Registers.DB);
+    ICPU.ShiftedDB = ICPU.Registers.DB << 16;
 }
 
 static void OpAB (void)
@@ -3183,9 +2843,9 @@ static void OpAB (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullB (Registers.DB);
-    SetZN8 (Registers.DB);
-    ICPU.ShiftedDB = Registers.DB << 16;
+    PullB (ICPU.Registers.DB);
+    SetZN8 (ICPU.Registers.DB);
+    ICPU.ShiftedDB = ICPU.Registers.DB << 16;
 }
 
 /* PHP */
@@ -3195,8 +2855,8 @@ static void Op2BE1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullWENew (Registers.D.W);
-    SetZN16 (Registers.D.W);
+    PullWENew (ICPU.Registers.D.W);
+    SetZN16 (ICPU.Registers.D.W);
 }
 
 static void Op2B (void)
@@ -3204,8 +2864,8 @@ static void Op2B (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullW (Registers.D.W);
-    SetZN16 (Registers.D.W);
+    PullW (ICPU.Registers.D.W);
+    SetZN16 (ICPU.Registers.D.W);
 }
 
 /* PLP */
@@ -3214,13 +2874,13 @@ static void Op28E1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullBE (Registers.PL);
+    PullBE (ICPU.Registers.PL);
     S9xUnpackStatus ();
 
     if (CheckIndex ())
     {
-	Registers.XH = 0;
-	Registers.YH = 0;
+	ICPU.Registers.XH = 0;
+	ICPU.Registers.YH = 0;
     }
     S9xFixCycles();
 /*     CHECK_FOR_IRQ();*/
@@ -3231,13 +2891,13 @@ static void Op28 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullB (Registers.PL);
+    PullB (ICPU.Registers.PL);
     S9xUnpackStatus ();
 
     if (CheckIndex ())
     {
-	Registers.XH = 0;
-	Registers.YH = 0;
+	ICPU.Registers.XH = 0;
+	ICPU.Registers.YH = 0;
     }
     S9xFixCycles();
 /*     CHECK_FOR_IRQ();*/
@@ -3249,8 +2909,8 @@ static void OpFAE1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullBE (Registers.XL);
-    SetZN8 (Registers.XL);
+    PullBE (ICPU.Registers.XL);
+    SetZN8 (ICPU.Registers.XL);
 }
 
 static void OpFAX1 (void)
@@ -3258,8 +2918,8 @@ static void OpFAX1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullB (Registers.XL);
-    SetZN8 (Registers.XL);
+    PullB (ICPU.Registers.XL);
+    SetZN8 (ICPU.Registers.XL);
 }
 
 static void OpFAX0 (void)
@@ -3267,8 +2927,8 @@ static void OpFAX0 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullW (Registers.X.W);
-    SetZN16 (Registers.X.W);
+    PullW (ICPU.Registers.X.W);
+    SetZN16 (ICPU.Registers.X.W);
 }
 
 //PLY
@@ -3277,8 +2937,8 @@ static void Op7AE1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullBE (Registers.YL);
-    SetZN8 (Registers.YL);
+    PullBE (ICPU.Registers.YL);
+    SetZN8 (ICPU.Registers.YL);
 }
 
 static void Op7AX1 (void)
@@ -3286,8 +2946,8 @@ static void Op7AX1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullB (Registers.YL);
-    SetZN8 (Registers.YL);
+    PullB (ICPU.Registers.YL);
+    SetZN8 (ICPU.Registers.YL);
 }
 
 static void Op7AX0 (void)
@@ -3295,8 +2955,8 @@ static void Op7AX0 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
-    PullW (Registers.Y.W);
-    SetZN16 (Registers.Y.W);
+    PullW (ICPU.Registers.Y.W);
+    SetZN16 (ICPU.Registers.Y.W);
 }
 
 /**********************************************************************************************/
@@ -3338,8 +2998,8 @@ static void OpAAX1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.XL = Registers.AL;
-    SetZN8 (Registers.XL);
+    ICPU.Registers.XL = ICPU.Registers.AL;
+    SetZN8 (ICPU.Registers.XL);
 }
 
 /* TAX16 */
@@ -3348,8 +3008,8 @@ static void OpAAX0 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.X.W = Registers.A.W;
-    SetZN16 (Registers.X.W);
+    ICPU.Registers.X.W = ICPU.Registers.A.W;
+    SetZN16 (ICPU.Registers.X.W);
 }
 
 /* TAY8 */
@@ -3358,8 +3018,8 @@ static void OpA8X1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.YL = Registers.AL;
-    SetZN8 (Registers.YL);
+    ICPU.Registers.YL = ICPU.Registers.AL;
+    SetZN8 (ICPU.Registers.YL);
 }
 
 /* TAY16 */
@@ -3368,8 +3028,8 @@ static void OpA8X0 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.Y.W = Registers.A.W;
-    SetZN16 (Registers.Y.W);
+    ICPU.Registers.Y.W = ICPU.Registers.A.W;
+    SetZN16 (ICPU.Registers.Y.W);
 }
 
 static void Op5B (void)
@@ -3377,8 +3037,8 @@ static void Op5B (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.D.W = Registers.A.W;
-    SetZN16 (Registers.D.W);
+    ICPU.Registers.D.W = ICPU.Registers.A.W;
+    SetZN16 (ICPU.Registers.D.W);
 }
 
 static void Op1B (void)
@@ -3386,9 +3046,9 @@ static void Op1B (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.S.W = Registers.A.W;
+    ICPU.Registers.S.W = ICPU.Registers.A.W;
     if (CheckEmulation())
-	Registers.SH = 1;
+	ICPU.Registers.SH = 1;
 }
 
 static void Op7B (void)
@@ -3396,8 +3056,8 @@ static void Op7B (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.A.W = Registers.D.W;
-    SetZN16 (Registers.A.W);
+    ICPU.Registers.A.W = ICPU.Registers.D.W;
+    SetZN16 (ICPU.Registers.A.W);
 }
 
 static void Op3B (void)
@@ -3405,8 +3065,8 @@ static void Op3B (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.A.W = Registers.S.W;
-    SetZN16 (Registers.A.W);
+    ICPU.Registers.A.W = ICPU.Registers.S.W;
+    SetZN16 (ICPU.Registers.A.W);
 }
 
 static void OpBAX1 (void)
@@ -3414,8 +3074,8 @@ static void OpBAX1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.XL = Registers.SL;
-    SetZN8 (Registers.XL);
+    ICPU.Registers.XL = ICPU.Registers.SL;
+    SetZN8 (ICPU.Registers.XL);
 }
 
 static void OpBAX0 (void)
@@ -3423,8 +3083,8 @@ static void OpBAX0 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.X.W = Registers.S.W;
-    SetZN16 (Registers.X.W);
+    ICPU.Registers.X.W = ICPU.Registers.S.W;
+    SetZN16 (ICPU.Registers.X.W);
 }
 
 static void Op8AM1 (void)
@@ -3432,8 +3092,8 @@ static void Op8AM1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.AL = Registers.XL;
-    SetZN8 (Registers.AL);
+    ICPU.Registers.AL = ICPU.Registers.XL;
+    SetZN8 (ICPU.Registers.AL);
 }
 
 static void Op8AM0 (void)
@@ -3441,8 +3101,8 @@ static void Op8AM0 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.A.W = Registers.X.W;
-    SetZN16 (Registers.A.W);
+    ICPU.Registers.A.W = ICPU.Registers.X.W;
+    SetZN16 (ICPU.Registers.A.W);
 }
 
 static void Op9A (void)
@@ -3450,9 +3110,9 @@ static void Op9A (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.S.W = Registers.X.W;
+    ICPU.Registers.S.W = ICPU.Registers.X.W;
     if (CheckEmulation())
-	Registers.SH = 1;
+	ICPU.Registers.SH = 1;
 }
 
 static void Op9BX1 (void)
@@ -3460,8 +3120,8 @@ static void Op9BX1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.YL = Registers.XL;
-    SetZN8 (Registers.YL);
+    ICPU.Registers.YL = ICPU.Registers.XL;
+    SetZN8 (ICPU.Registers.YL);
 }
 
 static void Op9BX0 (void)
@@ -3469,8 +3129,8 @@ static void Op9BX0 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.Y.W = Registers.X.W;
-    SetZN16 (Registers.Y.W);
+    ICPU.Registers.Y.W = ICPU.Registers.X.W;
+    SetZN16 (ICPU.Registers.Y.W);
 }
 
 static void Op98M1 (void)
@@ -3478,8 +3138,8 @@ static void Op98M1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.AL = Registers.YL;
-    SetZN8 (Registers.AL);
+    ICPU.Registers.AL = ICPU.Registers.YL;
+    SetZN8 (ICPU.Registers.AL);
 }
 
 static void Op98M0 (void)
@@ -3487,8 +3147,8 @@ static void Op98M0 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.A.W = Registers.Y.W;
-    SetZN16 (Registers.A.W);
+    ICPU.Registers.A.W = ICPU.Registers.Y.W;
+    SetZN16 (ICPU.Registers.A.W);
 }
 
 static void OpBBX1 (void)
@@ -3496,8 +3156,8 @@ static void OpBBX1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.XL = Registers.YL;
-    SetZN8 (Registers.XL);
+    ICPU.Registers.XL = ICPU.Registers.YL;
+    SetZN8 (ICPU.Registers.XL);
 }
 
 static void OpBBX0 (void)
@@ -3505,8 +3165,8 @@ static void OpBBX0 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
 #endif
-    Registers.X.W = Registers.Y.W;
-    SetZN16 (Registers.X.W);
+    ICPU.Registers.X.W = ICPU.Registers.Y.W;
+    SetZN16 (ICPU.Registers.X.W);
 }
 
 /**********************************************************************************************/
@@ -3518,21 +3178,21 @@ static void OpFB (void)
     CPU.Cycles += ONE_CYCLE;
 #endif
 
-    A1 = ICPU._Carry;
-    A2 = Registers.PH;
+    uint8 A1 = ICPU._Carry;
+    uint8 A2 = ICPU.Registers.PH;
     ICPU._Carry = A2 & 1;
-    Registers.PH = A1;
+    ICPU.Registers.PH = A1;
 
     if (CheckEmulation())
     {
 	SetFlags (MemoryFlag | IndexFlag);
-	Registers.SH = 1;
+	ICPU.Registers.SH = 1;
 	missing.emulate6502 = 1;
     }
     if (CheckIndex ())
     {
-	Registers.XH = 0;
-	Registers.YH = 0;
+	ICPU.Registers.XH = 0;
+	ICPU.Registers.YH = 0;
     }
     S9xFixCycles();
 }
@@ -3552,15 +3212,17 @@ static void Op00 (void)
 
     if (!CheckEmulation())
     {
-	PushB (Registers.PB);
+	PushB (ICPU.Registers.PB);
 	PushW (CPU.PC - CPU.PCBase + 1);
 	S9xPackStatus ();
-	PushB (Registers.PL);
-	OpenBus = Registers.PL;
+	PushB (ICPU.Registers.PL);
+#ifndef NO_OPEN_BUS
+	OpenBus = ICPU.Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
-	Registers.PB = 0;
+	ICPU.Registers.PB = 0;
 	ICPU.ShiftedPB = 0;
 	S9xSetPCBase (S9xGetWord (0xFFE6));
 #ifndef SA1_OPCODES
@@ -3571,12 +3233,14 @@ static void Op00 (void)
     {
 	PushW (CPU.PC - CPU.PCBase);
 	S9xPackStatus ();
-	PushB (Registers.PL);
-	OpenBus = Registers.PL;
+	PushB (ICPU.Registers.PL);
+#ifndef NO_OPEN_BUS
+	OpenBus = ICPU.Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
-	Registers.PB = 0;
+	ICPU.Registers.PB = 0;
 	ICPU.ShiftedPB = 0;
 	S9xSetPCBase (S9xGetWord (0xFFFE));
 #ifndef SA1_OPCODES
@@ -3589,7 +3253,7 @@ static void Op00 (void)
 /* BRL ************************************************************************************** */
 static void Op82 (void)
 {
-    RelativeLong (JUMP);
+    RelativeLong (JUMP, OpAddressPassthrough);
     S9xSetPCBase (ICPU.ShiftedPB + OpAddress);
 }
 /**********************************************************************************************/
@@ -3603,15 +3267,17 @@ void S9xOpcode_IRQ (void)
 #endif
     if (!CheckEmulation())
     {
-	PushB (Registers.PB);
+	PushB (ICPU.Registers.PB);
 	PushW (CPU.PC - CPU.PCBase);
 	S9xPackStatus ();
-	PushB (Registers.PL);
-	OpenBus = Registers.PL;
+	PushB (ICPU.Registers.PL);
+#ifndef NO_OPEN_BUS
+	OpenBus = ICPU.Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
-	Registers.PB = 0;
+	ICPU.Registers.PB = 0;
 	ICPU.ShiftedPB = 0;
 #ifdef SA1_OPCODES
 	S9xSA1SetPCBase (Memory.FillRAM [0x2207] |
@@ -3631,12 +3297,14 @@ void S9xOpcode_IRQ (void)
     {
 	PushW (CPU.PC - CPU.PCBase);
 	S9xPackStatus ();
-	PushB (Registers.PL);
-	OpenBus = Registers.PL;
+	PushB (ICPU.Registers.PL);
+#ifndef NO_OPEN_BUS
+	OpenBus = ICPU.Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
-	Registers.PB = 0;
+	ICPU.Registers.PB = 0;
 	ICPU.ShiftedPB = 0;
 #ifdef SA1_OPCODES
 	S9xSA1SetPCBase (Memory.FillRAM [0x2207] |
@@ -3665,15 +3333,17 @@ void S9xOpcode_NMI (void)
 #endif
     if (!CheckEmulation())
     {
-	PushB (Registers.PB);
+	PushB (ICPU.Registers.PB);
 	PushW (CPU.PC - CPU.PCBase);
 	S9xPackStatus ();
-	PushB (Registers.PL);
-	OpenBus = Registers.PL;
+	PushB (ICPU.Registers.PL);
+#ifndef NO_OPEN_BUS
+	OpenBus = ICPU.Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
-	Registers.PB = 0;
+	ICPU.Registers.PB = 0;
 	ICPU.ShiftedPB = 0;
 #ifdef SA1_OPCODES
 	S9xSA1SetPCBase (Memory.FillRAM [0x2205] |
@@ -3693,12 +3363,14 @@ void S9xOpcode_NMI (void)
     {
 	PushW (CPU.PC - CPU.PCBase);
 	S9xPackStatus ();
-	PushB (Registers.PL);
-	OpenBus = Registers.PL;
+	PushB (ICPU.Registers.PL);
+#ifndef NO_OPEN_BUS
+	OpenBus = ICPU.Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
-	Registers.PB = 0;
+	ICPU.Registers.PB = 0;
 	ICPU.ShiftedPB = 0;
 #ifdef SA1_OPCODES
 	S9xSA1SetPCBase (Memory.FillRAM [0x2205] |
@@ -3726,15 +3398,17 @@ static void Op02 (void)
 #endif	
     if (!CheckEmulation())
     {
-	PushB (Registers.PB);
+	PushB (ICPU.Registers.PB);
 	PushW (CPU.PC - CPU.PCBase + 1);
 	S9xPackStatus ();
-	PushB (Registers.PL);
-	OpenBus = Registers.PL;
+	PushB (ICPU.Registers.PL);
+#ifndef NO_OPEN_BUS
+	OpenBus = ICPU.Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
-	Registers.PB = 0;
+	ICPU.Registers.PB = 0;
 	ICPU.ShiftedPB = 0;
 	S9xSetPCBase (S9xGetWord (0xFFE4));
 #ifndef SA1_OPCODES
@@ -3745,12 +3419,14 @@ static void Op02 (void)
     {
 	PushW (CPU.PC - CPU.PCBase);
 	S9xPackStatus ();
-	PushB (Registers.PL);
-	OpenBus = Registers.PL;
+	PushB (ICPU.Registers.PL);
+#ifndef NO_OPEN_BUS
+	OpenBus = ICPU.Registers.PL;
+#endif
 	ClearDecimal ();
 	SetIRQ ();
 
-	Registers.PB = 0;
+	ICPU.Registers.PB = 0;
 	ICPU.ShiftedPB = 0;
 	S9xSetPCBase (S9xGetWord (0xFFF4));
 #ifndef SA1_OPCODES
@@ -3763,8 +3439,8 @@ static void Op02 (void)
 /* JML *************************************************************************************** */
 static void OpDC (void)
 {
-    AbsoluteIndirectLong (JUMP);
-    Registers.PB = (uint8) (OpAddress >> 16);
+    AbsoluteIndirectLong (JUMP, OpAddressPassthrough);
+    ICPU.Registers.PB = (uint8) (OpAddress >> 16);
     ICPU.ShiftedPB = OpAddress & 0xff0000;
     S9xSetPCBase (OpAddress);
 #ifndef SA1_OPCODES
@@ -3774,8 +3450,8 @@ static void OpDC (void)
 
 static void Op5C (void)
 {
-    AbsoluteLong (JUMP);
-    Registers.PB = (uint8) (OpAddress >> 16);
+    AbsoluteLong (JUMP, OpAddressPassthrough);
+    ICPU.Registers.PB = (uint8) (OpAddress >> 16);
     ICPU.ShiftedPB = OpAddress & 0xff0000;
     S9xSetPCBase (OpAddress);
 }
@@ -3784,7 +3460,7 @@ static void Op5C (void)
 /* JMP *************************************************************************************** */
 static void Op4C (void)
 {
-    Absolute (JUMP);
+    Absolute (JUMP, OpAddressPassthrough);
     S9xSetPCBase (ICPU.ShiftedPB + (OpAddress & 0xffff));
 #if defined(CPU_SHUTDOWN) && defined(SA1_OPCODES)
     CPUShutdown ();
@@ -3793,13 +3469,13 @@ static void Op4C (void)
 
 static void Op6C (void)
 {
-    AbsoluteIndirect (JUMP);
+    AbsoluteIndirect (JUMP, OpAddressPassthrough);
     S9xSetPCBase (ICPU.ShiftedPB + (OpAddress & 0xffff));
 }
 
 static void Op7C (void)
 {
-    AbsoluteIndexedIndirect (JUMP);
+    AbsoluteIndexedIndirect (JUMP, OpAddressPassthrough);
     S9xSetPCBase (ICPU.ShiftedPB + OpAddress);
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE;
@@ -3810,30 +3486,30 @@ static void Op7C (void)
 /* JSL/RTL *********************************************************************************** */
 static void Op22E1 (void)
 {
-    AbsoluteLong (JUMP);
-    PushB (Registers.PB);
+    AbsoluteLong (JUMP, OpAddressPassthrough);
+    PushB (ICPU.Registers.PB);
     PushWENew (CPU.PC - CPU.PCBase - 1);
-    Registers.PB = (uint8) (OpAddress >> 16);
+    ICPU.Registers.PB = (uint8) (OpAddress >> 16);
     ICPU.ShiftedPB = OpAddress & 0xff0000;
     S9xSetPCBase (OpAddress);
 }
 
 static void Op22 (void)
 {
-    AbsoluteLong (JUMP);
-    PushB (Registers.PB);
+    AbsoluteLong (JUMP, OpAddressPassthrough);
+    PushB (ICPU.Registers.PB);
     PushW (CPU.PC - CPU.PCBase - 1);
-    Registers.PB = (uint8) (OpAddress >> 16);
+    ICPU.Registers.PB = (uint8) (OpAddress >> 16);
     ICPU.ShiftedPB = OpAddress & 0xff0000;
     S9xSetPCBase (OpAddress);
 }
 
 static void Op6BE1 (void)
 {
-    PullWENew (Registers.PC);
-    PullB (Registers.PB);
-    ICPU.ShiftedPB = Registers.PB << 16;
-    S9xSetPCBase (ICPU.ShiftedPB + ((Registers.PC + 1) & 0xffff));
+    PullWENew (ICPU.Registers.PC);
+    PullB (ICPU.Registers.PB);
+    ICPU.ShiftedPB = ICPU.Registers.PB << 16;
+    S9xSetPCBase (ICPU.ShiftedPB + ((ICPU.Registers.PC + 1) & 0xffff));
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
@@ -3841,10 +3517,10 @@ static void Op6BE1 (void)
 
 static void Op6B (void)
 {
-    PullW (Registers.PC);
-    PullB (Registers.PB);
-    ICPU.ShiftedPB = Registers.PB << 16;
-    S9xSetPCBase (ICPU.ShiftedPB + ((Registers.PC + 1) & 0xffff));
+    PullW (ICPU.Registers.PC);
+    PullB (ICPU.Registers.PB);
+    ICPU.ShiftedPB = ICPU.Registers.PB << 16;
+    S9xSetPCBase (ICPU.ShiftedPB + ((ICPU.Registers.PC + 1) & 0xffff));
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
@@ -3854,7 +3530,7 @@ static void Op6B (void)
 /* JSR/RTS *********************************************************************************** */
 static void Op20 (void)
 {
-    Absolute (JUMP);
+    Absolute (JUMP, OpAddressPassthrough);
     PushW (CPU.PC - CPU.PCBase - 1);
     S9xSetPCBase (ICPU.ShiftedPB + (OpAddress & 0xffff));
 #ifndef SA1_OPCODES
@@ -3865,7 +3541,7 @@ static void Op20 (void)
 //JSR a,x
 static void OpFCE1 (void)
 {
-    AbsoluteIndexedIndirect (JUMP);
+    AbsoluteIndexedIndirect (JUMP, OpAddressPassthrough);
     PushWENew (CPU.PC - CPU.PCBase - 1);
     S9xSetPCBase (ICPU.ShiftedPB + OpAddress);
 #ifndef SA1_OPCODES
@@ -3875,7 +3551,7 @@ static void OpFCE1 (void)
 
 static void OpFC (void)
 {
-    AbsoluteIndexedIndirect (JUMP);
+    AbsoluteIndexedIndirect (JUMP, OpAddressPassthrough);
     PushW (CPU.PC - CPU.PCBase - 1);
     S9xSetPCBase (ICPU.ShiftedPB + OpAddress);
 #ifndef SA1_OPCODES
@@ -3885,8 +3561,8 @@ static void OpFC (void)
 
 static void Op60 (void)
 {
-    PullW (Registers.PC);
-    S9xSetPCBase (ICPU.ShiftedPB + ((Registers.PC + 1) & 0xffff));
+    PullW (ICPU.Registers.PC);
+    S9xSetPCBase (ICPU.ShiftedPB + ((ICPU.Registers.PC + 1) & 0xffff));
 #ifndef SA1_OPCODES
     CPU.Cycles += ONE_CYCLE * 3;
 #endif
@@ -3903,17 +3579,20 @@ static void Op54X1 (void)
     CPU.Cycles += CPU.MemSpeedx2 + TWO_CYCLES;
 #endif
     
-    Registers.DB = *CPU.PC++;
-    ICPU.ShiftedDB = Registers.DB << 16;
-    OpenBus = SrcBank = *CPU.PC++;
+    ICPU.Registers.DB = *CPU.PC++;
+    ICPU.ShiftedDB = ICPU.Registers.DB << 16;
+#ifndef NO_OPEN_BUS
+    OpenBus =
+#endif
+		SrcBank = *CPU.PC++;
 
-    S9xSetByte (S9xGetByte ((SrcBank << 16) + Registers.X.W), 
-	     ICPU.ShiftedDB + Registers.Y.W);
+    S9xSetByte (S9xGetByte ((SrcBank << 16) + ICPU.Registers.X.W), 
+	     ICPU.ShiftedDB + ICPU.Registers.Y.W);
 
-    Registers.XL++;
-    Registers.YL++;
-    Registers.A.W--;
-    if (Registers.A.W != 0xffff)
+    ICPU.Registers.XL++;
+    ICPU.Registers.YL++;
+    ICPU.Registers.A.W--;
+    if (ICPU.Registers.A.W != 0xffff)
 	CPU.PC -= 3;
 }
 
@@ -3925,17 +3604,20 @@ static void Op54X0 (void)
     CPU.Cycles += CPU.MemSpeedx2 + TWO_CYCLES;
 #endif
     
-    Registers.DB = *CPU.PC++;
-    ICPU.ShiftedDB = Registers.DB << 16;
-    OpenBus = SrcBank = *CPU.PC++;
+    ICPU.Registers.DB = *CPU.PC++;
+    ICPU.ShiftedDB = ICPU.Registers.DB << 16;
+#ifndef NO_OPEN_BUS
+    OpenBus =
+#endif
+		SrcBank = *CPU.PC++;
 
-    S9xSetByte (S9xGetByte ((SrcBank << 16) + Registers.X.W), 
-	     ICPU.ShiftedDB + Registers.Y.W);
+    S9xSetByte (S9xGetByte ((SrcBank << 16) + ICPU.Registers.X.W), 
+	     ICPU.ShiftedDB + ICPU.Registers.Y.W);
 
-    Registers.X.W++;
-    Registers.Y.W++;
-    Registers.A.W--;
-    if (Registers.A.W != 0xffff)
+    ICPU.Registers.X.W++;
+    ICPU.Registers.Y.W++;
+    ICPU.Registers.A.W--;
+    if (ICPU.Registers.A.W != 0xffff)
 	CPU.PC -= 3;
 }
 
@@ -3946,16 +3628,19 @@ static void Op44X1 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeedx2 + TWO_CYCLES;
 #endif    
-    Registers.DB = *CPU.PC++;
-    ICPU.ShiftedDB = Registers.DB << 16;
-    OpenBus = SrcBank = *CPU.PC++;
-    S9xSetByte (S9xGetByte ((SrcBank << 16) + Registers.X.W), 
-	     ICPU.ShiftedDB + Registers.Y.W);
+    ICPU.Registers.DB = *CPU.PC++;
+    ICPU.ShiftedDB = ICPU.Registers.DB << 16;
+#ifndef NO_OPEN_BUS
+    OpenBus =
+#endif
+		SrcBank = *CPU.PC++;
+    S9xSetByte (S9xGetByte ((SrcBank << 16) + ICPU.Registers.X.W), 
+	     ICPU.ShiftedDB + ICPU.Registers.Y.W);
 
-    Registers.XL--;
-    Registers.YL--;
-    Registers.A.W--;
-    if (Registers.A.W != 0xffff)
+    ICPU.Registers.XL--;
+    ICPU.Registers.YL--;
+    ICPU.Registers.A.W--;
+    if (ICPU.Registers.A.W != 0xffff)
 	CPU.PC -= 3;
 }
 
@@ -3966,16 +3651,19 @@ static void Op44X0 (void)
 #ifndef SA1_OPCODES
     CPU.Cycles += CPU.MemSpeedx2 + TWO_CYCLES;
 #endif    
-    Registers.DB = *CPU.PC++;
-    ICPU.ShiftedDB = Registers.DB << 16;
-    OpenBus = SrcBank = *CPU.PC++;
-    S9xSetByte (S9xGetByte ((SrcBank << 16) + Registers.X.W), 
-	     ICPU.ShiftedDB + Registers.Y.W);
+    ICPU.Registers.DB = *CPU.PC++;
+    ICPU.ShiftedDB = ICPU.Registers.DB << 16;
+#ifndef NO_OPEN_BUS
+    OpenBus =
+#endif
+		SrcBank = *CPU.PC++;
+    S9xSetByte (S9xGetByte ((SrcBank << 16) + ICPU.Registers.X.W), 
+	     ICPU.ShiftedDB + ICPU.Registers.Y.W);
 
-    Registers.X.W--;
-    Registers.Y.W--;
-    Registers.A.W--;
-    if (Registers.A.W != 0xffff)
+    ICPU.Registers.X.W--;
+    ICPU.Registers.Y.W--;
+    ICPU.Registers.A.W--;
+    if (ICPU.Registers.A.W != 0xffff)
 	CPU.PC -= 3;
 }
 
@@ -3984,8 +3672,8 @@ static void Op44X0 (void)
 /* REP/SEP *********************************************************************************** */
 static void OpC2 (void)
 {
-    Work8 = ~*CPU.PC++;
-    Registers.PL &= Work8;
+    uint8 Work8 = ~*CPU.PC++;
+    ICPU.Registers.PL &= Work8;
     ICPU._Carry &= Work8;
     ICPU._Overflow &= (Work8 >> 6);
     ICPU._Negative &= Work8;
@@ -4001,8 +3689,8 @@ static void OpC2 (void)
     }
     if (CheckIndex ())
     {
-	Registers.XH = 0;
-	Registers.YH = 0;
+	ICPU.Registers.XH = 0;
+	ICPU.Registers.YH = 0;
     }
     S9xFixCycles();
 /*    CHECK_FOR_IRQ(); */
@@ -4010,8 +3698,8 @@ static void OpC2 (void)
 
 static void OpE2 (void)
 {
-    Work8 = *CPU.PC++;
-    Registers.PL |= Work8;
+    uint8 Work8 = *CPU.PC++;
+    ICPU.Registers.PL |= Work8;
     ICPU._Carry |= Work8 & 1;
     ICPU._Overflow |= (Work8 >> 6) & 1;
     ICPU._Negative |= Work8;
@@ -4027,8 +3715,8 @@ static void OpE2 (void)
     }
     if (CheckIndex ())
     {
-	Registers.XH = 0;
-	Registers.YH = 0;
+	ICPU.Registers.XH = 0;
+	ICPU.Registers.YH = 0;
     }
     S9xFixCycles();
 }
@@ -4037,11 +3725,11 @@ static void OpE2 (void)
 /* XBA *************************************************************************************** */
 static void OpEB (void)
 {
-    Work8 = Registers.AL;
-    Registers.AL = Registers.AH;
-    Registers.AH = Work8;
+    uint8 Work8 = ICPU.Registers.AL;
+    ICPU.Registers.AL = ICPU.Registers.AH;
+    ICPU.Registers.AH = Work8;
 
-    SetZN8 (Registers.AL);
+    SetZN8 (ICPU.Registers.AL);
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
 #endif
@@ -4051,25 +3739,24 @@ static void OpEB (void)
 /* RTI *************************************************************************************** */
 static void Op40 (void)
 {
-    PullB (Registers.PL);
+    PullB (ICPU.Registers.PL);
     S9xUnpackStatus ();
-    PullW (Registers.PC);
+    PullW (ICPU.Registers.PC);
     if (!CheckEmulation())
     {
-	PullB (Registers.PB);
-	ICPU.ShiftedPB = Registers.PB << 16;
+	PullB (ICPU.Registers.PB);
+	ICPU.ShiftedPB = ICPU.Registers.PB << 16;
     }
     else
     {
 	SetFlags (MemoryFlag | IndexFlag);
 	missing.emulate6502 = 1;
     }
-    S9xSetPCBase (ICPU.ShiftedPB + Registers.PC);
-    
+    S9xSetPCBase (ICPU.ShiftedPB + ICPU.Registers.PC);
     if (CheckIndex ())
     {
-	Registers.XH = 0;
-	Registers.YH = 0;
+	ICPU.Registers.XH = 0;
+	ICPU.Registers.YH = 0;
     }
 #ifndef SA1_OPCODES
     CPU.Cycles += TWO_CYCLES;
@@ -4098,9 +3785,7 @@ static void OpCB (void)
             SA1.Executing = FALSE;
             do
             {
-                APU_EXECUTE1 ();
-            } while (APU.Cycles < SA1.NextEvent);
-            SA1.Executing = TRUE;
+                APU_EXECUTE1 (,         } while (APU.Cycles < SA1.NextEvent,         SA1.Executing = TRUE;
         }
     }
 #endif
@@ -4138,8 +3823,8 @@ static void OpCB (void)
 #ifndef SA1_OPCODES
             CPU.Cycles += TWO_CYCLES;
 #endif
-#endif
     }
+#endif
     }
 #endif // SA1_OPCODES
 }

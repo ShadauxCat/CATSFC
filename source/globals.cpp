@@ -113,19 +113,13 @@ struct SICPU ICPU;
 
 struct SCPUState CPU;
 
-struct SRegisters Registers;
-
 struct SAPU APU;
 
 struct SIAPU IAPU;
 
-struct SAPURegisters APURegisters;
-
 struct SSettings Settings;
 
 struct SDSP1 DSP1;
-
-struct SSA1Registers SA1Registers;
 
 struct SSA1 SA1;
 
@@ -147,6 +141,7 @@ CMemory Memory;
 
 struct SSNESGameFixes SNESGameFixes;
 
+#if 0
 uint8 A1 = 0, A2 = 0, A3 = 0, A4 = 0, W1 = 0, W2 = 0, W3 = 0, W4 = 0;
 uint8 Ans8 = 0;
 uint16 Ans16 = 0;
@@ -157,7 +152,10 @@ uint32 Work32 = 0;
 signed char Int8 = 0;
 short Int16 = 0;
 long Int32 = 0;
-unsigned char OpenBus = 0;
+#endif
+#ifndef NO_OPEN_BUS
+uint8 OpenBus = 0;
+#endif
 
 
 END_EXTERN_C
@@ -230,7 +228,6 @@ uint32 HIGH_BITS_SHIFTED_TWO_MASK = 0;
 uint32 current_graphic_format = RGB565;
 #endif
 
-uint8 GetBank = 0;
 struct SCheatData Cheat;
 
 volatile SoundStatus so;
@@ -357,7 +354,7 @@ struct SNetPlay NetPlay;
 #endif
 
 // Raw SPC700 instruction cycle lengths
-int32 S9xAPUCycleLengths [256] = 
+uint16 S9xAPUCycleLengths [256] = 
 {
     /*        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f, */
     /* 00 */  2, 8, 4, 5, 3, 4, 3, 6, 2, 6, 5, 4, 5, 4, 6, 8, 
@@ -380,7 +377,7 @@ int32 S9xAPUCycleLengths [256] =
 
 // Actual data used by CPU emulation, will be scaled by APUReset routine
 // to be relative to the 65c816 instruction lengths.
-int32 S9xAPUCycles [256] =
+uint16 S9xAPUCycles [256] =
 {
     /*        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f, */
     /* 00 */  2, 8, 4, 5, 3, 4, 3, 6, 2, 6, 5, 4, 5, 4, 6, 8, 

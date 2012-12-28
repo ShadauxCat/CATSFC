@@ -95,7 +95,6 @@
 #include "sa1.h"
 #define CPU SA1
 #define ICPU SA1
-#define Registers SA1Registers
 #define S9xGetByte S9xSA1GetByte
 #define S9xGetWord S9xSA1GetWord
 #define S9xSetByte S9xSA1SetByte
@@ -133,6 +132,69 @@
 #define DirectIndirectLong SA1DirectIndirectLong
 #define StackRelative SA1StackRelative
 #define StackRelativeIndirectIndexed SA1StackRelativeIndirectIndexed
+
+#define SetZN16 SA1SetZN16
+#define SetZN8 SA1SetZN8
+#define ADC8 SA1ADC8
+#define ADC16 SA1ADC16
+#define AND16 SA1AND16
+#define AND8 SA1AND8
+#define A_ASL16 SA1A_ASL16
+#define A_ASL8 SA1A_ASL8
+#define ASL16 SA1ASL16
+#define ASL8 SA1ASL8
+#define BIT16 SA1BIT16
+#define BIT8 SA1BIT8
+#define CMP16 SA1CMP16
+#define CMP8 SA1CMP8
+#define CMX16 SA1CMX16
+#define CMX8 SA1CMX8
+#define CMY16 SA1CMY16
+#define CMY8 SA1CMY8
+#define A_DEC16 SA1A_DEC16
+#define A_DEC8 SA1A_DEC8
+#define DEC16 SA1DEC16
+#define DEC8 SA1DEC8
+#define EOR16 SA1EOR16
+#define EOR8 SA1EOR8
+#define A_INC16 SA1A_INC16
+#define A_INC8 SA1A_INC8
+#define INC16 SA1INC16
+#define INC8 SA1INC8
+#define LDA16 SA1LDA16
+#define LDA8 SA1LDA8
+#define LDX16 SA1LDX16
+#define LDX8 SA1LDX8
+#define LDY16 SA1LDY16
+#define LDY8 SA1LDY8
+#define A_LSR16 SA1A_LSR16
+#define A_LSR8 SA1A_LSR8
+#define LSR16 SA1LSR16
+#define LSR8 SA1LSR8
+#define ORA16 SA1ORA16
+#define ORA8 SA1ORA8
+#define A_ROL16 SA1A_ROL16
+#define A_ROL8 SA1A_ROL8
+#define ROL16 SA1ROL16
+#define ROL8 SA1ROL8
+#define A_ROR16 SA1A_ROR16
+#define A_ROR8 SA1A_ROR8
+#define ROR16 SA1ROR16
+#define ROR8 SA1ROR8
+#define SBC16 SA1SBC16
+#define SBC8 SA1SBC8
+#define STA16 SA1STA16
+#define STA8 SA1STA8
+#define STX16 SA1STX16
+#define STX8 SA1STX8
+#define STY16 SA1STY16
+#define STY8 SA1STY8
+#define STZ16 SA1STZ16
+#define STZ8 SA1STZ8
+#define TSB16 SA1TSB16
+#define TSB8 SA1TSB8
+#define TRB16 SA1TRB16
+#define TRB8 SA1TRB8
 
 //#undef CPU_SHUTDOWN
 #undef VAR_CYCLES

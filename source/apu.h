@@ -95,6 +95,7 @@
 struct SIAPU
 {
     uint8  *PC;
+    struct SAPURegisters Registers;
     uint8  *RAM;
     uint8  *DirectPage;
     bool8  APUExecuting;
@@ -136,15 +137,15 @@ extern int spc_is_dumping_temp;
 extern uint8 spc_dump_dsp[0x100];
 STATIC inline void S9xAPUUnpackStatus()
 {
-    IAPU._Zero = ((APURegisters.P & Zero) == 0) | (APURegisters.P & Negative);
-    IAPU._Carry = (APURegisters.P & Carry);
-    IAPU._Overflow = (APURegisters.P & Overflow) >> 6;
+    IAPU._Zero = ((IAPU.Registers.P & Zero) == 0) | (IAPU.Registers.P & Negative);
+    IAPU._Carry = (IAPU.Registers.P & Carry);
+    IAPU._Overflow = (IAPU.Registers.P & Overflow) >> 6;
 }
 
 STATIC inline void S9xAPUPackStatus()
 {
-    APURegisters.P &= ~(Zero | Negative | Carry | Overflow);
-    APURegisters.P |= IAPU._Carry | ((IAPU._Zero == 0) << 1) |
+    IAPU.Registers.P &= ~(Zero | Negative | Carry | Overflow);
+    IAPU.Registers.P |= IAPU._Carry | ((IAPU._Zero == 0) << 1) |
 		      (IAPU._Zero & 0x80) | (IAPU._Overflow << 6);
 }
 
@@ -162,8 +163,8 @@ void S9xSetAPUTimer (uint16 Address, uint8 byte);
 bool8 S9xInitSound (int quality, bool8 stereo, int buffer_size);
 void S9xOpenCloseSoundTracingFile (bool8);
 void S9xPrintAPUState ();
-extern int32 S9xAPUCycles [256];	// Scaled cycle lengths
-extern int32 S9xAPUCycleLengths [256];	// Raw data.
+extern uint16 S9xAPUCycles [256];	// Scaled cycle lengths
+extern uint16 S9xAPUCycleLengths [256];	// Raw data.
 extern void (*S9xApuOpcodes [256]) (void);
 END_EXTERN_C
 
