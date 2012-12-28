@@ -105,17 +105,19 @@ void S9xInitCheatData ()
 void S9xAddCheat (bool8 enable, bool8 save_current_value, 
 		  uint32 address, uint8 byte)
 {
-    if (Cheat.num_cheats < sizeof (Cheat.c) / sizeof (Cheat. c [0]))
+    if (Cheat.num_cheats < sizeof (Cheat.c) / sizeof (Cheat.c [0]))
     {
 	Cheat.c [Cheat.num_cheats].address = address;
 	Cheat.c [Cheat.num_cheats].byte = byte;
-	Cheat.c [Cheat.num_cheats].enabled = TRUE;
+	Cheat.c [Cheat.num_cheats].enabled = enable;
 	if (save_current_value)
 	{
 	    Cheat.c [Cheat.num_cheats].saved_byte = S9xGetByte (address);
 	    Cheat.c [Cheat.num_cheats].saved = TRUE;
 	}
 	Cheat.num_cheats++;
+	if (enable)
+		S9xApplyCheat(Cheat.num_cheats - 1);
     }
 }
 
@@ -169,6 +171,8 @@ void S9xRemoveCheat (uint32 which1)
 	    *(ptr + (address & 0xffff)) = Cheat.c [which1].saved_byte;
 	else
 	    S9xSetByte (Cheat.c [which1].saved_byte, address);
+	// Unsave the address for the next call to S9xRemoveCheat.
+	Cheat.c [which1].saved = FALSE;
     }
 }
 
@@ -211,20 +215,24 @@ bool8 S9xLoadCheatFile (const char *filename)
     Cheat.num_cheats = 0;
 
     FILE *fs = fopen (filename, "rb");
-    uint8 data [28];
+    uint8 data [8 + MAX_SFCCHEAT_NAME];
 
     if (!fs)
 	return (FALSE);
 
-    while (fread ((void *) data, 1, 28, fs) == 28)
+    while (fread ((void *) data, 1, 8 + MAX_SFCCHEAT_NAME, fs) == 8 + MAX_SFCCHEAT_NAME)
     {
+	if (data[6] != 254 || data[7] != 252) {
+		fclose (fs);
+		return (FALSE);
+	}
 	Cheat.c [Cheat.num_cheats].enabled = (data [0] & 4) == 0;
 	Cheat.c [Cheat.num_cheats].byte = data [1];
 	Cheat.c [Cheat.num_cheats].address = data [2] | (data [3] << 8) |  (data [4] << 16);
 	Cheat.c [Cheat.num_cheats].saved_byte = data [5];
 	Cheat.c [Cheat.num_cheats].saved = (data [0] & 8) != 0;
-	memmove (Cheat.c [Cheat.num_cheats].name, &data [8], 20);
-	Cheat.c [Cheat.num_cheats++].name [20] = 0;
+	memcpy (Cheat.c [Cheat.num_cheats].name, &data [8], MAX_SFCCHEAT_NAME - 1);
+	Cheat.c [Cheat.num_cheats++].name [MAX_SFCCHEAT_NAME - 1] = 0;
     }
     fclose (fs);
 
@@ -240,7 +248,7 @@ bool8 S9xSaveCheatFile (const char *filename)
     }
 
     FILE *fs = fopen (filename, "wb");
-    uint8 data [28];
+    uint8 data [8 + MAX_SFCCHEAT_NAME];
 
     if (!fs)
 	return (FALSE);
@@ -248,12 +256,9 @@ bool8 S9xSaveCheatFile (const char *filename)
     uint32 i;
     for (i = 0; i < Cheat.num_cheats; i++)
     {
-	memset (data, 0, 28);
-	if (i == 0)
-	{
-	    data [6] = 254;
-	    data [7] = 252;
-	}
+	memset (data, 0, 8 + MAX_SFCCHEAT_NAME);
+	data [6] = 254;
+	data [7] = 252;
 	if (!Cheat.c [i].enabled)
 	    data [0] |= 4;
 
@@ -266,8 +271,8 @@ bool8 S9xSaveCheatFile (const char *filename)
 	data [4] = (uint8) (Cheat.c [i].address >> 16);
 	data [5] = Cheat.c [i].saved_byte;
 
-	memmove (&data [8], Cheat.c [i].name, 19);
-	if (fwrite (data, 28, 1, fs) != 1)
+	memcpy (&data [8], Cheat.c [i].name, MAX_SFCCHEAT_NAME - 1);
+	if (fwrite (data, 8 + MAX_SFCCHEAT_NAME, 1, fs) != 1)
 	{
 	    fclose (fs);
 	    return (FALSE);
@@ -277,5 +282,3 @@ bool8 S9xSaveCheatFile (const char *filename)
     fclose (fs);
     return (TRUE);
 }
-
-

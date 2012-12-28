@@ -342,7 +342,9 @@ struct SSettings{
     bool8  FixFrequency;
     
     /* Graphics options */
+#ifndef FOREVER_16_BIT
     bool8  SixteenBit;
+#endif
     bool8  Transparency;
     bool8  SupportHiRes;
     bool8  Mode7Interpolate;

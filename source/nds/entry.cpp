@@ -20,6 +20,7 @@
 
 #include "draw.h"
 #include "gui.h"
+#include "ds2sound.h"
 
 void S9xProcessSound (unsigned int);
 
@@ -90,13 +91,15 @@ void S9xParseDisplayArg (char **argv, int &ind, int)
 
 void S9xExit ()
 {
+  ds2_setCPUclocklevel(13); // Crank it up to exit quickly
   if(Settings.SPC7110)
     (*CleanUp7110)();
 
 	S9xSetSoundMute (TRUE);
     S9xDeinitDisplay ();
     Memory.SaveSRAM (S9xGetFilename (".srm"));
-    S9xSaveCheatFile (S9xGetFilename (".cht"));
+    // S9xSaveCheatFile (S9xGetFilename (".chb")); // cheat binary file
+	// Do this when loading a cheat file!
     Memory.Deinit ();
     S9xDeinitAPU ();
 
@@ -172,12 +175,10 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 			break;
 	}
 
-
-//    memcpy(up_screen_addr, GFX.Screen, 256*192*2);
-//    memcpy(down_screen_addr, GFX.Screen+256*192*2, 256*(224-192)*2);
-
-    ds2_flipScreen(UP_SCREEN, 0);
-//    ds2_flipScreen(DOWN_SCREEN, 0);
+    ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
+	// A problem with update method 1 (wait, double buffer) means that, after
+	// about 15 minutes of play time, the screen starts to half-redraw every
+	// frame. With update method 0, this is mitigated. (Method 2 is too slow.)
 
     return (TRUE);
 }
@@ -262,7 +263,6 @@ const char *S9xGetSnapshotDirectory ()
     return ((const char*)DEFAULT_RTS_DIR);
 }
 
-
 const char *S9xGetFilename (const char *ex)
 {
     static char filename [PATH_MAX + 1];
@@ -341,12 +341,10 @@ void game_disableAudio()
 {
 	if( game_enable_audio == 1)
 	{
-		Settings.APUEnabled = Settings.NextAPUEnabled = TRUE;
 		S9xSetSoundMute (FALSE);
 	}
 	else
 	{
-		Settings.APUEnabled = Settings.NextAPUEnabled = FALSE;
 		S9xSetSoundMute (TRUE);
 	}
 }
@@ -360,9 +358,9 @@ void init_sfc_setting(void)
     Settings.JoystickEnabled = FALSE;
 #endif
 
-    Settings.SoundPlaybackRate = 4;	//2 = 11025, 4 = 22050, 6 = 44100
+    Settings.SoundPlaybackRate = SNES9X_SRATE_ID;	// -> ds2sound.h for defs
     Settings.Stereo = TRUE;
-    Settings.SoundBufferSize = 0;
+    Settings.SoundBufferSize = DS2_BUFFER_SIZE;
     Settings.CyclesPercentage = 100;
     Settings.DisableSoundEcho = FALSE;
 	//sound settings
@@ -384,17 +382,20 @@ void init_sfc_setting(void)
     Settings.ControllerOption = SNES_JOYPAD;
 
     Settings.Transparency = TRUE;
+#ifndef FOREVER_16_BIT
     Settings.SixteenBit = TRUE;
+#endif
 
     Settings.SupportHiRes = FALSE;
-    Settings.NetPlay = FALSE;
-    Settings.ServerName [0] = 0;
     Settings.ThreadSound = FALSE;
+	Settings.SoundSync = TRUE;
     Settings.AutoSaveDelay = 0;
 #ifdef _NETPLAY_SUPPORT
+    Settings.NetPlay = FALSE;
+    Settings.ServerName [0] = 0;
     Settings.Port = NP_DEFAULT_PORT;
 #endif
-    Settings.ApplyCheats =FALSE;
+    Settings.ApplyCheats = TRUE;
     Settings.TurboMode = FALSE;
     Settings.TurboSkipFrames = 40;
     Settings.StretchScreenshots = 1;
@@ -454,14 +455,13 @@ int load_gamepak(char* file)
 
 	CPU.Flags = 0;
 	S9xReset ();
-	mdelay(50);
+	// mdelay(50); // Delete this delay
 	if (!Memory.LoadROM (file))
 		return -1;
 
 	Memory.LoadSRAM (S9xGetFilename (".srm"));
-	mdelay(50);
-	//S9xLoadCheatFile (S9xGetFilename (".cht"));
-	S9xCheat_Disable();
+	// mdelay(50); // Delete this delay
+	S9xLoadCheatFile (S9xGetFilename (".chb")); // cheat binary file, as opposed to text
 
 #ifdef _NETPLAY_SUPPORT
     if (strlen (Settings.ServerName) == 0)
@@ -507,9 +507,7 @@ int load_gamepak(char* file)
     }
 */
 
-	mdelay(50);
-    if (!Settings.APUEnabled)
-	    S9xSetSoundMute (FALSE);
+	// mdelay(50); // Delete this delay
 
 	return 0;
 }
@@ -532,9 +530,6 @@ int sfc_main (int argc, char **argv)
 
     S9xInitSound (Settings.SoundPlaybackRate, Settings.Stereo,
                   Settings.SoundBufferSize);
-
-    if (!Settings.APUEnabled)
-		S9xSetSoundMute (TRUE);
 
 #ifdef GFX_MULTI_FORMAT
 //    S9xSetRenderPixelFormat (RGB565);
@@ -586,9 +581,9 @@ int sfc_main (int argc, char **argv)
     {
 		if (!Settings.Paused
 #ifdef DEBUGGER
-			|| (CPU.Flags & (DEBUG_MODE_FLAG | SINGLE_STEP_FLAG))
+			|| (CPU.Flags & (DEBUG_MODE_FLAG | SINGLE_STEP_FLAG)
 #endif
-           )
+			)
 			S9xMainLoop ();
 
 
@@ -602,7 +597,6 @@ int sfc_main (int argc, char **argv)
 		if (Settings.Paused)
 		{
 			S9xSetSoundMute (TRUE);
-			mdelay(50);
 			unsigned short screen[256*192];
 
 			copy_screen((void*)screen, up_screen_addr, 0, 0, 256, 192);
@@ -769,28 +763,15 @@ void S9xSyncSpeed ()
 #endif
 }
 
-/*
-*   Open sound device
-*/
-static int Rates[8] =
-{
-    0, 8000, 11025, 16000, 22050, 32000, 44100, 48000
-};
-
-static int BufferSizes [8] =
-{
-    0, 256, 256, 256, 512, 512, 1024, 1024
-};
-
 bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
 {
 	so.sixteen_bit = TRUE;
     so.stereo = stereo;
-    so.playback_rate = Rates[mode & 0x07];
+    so.playback_rate = SND_SAMPLE_RATE;
     S9xSetPlaybackRate (so.playback_rate);
 
     if (buffer_size == 0)
-	    buffer_size = BufferSizes [mode & 7];
+	    buffer_size = DS2_BUFFER_SIZE;
 
     if (buffer_size > MAX_BUFFER_SIZE / 4)
 	    buffer_size = MAX_BUFFER_SIZE / 4;
@@ -873,7 +854,7 @@ void S9xProcessSound (unsigned int)
 {
 	unsigned short *audiobuff;
 
-	if (!Settings.APUEnabled || so.mute_sound )
+	if (so.mute_sound || !game_enable_audio)
 		return;
 
 	if(ds2_checkAudiobuff() > 4)
@@ -938,7 +919,7 @@ void S9xProcessSound (unsigned int)
 //		block_generate_sound = FALSE;
 
 		unsigned short *dst_pt = audiobuff;
-		unsigned short *dst_pt1 = dst_pt + 512;
+		unsigned short *dst_pt1 = dst_pt + DS2_BUFFER_SIZE;
 
 		/* Feed the samples to the soundcard until nothing is left */
 		for(;;)
@@ -1013,7 +994,8 @@ unsigned int S9xReadJoypad (int which1)
 			key |= (inputdata.key & (1<<i)) ? keymap[i] : 0;
 		}
 
-		return (key | 0x80000000);
+		// return (key | 0x80000000);
+		return key; // ??? [Neb]
 	}
 	else
 		return 0;

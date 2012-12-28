@@ -165,8 +165,10 @@ enum MSG
 enum LANGUAGE{
     ENGLISH,
     CHINESE_SIMPLIFIED,
-    CHINESE_TRADITIONAL
+	FRENCH
 };
+
+extern char* lang[3]; // Allocated in gui.c, needs to match the languages ^
 
 char *msg[MSG_END+1];
 char msg_data[16 * 1024];

@@ -107,29 +107,29 @@
 
 #define APUClearCarry() (IAPU._Carry = 0)
 #define APUSetCarry() (IAPU._Carry = 1)
-#define APUSetInterrupt() (APURegisters.P |= Interrupt)
-#define APUClearInterrupt() (APURegisters.P &= ~Interrupt)
-#define APUSetHalfCarry() (APURegisters.P |= HalfCarry)
-#define APUClearHalfCarry() (APURegisters.P &= ~HalfCarry)
-#define APUSetBreak() (APURegisters.P |= BreakFlag)
-#define APUClearBreak() (APURegisters.P &= ~BreakFlag)
-#define APUSetDirectPage() (APURegisters.P |= DirectPageFlag)
-#define APUClearDirectPage() (APURegisters.P &= ~DirectPageFlag)
+#define APUSetInterrupt() (IAPU.Registers.P |= Interrupt)
+#define APUClearInterrupt() (IAPU.Registers.P &= ~Interrupt)
+#define APUSetHalfCarry() (IAPU.Registers.P |= HalfCarry)
+#define APUClearHalfCarry() (IAPU.Registers.P &= ~HalfCarry)
+#define APUSetBreak() (IAPU.Registers.P |= BreakFlag)
+#define APUClearBreak() (IAPU.Registers.P &= ~BreakFlag)
+#define APUSetDirectPage() (IAPU.Registers.P |= DirectPageFlag)
+#define APUClearDirectPage() (IAPU.Registers.P &= ~DirectPageFlag)
 #define APUSetOverflow() (IAPU._Overflow = 1)
 #define APUClearOverflow() (IAPU._Overflow = 0)
 
 #define APUCheckZero() (IAPU._Zero == 0)
 #define APUCheckCarry() (IAPU._Carry)
-#define APUCheckInterrupt() (APURegisters.P & Interrupt)
-#define APUCheckHalfCarry() (APURegisters.P & HalfCarry)
-#define APUCheckBreak() (APURegisters.P & BreakFlag)
-#define APUCheckDirectPage() (APURegisters.P & DirectPageFlag)
+#define APUCheckInterrupt() (IAPU.Registers.P & Interrupt)
+#define APUCheckHalfCarry() (IAPU.Registers.P & HalfCarry)
+#define APUCheckBreak() (IAPU.Registers.P & BreakFlag)
+#define APUCheckDirectPage() (IAPU.Registers.P & DirectPageFlag)
 #define APUCheckOverflow() (IAPU._Overflow)
 #define APUCheckNegative() (IAPU._Zero & 0x80)
 
-#define APUClearFlags(f) (APURegisters.P &= ~(f))
-#define APUSetFlags(f)   (APURegisters.P |=  (f))
-#define APUCheckFlag(f)  (APURegisters.P &   (f))
+#define APUClearFlags(f) (IAPU.Registers.P &= ~(f))
+#define APUSetFlags(f)   (IAPU.Registers.P |=  (f))
+#define APUCheckFlag(f)  (IAPU.Registers.P &   (f))
 
 typedef union
 {
@@ -148,8 +148,6 @@ struct SAPURegisters{
     uint8  S;
     uint16  PC;
 };
-
-EXTERN_C struct SAPURegisters APURegisters;
 
 // Needed by ILLUSION OF GAIA
 //#define ONE_APU_CYCLE 14

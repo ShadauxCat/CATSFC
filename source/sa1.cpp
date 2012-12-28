@@ -122,16 +122,16 @@ void S9xSA1Init ()
 
 void S9xSA1Reset ()
 {
-    SA1Registers.PB = 0;
-    SA1Registers.PC = Memory.FillRAM [0x2203] |
+    SA1.Registers.PB = 0;
+    SA1.Registers.PC = Memory.FillRAM [0x2203] |
 		      (Memory.FillRAM [0x2204] << 8);
-    SA1Registers.D.W = 0;
-    SA1Registers.DB = 0;
-    SA1Registers.SH = 1;
-    SA1Registers.SL = 0xFF;
-    SA1Registers.XH = 0;
-    SA1Registers.YH = 0;
-    SA1Registers.P.W = 0;
+    SA1.Registers.D.W = 0;
+    SA1.Registers.DB = 0;
+    SA1.Registers.SH = 1;
+    SA1.Registers.SL = 0xFF;
+    SA1.Registers.XH = 0;
+    SA1.Registers.YH = 0;
+    SA1.Registers.P.W = 0;
 
     SA1.ShiftedPB = 0;
     SA1.ShiftedDB = 0;
@@ -141,7 +141,7 @@ void S9xSA1Reset ()
     SA1.WaitingForInterrupt = FALSE;
     SA1.PC = NULL;
     SA1.PCBase = NULL;
-    S9xSA1SetPCBase (SA1Registers.PC);
+    S9xSA1SetPCBase (SA1.Registers.PC);
     SA1.S9xOpcodes = S9xSA1OpcodesM1X1;
 
     S9xSA1UnpackStatus();
@@ -181,10 +181,10 @@ void S9xSA1SetBWRAMMemMap (uint8 val)
 
 void S9xFixSA1AfterSnapshotLoad ()
 {
-    SA1.ShiftedPB = (uint32) SA1Registers.PB << 16;
-    SA1.ShiftedDB = (uint32) SA1Registers.DB << 16;
+    SA1.ShiftedPB = (uint32) SA1.Registers.PB << 16;
+    SA1.ShiftedDB = (uint32) SA1.Registers.DB << 16;
 
-    S9xSA1SetPCBase (SA1.ShiftedPB + SA1Registers.PC);
+    S9xSA1SetPCBase (SA1.ShiftedPB + SA1.Registers.PC);
     S9xSA1UnpackStatus ();
     S9xSA1FixCycles ();
     SA1.VirtualBitmapFormat = (Memory.FillRAM [0x223f] & 0x80) ? 2 : 4;
@@ -228,14 +228,23 @@ uint8 S9xSA1GetByte (uint32 address)
 #ifdef DEBUGGER
 //	printf ("R(B) %06x\n", address);
 #endif
+#ifndef NO_OPEN_BUS
         return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
     }
 }
 
 uint16 S9xSA1GetWord (uint32 address)
 {
+#ifndef NO_OPEN_BUS
     OpenBus = S9xSA1GetByte (address);
     return (OpenBus | (S9xSA1GetByte (address + 1) << 8));
+#else
+	uint8 Split = S9xSA1GetByte (address);
+	return (Split | (S9xSA1GetByte (address + 1) << 8));
+#endif
 }
 
 void S9xSA1SetByte (uint8 byte, uint32 address)
