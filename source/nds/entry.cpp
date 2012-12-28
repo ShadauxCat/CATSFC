@@ -341,12 +341,10 @@ void game_disableAudio()
 {
 	if( game_enable_audio == 1)
 	{
-		Settings.APUEnabled = Settings.NextAPUEnabled = TRUE;
 		S9xSetSoundMute (FALSE);
 	}
 	else
 	{
-		Settings.APUEnabled = Settings.NextAPUEnabled = FALSE;
 		S9xSetSoundMute (TRUE);
 	}
 }
@@ -510,8 +508,6 @@ int load_gamepak(char* file)
 */
 
 	// mdelay(50); // Delete this delay
-    if (!Settings.APUEnabled)
-	    S9xSetSoundMute (FALSE);
 
 	return 0;
 }
@@ -534,9 +530,6 @@ int sfc_main (int argc, char **argv)
 
     S9xInitSound (Settings.SoundPlaybackRate, Settings.Stereo,
                   Settings.SoundBufferSize);
-
-    if (!Settings.APUEnabled)
-		S9xSetSoundMute (TRUE);
 
 #ifdef GFX_MULTI_FORMAT
 //    S9xSetRenderPixelFormat (RGB565);
@@ -861,7 +854,7 @@ void S9xProcessSound (unsigned int)
 {
 	unsigned short *audiobuff;
 
-	if (!Settings.APUEnabled || so.mute_sound )
+	if (so.mute_sound || !game_enable_audio)
 		return;
 
 	if(ds2_checkAudiobuff() > 4)
