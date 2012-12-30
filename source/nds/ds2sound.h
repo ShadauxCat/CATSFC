@@ -19,6 +19,6 @@
 #define SND_SAMPLE_RATE_7 48000
 
 // Settings in use. The number should match in all three settings.
-#define DS2_BUFFER_SIZE   DS2_BUFFER_SIZE_7
-#define SND_SAMPLE_RATE   SND_SAMPLE_RATE_7
-#define SNES9X_SRATE_ID   7
+#define DS2_BUFFER_SIZE   DS2_BUFFER_SIZE_4
+#define SND_SAMPLE_RATE   SND_SAMPLE_RATE_4
+#define SNES9X_SRATE_ID   4
