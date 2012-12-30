@@ -114,7 +114,6 @@ struct SGFX{
     uint32 PixSize;
     uint8  *S;
     uint8  *DB;
-    uint16 *ScreenColors;
     uint32 DepthDelta;
     uint8  Z1;          // Depth for comparison
     uint8  Z2;          // Depth to save

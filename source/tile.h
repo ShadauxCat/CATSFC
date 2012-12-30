@@ -108,65 +108,64 @@
 	return; \
 \
     register uint32 l; \
+    uint16 *ScreenColors; \
     if (BG.DirectColourMode) \
     { \
 	if (IPPU.DirectColourMapsNeedRebuild) \
             S9xBuildDirectColourMaps (); \
-        GFX.ScreenColors = DirectColourMaps [(Tile >> 10) & BG.PaletteMask]; \
+        ScreenColors = DirectColourMaps [(Tile >> 10) & BG.PaletteMask]; \
     } \
     else \
-	GFX.ScreenColors = &IPPU.ScreenColors [(((Tile >> 10) & BG.PaletteMask) << BG.PaletteShift) + BG.StartPalette];
+	ScreenColors = &IPPU.ScreenColors [(((Tile >> 10) & BG.PaletteMask) << BG.PaletteShift) + BG.StartPalette];
 
 #define RENDER_TILE(NORMAL, FLIPPED, N) \
-    if (!(Tile & (V_FLIP | H_FLIP))) \
+    switch (Tile & (V_FLIP | H_FLIP)) \
     { \
+    case 0: \
 	bp = pCache + StartLine; \
 	for (l = LineCount; l != 0; l--, bp += 8, Offset += GFX.PPL) \
 	{ \
 	    if (*(uint32 *) bp) \
-		NORMAL (Offset, bp); \
+		NORMAL (Offset, bp, ScreenColors); \
 	    if (*(uint32 *) (bp + 4)) \
-		NORMAL (Offset + N, bp + 4); \
+		NORMAL (Offset + N, bp + 4, ScreenColors); \
 	} \
-    } \
-    else \
-    if (!(Tile & V_FLIP)) \
-    { \
+        break; \
+    case H_FLIP: \
 	bp = pCache + StartLine; \
 	for (l = LineCount; l != 0; l--, bp += 8, Offset += GFX.PPL) \
 	{ \
 	    if (*(uint32 *) (bp + 4)) \
-		FLIPPED (Offset, bp + 4); \
+		FLIPPED (Offset, bp + 4, ScreenColors); \
 	    if (*(uint32 *) bp) \
-		FLIPPED (Offset + N, bp); \
+		FLIPPED (Offset + N, bp, ScreenColors); \
 	} \
-    } \
-    else \
-    if (Tile & H_FLIP) \
-    { \
+        break; \
+    case H_FLIP | V_FLIP: \
 	bp = pCache + 56 - StartLine; \
 	for (l = LineCount; l != 0; l--, bp -= 8, Offset += GFX.PPL) \
 	{ \
 	    if (*(uint32 *) (bp + 4)) \
-		FLIPPED (Offset, bp + 4); \
+		FLIPPED (Offset, bp + 4, ScreenColors); \
 	    if (*(uint32 *) bp) \
-		FLIPPED (Offset + N, bp); \
+		FLIPPED (Offset + N, bp, ScreenColors); \
 	} \
-    } \
-    else \
-    { \
+        break; \
+    case V_FLIP: \
 	bp = pCache + 56 - StartLine; \
 	for (l = LineCount; l != 0; l--, bp -= 8, Offset += GFX.PPL) \
 	{ \
 	    if (*(uint32 *) bp) \
-		NORMAL (Offset, bp); \
+		NORMAL (Offset, bp, ScreenColors); \
 	    if (*(uint32 *) (bp + 4)) \
-		NORMAL (Offset + N, bp + 4); \
+		NORMAL (Offset + N, bp + 4, ScreenColors); \
 	} \
+        break; \
+    default: \
+        break; \
     }
 
 #define TILE_CLIP_PREAMBLE \
-    uint32 dd; \
     uint32 d1; \
     uint32 d2; \
 \
@@ -191,62 +190,69 @@
     else \
 	d2 = 0;
 
-
 #define RENDER_CLIPPED_TILE(NORMAL, FLIPPED, N) \
-    if (!(Tile & (V_FLIP | H_FLIP))) \
+    uint32 dd; \
+    switch (Tile & (V_FLIP | H_FLIP)) \
     { \
+    case 0: \
 	bp = pCache + StartLine; \
 	for (l = LineCount; l != 0; l--, bp += 8, Offset += GFX.PPL) \
 	{ \
+            /* This is perfectly OK, regardless of endian. The tiles are \
+             * cached in leftmost-endian order (when not horiz flipped) by \
+             * the ConvertTile function. \
+             */ \
 	    if ((dd = (*(uint32 *) bp) & d1)) \
-		NORMAL (Offset, (uint8 *) &dd); \
+		NORMAL (Offset, (uint8 *) &dd, ScreenColors); \
 	    if ((dd = (*(uint32 *) (bp + 4)) & d2)) \
-		NORMAL (Offset + N, (uint8 *) &dd); \
+		NORMAL (Offset + N, (uint8 *) &dd, ScreenColors); \
 	} \
-    } \
-    else \
-    if (!(Tile & V_FLIP)) \
-    { \
+        break; \
+    case H_FLIP: \
 	bp = pCache + StartLine; \
 	SWAP_DWORD (d1); \
 	SWAP_DWORD (d2); \
 	for (l = LineCount; l != 0; l--, bp += 8, Offset += GFX.PPL) \
 	{ \
 	    if ((dd = *(uint32 *) (bp + 4) & d1)) \
-		FLIPPED (Offset, (uint8 *) &dd); \
+		FLIPPED (Offset, (uint8 *) &dd, ScreenColors); \
 	    if ((dd = *(uint32 *) bp & d2)) \
-		FLIPPED (Offset + N, (uint8 *) &dd); \
+		FLIPPED (Offset + N, (uint8 *) &dd, ScreenColors); \
 	} \
-    } \
-    else \
-    if (Tile & H_FLIP) \
-    { \
+        break; \
+    case H_FLIP | V_FLIP: \
 	bp = pCache + 56 - StartLine; \
 	SWAP_DWORD (d1); \
 	SWAP_DWORD (d2); \
 	for (l = LineCount; l != 0; l--, bp -= 8, Offset += GFX.PPL) \
 	{ \
 	    if ((dd = *(uint32 *) (bp + 4) & d1)) \
-		FLIPPED (Offset, (uint8 *) &dd); \
+		FLIPPED (Offset, (uint8 *) &dd, ScreenColors); \
 	    if ((dd = *(uint32 *) bp & d2)) \
-		FLIPPED (Offset + N, (uint8 *) &dd); \
+		FLIPPED (Offset + N, (uint8 *) &dd, ScreenColors); \
 	} \
-    } \
-    else \
-    { \
+        break; \
+    case V_FLIP: \
 	bp = pCache + 56 - StartLine; \
 	for (l = LineCount; l != 0; l--, bp -= 8, Offset += GFX.PPL) \
 	{ \
 	    if ((dd = (*(uint32 *) bp) & d1)) \
-		NORMAL (Offset, (uint8 *) &dd); \
+		NORMAL (Offset, (uint8 *) &dd, ScreenColors); \
 	    if ((dd = (*(uint32 *) (bp + 4)) & d2)) \
-		NORMAL (Offset + N, (uint8 *) &dd); \
+		NORMAL (Offset + N, (uint8 *) &dd, ScreenColors); \
 	} \
+        break; \
+    default: \
+        break; \
     }
 
 #define RENDER_TILE_LARGE(PIXEL, FUNCTION) \
-    if (!(Tile & (V_FLIP | H_FLIP))) \
+    switch (Tile & (V_FLIP | H_FLIP)) \
     { \
+    case H_FLIP: \
+	StartPixel = 7 - StartPixel; \
+        /* fallthrough for no-flip case - above was a horizontal flip */ \
+    case 0: \
 	if ((pixel = *(pCache + StartLine + StartPixel))) \
 	{ \
 	    pixel = PIXEL; \
@@ -260,29 +266,11 @@
 		    }\
 	    } \
 	} \
-    } \
-    else \
-    if (!(Tile & V_FLIP)) \
-    { \
+        break; \
+    case H_FLIP | V_FLIP: \
 	StartPixel = 7 - StartPixel; \
-	if ((pixel = *(pCache + StartLine + StartPixel))) \
-	{ \
-	    pixel = PIXEL; \
-	    for (l = LineCount; l != 0; l--, sp += GFX.PPL, Depth += GFX.PPL) \
-	    { \
-		for (int z = Pixels - 1; z >= 0; z--) \
-		    if (GFX.Z1 > Depth [z]) \
-		    { \
-			sp [z] = FUNCTION(sp + z, pixel); \
-			Depth [z] = GFX.Z2; \
-		    }\
-	    } \
-	} \
-    } \
-    else \
-    if (Tile & H_FLIP) \
-    { \
-	StartPixel = 7 - StartPixel; \
+        /* fallthrough for V_FLIP-only case - above was a horizontal flip */ \
+    case V_FLIP: \
 	if ((pixel = *(pCache + 56 - StartLine + StartPixel))) \
 	{ \
 	    pixel = PIXEL; \
@@ -296,22 +284,9 @@
 		    }\
 	    } \
 	} \
-    } \
-    else \
-    { \
-	if ((pixel = *(pCache + 56 - StartLine + StartPixel))) \
-	{ \
-	    pixel = PIXEL; \
-	    for (l = LineCount; l != 0; l--, sp += GFX.PPL, Depth += GFX.PPL) \
-	    { \
-		for (int z = Pixels - 1; z >= 0; z--) \
-		    if (GFX.Z1 > Depth [z]) \
-		    { \
-			sp [z] = FUNCTION(sp + z, pixel); \
-			Depth [z] = GFX.Z2; \
-		    }\
-	    } \
-	} \
+        break; \
+    default: \
+        break; \
     }
 #endif
 

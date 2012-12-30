@@ -2596,6 +2596,7 @@ static void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 }
 
 #define RENDER_BACKGROUND_MODE7(TYPE,FUNC) \
+    uint16 *ScreenColors; \
     CHECK_SOUND(); \
 \
     uint8 *VRAM1 = Memory.VRAM + 1; \
@@ -2603,10 +2604,10 @@ static void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     { \
 	if (IPPU.DirectColourMapsNeedRebuild) \
 	    S9xBuildDirectColourMaps (); \
-	GFX.ScreenColors = DirectColourMaps [0]; \
+	ScreenColors = DirectColourMaps [0]; \
     } \
     else \
-	GFX.ScreenColors = IPPU.ScreenColors; \
+	ScreenColors = IPPU.ScreenColors; \
 \
     int aa, cc; \
     int dir; \
@@ -2736,54 +2737,55 @@ static void DrawBGMode7Background (uint8 *Screen, int bg)
 
 static void DrawBGMode7Background16 (uint8 *Screen, int bg)
 {
-    RENDER_BACKGROUND_MODE7 (uint16, GFX.ScreenColors [b & GFX.Mode7Mask]);
+    RENDER_BACKGROUND_MODE7 (uint16, ScreenColors [b & GFX.Mode7Mask]);
 }
 
 static void DrawBGMode7Background16Add (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
-					    COLOR_ADD (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_ADD (ScreenColors [b & GFX.Mode7Mask],
 						       p [GFX.Delta]) :
-					    COLOR_ADD (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_ADD (ScreenColors [b & GFX.Mode7Mask],
 						       GFX.FixedColour)) :
-					 GFX.ScreenColors [b & GFX.Mode7Mask]);
+					 ScreenColors [b & GFX.Mode7Mask]);
 }
 
 static void DrawBGMode7Background16Add1_2 (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
-					    COLOR_ADD1_2 (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_ADD1_2 (ScreenColors [b & GFX.Mode7Mask],
 						       p [GFX.Delta]) :
-					    COLOR_ADD (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_ADD (ScreenColors [b & GFX.Mode7Mask],
 						       GFX.FixedColour)) :
-					 GFX.ScreenColors [b & GFX.Mode7Mask]);
+					 ScreenColors [b & GFX.Mode7Mask]);
 }
 
 static void DrawBGMode7Background16Sub (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
-					    COLOR_SUB (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_SUB (ScreenColors [b & GFX.Mode7Mask],
 						       p [GFX.Delta]) :
-					    COLOR_SUB (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_SUB (ScreenColors [b & GFX.Mode7Mask],
 						       GFX.FixedColour)) :
-					 GFX.ScreenColors [b & GFX.Mode7Mask]);
+					 ScreenColors [b & GFX.Mode7Mask]);
 }
 
 static void DrawBGMode7Background16Sub1_2 (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
-					    COLOR_SUB1_2 (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_SUB1_2 (ScreenColors [b & GFX.Mode7Mask],
 						       p [GFX.Delta]) :
-					    COLOR_SUB (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_SUB (ScreenColors [b & GFX.Mode7Mask],
 						       GFX.FixedColour)) :
-					 GFX.ScreenColors [b & GFX.Mode7Mask]);
+					 ScreenColors [b & GFX.Mode7Mask]);
 }
 
 #define RENDER_BACKGROUND_MODE7_i(TYPE,FUNC,COLORFUNC) \
+    uint16 *ScreenColors; \
     CHECK_SOUND(); \
 \
     uint8 *VRAM1 = Memory.VRAM + 1; \
@@ -2791,10 +2793,10 @@ static void DrawBGMode7Background16Sub1_2 (uint8 *Screen, int bg)
     { \
         if (IPPU.DirectColourMapsNeedRebuild) \
             S9xBuildDirectColourMaps (); \
-        GFX.ScreenColors = DirectColourMaps [0]; \
+        ScreenColors = DirectColourMaps [0]; \
     } \
     else \
-        GFX.ScreenColors = IPPU.ScreenColors; \
+        ScreenColors = IPPU.ScreenColors; \
     \
     int aa, cc; \
     int dir; \
@@ -3167,7 +3169,7 @@ STATIC uint32 Q_INTERPOLATE(uint32 A, uint32 B, uint32 C, uint32 D)
 
 static void DrawBGMode7Background16_i (uint8 *Screen, int bg)
 {
-    RENDER_BACKGROUND_MODE7_i (uint16, theColor, (GFX.ScreenColors[b & GFX.Mode7Mask]));
+    RENDER_BACKGROUND_MODE7_i (uint16, theColor, (ScreenColors[b & GFX.Mode7Mask]));
 }
 
 static void DrawBGMode7Background16Add_i (uint8 *Screen, int bg)
@@ -3178,7 +3180,7 @@ static void DrawBGMode7Background16Add_i (uint8 *Screen, int bg)
 						       p [GFX.Delta])) :
 					    (COLOR_ADD (theColor,
 						       GFX.FixedColour))) :
-					 theColor, (GFX.ScreenColors[b & GFX.Mode7Mask]));
+					 theColor, (ScreenColors[b & GFX.Mode7Mask]));
 }
 
 static void DrawBGMode7Background16Add1_2_i (uint8 *Screen, int bg)
@@ -3189,7 +3191,7 @@ static void DrawBGMode7Background16Add1_2_i (uint8 *Screen, int bg)
 						          p [GFX.Delta]) :
 					    COLOR_ADD (theColor,
 						       GFX.FixedColour)) :
-					 theColor, (GFX.ScreenColors[b & GFX.Mode7Mask]));
+					 theColor, (ScreenColors[b & GFX.Mode7Mask]));
 }
 
 static void DrawBGMode7Background16Sub_i (uint8 *Screen, int bg)
@@ -3200,7 +3202,7 @@ static void DrawBGMode7Background16Sub_i (uint8 *Screen, int bg)
 						       p [GFX.Delta]) :
 					    COLOR_SUB (theColor,
 						       GFX.FixedColour)) :
-					 theColor, (GFX.ScreenColors[b & GFX.Mode7Mask]));
+					 theColor, (ScreenColors[b & GFX.Mode7Mask]));
 }
 
 static void DrawBGMode7Background16Sub1_2_i (uint8 *Screen, int bg)
@@ -3211,7 +3213,7 @@ static void DrawBGMode7Background16Sub1_2_i (uint8 *Screen, int bg)
 						       p [GFX.Delta]) :
 					    COLOR_SUB (theColor,
 						       GFX.FixedColour)) :
-					 theColor, (GFX.ScreenColors[b & GFX.Mode7Mask]));
+					 theColor, (ScreenColors[b & GFX.Mode7Mask]));
 }
 
 #define _BUILD_SETUP(F) \
