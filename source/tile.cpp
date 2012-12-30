@@ -637,9 +637,9 @@ static void WRITE_4PIXELS16_ADD (uint32 Offset, uint8 *Pixels, uint16 *ScreenCol
 			if (SubDepth [N])
 			{
 				if (SubDepth [N] != 1)
-					Screen [N] = COLOR_ADD (ScreenColors [Pixel], Screen [GFX.Delta + N]); \
+					Screen [N] = COLOR_ADD (ScreenColors [Pixel], Screen [GFX.Delta + N]);
 				else
-					Screen [N] = COLOR_ADD (ScreenColors [Pixel], GFX.FixedColour); \
+					Screen [N] = COLOR_ADD (ScreenColors [Pixel], GFX.FixedColour);
 			}
 			else
 				Screen [N] = ScreenColors [Pixel];
@@ -662,9 +662,9 @@ static void WRITE_4PIXELS16_FLIPPED_ADD (uint32 Offset, uint8 *Pixels, uint16 *S
 			if (SubDepth [N])
 			{
 				if (SubDepth [N] != 1)
-					Screen [N] = COLOR_ADD (ScreenColors [Pixel], Screen [GFX.Delta + N]); \
+					Screen [N] = COLOR_ADD (ScreenColors [Pixel], Screen [GFX.Delta + N]);
 				else
-					Screen [N] = COLOR_ADD (ScreenColors [Pixel], GFX.FixedColour); \
+					Screen [N] = COLOR_ADD (ScreenColors [Pixel], GFX.FixedColour);
 			}
 			else
 				Screen [N] = ScreenColors [Pixel];
