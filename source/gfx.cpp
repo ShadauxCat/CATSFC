@@ -981,7 +981,6 @@ void S9xSetupOBJ ()
 		for(int i=0; i<SNES_HEIGHT_EXTENDED; i++){
 			GFX.OBJLines[i].RTOFlags=0;
 			GFX.OBJLines[i].Tiles=34;
-			for(int j=0; j<32; j++){ GFX.OBJLines[i].OBJ[j].Sprite=-1; }
 		}
 		uint8 FirstSprite=PPU.FirstSprite;
 		S=FirstSprite;
@@ -1026,6 +1025,10 @@ void S9xSetupOBJ ()
 			S=(S+1)&0x7F;
 		} while(S!=FirstSprite);
 
+		for (int Y = 0; Y < SNES_HEIGHT_EXTENDED; Y++) {
+			if (LineOBJ[Y] < 32) // Add the sentinel
+				GFX.OBJLines[Y].OBJ[LineOBJ[Y]].Sprite = -1;
+		}
 		for(int Y=1; Y<SNES_HEIGHT_EXTENDED; Y++){
 			GFX.OBJLines[Y].RTOFlags |= GFX.OBJLines[Y-1].RTOFlags;
 		}
@@ -1037,7 +1040,13 @@ void S9xSetupOBJ ()
 
 		/* First, find out which sprites are on which lines */
 		uint8 OBJOnLine[SNES_HEIGHT_EXTENDED][128];
-		memset(OBJOnLine, 0, sizeof(OBJOnLine));
+		// memset(OBJOnLine, 0, sizeof(OBJOnLine));
+		/* Hold on here, that's a lot of bytes to initialise at once!
+		 * So we only initialise them per line, as needed. [Neb]
+		 * Bonus: We can quickly avoid looping if a line has no OBJs.
+		 */
+		bool8 AnyOBJOnLine[SNES_HEIGHT_EXTENDED];
+		memset(AnyOBJOnLine, FALSE, sizeof(AnyOBJOnLine)); // better
 
 		for(S=0; S<128; S++){
 			if(PPU.OBJ[S].Size){
@@ -1057,6 +1066,10 @@ void S9xSetupOBJ ()
 				}
 				for(uint8 line=0, Y=(uint8)(PPU.OBJ[S].VPos&0xff); line<Height; Y++, line++){
 					if(Y>=SNES_HEIGHT_EXTENDED) continue;
+					if (!AnyOBJOnLine[Y]) {
+						memset(OBJOnLine[Y], 0, 128);
+						AnyOBJOnLine[Y] = TRUE;
+					}
 					if(PPU.OBJ[S].VFlip){
 						// Yes, Width not Height. It so happens that the
 						// sprites with H=2*W flip as two WxW sprites.
@@ -1074,24 +1087,27 @@ void S9xSetupOBJ ()
 			GFX.OBJLines[Y].RTOFlags=Y?0:GFX.OBJLines[Y-1].RTOFlags;
 
 			GFX.OBJLines[Y].Tiles=34;
-			uint8 FirstSprite=(PPU.FirstSprite+Y)&0x7F;
-			S=FirstSprite; j=0;
-			do {
-				if(OBJOnLine[Y][S]){
-					if(j>=32){
-						GFX.OBJLines[Y].RTOFlags|=0x40;
-#ifdef MK_DEBUG_RTO
-						if(Settings.BGLayering) fprintf(stderr, "%d: OBJ %02x ranged over\n", Y, S);
-#endif
-						break;
+			j=0;
+			if (AnyOBJOnLine[Y]) {
+				uint8 FirstSprite=(PPU.FirstSprite+Y)&0x7F;
+				S=FirstSprite;
+				do {
+					if(OBJOnLine[Y][S]){
+						if(j>=32){
+							GFX.OBJLines[Y].RTOFlags|=0x40;
+	#ifdef MK_DEBUG_RTO
+							if(Settings.BGLayering) fprintf(stderr, "%d: OBJ %02x ranged over\n", Y, S);
+	#endif
+							break;
+						}
+						GFX.OBJLines[Y].Tiles-=GFX.OBJVisibleTiles[S];
+						if(GFX.OBJLines[Y].Tiles<0) GFX.OBJLines[Y].RTOFlags|=0x80;
+						GFX.OBJLines[Y].OBJ[j].Sprite=S;
+						GFX.OBJLines[Y].OBJ[j++].Line=OBJOnLine[Y][S]&~0x80;
 					}
-					GFX.OBJLines[Y].Tiles-=GFX.OBJVisibleTiles[S];
-					if(GFX.OBJLines[Y].Tiles<0) GFX.OBJLines[Y].RTOFlags|=0x80;
-					GFX.OBJLines[Y].OBJ[j].Sprite=S;
-					GFX.OBJLines[Y].OBJ[j++].Line=OBJOnLine[Y][S]&~0x80;
-				}
-				S=(S+1)&0x7F;
-			} while(S!=FirstSprite);
+					S=(S+1)&0x7F;
+				} while(S!=FirstSprite);
+			}
 			if(j<32) GFX.OBJLines[Y].OBJ[j].Sprite=-1;
 		}
 	}
