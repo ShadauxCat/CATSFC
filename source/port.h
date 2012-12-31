@@ -274,6 +274,11 @@ EXTERN_C void MixSound(void);
     defined(__WIN32__) || defined(__alpha__)
 #define LSB_FIRST
 #define FAST_LSB_WORD_ACCESS
+#elif defined(__MIPSEL__)
+#define LSB_FIRST
+// On little-endian MIPS, a 16-bit word can be read directly from an address
+// only if it's aligned.
+#define FAST_ALIGNED_LSB_WORD_ACCESS
 #else
 //#define MSB_FIRST
 #define LSB_FIRST
