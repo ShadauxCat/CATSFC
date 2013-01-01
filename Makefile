@@ -61,17 +61,16 @@ CPP_OBJECTS  = $(CPP_SOURCES:.cpp=.o)
 OBJECTS      = $(C_OBJECTS) $(CPP_OBJECTS)
 
 # - - - Compilation flags - - -
-CFLAGS := -mips32 -Os -mno-abicalls -fno-pic -fno-builtin \
+CFLAGS := -mips32 -mno-abicalls -fno-pic -fno-builtin \
 	      -fno-exceptions -ffunction-sections -mno-long-calls \
-	      -fomit-frame-pointer -msoft-float -G 4 \
-          -fno-early-inlining \
-          -fgcse-sm -fgcse-las -fgcse-after-reload \
-          -fsched-spec-load -fsched-stalled-insns=0 -fweb
+	      -msoft-float -G 4 \
+          -O3 -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
+          -fweb -funroll-loops
 
 DEFS   := -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
           -DVAR_CYCLES -DCPU_SHUTDOWN -DSPC700_SHUTDOWN \
           -DNO_INLINE_SET_GET -DNOASM -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t' \
-          -DUNZIP_SUPPORT -DNO_OPEN_BUS -DSYNC_JOYPAD_AT_HBLANK
+          -DUNZIP_SUPPORT -DSYNC_JOYPAD_AT_HBLANK
 
 .PHONY: clean makedirs
 .SUFFIXES: .elf .dat .plg
