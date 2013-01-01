@@ -173,6 +173,11 @@ void DrawTile (uint32 Tile, uint32 Offset, uint32 StartLine,
 void DrawClippedTile (uint32 Tile, uint32 Offset,
 		      uint32 StartPixel, uint32 Width,
 		      uint32 StartLine, uint32 LineCount);
+void DrawTileHalfWidth (uint32 Tile, uint32 Offset, uint32 StartLine,
+	       uint32 LineCount);
+void DrawClippedTileHalfWidth (uint32 Tile, uint32 Offset,
+		      uint32 StartPixel, uint32 Width,
+		      uint32 StartLine, uint32 LineCount);
 void DrawTilex2 (uint32 Tile, uint32 Offset, uint32 StartLine,
 		 uint32 LineCount);
 void DrawClippedTilex2 (uint32 Tile, uint32 Offset,
@@ -191,6 +196,11 @@ void DrawLargePixel (uint32 Tile, uint32 Offset,
 void DrawTile16 (uint32 Tile, uint32 Offset, uint32 StartLine,
 	         uint32 LineCount);
 void DrawClippedTile16 (uint32 Tile, uint32 Offset,
+		        uint32 StartPixel, uint32 Width,
+		        uint32 StartLine, uint32 LineCount);
+void DrawTile16HalfWidth (uint32 Tile, uint32 Offset, uint32 StartLine,
+	         uint32 LineCount);
+void DrawClippedTile16HalfWidth (uint32 Tile, uint32 Offset,
 		        uint32 StartPixel, uint32 Width,
 		        uint32 StartLine, uint32 LineCount);
 void DrawTile16x2 (uint32 Tile, uint32 Offset, uint32 StartLine,
@@ -392,8 +402,16 @@ bool8 S9xGraphicsInit ()
 	DrawTilePtr = DrawTile16;
 	DrawClippedTilePtr = DrawClippedTile16;
 	DrawLargePixelPtr = DrawLargePixel16;
-	DrawHiResTilePtr= DrawTile16;
-	DrawHiResClippedTilePtr = DrawClippedTile16;
+	if (Settings.SupportHiRes)
+	{
+		DrawHiResTilePtr= DrawTile16;
+		DrawHiResClippedTilePtr = DrawClippedTile16;
+	}
+	else
+	{
+		DrawHiResTilePtr= DrawTile16HalfWidth;
+		DrawHiResClippedTilePtr = DrawClippedTile16HalfWidth;
+	}
 	GFX.PPL = GFX.Pitch >> 1;
 	GFX.PPLx2 = GFX.Pitch;
 #ifndef FOREVER_16_BIT
@@ -403,8 +421,16 @@ bool8 S9xGraphicsInit ()
 	DrawTilePtr = DrawTile;
 	DrawClippedTilePtr = DrawClippedTile;
 	DrawLargePixelPtr = DrawLargePixel;
-	DrawHiResTilePtr = DrawTile;
-	DrawHiResClippedTilePtr = DrawClippedTile;
+	if (Settings.SupportHiRes)
+	{
+		DrawHiResTilePtr= DrawTile;
+		DrawHiResClippedTilePtr = DrawClippedTile;
+	}
+	else
+	{
+		DrawHiResTilePtr= DrawTileHalfWidth;
+		DrawHiResClippedTilePtr = DrawClippedTileHalfWidth;
+	}
 	GFX.PPL = GFX.Pitch;
 	GFX.PPLx2 = GFX.Pitch * 2;
     }
@@ -635,11 +661,13 @@ void S9xStartScreenRefresh ()
 			{
 				IPPU.RenderedScreenWidth = 512;
 				IPPU.DoubleWidthPixels = TRUE;
+				IPPU.HalfWidthPixels = FALSE;
 			}
 			else
 			{
 				IPPU.RenderedScreenWidth = 256;
 				IPPU.DoubleWidthPixels = FALSE;
+				IPPU.HalfWidthPixels = FALSE;
 			}
 
 			if (IPPU.Interlace)
@@ -673,11 +701,20 @@ void S9xStartScreenRefresh ()
 				GFX.PPLx2 = GFX.PPL << 1;
 			}
 		}
+		else if (!Settings.SupportHiRes && (PPU.BGMode == 5))
+		{
+			// Secret of Mana displays menus with mode 5.
+			// Make them readable.
+			IPPU.DoubleWidthPixels = FALSE;
+			IPPU.HalfWidthPixels = TRUE;
+			IPPU.DoubleHeightPixels = FALSE;
+		}
 		else
 		{
 		    IPPU.RenderedScreenWidth = 256;
 		    IPPU.RenderedScreenHeight = PPU.ScreenHeight;
 		    IPPU.DoubleWidthPixels = FALSE;
+		    IPPU.HalfWidthPixels = FALSE;
     	    IPPU.DoubleHeightPixels = FALSE;
 		    {
 				GFX.Pitch2 = GFX.Pitch = GFX.RealPitch;
@@ -820,7 +857,6 @@ void S9xEndScreenRefresh ()
     }
 #endif
 
-		
     if (CPU.SRAMModified)
     {
 		S9xAutoSaveSRAM ();
@@ -852,9 +888,18 @@ inline void SelectTileRenderer (bool8 normal)
 {
     if (normal)
     {
-		DrawTilePtr = DrawTile16;
-		DrawClippedTilePtr = DrawClippedTile16;
-		DrawLargePixelPtr = DrawLargePixel16;
+		if (IPPU.HalfWidthPixels)
+		{
+			DrawTilePtr = DrawTile16HalfWidth;
+			DrawClippedTilePtr = DrawClippedTile16HalfWidth;
+			DrawLargePixelPtr = DrawLargePixel16;
+		}
+		else
+		{
+			DrawTilePtr = DrawTile16;
+			DrawClippedTilePtr = DrawClippedTile16;
+			DrawLargePixelPtr = DrawLargePixel16;
+		}
     }
     else
     {
@@ -1235,6 +1280,69 @@ if(Settings.BGLayering) {
 				{
 					DrawTilePtr = DrawTilex2;
 					DrawClippedTilePtr = DrawClippedTilex2;
+				}
+#endif
+			}
+		}
+		else
+		{
+#ifndef FOREVER_16_BIT
+			if (Settings.SixteenBit)
+			{
+#endif
+				DrawTilePtr = DrawTile16;
+				DrawClippedTilePtr = DrawClippedTile16;
+#ifndef FOREVER_16_BIT
+			}
+			else
+			{
+				DrawTilePtr = DrawTile;
+				DrawClippedTilePtr = DrawClippedTile;
+			}
+#endif
+		}
+	}
+	else if (!Settings.SupportHiRes)
+	{
+		if (PPU.BGMode == 5)
+		{
+			// Bah, OnMain is never used except to determine if calling
+			// SelectTileRenderer is necessary. So let's hack it to false here
+			// to stop SelectTileRenderer from being called when it causes
+			// problems.
+			OnMain = FALSE;
+			GFX.PixSize = 1; // half width - maybe? [Neb]
+			if (IPPU.HalfWidthPixels)
+			{
+#ifndef FOREVER_16_BIT
+				if (Settings.SixteenBit)
+				{
+#endif
+					DrawTilePtr = DrawTile16HalfWidth;
+					DrawClippedTilePtr = DrawClippedTile16HalfWidth;
+#ifndef FOREVER_16_BIT
+				}
+				else
+				{
+					DrawTilePtr = DrawTileHalfWidth;
+					DrawClippedTilePtr = DrawClippedTileHalfWidth;
+				}
+#endif
+			}
+			else
+			{
+#ifndef FOREVER_16_BIT
+				if (Settings.SixteenBit)
+				{
+#endif
+					DrawTilePtr = DrawTile16;
+					DrawClippedTilePtr = DrawClippedTile16;
+#ifndef FOREVER_16_BIT
+				}
+				else
+				{
+					DrawTilePtr = DrawTile;
+					DrawClippedTilePtr = DrawClippedTile;
 				}
 #endif
 			}
@@ -2066,7 +2174,7 @@ static void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8
 					Count = 8 - Offset;
 					if (Count > Width)
 						Count = Width;
-					s -= Offset;
+					s -= Offset >> 1;
 					Tile = READ_2BYTES (t);
 					GFX.Z1 = GFX.Z2 = depths [(Tile & 0x2000) >> 13];
 					
@@ -2123,14 +2231,14 @@ static void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8
 					else if (Quot == 127)
 						t = b1;
 					Quot++;
-					s += 8;
+					s += (IPPU.HalfWidthPixels ? 4 : 8);
 				}
 				
 				// Middle, unclipped tiles
 				Count = Width - Count;
 				int Middle = Count >> 3;
 				Count &= 7;
-				for (int C = Middle; C > 0; s += 8, Quot++, C--)
+				for (int C = Middle; C > 0; s += (IPPU.HalfWidthPixels ? 4 : 8), Quot++, C--)
 				{
 					Tile = READ_2BYTES(t);
 					GFX.Z1 = GFX.Z2 = depths [(Tile & 0x2000) >> 13];
@@ -2279,11 +2387,13 @@ static void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 		
     case 5:
     case 6: // XXX: is also offset per tile.
-		if (Settings.SupportHiRes)
-		{
+//		if (Settings.SupportHiRes)
+//		{
+			if (!Settings.SupportHiRes)
+				SelectTileRenderer(TRUE /* normal */);
 			DrawBackgroundMode5 (BGMode, bg, Z1, Z2);
 			return;
-		}
+//		}
 		break;
     }
     CHECK_SOUND();

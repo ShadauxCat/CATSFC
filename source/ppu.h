@@ -140,6 +140,7 @@ struct InternalPPU {
     bool8  Interlace;
     bool8  InterlaceSprites;
     bool8  DoubleWidthPixels;
+    bool8  HalfWidthPixels;
     int    RenderedScreenHeight;
     int    RenderedScreenWidth;
     uint32 Red [256];

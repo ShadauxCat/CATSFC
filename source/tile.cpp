@@ -249,6 +249,37 @@ static void WRITE_4PIXELS_FLIPPED (uint32 Offset, uint8 *Pixels, uint16 *ScreenC
 		}
 	}
 }
+static void WRITE_4PIXELS_HALFWIDTH (uint32 Offset, uint8 *Pixels, uint16 *ScreenColors)
+{
+	uint8 Pixel;
+	uint8 *Screen = GFX.S + Offset;
+	uint8 *Depth = GFX.DB + Offset;
+
+	for (uint8 N = 0; N < 4; N += 2)
+	{
+		if (GFX.Z1 > Depth [N] && (Pixel = Pixels[N]))
+		{
+			Screen [N >> 1] = (uint8) ScreenColors [Pixel];
+			Depth [N >> 1] = GFX.Z2;
+		}
+	}
+}
+
+static void WRITE_4PIXELS_FLIPPED_HALFWIDTH (uint32 Offset, uint8 *Pixels, uint16 *ScreenColors)
+{
+	uint8 Pixel;
+	uint8 *Screen = GFX.S + Offset;
+	uint8 *Depth = GFX.DB + Offset;
+
+	for (uint8 N = 0; N < 4; N += 2)
+	{
+		if (GFX.Z1 > Depth [N] && (Pixel = Pixels[2 - N]))
+		{
+			Screen [N >> 1] = (uint8) ScreenColors [Pixel];
+			Depth [N >> 1] = GFX.Z2;
+		}
+	}
+}
 
 static void WRITE_4PIXELSx2 (uint32 Offset, uint8 *Pixels, uint16 *ScreenColors)
 {
@@ -335,6 +366,27 @@ void DrawClippedTile (uint32 Tile, uint32 Offset,
     RENDER_CLIPPED_TILE(WRITE_4PIXELS, WRITE_4PIXELS_FLIPPED, 4)
 }
 
+void DrawTileHalfWidth (uint32 Tile, uint32 Offset, uint32 StartLine,
+	       uint32 LineCount)
+{
+    TILE_PREAMBLE
+
+    register uint8 *bp;
+
+    RENDER_TILE(WRITE_4PIXELS_HALFWIDTH, WRITE_4PIXELS_FLIPPED_HALFWIDTH, 2)
+}
+
+void DrawClippedTileHalfWidth (uint32 Tile, uint32 Offset,
+		      uint32 StartPixel, uint32 Width,
+		      uint32 StartLine, uint32 LineCount)
+{
+    TILE_PREAMBLE
+    register uint8 *bp;
+
+    TILE_CLIP_PREAMBLE
+    RENDER_CLIPPED_TILE(WRITE_4PIXELS_HALFWIDTH, WRITE_4PIXELS_FLIPPED_HALFWIDTH, 2)
+}
+
 void DrawTilex2 (uint32 Tile, uint32 Offset, uint32 StartLine,
 		 uint32 LineCount)
 {
@@ -419,6 +471,38 @@ static void WRITE_4PIXELS16_FLIPPED (uint32 Offset, uint8 *Pixels, uint16 *Scree
 		{
 			Screen [N] = ScreenColors [Pixel];
 			Depth [N] = GFX.Z2;
+		}
+	}
+}
+
+static void WRITE_4PIXELS16_HALFWIDTH (uint32 Offset, uint8 *Pixels, uint16 *ScreenColors)
+{
+	uint8  Pixel;
+	uint16 *Screen = (uint16 *) GFX.S + Offset;
+	uint8  *Depth = GFX.DB + Offset;
+
+	for (uint8 N = 0; N < 4; N += 2)
+	{
+		if (GFX.Z1 > Depth [N] && (Pixel = Pixels[N]))
+		{
+			Screen [N >> 1] = ScreenColors [Pixel];
+			Depth [N >> 1] = GFX.Z2;
+		}
+	}
+}
+
+static void WRITE_4PIXELS16_FLIPPED_HALFWIDTH (uint32 Offset, uint8 *Pixels, uint16 *ScreenColors)
+{
+	uint8  Pixel;
+	uint16 *Screen = (uint16 *) GFX.S + Offset;
+	uint8  *Depth = GFX.DB + Offset;
+
+	for (uint8 N = 0; N < 4; N += 2)
+	{
+		if (GFX.Z1 > Depth [N] && (Pixel = Pixels[2 - N]))
+		{
+			Screen [N >> 1] = ScreenColors [Pixel];
+			Depth [N >> 1] = GFX.Z2;
 		}
 	}
 }
@@ -568,6 +652,26 @@ void DrawClippedTile16 (uint32 Tile, uint32 Offset,
 
     TILE_CLIP_PREAMBLE
     RENDER_CLIPPED_TILE(WRITE_4PIXELS16, WRITE_4PIXELS16_FLIPPED, 4)
+}
+
+void DrawTile16HalfWidth (uint32 Tile, uint32 Offset, uint32 StartLine,
+		   uint32 LineCount)
+{
+    TILE_PREAMBLE
+    register uint8 *bp;
+
+    RENDER_TILE(WRITE_4PIXELS16_HALFWIDTH, WRITE_4PIXELS16_FLIPPED_HALFWIDTH, 2)
+}
+
+void DrawClippedTile16HalfWidth (uint32 Tile, uint32 Offset,
+			uint32 StartPixel, uint32 Width,
+			uint32 StartLine, uint32 LineCount)
+{
+    TILE_PREAMBLE
+    register uint8 *bp;
+
+    TILE_CLIP_PREAMBLE
+    RENDER_CLIPPED_TILE(WRITE_4PIXELS16_HALFWIDTH, WRITE_4PIXELS16_FLIPPED_HALFWIDTH, 2)
 }
 
 void DrawTile16x2 (uint32 Tile, uint32 Offset, uint32 StartLine,

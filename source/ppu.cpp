@@ -2615,6 +2615,7 @@ static void CommonPPUReset ()
 	IPPU.Interlace = FALSE;
 	IPPU.InterlaceSprites = FALSE;
 	IPPU.DoubleWidthPixels = FALSE;
+	IPPU.HalfWidthPixels = FALSE;
 	IPPU.DoubleHeightPixels = FALSE;
 	IPPU.RenderedScreenWidth = SNES_WIDTH;
 	IPPU.RenderedScreenHeight = SNES_HEIGHT;
