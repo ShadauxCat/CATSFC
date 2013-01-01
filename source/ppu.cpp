@@ -884,20 +884,27 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 		  case 0x2135:
 		  case 0x2136:
 			// Matrix 16bit x 8bit multiply result (read-only)
+			/* fall through */
 		  case 0x2137:
 			// Software latch for horizontal and vertical timers (read-only)
+			/* fall through */
 		  case 0x2138:
 			// OAM read data (read-only)
+			/* fall through */
 		  case 0x2139:
 		  case 0x213a:
 			// VRAM read data (read-only)
+			/* fall through */
 		  case 0x213b:
 			// CG-RAM read data (read-only)
+			/* fall through */
 		  case 0x213c:
 		  case 0x213d:
 			// Horizontal and vertical (low/high) read counter (read-only)
+			/* fall through */
 		  case 0x213e:
 			// PPU status (time over and range over)
+			/* fall through */
 		  case 0x213f:
 			// NTSC/PAL select and field (read-only)
 			return;
@@ -963,7 +970,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			if (Address == 0x2801 && Settings.SRTC)
 				S9xSetSRTC (Byte, Address);
 			else
-				if (Address < 0x3000 || Address >= 0x3300)
+				if (Address < 0x3000 || Address >= 0x3000 + 768)
 				{
 #ifdef DEBUGGER
 					missing.unknownppu_write = Address;
@@ -1084,25 +1091,47 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2104:
 	case 0x2105:
 	case 0x2106:
+	case 0x2108:
+	case 0x2109:
+	case 0x210a:
+	case 0x2115:
+	case 0x2116:
+	case 0x2118:
+	case 0x2119:
+	case 0x211a:
+	case 0x2124:
+	case 0x2125:
+	case 0x2126:
+	case 0x2128:
+	case 0x2129:
+	case 0x212a:
 #ifndef NO_OPEN_BUS
 		return PPU.OpenBus1;
 #else
 		return 0; // Arbitrarily chosen value [Neb]
 #endif
+
 	case 0x2107:
+	case 0x2117:
+	case 0x2121:
+	case 0x2122:
+	case 0x2123:
+	case 0x2127:
+	case 0x212b:
+	case 0x212c:
+	case 0x212d:
+	case 0x212e:
+	case 0x212f:
+	case 0x2130:
+	case 0x2131:
+	case 0x2132:
+	case 0x2133:
 #ifndef NO_OPEN_BUS
 		return OpenBus;
 #else
 		return 0; // Arbitrarily chosen value [Neb]
 #endif
-	case 0x2108:
-	case 0x2109:
-	case 0x210a:
-#ifndef NO_OPEN_BUS
-		return PPU.OpenBus1;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
+
 	case 0x210b:
 	case 0x210c:
 	case 0x210d:
@@ -1125,29 +1154,6 @@ uint8 S9xGetPPU (uint16 Address)
 #ifdef DEBUGGER
 	    missing.bg_offset_read = 1;
 #endif
-	case 0x2115:
-	case 0x2116:
-#ifndef NO_OPEN_BUS
-		return PPU.OpenBus1;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
-
-	case 0x2117:
-#ifndef NO_OPEN_BUS
-		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
-
-	case 0x2118:
-	case 0x2119:
-	case 0x211a:
-#ifndef NO_OPEN_BUS
-		return PPU.OpenBus1;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 
 	case 0x211b:
 	case 0x211c:
@@ -1164,36 +1170,6 @@ uint8 S9xGetPPU (uint16 Address)
 		return 0; // Arbitrarily chosen value [Neb]
 #endif
 
-	case 0x2121:
-	case 0x2122:
-	case 0x2123:
-	case 0x2127:
-	case 0x212b:
-	case 0x212c:
-	case 0x212d:
-	case 0x212e:
-	case 0x212f:
-	case 0x2130:
-	case 0x2131:
-	case 0x2132:
-	case 0x2133:
-#ifndef NO_OPEN_BUS
-		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
-
-	case 0x2124:
-	case 0x2125:
-	case 0x2126:
-	case 0x2128:
-	case 0x2129:
-	case 0x212a:
-#ifndef NO_OPEN_BUS
-		return PPU.OpenBus1;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 
 	case 0x2134:
 	case 0x2135:
@@ -1529,6 +1505,12 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2181:
 	case 0x2182:
 	case 0x2183:
+#ifndef NO_OPEN_BUS
+		return OpenBus;
+#else
+		return 0; // Arbitrarily chosen value [Neb]
+#endif
+
 	default:
 #ifndef NO_OPEN_BUS
 		return OpenBus;
@@ -1758,6 +1740,7 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 			break;
 		  case 0x4206:
 			{
+				// TODO FAST_ALIGNED_LSB_WORD_ACCESS [Neb]
 				// Divisor
 				uint16 a = Memory.FillRAM[0x4204] + (Memory.FillRAM[0x4205] << 8);
 				uint16 div = byte ? a / byte : 0xffff;
@@ -1886,14 +1869,18 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 			break;
 		  case 0x4212:
 			// v-blank, h-blank and joypad being scanned flags (read-only)
+			/* fall through */
 		  case 0x4213:
 			// I/O Port (read-only)
+			/* fall through */
 		  case 0x4214:
 		  case 0x4215:
 			// Quotent of divide (read-only)
+			/* fall through */
 		  case 0x4216:
 		  case 0x4217:
 			// Multiply product (read-only)
+			/* fall through */
 		  case 0x4218:
 		  case 0x4219:
 		  case 0x421a:
@@ -2076,7 +2063,9 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 		  case 0x437B:
 
 			// Unknown, but they seem to be RAM-ish
+#ifdef DEBUGGER
 			fprintf(stderr, "Write %02x to %04x!\n", byte, Address);
+#endif
 			break;
 
 			//These registers are used by both the S-DD1 and the SPC7110
@@ -2337,6 +2326,7 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4217:
 		// Multiplcation result (for multiply) or remainder of
 		// divison.
+		/* fall through */
 	  case 0x4218:
 	  case 0x4219:
 	  case 0x421a:
@@ -2346,7 +2336,7 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x421e:
 	  case 0x421f:
 		// Joypads 1-4 button and direction state.
-
+		/* fall through */
 	  case 0x4300:
 	  case 0x4310:
 	  case 0x4320:
@@ -2356,7 +2346,7 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4360:
 	  case 0x4370:
 		// DMA direction, address type, fixed flag,
-
+		/* fall through */
 	  case 0x4301:
 	  case 0x4311:
 	  case 0x4321:
@@ -2365,7 +2355,7 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4351:
 	  case 0x4361:
 	  case 0x4371:
-
+		/* fall through */
 	  case 0x4302:
 	  case 0x4312:
 	  case 0x4322:
@@ -2374,7 +2364,7 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4352:
 	  case 0x4362:
 	  case 0x4372:
-
+		/* fall through */
 	  case 0x4303:
 	  case 0x4313:
 	  case 0x4323:
@@ -2383,7 +2373,7 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4353:
 	  case 0x4363:
 	  case 0x4373:
-
+		/* fall through */
 	  case 0x4304:
 	  case 0x4314:
 	  case 0x4324:
@@ -2392,7 +2382,7 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4354:
 	  case 0x4364:
 	  case 0x4374:
-
+		/* fall through */
 	  case 0x4305:
 	  case 0x4315:
 	  case 0x4325:
@@ -2401,7 +2391,7 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4355:
 	  case 0x4365:
 	  case 0x4375:
-
+		/* fall through */
 	  case 0x4306:
 	  case 0x4316:
 	  case 0x4326:
@@ -2410,24 +2400,6 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4356:
 	  case 0x4366:
 	  case 0x4376:
-
-	  case 0x4308:
-	  case 0x4318:
-	  case 0x4328:
-	  case 0x4338:
-	  case 0x4348:
-	  case 0x4358:
-	  case 0x4368:
-	  case 0x4378:
-
-	  case 0x4309:
-	  case 0x4319:
-	  case 0x4329:
-	  case 0x4339:
-	  case 0x4349:
-	  case 0x4359:
-	  case 0x4369:
-	  case 0x4379:
 		return (Memory.FillRAM[Address]);
 
 	  case 0x4307:
@@ -2439,6 +2411,25 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4367:
 	  case 0x4377:
 		return (DMA[(Address >> 4) & 7].IndirectBank);
+
+	  case 0x4308:
+	  case 0x4318:
+	  case 0x4328:
+	  case 0x4338:
+	  case 0x4348:
+	  case 0x4358:
+	  case 0x4368:
+	  case 0x4378:
+		/* fall through */
+	  case 0x4309:
+	  case 0x4319:
+	  case 0x4329:
+	  case 0x4339:
+	  case 0x4349:
+	  case 0x4359:
+	  case 0x4369:
+	  case 0x4379:
+		return (Memory.FillRAM[Address]);
 
 	  case 0x430A:
 	  case 0x431A:
@@ -2515,7 +2506,6 @@ static void CommonPPUReset ()
 	PPU.VMA.High = 0;
 	PPU.VMA.Increment = 1;
 	PPU.VMA.Address = 0;
-
 	PPU.VMA.FullGraphicCount = 0;
 	PPU.VMA.Shift = 0;
 
@@ -2539,11 +2529,13 @@ static void CommonPPUReset ()
 	PPU.ClipCounts[4] = 0;
 	PPU.ClipCounts[5] = 0;
 	PPU.ClipWindowOverlapLogic[4] = PPU.ClipWindowOverlapLogic[5] = CLIP_OR;
-	PPU.ClipWindow1Enable[4] = PPU.ClipWindow1Enable[5] = PPU.ClipWindow2Enable[4] = PPU.ClipWindow2Enable[5] = FALSE;
-	PPU.ClipWindow1Inside[4] = PPU.ClipWindow1Inside[5] = PPU.ClipWindow2Inside[4] = PPU.ClipWindow2Inside[5] = TRUE;
+	PPU.ClipWindow1Enable[4] = PPU.ClipWindow1Enable[5] = FALSE;
+	PPU.ClipWindow2Enable[4] = PPU.ClipWindow2Enable[5] = FALSE;
+	PPU.ClipWindow1Inside[4] = PPU.ClipWindow1Inside[5] = TRUE;
+	PPU.ClipWindow2Inside[4] = PPU.ClipWindow2Inside[5] = TRUE;
 
 	PPU.CGFLIP = 0;
-	uint16 c;
+	int c;
 	for (c = 0; c < 256; c++)
 	{
 		IPPU.Red [c] = (c & 7) << 2;
@@ -2588,7 +2580,6 @@ static void CommonPPUReset ()
 
 	PPU.MatrixA = PPU.MatrixB = PPU.MatrixC = PPU.MatrixD = 0;
 	PPU.CentreX = PPU.CentreY = 0;
-
 	PPU.CGADD = 0;
 	PPU.FixedColourRed = PPU.FixedColourGreen = PPU.FixedColourBlue = 0;
 	PPU.SavedOAMAddr = 0;
@@ -2609,9 +2600,9 @@ static void CommonPPUReset ()
 	PPU.VTimerEnabled = FALSE;
 	PPU.HTimerEnabled = FALSE;
 	PPU.HTimerPosition = Settings.H_Max + 1;
-
 	PPU.Mosaic = 0;
-	PPU.BGMosaic [0] = PPU.BGMosaic [1] = PPU.BGMosaic [2] = PPU.BGMosaic [3] = FALSE;
+	PPU.BGMosaic [0] = PPU.BGMosaic [1] = FALSE;
+	PPU.BGMosaic [2] = PPU.BGMosaic [3] = FALSE;
 	PPU.Mode7HFlip = FALSE;
 	PPU.Mode7VFlip = FALSE;
 	PPU.Mode7Repeat = 0;
@@ -2620,7 +2611,6 @@ static void CommonPPUReset ()
 	PPU.Window2Left = 1;
 	PPU.Window2Right = 0;
 	PPU.RecomputeClipWindows = TRUE;
-
 	PPU.CGFLIPRead = 0;
 	PPU.Need16x8Mulitply = FALSE;
 	PPU.MouseSpeed[0] = PPU.MouseSpeed[1] = 0;
@@ -2638,7 +2628,6 @@ static void CommonPPUReset ()
 	IPPU.DisplayedRenderedFrameCount = 0;
 	IPPU.SkippedFrames = 0;
 	IPPU.FrameSkip = 0;
-
 	ZeroMemory (IPPU.TileCached [TILE_2BIT], MAX_2BIT_TILES);
 	ZeroMemory (IPPU.TileCached [TILE_4BIT], MAX_4BIT_TILES);
 	ZeroMemory (IPPU.TileCached [TILE_8BIT], MAX_8BIT_TILES);
@@ -2654,7 +2643,6 @@ static void CommonPPUReset ()
 	IPPU.RenderedScreenWidth = SNES_WIDTH;
 	IPPU.RenderedScreenHeight = SNES_HEIGHT;
 	IPPU.XB = NULL;
-
 	for (c = 0; c < 256; c++)
 		IPPU.ScreenColors [c] = c;
 	S9xFixColourBrightness ();
@@ -2674,14 +2662,6 @@ static void CommonPPUReset ()
 		S9xProcessMouse (0);
 		S9xProcessMouse (1);
 	}
-
-	ZeroMemory (&Memory.FillRAM [0x2100], 0x100);
-	ZeroMemory (&Memory.FillRAM [0x4200], 0x100);
-	ZeroMemory (&Memory.FillRAM [0x4000], 0x100);
-	// For BS Suttehakkun 2...
-	ZeroMemory (&Memory.FillRAM [0x1000], 0x1000);
-
-	Memory.FillRAM[0x4201]=Memory.FillRAM[0x4213]=0xFF;
 }
 
 void S9xResetPPU ()
@@ -2698,7 +2678,7 @@ void S9xResetPPU ()
 	IPPU.PrevMouseX[0] = IPPU.PrevMouseX[1] = 256 / 2;
 	IPPU.PrevMouseY[0] = IPPU.PrevMouseY[1] = 224 / 2;
 
-	for (uint16 c = 0; c < 0x8000; c += 0x100)
+	for (int c = 0; c < 0x8000; c += 0x100)
 	{
 		if ( !Settings.SuperFX )
 		{
@@ -2712,6 +2692,14 @@ void S9xResetPPU ()
 			memset (&Memory.FillRAM [c], c >> 8, 0x100);
 		}
 	}
+
+	ZeroMemory (&Memory.FillRAM [0x2100], 0x100);
+	ZeroMemory (&Memory.FillRAM [0x4200], 0x100);
+	ZeroMemory (&Memory.FillRAM [0x4000], 0x100);
+	// For BS Suttehakkun 2...
+	ZeroMemory (&Memory.FillRAM [0x1000], 0x1000);
+
+	Memory.FillRAM[0x4201]=Memory.FillRAM[0x4213]=0xFF;
 }
 
 void S9xSoftResetPPU ()
@@ -2728,8 +2716,16 @@ void S9xSoftResetPPU ()
 //	IPPU.PrevMouseX[0] = IPPU.PrevMouseX[1] = 256 / 2;
 //	IPPU.PrevMouseY[0] = IPPU.PrevMouseY[1] = 224 / 2;
 
-	for (uint16 c = 0; c < 0x8000; c += 0x100)
+	for (int c = 0; c < 0x8000; c += 0x100)
 		memset (&Memory.FillRAM [c], c >> 8, 0x100);
+
+	ZeroMemory (&Memory.FillRAM [0x2100], 0x100);
+	ZeroMemory (&Memory.FillRAM [0x4200], 0x100);
+	ZeroMemory (&Memory.FillRAM [0x4000], 0x100);
+	// For BS Suttehakkun 2...
+	ZeroMemory (&Memory.FillRAM [0x1000], 0x1000);
+
+	Memory.FillRAM[0x4201]=Memory.FillRAM[0x4213]=0xFF;
 }
 
 void S9xProcessMouse (int which1)
@@ -3007,7 +3003,7 @@ void S9xUpdateJoypads ()
 			// from each line.
 			// If, initially, the key is NOT pressed, one line of it being
 			// pressed means that the key MUST be pressed.
-			// Otherwise, the key MUST be pressed if it doesn't start as such.
+			// Otherwise, the key MUST be depressed if it starts pressed.
 			for (j = 1; j < (Settings.PAL ? SNES_MAX_PAL_VCOUNTER : SNES_MAX_NTSC_VCOUNTER); j++)
 			{
 				if ((StartedPressed) && ((IPPU.JoypadsAtHBlanks[i][j] & k) == 0)) {
@@ -3295,8 +3291,8 @@ uint8 REGISTER_4212()
 
 void FLUSH_REDRAW ()
 {
-	if (IPPU.PreviousLine != IPPU.CurrentLine)
-		S9xUpdateScreen ();
+    if (IPPU.PreviousLine != IPPU.CurrentLine)
+    S9xUpdateScreen ();
 }
 
 void REGISTER_2104 (uint8 byte)
@@ -3526,11 +3522,11 @@ void REGISTER_2122(uint8 Byte)
         if (Settings.SixteenBit)
         {
 #endif
-        IPPU.Blue [PPU.CGADD] = IPPU.XB [(Byte >> 2) & 0x1f];
-        IPPU.Green [PPU.CGADD] = IPPU.XB [(PPU.CGDATA[PPU.CGADD] >> 5) & 0x1f];
-        IPPU.ScreenColors [PPU.CGADD] = (uint16) BUILD_PIXEL (IPPU.Red [PPU.CGADD],
-                                 IPPU.Green [PPU.CGADD],
-                                 IPPU.Blue [PPU.CGADD]);
+		IPPU.Blue [PPU.CGADD] = IPPU.XB [(Byte >> 2) & 0x1f];
+		IPPU.Green [PPU.CGADD] = IPPU.XB [(PPU.CGDATA[PPU.CGADD] >> 5) & 0x1f];
+		IPPU.ScreenColors [PPU.CGADD] = (uint16) BUILD_PIXEL (IPPU.Red [PPU.CGADD],
+		                         IPPU.Green [PPU.CGADD],
+		                         IPPU.Blue [PPU.CGADD]);
 #ifndef FOREVER_16_BIT
         }
 #endif
@@ -3552,11 +3548,11 @@ void REGISTER_2122(uint8 Byte)
         if (Settings.SixteenBit)
         {
 #endif
-        IPPU.Red [PPU.CGADD] = IPPU.XB [Byte & 0x1f];
-        IPPU.Green [PPU.CGADD] = IPPU.XB [(PPU.CGDATA[PPU.CGADD] >> 5) & 0x1f];
-        IPPU.ScreenColors [PPU.CGADD] = (uint16) BUILD_PIXEL (IPPU.Red [PPU.CGADD],
-                                 IPPU.Green [PPU.CGADD],
-                                 IPPU.Blue [PPU.CGADD]);
+		IPPU.Red [PPU.CGADD] = IPPU.XB [Byte & 0x1f];
+		IPPU.Green [PPU.CGADD] = IPPU.XB [(PPU.CGDATA[PPU.CGADD] >> 5) & 0x1f];
+		IPPU.ScreenColors [PPU.CGADD] = (uint16) BUILD_PIXEL (IPPU.Red [PPU.CGADD],
+		                         IPPU.Green [PPU.CGADD],
+		                         IPPU.Blue [PPU.CGADD]);
 #ifndef FOREVER_16_BIT
         }
 #endif
