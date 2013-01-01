@@ -356,38 +356,14 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			}
 			break;
 		  case 0x2107:		// [BG0SC]
-			if (Byte != Memory.FillRAM [0x2107])
-			{
-				FLUSH_REDRAW ();
-				PPU.BG[0].SCSize = Byte & 3;
-				PPU.BG[0].SCBase = (Byte & 0x7c) << 8;
-			}
-			break;
-
 		  case 0x2108:		// [BG1SC]
-			if (Byte != Memory.FillRAM [0x2108])
-			{
-				FLUSH_REDRAW ();
-				PPU.BG[1].SCSize = Byte & 3;
-				PPU.BG[1].SCBase = (Byte & 0x7c) << 8;
-			}
-			break;
-
 		  case 0x2109:		// [BG2SC]
-			if (Byte != Memory.FillRAM [0x2109])
-			{
-				FLUSH_REDRAW ();
-				PPU.BG[2].SCSize = Byte & 3;
-				PPU.BG[2].SCBase = (Byte & 0x7c) << 8;
-			}
-			break;
-
 		  case 0x210A:		// [BG3SC]
-			if (Byte != Memory.FillRAM [0x210a])
+			if (Byte != Memory.FillRAM [Address])
 			{
 				FLUSH_REDRAW ();
-				PPU.BG[3].SCSize = Byte & 3;
-				PPU.BG[3].SCBase = (Byte & 0x7c) << 8;
+				PPU.BG[Address - 0x2107].SCSize = Byte & 3;
+				PPU.BG[Address - 0x2107].SCBase = (Byte & 0x7c) << 8;
 			}
 			break;
 
@@ -769,15 +745,9 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			break;
 		  case 0x212e:
 			// Window mask designation for main screen ?
-			if (Byte != Memory.FillRAM [0x212e])
-			{
-				FLUSH_REDRAW ();
-				PPU.RecomputeClipWindows = TRUE;
-			}
-			break;
 		  case 0x212f:
 			// Window mask designation for sub-screen ?
-			if (Byte != Memory.FillRAM [0x212f])
+			if (Byte != Memory.FillRAM [Address])
 			{
 				FLUSH_REDRAW ();
 				PPU.RecomputeClipWindows = TRUE;
@@ -970,7 +940,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			if (Address == 0x2801 && Settings.SRTC)
 				S9xSetSRTC (Byte, Address);
 			else
-				if (Address < 0x3000 || Address >= 0x3000 + 768)
+				if (Address < 0x3000 || Address >= 0x3300)
 				{
 #ifdef DEBUGGER
 					missing.unknownppu_write = Address;
@@ -1505,12 +1475,6 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2181:
 	case 0x2182:
 	case 0x2183:
-#ifndef NO_OPEN_BUS
-		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
-
 	default:
 #ifndef NO_OPEN_BUS
 		return OpenBus;
@@ -1524,7 +1488,7 @@ uint8 S9xGetPPU (uint16 Address)
 	if (Settings.SA1)
 	    return (S9xGetSA1 (Address));
 
-	if (Address <= 0x2fff || Address >= 0x3000 + 768)
+	if (Address <= 0x2fff || Address >= 0x3300)
 	{
 	    switch (Address)
 	    {
@@ -1730,8 +1694,13 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 				// Multiplicand
 				uint32 res = Memory.FillRAM[0x4202] * byte;
 
+#if defined FAST_LSB_WORD_ACCESS || defined FAST_ALIGNED_LSB_WORD_ACCESS
+				// assume malloc'd memory is 2-byte aligned
+				* ((uint16 *) &Memory.FillRAM[0x4216]) = res;
+#else
 				Memory.FillRAM[0x4216] = (uint8) res;
 				Memory.FillRAM[0x4217] = (uint8) (res >> 8);
+#endif
 				break;
 			}
 		  case 0x4204:
@@ -1740,16 +1709,25 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 			break;
 		  case 0x4206:
 			{
-				// TODO FAST_ALIGNED_LSB_WORD_ACCESS [Neb]
-				// Divisor
+#if defined FAST_LSB_WORD_ACCESS || defined FAST_ALIGNED_LSB_WORD_ACCESS
+				// assume malloc'd memory is 2-byte aligned
+				uint16 a = *((uint16 *) &Memory.FillRAM[0x4204]);
+#else
 				uint16 a = Memory.FillRAM[0x4204] + (Memory.FillRAM[0x4205] << 8);
+#endif
 				uint16 div = byte ? a / byte : 0xffff;
 				uint16 rem = byte ? a % byte : a;
 
+#if defined FAST_LSB_WORD_ACCESS || defined FAST_ALIGNED_LSB_WORD_ACCESS
+				// assume malloc'd memory is 2-byte aligned
+				* ((uint16 *) &Memory.FillRAM[0x4214]) = div;
+				* ((uint16 *) &Memory.FillRAM[0x4216]) = rem;
+#else
 				Memory.FillRAM[0x4214] = (uint8)div;
 				Memory.FillRAM[0x4215] = div >> 8;
 				Memory.FillRAM[0x4216] = (uint8)rem;
 				Memory.FillRAM[0x4217] = rem >> 8;
+#endif
 				break;
 			}
 		  case 0x4207:
@@ -2317,8 +2295,7 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4213:
 		// I/O port input - returns 0 wherever $4201 is 0, and 1 elsewhere
 		// unless something else pulls it down (i.e. a gun)
-		return Memory.FillRAM[0x4213];
-
+		/* fall through */
 	  case 0x4214:
 	  case 0x4215:
 		// Quotient of divide result
@@ -2400,18 +2377,7 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4356:
 	  case 0x4366:
 	  case 0x4376:
-		return (Memory.FillRAM[Address]);
-
-	  case 0x4307:
-	  case 0x4317:
-	  case 0x4327:
-	  case 0x4337:
-	  case 0x4347:
-	  case 0x4357:
-	  case 0x4367:
-	  case 0x4377:
-		return (DMA[(Address >> 4) & 7].IndirectBank);
-
+		/* fall through */
 	  case 0x4308:
 	  case 0x4318:
 	  case 0x4328:
@@ -2430,6 +2396,16 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x4369:
 	  case 0x4379:
 		return (Memory.FillRAM[Address]);
+
+	  case 0x4307:
+	  case 0x4317:
+	  case 0x4327:
+	  case 0x4337:
+	  case 0x4347:
+	  case 0x4357:
+	  case 0x4367:
+	  case 0x4377:
+		return (DMA[(Address >> 4) & 7].IndirectBank);
 
 	  case 0x430A:
 	  case 0x431A:
