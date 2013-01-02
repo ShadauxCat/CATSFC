@@ -22,7 +22,6 @@
 #include "fs_api.h"
 #include "ds2_malloc.h"
 #include "gcheat.h"
-#include "charsets.h"
 #include "cheats.h"
 
 extern struct SCheatData Cheat;

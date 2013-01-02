@@ -31,10 +31,9 @@ NM           = $(CROSS)nm
 OBJDUMP      = $(CROSS)objdump
 
 # - - - Sources and objects - - -
-C_SOURCES   = source/unicode.c \
-              source/unzip/explode.c source/unzip/unreduce.c \
+C_SOURCES   = source/unzip/explode.c source/unzip/unreduce.c \
               source/unzip/unshrink.c source/unzip/unzip.c \
-              source/nds/bdf_font.c source/nds/bitmap.c source/nds/charsets.c \
+              source/nds/bdf_font.c source/nds/bitmap.c \
               source/nds/draw.c source/nds/ds2_main.c source/nds/gcheat.c \
               source/nds/gui.c
 CPP_SOURCES = source/apu.cpp source/apudebug.cpp source/c4.cpp \
