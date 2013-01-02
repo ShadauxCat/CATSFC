@@ -77,6 +77,7 @@ DEFS   := -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
 all: $(OUTPUT).plg makedirs
 
 release: all
+	-rm -f $(OUTPUT).zip
 	zip -r $(OUTPUT).zip $(PLUGIN_DIR) $(OUTPUT).plg $(OUTPUT).bmp $(OUTPUT).ini copyright installation.txt README.md source.txt version
 
 # $< is the source (OUTPUT.dat); $@ is the target (OUTPUT.plg)
