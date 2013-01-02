@@ -129,7 +129,7 @@ bool8 S9xInitUpdate ()
 
 bool frame_flip = 0;
 
-extern bool Draw_Frame_Flip(bool flip);
+extern void NDSSFCDrawFrameAntialiased();
 	
 
 bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
@@ -154,7 +154,7 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 			break;
 			
 		case 4:
-			frame_flip =  Draw_Frame_Flip(frame_flip);
+			NDSSFCDrawFrameAntialiased ();
 		break;
 		
 

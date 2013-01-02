@@ -143,19 +143,19 @@ Select a game from the card
 Select a game
 
 #MSG_SCREEN_RATIO_0
-[0] Resized, entire screen
+[0] Entire screen
 
 #MSG_SCREEN_RATIO_1
-[1] Original, show the bottom
+[1] Bottom, square pixels
 
 #MSG_SCREEN_RATIO_2,
-[2] Original, show the top
+[2] Top, square pixels
 
 #MSG_SCREEN_RATIO_3,
-[3] Original, show the middle
+[3] Middle, square pixels
 
 #MSG_SCREEN_RATIO_4,
-[4] Resized, entire screen
+[4] Entire screen, antialiased
 
 #MSG_FRAMESKIP_0
 Manual
@@ -865,16 +865,16 @@ Sélectionner un jeu
 [0] Écran entier
 
 #MSG_SCREEN_RATIO_1
-[1] Couper le haut
+[1] Bas, pixels carrés
 
 #MSG_SCREEN_RATIO_2,
-[2] Couper le bas
+[2] Haut, pixels carrés
 
 #MSG_SCREEN_RATIO_3,
-[3] Montrer le milieu
+[3] Milieu, pixels carrés
 
 #MSG_SCREEN_RATIO_4,
-[4] Écran entier
+[4] Écran entier anticrénelé
 
 #MSG_FRAMESKIP_0
 Manuelle
