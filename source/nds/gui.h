@@ -97,6 +97,7 @@ extern char main_path[MAX_PATH];
 extern char rom_path[MAX_PATH];
 
 extern u32 game_enable_audio;
+extern u32 clock_speed_number;
 
 /******************************************************************************
  ******************************************************************************/
@@ -117,6 +118,7 @@ extern GAME_CONFIG	game_config;
 extern void gui_init(u32 lang_id);
 extern u32 menu(u16 *original_screen);
 extern void game_disableAudio();
+extern void set_cpu_clock(u32 num);
 
 #ifdef __cplusplus
 }

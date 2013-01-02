@@ -126,16 +126,11 @@ bool8 S9xInitUpdate ()
 }
 
 
-
-bool frame_flip = 0;
-
 extern void NDSSFCDrawFrameAntialiased();
 	
 
 bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 {
-	
-	
 	switch(game_config.graphic)
 	{
 		//Up
@@ -175,12 +170,12 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 			break;
 	}
 
-    ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
+	ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 	// A problem with update method 1 (wait, double buffer) means that, after
 	// about 15 minutes of play time, the screen starts to half-redraw every
 	// frame. With update method 0, this is mitigated. (Method 2 is too slow.)
 
-    return (TRUE);
+	return (TRUE);
 }
 
 void _makepath (char *path, const char *, const char *dir,
@@ -980,6 +975,18 @@ unsigned int S9xReadJoypad (int which1)
     struct key_buf inputdata;
 
 	ds2_getrawInput(&inputdata);
+
+	if (inputdata.key & KEY_LID)
+	{
+		ds2_setCPUclocklevel(0);
+		ds2_setSupend();
+		do {
+			ds2_getrawInput(&inputdata);
+		} while (inputdata.key & KEY_LID);
+		ds2_wakeup();
+		set_cpu_clock(clock_speed_number);
+	}
+
 	if(inputdata.key & KEY_TOUCH)	//Active menu
 		Settings.Paused = 1;
 
