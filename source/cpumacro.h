@@ -140,7 +140,6 @@ static void ADC8 (long Addr)
 	else
 	    ClearOverflow();
 	ICPU.Registers.AL = Ans8;
-	SetZN8 (ICPU.Registers.AL);
     }
     else
     {
@@ -154,9 +153,8 @@ static void ADC8 (long Addr)
 	else
 	    ClearOverflow();
 	ICPU.Registers.AL = (uint8) Ans16;
-	SetZN8 (ICPU.Registers.AL);
-
     }
+    SetZN8 (ICPU.Registers.AL);
 }
 
 static void ADC16 (long Addr)
@@ -217,7 +215,6 @@ static void ADC16 (long Addr)
 	else
 	    ClearOverflow();
 	ICPU.Registers.A.W = Ans16;
-	SetZN16 (ICPU.Registers.A.W);
     }
     else
     {
@@ -231,8 +228,8 @@ static void ADC16 (long Addr)
 	else
 	    ClearOverflow();
 	ICPU.Registers.A.W = (uint16) Ans32;
-	SetZN16 (ICPU.Registers.A.W);
     }
+    SetZN16 (ICPU.Registers.A.W);
 }
 
 static void AND16 (long Addr)
