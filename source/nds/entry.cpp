@@ -1001,8 +1001,7 @@ unsigned int S9xReadJoypad (int which1)
 			key |= (inputdata.key & (1<<i)) ? keymap[i] : 0;
 		}
 
-		// return (key | 0x80000000);
-		return key; // ??? [Neb]
+		return (key | 0x80000000);
 	}
 	else
 		return 0;
