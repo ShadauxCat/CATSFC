@@ -266,9 +266,6 @@ static inline void A_ASL8 ()
 
 static void ASL16 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
     uint16 Work16 = S9xGetWord (Addr);
     ICPU._Carry = (Work16 & 0x8000) != 0;
     Work16 <<= 1;
@@ -280,9 +277,6 @@ static void ASL16 (long Addr)
 
 static void ASL8 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
     uint8 Work8 = S9xGetByte (Addr);
     ICPU._Carry = (Work8 & 0x80) != 0;
     Work8 <<= 1;
@@ -382,9 +376,6 @@ static inline void A_DEC8 ()
 
 static void DEC16 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
 #ifdef CPU_SHUTDOWN
     CPU.WaitAddress = NULL;
 #endif
@@ -398,9 +389,6 @@ static void DEC16 (long Addr)
 
 static void DEC8 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
 #ifdef CPU_SHUTDOWN
     CPU.WaitAddress = NULL;
 #endif
@@ -450,9 +438,6 @@ static inline void A_INC8 ()
 
 static void INC16 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
 #ifdef CPU_SHUTDOWN
     CPU.WaitAddress = NULL;
 #endif
@@ -466,9 +451,6 @@ static void INC16 (long Addr)
 
 static void INC8 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
 #ifdef CPU_SHUTDOWN
     CPU.WaitAddress = NULL;
 #endif
@@ -536,9 +518,6 @@ static inline void A_LSR8 ()
 
 static void LSR16 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
     uint16 Work16 = S9xGetWord (Addr);
     ICPU._Carry = Work16 & 1;
     Work16 >>= 1;
@@ -550,9 +529,6 @@ static void LSR16 (long Addr)
 
 static void LSR8 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
     uint8 Work8 = S9xGetByte (Addr);
     ICPU._Carry = Work8 & 1;
     Work8 >>= 1;
@@ -598,9 +574,6 @@ static inline void A_ROL8 ()
 
 static void ROL16 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
     uint32 Work32 = S9xGetWord (Addr);
     Work32 <<= 1;
     Work32 |= CheckCarry();
@@ -613,9 +586,6 @@ static void ROL16 (long Addr)
 
 static void ROL8 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
     uint16 Work16 = S9xGetByte (Addr);
     Work16 <<= 1;
     Work16 |= CheckCarry ();
@@ -651,9 +621,6 @@ static inline void A_ROR8 ()
 
 static void ROR16 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
     uint32 Work32 = S9xGetWord (Addr);
     Work32 |= (int) CheckCarry() << 16;
     ICPU._Carry = (uint8) (Work32 & 1);
@@ -666,9 +633,6 @@ static void ROR16 (long Addr)
 
 static void ROR8 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
     uint16 Work16 = S9xGetByte (Addr);
     Work16 |= (int) CheckCarry () << 8;
     ICPU._Carry = (uint8) (Work16 & 1);
@@ -840,9 +804,6 @@ static void STZ8 (long Addr)
 
 static void TSB16 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
     uint16 Work16 = S9xGetWord (Addr);
     ICPU._Zero = (Work16 & ICPU.Registers.A.W) != 0;
     Work16 |= ICPU.Registers.A.W;
@@ -853,9 +814,6 @@ static void TSB16 (long Addr)
 
 static void TSB8 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
     uint8 Work8 = S9xGetByte (Addr);
     ICPU._Zero = Work8 & ICPU.Registers.AL;
     Work8 |= ICPU.Registers.AL;
@@ -864,9 +822,6 @@ static void TSB8 (long Addr)
 
 static void TRB16 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
     uint16 Work16 = S9xGetWord (Addr);
     ICPU._Zero = (Work16 & ICPU.Registers.A.W) != 0;
     Work16 &= ~ICPU.Registers.A.W;
@@ -877,9 +832,6 @@ static void TRB16 (long Addr)
 
 static void TRB8 (long Addr)
 {
-#ifndef SA1_OPCODES
-    CPU.Cycles += ONE_CYCLE;
-#endif
     uint8 Work8 = S9xGetByte (Addr);
     ICPU._Zero = Work8 & ICPU.Registers.AL;
     Work8 &= ~ICPU.Registers.AL;

@@ -631,7 +631,7 @@ static void Op06M1 (void)
 {
     Direct (MODIFY, ASL8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -639,7 +639,7 @@ static void Op06M0 (void)
 {
     Direct (MODIFY, ASL16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -647,11 +647,7 @@ static void Op16M1 (void)
 {
     DirectIndexedX (MODIFY, ASL8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
-//    if (ICPU.Registers.DL != 0)
-//	CPU.Cycles += TWO_CYCLES;
-//    else
-//	CPU.Cycles += ONE_CYCLE;
+    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -659,11 +655,7 @@ static void Op16M0 (void)
 {
     DirectIndexedX (MODIFY, ASL16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
-//    if (ICPU.Registers.DL != 0)
-//	CPU.Cycles += TWO_CYCLES;
-//    else
-//	CPU.Cycles += ONE_CYCLE;
+    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -671,7 +663,7 @@ static void Op0EM1 (void)
 {
     Absolute (MODIFY, ASL8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -679,7 +671,7 @@ static void Op0EM0 (void)
 {
     Absolute (MODIFY, ASL16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -687,7 +679,7 @@ static void Op1EM1 (void)
 {
     AbsoluteIndexedX (MODIFY, ASL8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -695,7 +687,7 @@ static void Op1EM0 (void)
 {
     AbsoluteIndexedX (MODIFY, ASL16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 /**********************************************************************************************/
@@ -1196,7 +1188,7 @@ static void OpC6M1 (void)
 {
     Direct (MODIFY, DEC8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -1204,7 +1196,7 @@ static void OpC6M0 (void)
 {
     Direct (MODIFY, DEC16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -1212,7 +1204,7 @@ static void OpD6M1 (void)
 {
     DirectIndexedX (MODIFY, DEC8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
+    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE /* memory */ + ONE_CYCLE /* opcode */;
 //    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
@@ -1224,7 +1216,7 @@ static void OpD6M0 (void)
 {
     DirectIndexedX (MODIFY, DEC16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
+    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE /* memory */ + ONE_CYCLE /* opcode */;
 //    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
@@ -1236,7 +1228,7 @@ static void OpCEM1 (void)
 {
     Absolute (MODIFY, DEC8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -1244,7 +1236,7 @@ static void OpCEM0 (void)
 {
     Absolute (MODIFY, DEC16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -1252,7 +1244,7 @@ static void OpDEM1 (void)
 {
     AbsoluteIndexedX (MODIFY, DEC8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -1260,7 +1252,7 @@ static void OpDEM0 (void)
 {
     AbsoluteIndexedX (MODIFY, DEC16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -1539,7 +1531,7 @@ static void OpE6M1 (void)
 {
     Direct (MODIFY, INC8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -1547,7 +1539,7 @@ static void OpE6M0 (void)
 {
     Direct (MODIFY, INC16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -1555,7 +1547,7 @@ static void OpF6M1 (void)
 {
     DirectIndexedX (MODIFY, INC8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
+    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE /* memory */ + ONE_CYCLE /* opcode */;
 //    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
@@ -1567,7 +1559,7 @@ static void OpF6M0 (void)
 {
     DirectIndexedX (MODIFY, INC16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
+    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE /* memory */ + ONE_CYCLE /* opcode */;
 //    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
@@ -1579,7 +1571,7 @@ static void OpEEM1 (void)
 {
     Absolute (MODIFY, INC8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -1587,7 +1579,7 @@ static void OpEEM0 (void)
 {
     Absolute (MODIFY, INC16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -1595,7 +1587,7 @@ static void OpFEM1 (void)
 {
     AbsoluteIndexedX (MODIFY, INC8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -1603,7 +1595,7 @@ static void OpFEM0 (void)
 {
     AbsoluteIndexedX (MODIFY, INC16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2077,7 +2069,7 @@ static void Op46M1 (void)
 {
     Direct (MODIFY, LSR8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2085,7 +2077,7 @@ static void Op46M0 (void)
 {
     Direct (MODIFY, LSR16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2093,7 +2085,7 @@ static void Op56M1 (void)
 {
     DirectIndexedX (MODIFY, LSR8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
+    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE /* memory */ + ONE_CYCLE /* opcode */;
 //    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
@@ -2105,7 +2097,7 @@ static void Op56M0 (void)
 {
     DirectIndexedX (MODIFY, LSR16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
+    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE /* memory */ + ONE_CYCLE /* opcode */;
 //    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
@@ -2117,7 +2109,7 @@ static void Op4EM1 (void)
 {
     Absolute (MODIFY, LSR8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2125,7 +2117,7 @@ static void Op4EM0 (void)
 {
     Absolute (MODIFY, LSR16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2133,7 +2125,7 @@ static void Op5EM1 (void)
 {
     AbsoluteIndexedX (MODIFY, LSR8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2141,7 +2133,7 @@ static void Op5EM0 (void)
 {
     AbsoluteIndexedX (MODIFY, LSR16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2420,7 +2412,7 @@ static void Op26M1 (void)
 {
     Direct (MODIFY, ROL8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2428,7 +2420,7 @@ static void Op26M0 (void)
 {
     Direct (MODIFY, ROL16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2436,7 +2428,7 @@ static void Op36M1 (void)
 {
     DirectIndexedX (MODIFY, ROL8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
+    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE /* memory */ + ONE_CYCLE /* opcode */;
 //    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
@@ -2448,7 +2440,7 @@ static void Op36M0 (void)
 {
     DirectIndexedX (MODIFY, ROL16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
+    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE /* memory */ + ONE_CYCLE /* opcode */;
 //    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
@@ -2460,7 +2452,7 @@ static void Op2EM1 (void)
 {
     Absolute (MODIFY, ROL8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2468,7 +2460,7 @@ static void Op2EM0 (void)
 {
     Absolute (MODIFY, ROL16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2476,7 +2468,7 @@ static void Op3EM1 (void)
 {
     AbsoluteIndexedX (MODIFY, ROL8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2484,7 +2476,7 @@ static void Op3EM0 (void)
 {
     AbsoluteIndexedX (MODIFY, ROL16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 /**********************************************************************************************/
@@ -2504,7 +2496,7 @@ static void Op66M1 (void)
 {
     Direct (MODIFY, ROR8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2512,7 +2504,7 @@ static void Op66M0 (void)
 {
     Direct (MODIFY, ROR16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2520,7 +2512,7 @@ static void Op76M1 (void)
 {
     DirectIndexedX (MODIFY, ROR8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
+    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE /* memory */ + ONE_CYCLE /* opcode */;
 //    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
@@ -2532,7 +2524,7 @@ static void Op76M0 (void)
 {
     DirectIndexedX (MODIFY, ROR16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE;
+    CPU.Cycles += CPU.MemSpeed + ONE_CYCLE /* memory */ + ONE_CYCLE /* opcode */;
 //    if (ICPU.Registers.DL != 0)
 //	CPU.Cycles += TWO_CYCLES;
 //    else
@@ -2544,7 +2536,7 @@ static void Op6EM1 (void)
 {
     Absolute (MODIFY, ROR8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2552,7 +2544,7 @@ static void Op6EM0 (void)
 {
     Absolute (MODIFY, ROR16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2560,7 +2552,7 @@ static void Op7EM1 (void)
 {
     AbsoluteIndexedX (MODIFY, ROR8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -2568,7 +2560,7 @@ static void Op7EM0 (void)
 {
     AbsoluteIndexedX (MODIFY, ROR16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 /**********************************************************************************************/
@@ -3255,7 +3247,7 @@ static void Op14M1 (void)
 {
     Direct (MODIFY, TRB8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -3263,7 +3255,7 @@ static void Op14M0 (void)
 {
     Direct (MODIFY, TRB16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -3271,7 +3263,7 @@ static void Op1CM1 (void)
 {
     Absolute (MODIFY, TRB8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -3279,7 +3271,7 @@ static void Op1CM0 (void)
 {
     Absolute (MODIFY, TRB16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 /**********************************************************************************************/
@@ -3289,7 +3281,7 @@ static void Op04M1 (void)
 {
     Direct (MODIFY, TSB8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -3297,7 +3289,7 @@ static void Op04M0 (void)
 {
     Direct (MODIFY, TSB16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeed;
+    CPU.Cycles += CPU.MemSpeed /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -3305,7 +3297,7 @@ static void Op0CM1 (void)
 {
     Absolute (MODIFY, TSB8);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -3313,7 +3305,7 @@ static void Op0CM0 (void)
 {
     Absolute (MODIFY, TSB16);
 #ifndef SA1_OPCODES
-    CPU.Cycles += CPU.MemSpeedx2;
+    CPU.Cycles += CPU.MemSpeedx2 /* memory */ + ONE_CYCLE /* opcode */;
 #endif
 }
 
@@ -4514,8 +4506,6 @@ void S9xOpcode_IRQ (void)
 			  (Memory.FillRAM [0x220f] << 8));
 	else
 	    S9xSetPCBase (S9xGetWord (0xFFEE));
-#endif
-#ifndef SA1_OPCODES
         CPU.Cycles += TWO_CYCLES;
 #endif
     }
@@ -4541,8 +4531,6 @@ void S9xOpcode_IRQ (void)
 			  (Memory.FillRAM [0x220f] << 8));
 	else
 	    S9xSetPCBase (S9xGetWord (0xFFFE));
-#endif
-#ifndef SA1_OPCODES
 	CPU.Cycles += ONE_CYCLE;
 #endif
     }
@@ -4580,8 +4568,6 @@ void S9xOpcode_NMI (void)
 			  (Memory.FillRAM [0x220d] << 8));
 	else
 	    S9xSetPCBase (S9xGetWord (0xFFEA));
-#endif
-#ifndef SA1_OPCODES
 	CPU.Cycles += TWO_CYCLES;
 #endif
     }
@@ -4607,8 +4593,6 @@ void S9xOpcode_NMI (void)
 			  (Memory.FillRAM [0x220d] << 8));
 	else
 	    S9xSetPCBase (S9xGetWord (0xFFFA));
-#endif
-#ifndef SA1_OPCODES
 	CPU.Cycles += ONE_CYCLE;
 #endif
     }

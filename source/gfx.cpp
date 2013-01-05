@@ -1302,6 +1302,7 @@ if(Settings.BGLayering) {
 #endif
 		}
 	}
+#if 0
 	else if (!Settings.SupportHiRes)
 	{
 		if (PPU.BGMode == 5)
@@ -1365,6 +1366,7 @@ if(Settings.BGLayering) {
 #endif
 		}
 	}
+#endif // 0
 	GFX.Z1 = D + 2;
 
 	for(uint32 Y=GFX.StartY, Offset=Y*GFX.PPL; Y<=GFX.EndY; Y++, Offset+=GFX.PPL){
