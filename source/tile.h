@@ -288,5 +288,48 @@
     default: \
         break; \
     }
+
+#define RENDER_TILE_LARGE_HALFWIDTH(PIXEL, FUNCTION) \
+    switch (Tile & (V_FLIP | H_FLIP)) \
+    { \
+    case H_FLIP: \
+	StartPixel = 7 - StartPixel; \
+        /* fallthrough for no-flip case - above was a horizontal flip */ \
+    case 0: \
+	if ((pixel = *(pCache + StartLine + StartPixel))) \
+	{ \
+	    pixel = PIXEL; \
+	    for (l = LineCount; l != 0; l--, sp += GFX.PPL, Depth += GFX.PPL) \
+	    { \
+		for (int z = Pixels - 2; z >= 0; z -= 2) \
+		    if (GFX.Z1 > Depth [z]) \
+		    { \
+			sp [z >> 1] = FUNCTION(sp + z, pixel); \
+			Depth [z >> 1] = GFX.Z2; \
+		    }\
+	    } \
+	} \
+        break; \
+    case H_FLIP | V_FLIP: \
+	StartPixel = 7 - StartPixel; \
+        /* fallthrough for V_FLIP-only case - above was a horizontal flip */ \
+    case V_FLIP: \
+	if ((pixel = *(pCache + 56 - StartLine + StartPixel))) \
+	{ \
+	    pixel = PIXEL; \
+	    for (l = LineCount; l != 0; l--, sp += GFX.PPL, Depth += GFX.PPL) \
+	    { \
+		for (int z = Pixels - 2; z >= 0; z -= 2) \
+		    if (GFX.Z1 > Depth [z]) \
+		    { \
+			sp [z >> 1] = FUNCTION(sp + z, pixel); \
+			Depth [z >> 1] = GFX.Z2; \
+		    }\
+	    } \
+	} \
+        break; \
+    default: \
+        break; \
+    }
 #endif
 

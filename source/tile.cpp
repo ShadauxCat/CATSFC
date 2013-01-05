@@ -441,6 +441,19 @@ void DrawLargePixel (uint32 Tile, uint32 Offset,
 
     RENDER_TILE_LARGE (((uint8) ScreenColors [pixel]), PLOT_PIXEL)
 }
+
+void DrawLargePixelHalfWidth (uint32 Tile, uint32 Offset,
+		     uint32 StartPixel, uint32 Pixels,
+		     uint32 StartLine, uint32 LineCount)
+{
+    TILE_PREAMBLE
+
+    register uint8 *sp = GFX.S + Offset;
+    uint8  *Depth = GFX.DB + Offset;
+    uint8 pixel;
+
+    RENDER_TILE_LARGE_HALFWIDTH (((uint8) ScreenColors [pixel]), PLOT_PIXEL)
+}
 #endif
 
 static void WRITE_4PIXELS16 (uint32 Offset, uint8 *Pixels, uint16 *ScreenColors)
@@ -725,6 +738,19 @@ void DrawLargePixel16 (uint32 Tile, uint32 Offset,
     uint16 pixel;
 
     RENDER_TILE_LARGE (ScreenColors [pixel], PLOT_PIXEL)
+}
+
+void DrawLargePixel16HalfWidth (uint32 Tile, uint32 Offset,
+		       uint32 StartPixel, uint32 Pixels,
+		       uint32 StartLine, uint32 LineCount)
+{
+    TILE_PREAMBLE
+
+    register uint16 *sp = (uint16 *) GFX.S + Offset;
+    uint8  *Depth = GFX.DB + Offset;
+    uint16 pixel;
+
+    RENDER_TILE_LARGE_HALFWIDTH (ScreenColors [pixel], PLOT_PIXEL)
 }
 
 static void WRITE_4PIXELS16_ADD (uint32 Offset, uint8 *Pixels, uint16 *ScreenColors)
