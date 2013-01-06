@@ -109,14 +109,12 @@ need to do the following:
   be `, (char *) &lang[3]`.
 * Still in `source/nds/gui.c`, find `case CHINESE_SIMPLIFIED`. Copy the lines
   starting at the `case` and ending with `break`, inclusively. Paste them
-  before the `}`. Change the language name and tags, and update the `cmplen`
-  to be the length of the `START` tag. For the example of German, you would
-  use `cmplen= 11;`, because that's the length of `STARTGERMAN`:
+  before the `}`. Change the language name and tags. For the example of
+  German, you would use:
   ```
 	case GERMAN:
 		strcpy(start, "STARTGERMAN");
 		strcpy(end, "ENDGERMAN");
-		cmplen = 11;
 		break;
   ```
 

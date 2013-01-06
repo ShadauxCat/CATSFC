@@ -112,7 +112,7 @@ static unsigned int savestate_index;
   passive_function,                                                           \
   NULL,                                                                       \
   &cheat_data_ptr[number],                                                    \
-  enable_disable_options,                                                     \
+  NULL /* enable_disable_options */,                                                     \
   &(Cheat.c[number].enabled),				                            	  \
   2,                                                                          \
   NULL,                                                                       \
@@ -1239,7 +1239,7 @@ u32 play_screen_snapshot(void)
         //construct filelist_info struct
 		manage_filelist_info(&filelist_info, -1);
 
-        if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes(A)", "No(A)"))
+        if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes(A)", "No(B)"))
             return 1;
         else 
             return 0;
@@ -1683,13 +1683,11 @@ u32 menu(u16 *screen)
 	auto void menu_load_state();
 	auto void menu_load_cheat_file();
 	auto void others_menu_init();
-	auto void keyremap_show();
 	auto void main_menu_passive();
 	auto void main_menu_key();
 	auto void delette_savestate();
 	auto void save_screen_snapshot();
 	auto void browse_screen_snapshot();
-	auto void keyremap();
 	auto void time_backward_action();
 	auto void time_period_passive();
 	auto void time_period_action();
@@ -1748,7 +1746,7 @@ u32 menu(u16 *screen)
 			strcat(line_buffer, tmp_filename);
 
 			draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
-			draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_LOADING_GAME]);
+			draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_LOADING_GAME]);
 			ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 			ds2_setCPUclocklevel(13);
@@ -1816,7 +1814,7 @@ u32 menu(u16 *screen)
 		fat_remove("plgargs.dat");
 	
 		draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
-		draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_LOADING_GAME]);
+		draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_LOADING_GAME]);
 		ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 		ds2_setCPUclocklevel(13);
@@ -2046,7 +2044,7 @@ u32 menu(u16 *screen)
 				get_savestate_filename(slot_index, tmp_filename);
 
 				draw_message(down_screen_addr, NULL, 28, 31, 227, 165, 0);
-				draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_SAVESTATE_DOING]);
+				draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CREATING]);
 				ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 				int flag = save_state(tmp_filename, (void*)screen);
@@ -2054,12 +2052,12 @@ u32 menu(u16 *screen)
 				draw_message(down_screen_addr, NULL, 28, 31, 227, 96, 0);
 				if(flag < 0)
 				{
-					draw_string_vcenter(down_screen_addr, 36, 74, 190, COLOR_MSSG, msg[MSG_SAVESTATE_FAILUER]);
+					draw_string_vcenter(down_screen_addr, 36, 74, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CREATION_FAILED]);
 					savestate_map[slot_index]= -savestate_map[slot_index];
 				}
 				else
 				{
-					draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_SAVESTATE_SUCCESS]);
+					draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CREATION_SUCCEEDED]);
 					savestate_index = slot_index;
 				}
 
@@ -2099,7 +2097,7 @@ u32 menu(u16 *screen)
 				if(fp == NULL)
 				{
 					draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
-					draw_string_vcenter(down_screen_addr, 36, 80, 190, COLOR_MSSG, msg[MSG_SAVESTATE_FILE_BAD]);
+					draw_string_vcenter(down_screen_addr, 36, 80, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CORRUPTED]);
 					ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 					wait_Allkey_release(0);
@@ -2115,17 +2113,17 @@ u32 menu(u16 *screen)
 				if(gui_action == CURSOR_SELECT)
 				{
 					draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
-					draw_string_vcenter(up_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_LOADSTATE_DOING]);
+					draw_string_vcenter(up_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_LOADING]);
 
 					int flag = load_state(tmp_filename);
 					if(0 == flag)
 					{
 						return_value = 1;
 						repeat = 0;
-						draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_LOADSTATE_SUCCESS]);
+						draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_LOAD_SUCCEEDED]);
 					}
 					else
-						draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_LOADSTATE_FAILURE]);
+						draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_LOAD_FAILED]);
 				}
 				else	//load screen snapshot
 				{
@@ -2135,7 +2133,7 @@ u32 menu(u16 *screen)
 			else
 			{
 				ds2_clearScreen(UP_SCREEN, COLOR_BLACK);
-				draw_string_vcenter(up_screen_addr, 36, 75, 190, COLOR_WHITE, msg[MSG_SAVESTATE_SLOT_EMPTY]);
+				draw_string_vcenter(up_screen_addr, 36, 75, 190, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT]);
 				ds2_flipScreen(UP_SCREEN, 1);
 			}
 		}
@@ -2159,7 +2157,7 @@ u32 menu(u16 *screen)
 				u32 i, flag;
 
 				draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
-				draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_DELETTE_ALL_SAVESTATE_WARING]);
+				draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_DIALOG_SAVED_STATE_DELETE_ALL]);
 
 				flag= 0;
 				for(i= 0; i < SAVE_STATE_SLOT_NUM; i++)
@@ -2185,7 +2183,7 @@ u32 menu(u16 *screen)
 				else
 				{
 					draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
-					draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_DELETTE_SAVESTATE_NOTHING]);
+					draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY]);
 					ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 					mdelay(500);
 				}
@@ -2196,7 +2194,7 @@ u32 menu(u16 *screen)
 
 				if(savestate_map[delette_savestate_num] > 0)
 				{
-					sprintf(line_buffer, msg[MSG_DELETTE_SINGLE_SAVESTATE_WARING], delette_savestate_num);
+					sprintf(line_buffer, msg[FMT_DIALOG_SAVED_STATE_DELETE_ONE], delette_savestate_num);
 					draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, line_buffer);
 
 					if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes(A)", "No(B)")) {
@@ -2206,7 +2204,7 @@ u32 menu(u16 *screen)
 				}
 				else
 				{
-					draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_DELETTE_SAVESTATE_NOTHING]);
+					draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY]);
 					ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 					mdelay(500);
 				}
@@ -2488,7 +2486,7 @@ u32 menu(u16 *screen)
 		PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, CHEAT_NUMBER_X, 40 + display_option-> line_number*27);
 
 		if (i >= Cheat.num_cheats) {
-			PRINT_STRING_BG(down_screen_addr, msg[MSG_CHEAT_MENU_NON_LOAD], color, COLOR_TRANS, CHEAT_DESC_X, 40 + display_option-> line_number*27);
+			PRINT_STRING_BG(down_screen_addr, msg[MSG_CHEAT_ELEMENT_NOT_LOADED], color, COLOR_TRANS, CHEAT_DESC_X, 40 + display_option-> line_number*27);
 		}
 		else {
 			strcpy(line_buffer, Cheat.c[i].name);
@@ -2577,18 +2575,18 @@ u32 menu(u16 *screen)
             draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
             if(!first_load)
             {
-                draw_string_vcenter(down_screen_addr, 36, 70, 190, COLOR_MSSG, msg[MSG_SAVE_SNAPSHOT]);
+                draw_string_vcenter(down_screen_addr, 36, 70, 190, COLOR_MSSG, msg[MSG_PROGRESS_SCREENSHOT_CREATING]);
                 ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
                 if(save_ss_bmp(screen))
-                    draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_SAVE_SNAPSHOT_COMPLETE]);
+                    draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_PROGRESS_SCREENSHOT_CREATION_SUCCEEDED]);
                 else
-                    draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_SAVE_SNAPSHOT_FAILURE]);
+                    draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_PROGRESS_SCREENSHOT_CREATION_FAILED]);
                 ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 				mdelay(500);
             }
             else
             {
-                draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_SAVESTATE_SLOT_EMPTY]);
+                draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT]);
                 ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 				mdelay(500);
             }
@@ -2599,94 +2597,6 @@ u32 menu(u16 *screen)
     {
         if(current_option_num == 2)
             play_screen_snapshot();
-    }
-
-    void keyremap()
-    {
-        if(gui_action== CURSOR_RIGHT || gui_action== CURSOR_LEFT)
-        {
-//          if(current_option_num != 0)
-//              game_config.use_default_gamepad_map = 0;
-          switch(current_option_num)
-          {
-            case 1: //GBA KEY A
-                if(BUTTON_MAP_A == BUTTON_ID_A)
-                    BUTTON_MAP_A = BUTTON_ID_Y;
-                else if(BUTTON_MAP_A == BUTTON_ID_Y)
-                    BUTTON_MAP_A = BUTTON_ID_A;
-
-                BUTTON_MAP_FA = BUTTON_ID_NONE;
-                BUTTON_MAP_FB = BUTTON_ID_NONE;
-              break;
-            case 2: //GBA KEY B(fixed B)
-              break;
-            case 3: //GBA KEY FA(fixed X)
-                if(BUTTON_MAP_FA == BUTTON_ID_NONE)
-                {
-                   BUTTON_MAP_FA = BUTTON_ID_X;
-                }
-                else
-                   BUTTON_MAP_FA = BUTTON_ID_NONE;
-
-              break;
-            case 4: //GBA KEY FB
-                if(BUTTON_MAP_A == BUTTON_ID_A)
-                {
-                    if(BUTTON_MAP_FB == BUTTON_ID_Y)
-                        BUTTON_MAP_FB = BUTTON_ID_NONE;
-                    else
-                        BUTTON_MAP_FB = BUTTON_ID_Y;
-                }
-                else if(BUTTON_MAP_A == BUTTON_ID_Y)
-                {
-                    if(BUTTON_MAP_FB == BUTTON_ID_NONE)
-                        BUTTON_MAP_FB = BUTTON_ID_A;
-                    else
-                        BUTTON_MAP_FB = BUTTON_ID_NONE;
-                }
-              break;
-            case 5: //Awaking menu
-                if(BUTTON_MAP_MENU == BUTTON_ID_X)
-                {
-                    if(BUTTON_MAP_A != BUTTON_ID_Y && BUTTON_MAP_FB != BUTTON_ID_Y)
-                        BUTTON_MAP_MENU = BUTTON_ID_Y;
-                    else
-                        BUTTON_MAP_MENU = BUTTON_ID_TOUCH;
-                }
-                else if(BUTTON_MAP_MENU == BUTTON_ID_TOUCH)
-                {
-                    if(BUTTON_MAP_FA != BUTTON_ID_X)
-                        BUTTON_MAP_MENU = BUTTON_ID_X;
-                    else if(BUTTON_MAP_A != BUTTON_ID_Y && BUTTON_MAP_FB != BUTTON_ID_Y)
-                        BUTTON_MAP_MENU = BUTTON_ID_Y;
-                }
-                else
-                    BUTTON_MAP_MENU = BUTTON_ID_TOUCH;
-              break;
-            default:
-              break;
-          }
-        }
-
-        if(BUTTON_MAP_MENU == BUTTON_ID_X && BUTTON_MAP_FA == BUTTON_ID_X)
-        {
-            if(BUTTON_MAP_A == BUTTON_ID_Y || BUTTON_MAP_FB == BUTTON_ID_Y)
-                BUTTON_MAP_MENU = BUTTON_ID_TOUCH;
-            else
-                BUTTON_MAP_MENU = BUTTON_ID_Y;
-        }
-        else if(BUTTON_MAP_MENU == BUTTON_ID_Y)
-        {
-            if(BUTTON_MAP_A == BUTTON_ID_Y || BUTTON_MAP_FB == BUTTON_ID_Y)
-            {
-                if(BUTTON_MAP_FA == BUTTON_ID_X)
-                    BUTTON_MAP_MENU = BUTTON_ID_TOUCH;
-                else
-                    BUTTON_MAP_MENU = BUTTON_ID_X;
-            }
-        }
-
-//        gamepad_config_menu = BUTTON_MAP_MENU;
     }
 
 	void time_backward_action()
@@ -2739,13 +2649,13 @@ u32 menu(u16 *screen)
             bg_screenp_color = COLOR_BG;
 
         draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
-        draw_string_vcenter(down_screen_addr, 36, 70, 190, COLOR_MSSG, msg[MSG_LOAD_DEFAULT_WARING]);
+        draw_string_vcenter(down_screen_addr, 36, 70, 190, COLOR_MSSG, msg[MSG_DIALOG_RESET]);
 
         if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes", "No"))
         {
 			wait_Allkey_release(0);
             draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
-            draw_string_vcenter(down_screen_addr, 36, 80, 190, COLOR_MSSG, msg[MSG_DEFAULT_LOADING]);
+            draw_string_vcenter(down_screen_addr, 36, 80, 190, COLOR_MSSG, msg[MSG_PROGRESS_RESETTING]);
             ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
             sprintf(line_buffer, "%s/%s", main_path, EMU_CONFIG_FILENAME);
@@ -2756,7 +2666,7 @@ u32 menu(u16 *screen)
             init_game_config();
 
 			ds2_clearScreen(UP_SCREEN, 0);
-            draw_string_vcenter(up_screen_addr, 0, 80, 256, COLOR_WHITE, msg[MSG_NON_LOAD_GAME]);
+            draw_string_vcenter(up_screen_addr, 0, 80, 256, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_GAME_LOADED]);
 			ds2_flipScreen(UP_SCREEN, 1);
 
 			// mdelay(500); // Delete this delay
@@ -2774,8 +2684,8 @@ u32 menu(u16 *screen)
             bg_screenp_color = COLOR_BG;
 
         draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
-        draw_string_vcenter(down_screen_addr, 36, 80, 190, COLOR_MSSG, msg[MSG_EMU_VERSION0]);
-        sprintf(line_buffer, "%s %s", msg[MSG_EMU_VERSION1], NDSSFC_VERSION);
+        draw_string_vcenter(down_screen_addr, 36, 80, 190, COLOR_MSSG, msg[MSG_EMULATOR_NAME]);
+        sprintf(line_buffer, "%s %s", msg[MSG_WORD_EMULATOR_VERSION], NDSSFC_VERSION);
         draw_string_vcenter(down_screen_addr, 36, 95, 190, COLOR_MSSG, line_buffer);
         ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
@@ -2786,6 +2696,7 @@ u32 menu(u16 *screen)
     {
         if(gui_action == CURSOR_LEFT || gui_action == CURSOR_RIGHT)
         {
+            ds2_setCPUclocklevel(13); // crank it up
             if(bg_screenp != NULL)
             {
                 bg_screenp_color = COLOR16(43, 11, 11);
@@ -2805,12 +2716,13 @@ u32 menu(u16 *screen)
             if(first_load)
             {
 				ds2_clearScreen(UP_SCREEN, 0);
-                draw_string_vcenter(up_screen_addr, 0, 80, 256, COLOR_WHITE, msg[MSG_NON_LOAD_GAME]);
+                draw_string_vcenter(up_screen_addr, 0, 80, 256, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_GAME_LOADED]);
 				ds2_flipScreen(UP_SCREEN, 1);
             }
 
-			save_emu_config_file();
-			wait_Allkey_release(0);
+            save_emu_config_file();
+            ds2_setCPUclocklevel(0); // and back down
+            wait_Allkey_release(0);
         }
     }
 
@@ -2858,43 +2770,36 @@ u32 menu(u16 *screen)
             40 + (display_option->line_number)*27);
     }
 
-    char *screen_ratio_options[] = { (char*)&msg[MSG_SCREEN_RATIO_0],
-									(char*)&msg[MSG_SCREEN_RATIO_1],
-									(char*)&msg[MSG_SCREEN_RATIO_2],
-									(char*)&msg[MSG_SCREEN_RATIO_3],
-									(char*)&msg[MSG_SCREEN_RATIO_4]};
+    char *screen_ratio_options[] = { (char*)&msg[MSG_VIDEO_ASPECT_RATIO_0],
+									(char*)&msg[MSG_VIDEO_ASPECT_RATIO_1],
+									(char*)&msg[MSG_VIDEO_ASPECT_RATIO_2],
+									(char*)&msg[MSG_VIDEO_ASPECT_RATIO_3],
+									(char*)&msg[MSG_VIDEO_ASPECT_RATIO_4]};
     
     char *frameskip_options[] = { (char*)&msg[MSG_FRAMESKIP_0], (char*)&msg[MSG_FRAMESKIP_1] };
 
     char *on_off_options[] = { (char*)&msg[MSG_ON_OFF_0], (char*)&msg[MSG_ON_OFF_1] };
 
-//    char *sound_seletion[] = { (char*)&msg[MSG_SOUND_SWITCH_0], (char*)&msg[MSG_SOUND_SWITCH_1] };
+    char *sound_seletion[] = { (char*)&msg[MSG_AUDIO_ENABLED], (char*)&msg[MSG_AUDIO_MUTED] };
 
 //    char *snap_frame_options[] = { (char*)&msg[MSG_SNAP_FRAME_0], (char*)&msg[MSG_SNAP_FRAME_1] };
 
     char *enable_disable_options[] = { (char*)&msg[MSG_EN_DIS_ABLE_0], (char*)&msg[MSG_EN_DIS_ABLE_1] };
-
-    char *keyremap_options[] = {(char*)&msg[MSG_KEY_MAP_NONE], (char*)&msg[MSG_KEY_MAP_A], (char*)&msg[MSG_KEY_MAP_B], 
-                                (char*)&msg[MSG_KEY_MAP_SL], (char*)&msg[MSG_KEY_MAP_ST], (char*)&msg[MSG_KEY_MAP_RT], 
-                                (char*)&msg[MSG_KEY_MAP_LF], (char*)&msg[MSG_KEY_MAP_UP], (char*)&msg[MSG_KEY_MAP_DW], 
-                                (char*)&msg[MSG_KEY_MAP_R], (char*)&msg[MSG_KEY_MAP_L], (char*)&msg[MSG_KEY_MAP_X], 
-                                (char*)&msg[MSG_KEY_MAP_Y], (char*)&msg[MSG_KEY_MAP_TOUCH]
-                                };
 
   /*--------------------------------------------------------
     Video & Audio
   --------------------------------------------------------*/
 	MENU_OPTION_TYPE graphics_options[] =
 	{
-	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_0], NULL, 0),
+	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_VIDEO_AUDIO], NULL, 0),
 
-    /* 01 */ STRING_SELECTION_OPTION(NULL, NULL, &msg[MSG_SUB_MENU_00], screen_ratio_options, 
+    /* 01 */ STRING_SELECTION_OPTION(NULL, NULL, &msg[FMT_VIDEO_ASPECT_RATIO], screen_ratio_options, 
         &game_config.graphic, 5, NULL, PASSIVE_TYPE, 1),
 
-	/* 02 */ STRING_SELECTION_OPTION(game_fastforward, NULL, &msg[MSG_SUB_MENU_01], on_off_options, 
+	/* 02 */ STRING_SELECTION_OPTION(game_fastforward, NULL, &msg[MSG_VIDEO_FAST_FORWARD], on_off_options, 
 		&game_fast_forward, 2, NULL, ACTION_TYPE, 2),
 		
-	/* 03 */	STRING_SELECTION_OPTION(game_disableAudio, NULL, &msg[MSG_SUB_MENU_04],on_off_options,
+	/* 03 */	STRING_SELECTION_OPTION(game_disableAudio, NULL, &msg[FMT_AUDIO_SOUND], sound_seletion,
 		&game_enable_audio, 2, NULL, ACTION_TYPE, 3)
 	};
 
@@ -2907,12 +2812,12 @@ u32 menu(u16 *screen)
 
 	MENU_OPTION_TYPE gamestate_delette_options[] =
 	{
-	/* 00 */ SUBMENU_OPTION(&game_state_menu, &msg[MSG_SUB_MENU_13], NULL, 0),
+	/* 00 */ SUBMENU_OPTION(&game_state_menu, &msg[MSG_SAVED_STATE_DELETE_GENERAL], NULL, 0),
 
-	/* 01 */ ACTION_OPTION(delette_savestate, NULL, &msg[MSG_SUB_MENU_130], NULL, 1),
+	/* 01 */ ACTION_OPTION(delette_savestate, NULL, &msg[MSG_SAVED_STATE_DELETE_ALL], NULL, 1),
 
 	/* 02 */ NUMERIC_SELECTION_ACTION_OPTION(delette_savestate, NULL,
-		&msg[MSG_SUB_MENU_131], &delette_savestate_num, 10, NULL, 2)
+		&msg[FMT_SAVED_STATE_DELETE_ONE], &delette_savestate_num, 10, NULL, 2)
 	};
 
 	MAKE_MENU(gamestate_delette, NULL, gamestate_delette_menu_passive, NULL, NULL, 0, 0);
@@ -2922,14 +2827,14 @@ u32 menu(u16 *screen)
   --------------------------------------------------------*/
 	MENU_OPTION_TYPE game_state_options[] =
 	{
-	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_1], NULL, 0),
+	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_SAVED_STATES], NULL, 0),
 
-	/* 01 */ ACTION_OPTION(menu_save_state, NULL, &msg[MSG_SUB_MENU_10], NULL, 1),
+	/* 01 */ ACTION_OPTION(menu_save_state, NULL, &msg[MSG_SAVED_STATE_CREATE], NULL, 1),
 
 	/* 02 */ NUMERIC_SELECTION_ACTION_OPTION(menu_load_state, NULL,
-        &msg[MSG_SUB_MENU_11], &savestate_index, 10, NULL, 2),
+        &msg[FMT_SAVED_STATE_LOAD], &savestate_index, 10, NULL, 2),
 
-	/* 03 */ SUBMENU_OPTION(&gamestate_delette_menu, &msg[MSG_SUB_MENU_13], NULL, 5),
+	/* 03 */ SUBMENU_OPTION(&gamestate_delette_menu, &msg[MSG_SAVED_STATE_DELETE_GENERAL], NULL, 5),
 	};
 
 	INIT_MENU(game_state, NULL, game_state_menu_passive, NULL, NULL, 0, 0);
@@ -2939,7 +2844,7 @@ u32 menu(u16 *screen)
   --------------------------------------------------------*/
 	MENU_OPTION_TYPE cheats_options[] =
 	{
-	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_2], NULL,0),
+	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_CHEATS], NULL,0),
 
 	/* 01 */ CHEAT_OPTION(cheat_option_action, cheat_option_passive, 
 		((CHEATS_PER_PAGE * menu_cheat_page) + 0), 1),
@@ -2950,10 +2855,10 @@ u32 menu(u16 *screen)
 	/* 04 */ CHEAT_OPTION(cheat_option_action, cheat_option_passive,
 		((CHEATS_PER_PAGE * menu_cheat_page) + 3), 4),
 
-	/* 05 */ NUMERIC_SELECTION_ACTION_OPTION(reload_cheats_page, NULL, &msg[MSG_SUB_MENU_20],
+	/* 05 */ NUMERIC_SELECTION_ACTION_OPTION(reload_cheats_page, NULL, &msg[FMT_CHEAT_PAGE],
         &menu_cheat_page, MAX_CHEATS_PAGE, NULL, 5),
 
-	/* 06 */ ACTION_OPTION(menu_load_cheat_file, NULL, &msg[MSG_SUB_MENU_21],
+	/* 06 */ ACTION_OPTION(menu_load_cheat_file, NULL, &msg[MSG_CHEAT_LOAD_FROM_FILE],
         NULL, 6)
 	};
 
@@ -2966,51 +2871,26 @@ u32 menu(u16 *screen)
 
     MENU_OPTION_TYPE tools_screensnap_options[] =
     {
-	/* 00 */ SUBMENU_OPTION(&tools_menu, &msg[MSG_SUB_MENU_30], NULL, 0),
+	/* 00 */ SUBMENU_OPTION(&tools_menu, &msg[MSG_TOOLS_SCREENSHOT_GENERAL], NULL, 0),
 
-	/* 01 */ ACTION_OPTION(save_screen_snapshot, NULL, &msg[MSG_SUB_MENU_300], NULL, 1),
+	/* 01 */ ACTION_OPTION(save_screen_snapshot, NULL, &msg[MSG_SCREENSHOT_CREATE], NULL, 1),
 
-	/* 02 */ ACTION_OPTION(browse_screen_snapshot, NULL, &msg[MSG_SUB_MENU_301], NULL, 2)
+	/* 02 */ ACTION_OPTION(browse_screen_snapshot, NULL, &msg[MSG_SCREENSHOT_BROWSE], NULL, 2)
     };
 
     MAKE_MENU(tools_screensnap, NULL, NULL, NULL, NULL, 0, 0);
-
-  /*--------------------------------------------------------
-     Tools-keyremap
-  --------------------------------------------------------*/
-    MENU_OPTION_TYPE tools_keyremap_options[] = 
-    {
-	/* 00 */ SUBMENU_OPTION(&tools_menu, &msg[MSG_SUB_MENU_31], NULL, 0),
-        
-	/* 01 */ STRING_SELECTION_OPTION(keyremap, keyremap_show, &msg[MSG_SUB_MENU_310], 
-		NULL, &string_select, 2, NULL, ACTION_TYPE, 1),
-        
-	/* 02 */ STRING_SELECTION_OPTION(keyremap, keyremap_show, &msg[MSG_SUB_MENU_311], 
-		NULL, &string_select, 1, NULL, ACTION_TYPE | HIDEN_TYPE, 2),
-        
-	/* 03 */ STRING_SELECTION_OPTION(keyremap, keyremap_show, &msg[MSG_SUB_MENU_312], 
-		NULL, &string_select, 2, NULL, ACTION_TYPE, 3),
-        
-	/* 04 */ STRING_SELECTION_OPTION(keyremap, keyremap_show, &msg[MSG_SUB_MENU_313], 
-		NULL, &string_select, 3, NULL, ACTION_TYPE, 4),
-        
-	/* 05 */ STRING_SELECTION_OPTION(keyremap, keyremap_show, &msg[MSG_SUB_MENU_314], 
-		NULL, &string_select, 3, NULL, ACTION_TYPE, 5)
-    };
-
-    MAKE_MENU(tools_keyremap, NULL, NULL, NULL, NULL, 0, 0);
   /*--------------------------------------------------------
      Tools
   --------------------------------------------------------*/
     MENU_OPTION_TYPE tools_options[] = 
     {
-	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_3], NULL, 0),
+	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_TOOLS], NULL, 0),
 
-	/* 01 */ SUBMENU_OPTION(&tools_screensnap_menu, &msg[MSG_SUB_MENU_30], NULL, 1),
+	/* 01 */ SUBMENU_OPTION(&tools_screensnap_menu, &msg[MSG_TOOLS_SCREENSHOT_GENERAL], NULL, 1),
 
 //	/* 02 */ SUBMENU_OPTION(&tools_keyremap_menu, &msg[MSG_SUB_MENU_31], NULL, 2),
 
-//	/* 03 */ STRING_SELECTION_OPTION(time_backward_action, NULL, &msg[MSG_SUB_MENU_302], enable_disable_options, 
+//	/* 03 */ STRING_SELECTION_OPTION(time_backward_action, NULL, &msg[MSG_SUB_MENU_302], on_off_options, 
 //			&game_config.backward, 2, NULL, ACTION_TYPE, 3),
 
 //	/* 04 */ NUMERIC_SELECTION_ACTION_OPTION(time_period_action, time_period_passive, &msg[MSG_SUB_MENU_32], 
@@ -3025,20 +2905,20 @@ u32 menu(u16 *screen)
     u32 desert= 0;
 	MENU_OPTION_TYPE others_options[] = 
 	{
-	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_4], NULL, 0),
+	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_OPTIONS], NULL, 0),
 
 	//CPU speed
-	/* 01 */ NUMERIC_SELECTION_OPTION(NULL, &msg[MSG_SUB_MENU_42], &clock_speed_number, 6, NULL, 1),
+	/* 01 */ NUMERIC_SELECTION_OPTION(NULL, &msg[FMT_OPTIONS_CPU_FREQUENCY], &clock_speed_number, 6, NULL, 1),
 
-	/* 02 */ STRING_SELECTION_OPTION(language_set, NULL, &msg[MSG_SUB_MENU_41], language_options, 
+	/* 02 */ STRING_SELECTION_OPTION(language_set, NULL, &msg[FMT_OPTIONS_LANGUAGE], language_options, 
         &emu_config.language, sizeof(language_options) / sizeof(language_options[0]) /* number of possible languages */, NULL, ACTION_TYPE, 2),
 
-	/* 03 */ STRING_SELECTION_OPTION(NULL, show_card_space, &msg[MSG_SUB_MENU_43], NULL, 
+	/* 03 */ STRING_SELECTION_OPTION(NULL, show_card_space, &msg[MSG_OPTIONS_CARD_CAPACITY], NULL, 
         &desert, 2, NULL, PASSIVE_TYPE | HIDEN_TYPE, 3),
 
-	/* 04 */ ACTION_OPTION(load_default_setting, NULL, &msg[MSG_SUB_MENU_44], NULL, 4),
+	/* 04 */ ACTION_OPTION(load_default_setting, NULL, &msg[MSG_OPTIONS_RESET], NULL, 4),
 
-	/* 05 */ ACTION_OPTION(check_gbaemu_version, NULL, &msg[MSG_SUB_MENU_45], NULL, 5),
+	/* 05 */ ACTION_OPTION(check_gbaemu_version, NULL, &msg[MSG_OPTIONS_VERSION], NULL, 5),
 	};
 
 	MAKE_MENU(others, others_menu_init, NULL, NULL, NULL, 1, 1);
@@ -3050,11 +2930,11 @@ u32 menu(u16 *screen)
   
     MENU_OPTION_TYPE load_game_options[] =
     {
-	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_SUB_MENU_62], NULL, 0),
+	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_LOAD_GAME_MENU_TITLE], NULL, 0),
 
-	/* 01 */ ACTION_OPTION(menu_load, NULL, &msg[MSG_SUB_MENU_61], NULL, 1),
+	/* 01 */ ACTION_OPTION(menu_load, NULL, &msg[MSG_LOAD_GAME_FROM_CARD], NULL, 1),
 
-	/* 02 */ SUBMENU_OPTION(&latest_game_menu, &msg[MSG_SUB_MENU_60], NULL, 2)
+	/* 02 */ SUBMENU_OPTION(&latest_game_menu, &msg[MSG_LOAD_GAME_RECENTLY_PLAYED], NULL, 2)
     };
 
     MAKE_MENU(load_game, NULL, NULL, NULL, NULL, 1, 1);
@@ -3064,7 +2944,7 @@ u32 menu(u16 *screen)
   --------------------------------------------------------*/
     MENU_OPTION_TYPE latest_game_options[] =
     {
-	/* 00 */ SUBMENU_OPTION(&load_game_menu, &msg[MSG_SUB_MENU_60], NULL, 0),
+	/* 00 */ SUBMENU_OPTION(&load_game_menu, &msg[MSG_LOAD_GAME_RECENTLY_PLAYED], NULL, 0),
 
 	/* 01 */ ACTION_OPTION(load_lastest_played, NULL, NULL, NULL, 1),
 
@@ -3085,17 +2965,17 @@ u32 menu(u16 *screen)
   --------------------------------------------------------*/
 	MENU_OPTION_TYPE main_options[] =
 	{
-    /* 00 */ SUBMENU_OPTION(&graphics_menu, &msg[MSG_MAIN_MENU_0], NULL, 0),
+    /* 00 */ SUBMENU_OPTION(&graphics_menu, &msg[MSG_MAIN_MENU_VIDEO_AUDIO], NULL, 0),
 
-    /* 01 */ SUBMENU_OPTION(&game_state_menu, &msg[MSG_MAIN_MENU_1], NULL, 1),
+    /* 01 */ SUBMENU_OPTION(&game_state_menu, &msg[MSG_MAIN_MENU_SAVED_STATES], NULL, 1),
 
-    /* 02 */ SUBMENU_OPTION(&cheats_menu, &msg[MSG_MAIN_MENU_2], NULL, 2),
+    /* 02 */ SUBMENU_OPTION(&cheats_menu, &msg[MSG_MAIN_MENU_CHEATS], NULL, 2),
 
-    /* 03 */ SUBMENU_OPTION(&tools_menu, &msg[MSG_MAIN_MENU_3], NULL, 3),
+    /* 03 */ SUBMENU_OPTION(&tools_menu, &msg[MSG_MAIN_MENU_TOOLS], NULL, 3),
 
-    /* 04 */ SUBMENU_OPTION(&others_menu, &msg[MSG_MAIN_MENU_4], NULL, 4),
+    /* 04 */ SUBMENU_OPTION(&others_menu, &msg[MSG_MAIN_MENU_OPTIONS], NULL, 4),
 
-    /* 05 */ ACTION_OPTION(menu_exit, NULL, &msg[MSG_MAIN_MENU_5], NULL, 5),
+    /* 05 */ ACTION_OPTION(menu_exit, NULL, &msg[MSG_MAIN_MENU_EXIT], NULL, 5),
 
     /* 06 */ SUBMENU_OPTION(&load_game_menu, NULL, NULL, 6),
 
@@ -3404,7 +3284,7 @@ u32 menu(u16 *screen)
 		char *ext_pos;
 
 		draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, 0);
-		draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_LOADING_GAME]);
+		draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_LOADING_GAME]);
 		ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 		if(gamepak_name[0] != 0)
@@ -3456,40 +3336,6 @@ u32 menu(u16 *screen)
 
 		return_value = 1;
 		repeat = 0;
-    }
-
-    void keyremap_show()
-    {
-        unsigned short color;
-        u32 line_num;
-        u32 index;
-
-        if(display_option->option_type & STRING_SELECTION_TYPE)
-        {
-            switch(i+1)
-            {
-                case 1: index= BUTTON_MAP_A; break;
-                case 2: index= BUTTON_MAP_B; break;
-                case 3: index= BUTTON_MAP_FA; break;
-                case 4: index= BUTTON_MAP_FB; break;
-                case 5: index= BUTTON_MAP_MENU; break;
-                default: index= 0; break;
-            }
-
-            line_num= 0;
-            while(index) {index >>= 1; line_num++;}
-            sprintf(line_buffer, *(display_option->display_string), *((u32*)keyremap_options[line_num]));
-        }
-        else
-            strcpy(line_buffer, *(display_option->display_string));
-    
-        line_num= display_option-> line_number;
-        if(display_option == current_option)
-            color= COLOR_ACTIVE_ITEM;
-        else
-            color= COLOR_INACTIVE_ITEM;
-    
-        PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 26, 37 + line_num*32);
     }
 
     void game_fastforward()
@@ -3553,7 +3399,7 @@ u32 menu(u16 *screen)
 		else
 		{
 			ds2_clearScreen(UP_SCREEN, COLOR_BLACK);
-			draw_string_vcenter(up_screen_addr, 0, 80, 256, COLOR_WHITE, msg[MSG_NON_LOAD_GAME]);
+			draw_string_vcenter(up_screen_addr, 0, 80, 256, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_GAME_LOADED]);
 			ds2_flipScreen(UP_SCREEN, 1);
 		}
 	}
@@ -4022,116 +3868,114 @@ void initial_path_config(void)
 --------------------------------------------------------*/
 int load_language_msg(char *filename, u32 language)
 {
-    FILE *fp;
-    char msg_path[MAX_PATH];
-    char string[256];
-    char start[32];
-    char end[32];
-    char *pt, *dst;
-    u32 cmplen;
-    u32 loop, offset, len;
-    int ret;
+	FILE *fp;
+	char msg_path[MAX_PATH];
+	char string[256];
+	char start[32];
+	char end[32];
+	char *pt, *dst;
+	u32 loop, offset, len;
+	int ret;
 
-    sprintf(msg_path, "%s/%s", main_path, filename);
-    fp = fopen(msg_path, "rb");
-    if(fp == NULL)
-        return -1;
+	sprintf(msg_path, "%s/%s", main_path, filename);
+	fp = fopen(msg_path, "rb");
+	if(fp == NULL)
+	return -1;
 
-    switch(language)
-    {
-    case ENGLISH:
+	switch(language)
+	{
+	case ENGLISH:
 	default:
-        strcpy(start, "STARTENGLISH");
-        strcpy(end, "ENDENGLISH");
-        cmplen= 12;
-        break;
-    case CHINESE_SIMPLIFIED:
-        strcpy(start, "STARTCHINESESIM");
-        strcpy(end, "ENDCHINESESIM");
-        cmplen= 15;
-        break;
+		strcpy(start, "STARTENGLISH");
+		strcpy(end, "ENDENGLISH");
+		break;
+	case CHINESE_SIMPLIFIED:
+		strcpy(start, "STARTCHINESESIM");
+		strcpy(end, "ENDCHINESESIM");
+		break;
 	case FRENCH:
-        strcpy(start, "STARTFRENCH");
-        strcpy(end, "ENDFRENCH");
-        cmplen= 11;
-        break;
-    }
-    //find the start flag
-    ret= 0;
-    while(1)
-    {
-        pt= fgets(string, 256, fp);
-        if(pt == NULL)
-        {
-            ret= -2;
-            goto load_language_msg_error;
-        }
+		strcpy(start, "STARTFRENCH");
+		strcpy(end, "ENDFRENCH");
+		break;
+	}
+	u32 cmplen = strlen(start);
 
-        if(!strncmp(pt, start, cmplen))
-            break;
-    }
+	//find the start flag
+	ret= 0;
+	while(1)
+	{
+		pt= fgets(string, 256, fp);
+		if(pt == NULL)
+		{
+			ret= -2;
+			goto load_language_msg_error;
+		}
 
-    loop= 0;
-    offset= 0;
-    dst= msg_data;
-    msg[0]= dst;
+		if(!strncmp(pt, start, cmplen))
+			break;
+	}
 
-    while(loop != MSG_END)
-    {
-        while(1)
-        {
-            pt = fgets(string, 256, fp);
-            if(pt[0] == '#' || pt[0] == 0x0D || pt[0] == 0x0A)
-                continue;
-            if(pt != NULL)
-                break;
-            else
-            {
-                ret = -3;
-                goto load_language_msg_error;
-            }
-        }
+	loop= 0;
+	offset= 0;
+	dst= msg_data;
+	msg[0]= dst;
 
-        if(!strncmp(pt, end, cmplen-2))
-            break;
+	while(loop != MSG_END)
+	{
+		while(1)
+		{
+			pt = fgets(string, 256, fp);
+			if(pt[0] == '#' || pt[0] == 0x0D || pt[0] == 0x0A)
+				continue;
+			if(pt != NULL)
+				break;
+			else
+			{
+				ret = -3;
+				goto load_language_msg_error;
+			}
+		}
 
-        len= strlen(pt);
-        memcpy(dst, pt, len);
+		if(!strncmp(pt, end, cmplen-2))
+			break;
 
-        dst += len;
-        //at a line return, when "\n" paded, this message not end
-        if(*(dst-1) == 0x0A)
-        {
-            pt = strrchr(pt, '\\');
-            if((pt != NULL) && (*(pt+1) == 'n'))
-            {
-                if(*(dst-2) == 0x0D)
-                {
-                    *(dst-4)= '\n';
-                    dst -= 3;
-                }
-                else
-                {
-                    *(dst-3)= '\n';
-                    dst -= 2;
-                }
-            }
-            else//a message end
-            {
-                if(*(dst-2) == 0x0D)
-                    dst -= 1;
-                *(dst-1) = '\0';
-                msg[++loop] = dst;
-            }
-        }
-    }
+		len= strlen(pt);
+		memcpy(dst, pt, len);
 
-#if 0
+		dst += len;
+		//at a line return, when "\n" paded, this message not end
+		if(*(dst-1) == 0x0A)
+		{
+			pt = strrchr(pt, '\\');
+			if((pt != NULL) && (*(pt+1) == 'n'))
+			{
+				if(*(dst-2) == 0x0D)
+				{
+					*(dst-4)= '\n';
+					dst -= 3;
+				}
+				else
+				{
+					*(dst-3)= '\n';
+					dst -= 2;
+				}
+			}
+			else//a message end
+			{
+				if(*(dst-2) == 0x0D)
+				dst -= 1;
+				*(dst-1) = '\0';
+				msg[++loop] = dst;
+			}
+		}
+	}
+
+	#if 0
 	loop= 0;
 	printf("------\n");
 	while(loop != MSG_END)
-		printf("%d: %s\n",loop, msg[loop++]);
-#endif
+	printf("%d: %s\n",loop, msg[loop++]);
+	#endif
 
 load_language_msg_error:
 	fclose(fp);

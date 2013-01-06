@@ -22,149 +22,149 @@
 
 enum MSG
 {
-    MSG_MAIN_MENU_0,    /* 0 */
-    MSG_MAIN_MENU_1,    /* 1 */
-    MSG_MAIN_MENU_2,    /* 2 */
-    MSG_MAIN_MENU_3,    /* 3 */
-    MSG_MAIN_MENU_4,    /* 4 */
-    MSG_MAIN_MENU_5,    /* 5 */
-    MSG_SUB_MENU_00,    /* 6 */
-    MSG_SUB_MENU_01,    /* 7 */
-    MSG_SUB_MENU_02,    /* 8 */
-    MSG_SUB_MENU_03,    /* 9 */
-    MSG_SUB_MENU_04,    /* 10 */
-    MSG_SUB_MENU_05,    /* 11 */
-    MSG_SUB_MENU_10,    /* 12 */
-    MSG_SUB_MENU_11,    /* 13 */
-    MSG_SUB_MENU_12,    /* 14 */
-    MSG_SUB_MENU_13,    /* 15 */
-    MSG_SUB_MENU_14,    /* 16 */
-    MSG_SUB_MENU_20,    /* 17 */
-    MSG_SUB_MENU_21,    /* 18 */
-    MSG_SUB_MENU_22,    /* 19 */
-    MSG_SUB_MENU_23,    /* 20 */
-    MSG_SUB_MENU_24,    /* 21 */
-    MSG_SUB_MENU_30,    /* 22 */
-    MSG_SUB_MENU_31,    /* 23 */
-    MSG_SUB_MENU_32,    /* 24 */
-    MSG_SUB_MENU_40,    /* 25 */
-    MSG_SUB_MENU_41,    /* 26 */
-    MSG_SUB_MENU_42,    /* 27 */
-    MSG_SUB_MENU_43,    /* 28 */
-    MSG_SUB_MENU_44,    /* 29 */
-    MSG_SUB_MENU_45,    /* 30 */
-    MSG_SUB_MENU_300,   /* 31 */
-    MSG_SUB_MENU_301,   /* 32 */
-    MSG_SUB_MENU_302,   /* 33 */
-    MSG_SUB_MENU_310,   /* 34 */
-    MSG_SUB_MENU_311,   /* 35 */
-    MSG_SUB_MENU_312,   /* 36 */
-    MSG_SUB_MENU_313,   /* 37 */
-    MSG_SUB_MENU_314,   /* 38 */
-    MSG_SUB_MENU_315,   /* 39 */
-    MSG_SUB_MENU_60,    /* 40 */
-    MSG_SUB_MENU_61,    /* 41 */
-    MSG_SUB_MENU_62,    /* 42 */
+	MSG_MAIN_MENU_VIDEO_AUDIO,
+	MSG_MAIN_MENU_SAVED_STATES,
+	MSG_MAIN_MENU_CHEATS,
+	MSG_MAIN_MENU_TOOLS,
+	MSG_MAIN_MENU_OPTIONS,
+	MSG_MAIN_MENU_EXIT,
+	FMT_VIDEO_ASPECT_RATIO,
+	MSG_VIDEO_FAST_FORWARD,
+	FMT_VIDEO_FRAME_SKIP_AUTOMATIC,
+	FMT_VIDEO_FRAME_SKIP_MANUAL,
+	FMT_AUDIO_SOUND,
+	MSG_SUB_MENU_05,                  // unused
+	MSG_SAVED_STATE_CREATE,
+	FMT_SAVED_STATE_LOAD,
+	MSG_SUB_MENU_12,                  // unused
+	MSG_SAVED_STATE_DELETE_GENERAL,
+	MSG_SUB_MENU_14,                  // unused
+	FMT_CHEAT_PAGE,
+	MSG_CHEAT_LOAD_FROM_FILE,
+	MSG_SUB_MENU_22,                  // unused
+	MSG_SUB_MENU_23,                  // unused
+	MSG_SUB_MENU_24,                  // unused
+	MSG_TOOLS_SCREENSHOT_GENERAL,
+	MSG_SUB_MENU_31,                  // unused
+	MSG_SUB_MENU_32,                  // unused
+	MSG_SUB_MENU_40,                  // unused
+	FMT_OPTIONS_LANGUAGE,
+	FMT_OPTIONS_CPU_FREQUENCY,
+	MSG_OPTIONS_CARD_CAPACITY,
+	MSG_OPTIONS_RESET,
+	MSG_OPTIONS_VERSION,
+	MSG_SCREENSHOT_CREATE,
+	MSG_SCREENSHOT_BROWSE,
+	MSG_SUB_MENU_302,                 // unused
+	MSG_SUB_MENU_310,                 // unused
+	MSG_SUB_MENU_311,                 // unused
+	MSG_SUB_MENU_312,                 // unused
+	MSG_SUB_MENU_313,                 // unused
+	MSG_SUB_MENU_314,                 // unused
+	MSG_SUB_MENU_315,                 // unused
+	MSG_LOAD_GAME_RECENTLY_PLAYED,
+	MSG_LOAD_GAME_FROM_CARD,
+	MSG_LOAD_GAME_MENU_TITLE,
 
-    MSG_SCREEN_RATIO_0,
-    MSG_SCREEN_RATIO_1,
-    MSG_SCREEN_RATIO_2,
-    MSG_SCREEN_RATIO_3,
-	MSG_SCREEN_RATIO_4,
+	MSG_VIDEO_ASPECT_RATIO_0,
+	MSG_VIDEO_ASPECT_RATIO_1,
+	MSG_VIDEO_ASPECT_RATIO_2,
+	MSG_VIDEO_ASPECT_RATIO_3,
+	MSG_VIDEO_ASPECT_RATIO_4,
 
-    MSG_FRAMESKIP_0,    /* 45 */
-    MSG_FRAMESKIP_1,    /* 46 */
+	MSG_FRAMESKIP_0,                  // unused
+	MSG_FRAMESKIP_1,                  // unused
 
-    MSG_ON_OFF_0,       /* 47 */
-    MSG_ON_OFF_1,       /* 48 */
-    
-    MSG_SOUND_SWITCH_0, /* 49 */
-    MSG_SOUND_SWITCH_1, /* 50 */
+	MSG_ON_OFF_0,
+	MSG_ON_OFF_1,
 
-    MSG_SNAP_FRAME_0,   /* 51 */
-    MSG_SNAP_FRAME_1,   /* 52 */
+	MSG_AUDIO_ENABLED,
+	MSG_AUDIO_MUTED,
 
-    MSG_EN_DIS_ABLE_0,  /* 53 */
-    MSG_EN_DIS_ABLE_1,  /* 54 */
+	MSG_SNAP_FRAME_0,                 // unused
+	MSG_SNAP_FRAME_1,                 // unused
 
-    MSG_NON_LOAD_GAME,  /* 55 */
-    MSG_CHEAT_MENU_NON_LOAD,/* 56 */
-    MSG_CHEAT_MENU_LOADED,   /* 57 */
+	MSG_EN_DIS_ABLE_0,                // unused
+	MSG_EN_DIS_ABLE_1,                // unused
 
-    MSG_LOAD_STATE,     /* 58 */
-    MSG_LOAD_STATE_END, /* 59 */
-    MSG_SAVE_STATE,     /* 60 */
-    MSG_SAVE_STATE_END, /* 61 */
+	MSG_TOP_SCREEN_NO_GAME_LOADED,
+	MSG_CHEAT_ELEMENT_NOT_LOADED,
+	MSG_CHEAT_MENU_LOADED,            // unused
 
-    MSG_KEY_MAP_NONE,   /* 62 */
-    MSG_KEY_MAP_A,      /* 63 */
-    MSG_KEY_MAP_B,      /* 64 */
-    MSG_KEY_MAP_SL,     /* 65 */
-    MSG_KEY_MAP_ST,     /* 66 */
-    MSG_KEY_MAP_RT,     /* 67 */
-    MSG_KEY_MAP_LF,     /* 68 */
-    MSG_KEY_MAP_UP,     /* 69 */
-    MSG_KEY_MAP_DW,     /* 70 */
-    MSG_KEY_MAP_R,      /* 71 */
-    MSG_KEY_MAP_L,      /* 72 */
-    MSG_KEY_MAP_X,      /* 73 */
-    MSG_KEY_MAP_Y,      /* 74 */
-    MSG_KEY_MAP_TOUCH,  /* 75 */
+	MSG_LOAD_STATE,                   // unused
+	MSG_LOAD_STATE_END,               // unused
+	MSG_SAVE_STATE,                   // unused
+	MSG_SAVE_STATE_END,               // unused
 
-    MSG_SAVESTATE_EMPTY,/* 76 */
-    MSG_SAVESTATE_FULL, /* 77 */
-    MSG_SAVESTATE_DOING,/* 78 */
-    MSG_SAVESTATE_FAILUER,/* 79 */
-    MSG_SAVESTATE_SUCCESS,/* 80 */
-    MSG_SAVESTATE_SLOT_EMPTY,/* 81 */
-    MSG_SAVESTATE_FILE_BAD, /* 82 */
-    MSG_LOADSTATE_DOING,/* 83 */
-    MSG_LOADSTATE_FAILURE,/* 84 */
-    MSG_LOADSTATE_SUCCESS,/* 85 */
+	MSG_KEY_MAP_NONE,                 // unused
+	MSG_KEY_MAP_A,                    // unused
+	MSG_KEY_MAP_B,                    // unused
+	MSG_KEY_MAP_SL,                   // unused
+	MSG_KEY_MAP_ST,                   // unused
+	MSG_KEY_MAP_RT,                   // unused
+	MSG_KEY_MAP_LF,                   // unused
+	MSG_KEY_MAP_UP,                   // unused
+	MSG_KEY_MAP_DW,                   // unused
+	MSG_KEY_MAP_R,                    // unused
+	MSG_KEY_MAP_L,                    // unused
+	MSG_KEY_MAP_X,                    // unused
+	MSG_KEY_MAP_Y,                    // unused
+	MSG_KEY_MAP_TOUCH,                // unused
 
-    MSG_WARING_DIALOG,  /* 86 */
-    MSG_TIME_FORMATE,   /* 87 */
+	MSG_SAVESTATE_EMPTY,              // unused
+	MSG_SAVESTATE_FULL,
+	MSG_PROGRESS_SAVED_STATE_CREATING,
+	MSG_PROGRESS_SAVED_STATE_CREATION_FAILED,
+	MSG_PROGRESS_SAVED_STATE_CREATION_SUCCEEDED,
+	MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT,
+	MSG_PROGRESS_SAVED_STATE_CORRUPTED,
+	MSG_PROGRESS_SAVED_STATE_LOADING,
+	MSG_PROGRESS_SAVED_STATE_LOAD_FAILED,
+	MSG_PROGRESS_SAVED_STATE_LOAD_SUCCEEDED,
 
-    MSG_SUB_MENU_130,   /* 88 */
-    MSG_SUB_MENU_131,   /* 89 */
+	MSG_WARING_DIALOG,                // unused
+	MSG_TIME_FORMATE,                 // unused
 
-    MSG_DELETTE_ALL_SAVESTATE_WARING,
-    MSG_DELETTE_SINGLE_SAVESTATE_WARING,
-    MSG_DELETTE_SAVESTATE_NOTHING,
+	MSG_SAVED_STATE_DELETE_ALL,
+	FMT_SAVED_STATE_DELETE_ONE,
 
-    MSG_SAVE_SNAPSHOT,
-    MSG_SAVE_SNAPSHOT_COMPLETE,
-    MSG_SAVE_SNAPSHOT_FAILURE,
+	MSG_DIALOG_SAVED_STATE_DELETE_ALL,
+	FMT_DIALOG_SAVED_STATE_DELETE_ONE,
+	MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY,
 
-    MSG_CHANGE_LANGUAGE,
-    MSG_CHANGE_LANGUAGE_WAITING,
+	MSG_PROGRESS_SCREENSHOT_CREATING,
+	MSG_PROGRESS_SCREENSHOT_CREATION_SUCCEEDED,
+	MSG_PROGRESS_SCREENSHOT_CREATION_FAILED,
 
-    MSG_NO_SLIDE,
-    MSG_PLAYING_SLIDE,
-    MSG_PAUSE_SLIDE,
-    MSG_PLAY_SLIDE1,
-    MSG_PLAY_SLIDE2,
-    MSG_PLAY_SLIDE3,
-    MSG_PLAY_SLIDE4,
-    MSG_PLAY_SLIDE5,
-    MSG_PLAY_SLIDE6,
-    
-    MSG_LOADING_GAME,
+	MSG_CHANGE_LANGUAGE,
+	MSG_CHANGE_LANGUAGE_WAITING,
 
-    MSG_EMU_VERSION0,
-    MSG_EMU_VERSION1,
+	MSG_NO_SLIDE,
+	MSG_PLAYING_SLIDE,
+	MSG_PAUSE_SLIDE,
+	MSG_PLAY_SLIDE1,
+	MSG_PLAY_SLIDE2,
+	MSG_PLAY_SLIDE3,
+	MSG_PLAY_SLIDE4,
+	MSG_PLAY_SLIDE5,
+	MSG_PLAY_SLIDE6,
 
-    MSG_LOAD_DEFAULT_WARING,
-    MSG_DEFAULT_LOADING,
+	MSG_PROGRESS_LOADING_GAME,
 
-    MSG_BACK,
+	MSG_EMULATOR_NAME,
+	MSG_WORD_EMULATOR_VERSION,
 
-    MSG_END
+	MSG_DIALOG_RESET,
+	MSG_PROGRESS_RESETTING,
+
+	MSG_BACK,                        // unused
+
+	MSG_END
 };
 
-enum LANGUAGE{
-    ENGLISH,
-    CHINESE_SIMPLIFIED,
+enum LANGUAGE {
+	ENGLISH,
+	CHINESE_SIMPLIFIED,
 	FRENCH
 };
 
