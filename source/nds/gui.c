@@ -1054,9 +1054,9 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			unsigned short color;
 
 			//draw background
-			show_icon(down_screen_addr, ICON_SUBBG, 0, 0);
-			show_icon(down_screen_addr, ICON_TITLE, 0, 0);
-			show_icon(down_screen_addr, ICON_TITLEICON, 12, 9);
+			show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
+			show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
+			show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
 
 			//release data struct to draw scrolling string
 			//Path
@@ -1081,14 +1081,14 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			{
 				if(k == selected_item_on_screen) {
 					color = COLOR_ACTIVE_ITEM;
-					show_icon(down_screen_addr, ICON_SUBSELA, 6, 35 + k*27);
+					show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + k*27);
 				}
 				else
 					color = COLOR_INACTIVE_ITEM;
 
 				//directorys
 				if((m+1) > num_files) {
-					show_icon(down_screen_addr, ICON_DIRECTORY, 17, 37 + k*27);
+					show_icon(down_screen_addr, &ICON_DIRECTORY, 17, 37 + k*27);
 					pt = dir_list[m - num_files];
 				}
 				//files
@@ -1096,15 +1096,15 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 					pt= strrchr(file_list[m], '.');
 
 					if(!strcasecmp(pt, ".smc") || !strcasecmp(pt, ".sfc"))
-						show_icon(down_screen_addr, ICON_SFCFILE, 17, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_SFCFILE, 17, 37 + k*27);
 					else if(!strcasecmp(pt, ".zip"))
-						show_icon(down_screen_addr, ICON_ZIPFILE, 17, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_ZIPFILE, 17, 37 + k*27);
 					else if(!strcasecmp(pt, ".cht"))
-						show_icon(down_screen_addr, ICON_CHTFILE, 17, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_CHTFILE, 17, 37 + k*27);
 					else if(!strcasecmp(file_list[m], ".."))
-						show_icon(down_screen_addr, ICON_DOTDIR, 17, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_DOTDIR, 17, 37 + k*27);
 					else //Not recoganized file
-						show_icon(down_screen_addr, ICON_UNKNOW, 17, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_UNKNOW, 17, 37 + k*27);
 
 					pt = file_list[m];
 				}
@@ -1121,24 +1121,24 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			char *pt;
 
 			m = selected_item_on_screen;
-			show_icon(down_screen_addr, ICON_SUBSELA, 6, 35 + m*27);
+			show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + m*27);
 
 			n = selected_item_on_list;
 			if((n+1) > num_files)
-				show_icon(down_screen_addr, ICON_DIRECTORY, 17, 37 + m*27);
+				show_icon(down_screen_addr, &ICON_DIRECTORY, 17, 37 + m*27);
 			else {
 				pt= strrchr(file_list[n], '.');
 
 				if(!strcasecmp(pt, ".smc"))
-					show_icon(down_screen_addr, ICON_SFCFILE, 17, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_SFCFILE, 17, 37 + m*27);
 				else if(!strcasecmp(pt, ".zip"))
-					show_icon(down_screen_addr, ICON_ZIPFILE, 17, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_ZIPFILE, 17, 37 + m*27);
 				else if(!strcasecmp(pt, ".cht"))
-					show_icon(down_screen_addr, ICON_CHTFILE, 17, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_CHTFILE, 17, 37 + m*27);
 				else if(!strcasecmp(file_list[m], ".."))
-					show_icon(down_screen_addr, ICON_DOTDIR, 17, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_DOTDIR, 17, 37 + m*27);
 				else //Not recoganized file
-					show_icon(down_screen_addr, ICON_UNKNOW, 17, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_UNKNOW, 17, 37 + m*27);
 			}
 
 			draw_hscroll(m+1, redraw);
@@ -1151,8 +1151,8 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 		if(m < 20) //pause 0.5sec
 			path_scroll += 1;
 		else {
-			show_icon(down_screen_addr, ICON_TITLE, 0, 0);
-			show_icon(down_screen_addr, ICON_TITLEICON, 12, 9);
+			show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
+			show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
 
 			if(path_scroll & 0x8000)	//scroll left
 			{
@@ -1878,16 +1878,16 @@ u32 menu(u16 *screen)
 			if(selected != k)
 			{
 				if(savestate_map[k] > 0)	//full
-					show_icon((unsigned short*)down_screen_addr, ICON_NSTATEFULL, 28+k*21, y_pos);
+					show_icon((unsigned short*)down_screen_addr, &ICON_NSTATEFULL, 28+k*21, y_pos);
 				else
-					show_icon((unsigned short*)down_screen_addr, ICON_NSTATEEMPTY, 28+k*21, y_pos);
+					show_icon((unsigned short*)down_screen_addr, &ICON_NSTATEEMPTY, 28+k*21, y_pos);
 			}
 			else	//Highlight
 			{
 				if(savestate_map[k] > 0)	//full
-					show_icon((unsigned short*)down_screen_addr, ICON_STATEFULL, 28+k*21, y_pos);
+					show_icon((unsigned short*)down_screen_addr, &ICON_STATEFULL, 28+k*21, y_pos);
 				else
-					show_icon((unsigned short*)down_screen_addr, ICON_STATEEMPTY, 28+k*21, y_pos);
+					show_icon((unsigned short*)down_screen_addr, &ICON_STATEEMPTY, 28+k*21, y_pos);
 			}
         }
     }
@@ -1898,14 +1898,14 @@ u32 menu(u16 *screen)
 		unsigned int line[3] = {0, 1, 3};
 
 		//draw background
-		show_icon(down_screen_addr, ICON_SUBBG, 0, 0);
-		show_icon(down_screen_addr, ICON_TITLE, 0, 0);
-		show_icon(down_screen_addr, ICON_TITLEICON, 12, 9);
+		show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
+		show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
+		show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
 
 		if(current_option_num == 0)
-			show_icon(down_screen_addr, ICON_BACK, 229, 10);
+			show_icon(down_screen_addr, &ICON_BACK, 229, 10);
 		else
-			show_icon(down_screen_addr, ICON_NBACK, 229, 10);
+			show_icon(down_screen_addr, &ICON_NBACK, 229, 10);
 
 		strcpy(line_buffer, *(display_option->display_string));
 		draw_string_vcenter(down_screen_addr, 0, 9, 256, COLOR_ACTIVE_ITEM, line_buffer);
@@ -1916,7 +1916,7 @@ u32 menu(u16 *screen)
             unsigned short color;
 
 			if(display_option == current_option)
-				show_icon(down_screen_addr, ICON_SUBSELA, 6, 35 + line[i]*27);
+				show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + line[i]*27);
 
 			if(display_option->option_type & NUMBER_SELECTION_TYPE)
 			{
@@ -1967,14 +1967,14 @@ u32 menu(u16 *screen)
 		unsigned int line[2] = {0, 1};
 
 		//draw background
-		show_icon(down_screen_addr, ICON_SUBBG, 0, 0);
-		show_icon(down_screen_addr, ICON_TITLE, 0, 0);
-		show_icon(down_screen_addr, ICON_TITLEICON, 12, 9);
+		show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
+		show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
+		show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
 
 		if(current_option_num == 0)
-			show_icon(down_screen_addr, ICON_BACK, 229, 6);
+			show_icon(down_screen_addr, &ICON_BACK, 229, 6);
 		else
-			show_icon(down_screen_addr, ICON_NBACK, 229, 6);
+			show_icon(down_screen_addr, &ICON_NBACK, 229, 6);
 
 		strcpy(line_buffer, *(display_option->display_string));
 		draw_string_vcenter(down_screen_addr, 0, 9, 256, COLOR_ACTIVE_ITEM, line_buffer);
@@ -1985,7 +1985,7 @@ u32 menu(u16 *screen)
             unsigned short color;
 
 			if(display_option == current_option)
-				show_icon(down_screen_addr, ICON_SUBSELA, 6, 35 + line[i]*27);
+				show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + line[i]*27);
 
 			if(display_option->option_type & NUMBER_SELECTION_TYPE)
 			{
@@ -2403,23 +2403,23 @@ u32 menu(u16 *screen)
 		current_menu -> focus_option = focus_option;
 
 		//draw background
-		show_icon(down_screen_addr, ICON_SUBBG, 0, 0);
-		show_icon(down_screen_addr, ICON_TITLE, 0, 0);
-		show_icon(down_screen_addr, ICON_TITLEICON, 12, 9);
+		show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
+		show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
+		show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
 
 		if(current_menu -> screen_focus > 0)
-			show_icon(down_screen_addr, ICON_SUBSELA, 6, 35 + (current_menu -> screen_focus-1)*27);
+			show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + (current_menu -> screen_focus-1)*27);
 
 		if(current_menu->screen_focus == 0)
 		{
 			draw_hscroll(0, dynamic_cheat_scroll_value);
 			dynamic_cheat_scroll_value = 0;
-			show_icon(down_screen_addr, ICON_BACK, 229, 10);
+			show_icon(down_screen_addr, &ICON_BACK, 229, 10);
 		}
 		else
 		{
 			draw_hscroll(0, 0);
-			show_icon(down_screen_addr, ICON_NBACK, 229, 10);
+			show_icon(down_screen_addr, &ICON_NBACK, 229, 10);
 		}
 
 		k = current_menu->num_options -1;
@@ -2441,16 +2441,16 @@ u32 menu(u16 *screen)
 			if(m == (n +i))
 			{
 				if(dynamic_cheat_active & 1)
-					show_icon((unsigned short*)down_screen_addr, ICON_STATEFULL, 230, 40 + i*27);
+					show_icon((unsigned short*)down_screen_addr, &ICON_STATEFULL, 230, 40 + i*27);
 				else
-					show_icon((unsigned short*)down_screen_addr, ICON_NSTATEFULL, 230, 40 + i*27);
+					show_icon((unsigned short*)down_screen_addr, &ICON_NSTATEFULL, 230, 40 + i*27);
 			}
 			else
 			{
 				if(dynamic_cheat_active & 1)
-					show_icon((unsigned short*)down_screen_addr, ICON_STATEEMPTY, 230, 40 + i*27);
+					show_icon((unsigned short*)down_screen_addr, &ICON_STATEEMPTY, 230, 40 + i*27);
 				else
-					show_icon((unsigned short*)down_screen_addr, ICON_NSTATEEMPTY, 230, 40 + i*27);
+					show_icon((unsigned short*)down_screen_addr, &ICON_NSTATEEMPTY, 230, 40 + i*27);
 			}
 		}
 	}
@@ -2778,13 +2778,13 @@ u32 menu(u16 *screen)
     
     char *frameskip_options[] = { (char*)&msg[MSG_FRAMESKIP_0], (char*)&msg[MSG_FRAMESKIP_1] };
 
-    char *on_off_options[] = { (char*)&msg[MSG_ON_OFF_0], (char*)&msg[MSG_ON_OFF_1] };
+    char *on_off_options[] = { (char*)&msg[MSG_GENERAL_OFF], (char*)&msg[MSG_GENERAL_ON] };
 
-    char *sound_seletion[] = { (char*)&msg[MSG_AUDIO_ENABLED], (char*)&msg[MSG_AUDIO_MUTED] };
+    char *sound_seletion[] = { (char*)&msg[MSG_AUDIO_MUTED], (char*)&msg[MSG_AUDIO_ENABLED] };
 
 //    char *snap_frame_options[] = { (char*)&msg[MSG_SNAP_FRAME_0], (char*)&msg[MSG_SNAP_FRAME_1] };
 
-    char *enable_disable_options[] = { (char*)&msg[MSG_EN_DIS_ABLE_0], (char*)&msg[MSG_EN_DIS_ABLE_1] };
+//    char *enable_disable_options[] = { (char*)&msg[MSG_EN_DIS_ABLE_0], (char*)&msg[MSG_EN_DIS_ABLE_1] };
 
   /*--------------------------------------------------------
     Video & Audio
@@ -2796,7 +2796,7 @@ u32 menu(u16 *screen)
     /* 01 */ STRING_SELECTION_OPTION(NULL, NULL, &msg[FMT_VIDEO_ASPECT_RATIO], screen_ratio_options, 
         &game_config.graphic, 5, NULL, PASSIVE_TYPE, 1),
 
-	/* 02 */ STRING_SELECTION_OPTION(game_fastforward, NULL, &msg[MSG_VIDEO_FAST_FORWARD], on_off_options, 
+	/* 02 */ STRING_SELECTION_OPTION(game_fastforward, NULL, &msg[FMT_VIDEO_FAST_FORWARD], on_off_options, 
 		&game_fast_forward, 2, NULL, ACTION_TYPE, 2),
 		
 	/* 03 */	STRING_SELECTION_OPTION(game_disableAudio, NULL, &msg[FMT_AUDIO_SOUND], sound_seletion,
@@ -2988,98 +2988,98 @@ u32 menu(u16 *screen)
 
 	void main_menu_passive()
 	{
-		show_icon(down_screen_addr, ICON_MAINBG, 0, 0);
+		show_icon(down_screen_addr, &ICON_MAINBG, 0, 0);
 		current_menu -> focus_option = current_option -> line_number;
 
 		//Audio/Video
 		strcpy(line_buffer, *(display_option->display_string));
 		if(display_option++ == current_option) {
-			show_icon(down_screen_addr, ICON_AVO, 22, 2);
-			show_icon(down_screen_addr, ICON_MSEL, 11, 57);
+			show_icon(down_screen_addr, &ICON_AVO, 22, 2);
+			show_icon(down_screen_addr, &ICON_MSEL, 11, 57);
 		}
 		else {
-			show_icon(down_screen_addr, ICON_NAVO, 22, 2);
-			show_icon(down_screen_addr, ICON_MNSEL, 11, 57);
+			show_icon(down_screen_addr, &ICON_NAVO, 22, 2);
+			show_icon(down_screen_addr, &ICON_MNSEL, 11, 57);
 		}
 		draw_string_vcenter(down_screen_addr, 13, 57, 76, COLOR_WHITE, line_buffer);
 
 		//Save
 		strcpy(line_buffer, *(display_option->display_string));
 		if(display_option++ == current_option) {
-			show_icon(down_screen_addr, ICON_SAVO, 102, 2);
-			show_icon(down_screen_addr, ICON_MSEL, 92, 57);
+			show_icon(down_screen_addr, &ICON_SAVO, 102, 2);
+			show_icon(down_screen_addr, &ICON_MSEL, 92, 57);
 		}
 		else {
-			show_icon(down_screen_addr, ICON_NSAVO, 102, 2);
-			show_icon(down_screen_addr, ICON_MNSEL, 92, 57);
+			show_icon(down_screen_addr, &ICON_NSAVO, 102, 2);
+			show_icon(down_screen_addr, &ICON_MNSEL, 92, 57);
 		}
 		draw_string_vcenter(down_screen_addr, 95, 57, 72, COLOR_WHITE, line_buffer);
 
 		//Cheat
 		strcpy(line_buffer, *(display_option->display_string));
 		if(display_option++ == current_option) {
-			show_icon(down_screen_addr, ICON_CHEAT, 182, 2);
-			show_icon(down_screen_addr, ICON_MSEL, 173, 57);
+			show_icon(down_screen_addr, &ICON_CHEAT, 182, 2);
+			show_icon(down_screen_addr, &ICON_MSEL, 173, 57);
 		}
 		else {
-			show_icon(down_screen_addr, ICON_NCHEAT, 182, 2);
-			show_icon(down_screen_addr, ICON_MNSEL, 173, 57);
+			show_icon(down_screen_addr, &ICON_NCHEAT, 182, 2);
+			show_icon(down_screen_addr, &ICON_MNSEL, 173, 57);
 		}
 		draw_string_vcenter(down_screen_addr, 176, 57, 68, COLOR_WHITE, line_buffer);
 
 		//Tools
 		strcpy(line_buffer, *(display_option->display_string));
 		if(display_option++ == current_option) {
-			show_icon(down_screen_addr, ICON_TOOL, 22, 75);
-			show_icon(down_screen_addr, ICON_MSEL, 11, 131);
+			show_icon(down_screen_addr, &ICON_TOOL, 22, 75);
+			show_icon(down_screen_addr, &ICON_MSEL, 11, 131);
 		}
 		else {
-			show_icon(down_screen_addr, ICON_NTOOL, 22, 75);
-			show_icon(down_screen_addr, ICON_MNSEL, 11, 131);
+			show_icon(down_screen_addr, &ICON_NTOOL, 22, 75);
+			show_icon(down_screen_addr, &ICON_MNSEL, 11, 131);
 		}
 		draw_string_vcenter(down_screen_addr, 14, 131, 68, COLOR_WHITE, line_buffer);
 
 		//Other
 		strcpy(line_buffer, *(display_option->display_string));
 		if(display_option++ == current_option) {
-			show_icon(down_screen_addr, ICON_OTHER, 102, 75);
-			show_icon(down_screen_addr, ICON_MSEL, 92, 131);
+			show_icon(down_screen_addr, &ICON_OTHER, 102, 75);
+			show_icon(down_screen_addr, &ICON_MSEL, 92, 131);
 		}
 		else {
-			show_icon(down_screen_addr, ICON_NOTHER, 102, 75);
-			show_icon(down_screen_addr, ICON_MNSEL, 92, 131);
+			show_icon(down_screen_addr, &ICON_NOTHER, 102, 75);
+			show_icon(down_screen_addr, &ICON_MNSEL, 92, 131);
 		}
 		draw_string_vcenter(down_screen_addr, 95, 131, 68, COLOR_WHITE, line_buffer);
 
 		//Exit
 		strcpy(line_buffer, *(display_option->display_string));
 		if(display_option++ == current_option) {
-			show_icon(down_screen_addr, ICON_EXIT, 182, 75);
-			show_icon(down_screen_addr, ICON_MSEL, 173, 131);
+			show_icon(down_screen_addr, &ICON_EXIT, 182, 75);
+			show_icon(down_screen_addr, &ICON_MSEL, 173, 131);
 		}
 		else {
-			show_icon(down_screen_addr, ICON_NEXIT, 182, 75);	
-			show_icon(down_screen_addr, ICON_MNSEL, 173, 131);
+			show_icon(down_screen_addr, &ICON_NEXIT, 182, 75);	
+			show_icon(down_screen_addr, &ICON_MNSEL, 173, 131);
 		}
 		draw_string_vcenter(down_screen_addr, 176, 131, 68, COLOR_WHITE, line_buffer);
 
 		//New
 		if(display_option++ == current_option)
-			show_icon(down_screen_addr, ICON_NEW, 0, 154);
+			show_icon(down_screen_addr, &ICON_NEW, 0, 154);
 		else
-			show_icon(down_screen_addr, ICON_NNEW, 0, 154);
+			show_icon(down_screen_addr, &ICON_NNEW, 0, 154);
 
 		//Restart
 		if(display_option++ == current_option)
-			show_icon(down_screen_addr, ICON_RETURN, 89, 154);
+			show_icon(down_screen_addr, &ICON_RETURN, 89, 154);
 		else
-			show_icon(down_screen_addr, ICON_NRETURN, 89, 154);
+			show_icon(down_screen_addr, &ICON_NRETURN, 89, 154);
 
 		//Return
 		if(display_option++ == current_option)
-			show_icon(down_screen_addr, ICON_RESET, 170, 154);
+			show_icon(down_screen_addr, &ICON_RESET, 170, 154);
 		else
-			show_icon(down_screen_addr, ICON_NRESET, 170, 154);
+			show_icon(down_screen_addr, &ICON_NRESET, 170, 154);
 	}
 
     void main_menu_key()
@@ -3170,16 +3170,16 @@ u32 menu(u16 *screen)
 		unsigned short color;
 
 		//draw background
-		show_icon(down_screen_addr, ICON_SUBBG, 0, 0);
-		show_icon(down_screen_addr, ICON_TITLE, 0, 0);
-		show_icon(down_screen_addr, ICON_TITLEICON, 12, 9);
+		show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
+		show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
+		show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
 
 		if(current_option_num == 0)
-			show_icon(down_screen_addr, ICON_BACK, 229, 10);
+			show_icon(down_screen_addr, &ICON_BACK, 229, 10);
 		else
 		{
-			show_icon(down_screen_addr, ICON_NBACK, 229, 10);
-			show_icon(down_screen_addr, ICON_SUBSELA, 6, 35 + (current_option_num-1)*27);
+			show_icon(down_screen_addr, &ICON_NBACK, 229, 10);
+			show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + (current_option_num-1)*27);
 		}
 
 		strcpy(line_buffer, *(display_option->display_string));
@@ -3432,9 +3432,9 @@ u32 menu(u16 *screen)
 			u32 line_num, screen_focus, focus_option;
 
 			//draw background
-			show_icon(down_screen_addr, ICON_SUBBG, 0, 0);
-			show_icon(down_screen_addr, ICON_TITLE, 0, 0);
-			show_icon(down_screen_addr, ICON_TITLEICON, 12, 9);
+			show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
+			show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
+			show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
 
 			strcpy(line_buffer, *(display_option->display_string));
 			draw_string_vcenter(down_screen_addr, 0, 9, 256, COLOR_ACTIVE_ITEM, line_buffer);
@@ -3477,16 +3477,16 @@ u32 menu(u16 *screen)
 				line_num = SUBMENU_ROW_NUM;
 
 			if(focus_option == 0)
-				show_icon(down_screen_addr, ICON_BACK, 229, 10);
+				show_icon(down_screen_addr, &ICON_BACK, 229, 10);
 			else
-				show_icon(down_screen_addr, ICON_NBACK, 229, 10);
+				show_icon(down_screen_addr, &ICON_NBACK, 229, 10);
 
 			for(i= 0; i < line_num; i++, display_option++)
     	    {
     	        unsigned short color;
 
 				if(display_option == current_option)
-					show_icon(down_screen_addr, ICON_SUBSELA, 6, 35 + i*27);
+					show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + i*27);
 
 				if(display_option->passive_function)
 				{
@@ -3925,7 +3925,7 @@ int load_language_msg(char *filename, u32 language)
 		while(1)
 		{
 			pt = fgets(string, 256, fp);
-			if(pt[0] == '#' || pt[0] == 0x0D || pt[0] == 0x0A)
+			if(pt[0] == '#' || pt[0] == '\r' || pt[0] == '\n')
 				continue;
 			if(pt != NULL)
 				break;

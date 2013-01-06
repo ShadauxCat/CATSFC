@@ -190,7 +190,7 @@ extern void msg_set_text_color(u32 color);
 extern int icon_init(u32 language_id);
 extern int gui_change_icon(u32 language_id);
 extern int show_background(void *screen, char *bgname);
-extern void show_icon(void* screen, struct gui_iconlist icon, u32 x, u32 y);
+extern void show_icon(void* screen, struct gui_iconlist *icon, u32 x, u32 y);
 extern void show_Vscrollbar(char *screen, u32 x, u32 y, u32 part, u32 total);
 
 extern void show_log(void* screen_addr);

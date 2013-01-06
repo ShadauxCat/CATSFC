@@ -308,7 +308,7 @@ void draw_message(void* screen_addr, u16 *screen_bg, u32 sx, u32 sy, u32 ex, u32
     {
 //        drawbox(screen_addr, sx, sy, ex, ey, COLOR16(12, 12, 12));
 //        drawboxfill(screen_addr, sx+1, sy+1, ex-1, ey-1, color_fg);
-		show_icon(screen_addr, ICON_MSG, 34, 48);
+		show_icon(screen_addr, &ICON_MSG, 34, 48);
     }
     else
     {
@@ -800,14 +800,14 @@ u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
     i= SCREEN_WIDTH/2 - box_width - 2;
 //    drawbox(screen_address, i, sy-1, i+box_width-1, sy+FONTS_HEIGHT, COLOR16(8, 8, 8));
 //    drawboxfill(screen_address, i+1, sy, i+box_width-2, sy+FONTS_HEIGHT-1, COLOR16(15, 15, 15));
-	show_icon((unsigned short*)screen_addr, ICON_BUTTON, 64, 128);
+	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 64, 128);
 //    draw_string_vcenter(screen_address, i+1, sy+1, box_width, COLOR_WHITE, yes);
     draw_string_vcenter((unsigned short*)screen_addr, 66, 130, 58, COLOR_WHITE, yes);
 
     i= SCREEN_WIDTH/2 + 3;
 //    drawbox(screen_address, i, sy-1, i+box_width-1, sy+FONTS_HEIGHT, COLOR16(8, 8, 8));
 //    drawboxfill(screen_address, i+1, sy, i+box_width-2, sy+FONTS_HEIGHT-1, COLOR16(15, 15, 15));
-	show_icon((unsigned short*)screen_addr, ICON_BUTTON, 136, 128);
+	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 136, 128);
 //    draw_string_vcenter(screen_address, i+1, sy+1, box_width, COLOR_WHITE, no);
     draw_string_vcenter((unsigned short*)screen_addr, 138, 130, 58, COLOR_WHITE, no);
 
@@ -1186,18 +1186,18 @@ int icon_init(u32 language_id)
 }
 
 /*************************************************************/
-void show_icon(void* screen, struct gui_iconlist icon, u32 x, u32 y)
+void show_icon(void* screen, struct gui_iconlist* icon, u32 x, u32 y)
 {
     u32 i, k;
     unsigned short *src, *dst;
 
-    src= (unsigned short*)icon.iconbuff;
+    src= (unsigned short*)icon->iconbuff;
     dst = (unsigned short*)screen + y*NDS_SCREEN_WIDTH + x;
 	if(NULL == src) return;	//The icon may initialized failure
 
-    for(i= 0; i < icon.y; i++)
+    for(i= 0; i < icon->y; i++)
     {
-		for(k= 0; k < icon.x; k++)
+		for(k= 0; k < icon->x; k++)
 		{
 			if(0x03E0 != *src) dst[k]= *src;
 			src++;
