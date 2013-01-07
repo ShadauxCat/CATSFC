@@ -693,7 +693,8 @@ void S9xSyncSpeed ()
 				// paused, so do nothing.
 				if (syncdif <= -11719 /* 500.0 ms late or more */)
 					sync_next = syncnow + frame_time * (auto_equivalent_skip + 1);
-				else if (auto_equivalent_skip < 7)
+				// Tolerate 1/16 late without skipping.
+				else if (syncdif < -(frame_time * auto_equivalent_skip / 16) && auto_equivalent_skip < 7)
 					auto_equivalent_skip++;
 			}
 			if (auto_equivalent_skip >= 8)
@@ -709,85 +710,6 @@ void S9xSyncSpeed ()
 			IPPU.RenderThisFrame = FALSE;
 		}
 
-#if 0
-		// frame_time is in getSysTime units: 42.667 microseconds.
-		uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
-		if (sync_last > syncnow) // Overflow occurred! (every 50 hrs)
-		{
-			// Render this frame regardless, set the
-			// sync_next, and get the hell out.
-			IPPU.RenderThisFrame = TRUE;
-			sync_last = syncnow;
-			sync_next = syncnow + frame_time;
-			return;
-		}
-		sync_last = syncnow;
-		// If this is positive, we have syncdif*42.66 microseconds to
-		// spare.
-		// If this is negative, we're late by syncdif*42.66
-		// microseconds.
-		syncdif = sync_next - syncnow;
-		if (syncdif < 0 && syncdif >= -(frame_time / 2))
-		{
-			// We're late, but by less than half a frame. Draw it
-			// anyway. If the next frame is too late, it'll be
-			// skipped.
-			skip_rate = 0;
-			IPPU.RenderThisFrame = true;
-			sync_next += frame_time;
-		}
-		else if(syncdif < 0)
-		{
-			/*
-			 * If we're consistently late, delay up to 8 frames.
-			 * 
-			 * That really helps with certain games, such as
-			 * Super Mario RPG and Yoshi's Island.
-			 */
-			if(++skip_rate < 10)
-			{
-				if(syncdif >= -11719 /* not more than 500.0 ms late */)
-				{
-					IPPU.RenderThisFrame = FALSE;
-					sync_next += frame_time;
-				}
-				else
-				{	//lag more than 0.5s, maybe paused
-					IPPU.RenderThisFrame = TRUE;
-					sync_next = syncnow + frame_time;
-					framenum = 0;
-				}
-			}
-			else
-			{
-				skip_rate = 0;
-				IPPU.RenderThisFrame = TRUE;
-				sync_next = syncnow + frame_time;
-			}
-		}
-		else // Early
-		{
-			skip_rate = 0;
-			ds2_setCPUclocklevel(0);
-			if (syncdif > 0)
-				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
-			set_cpu_clock(clock_speed_number);
-			S9xProcessSound (0);
-
-			IPPU.RenderThisFrame = TRUE;
-			sync_next += frame_time;
-		}
-/*
-		if(++framenum >= 60)
-		{
-			syncdif = syncnow - sync_last;
-			sync_last = syncnow;
-			framenum = 0;
-			//printf("T %d %d\n", syncdif*42667/1000, realframe);
-			realframe = 0;
-		}
-*/
-#endif
 	}
 	else /* if (Settings.SkipFrames != AUTO_FRAMERATE && !game_fast_forward) */
 	{
