@@ -626,7 +626,7 @@ int sfc_main (int argc, char **argv)
 
 static unsigned int sync_last= 0;
 static unsigned int sync_next = 0;
-static unsigned int framenum = 0;
+static unsigned int auto_equivalent_skip = 0;
 
 extern "C" u32 game_fast_forward;
 
@@ -662,6 +662,54 @@ void S9xSyncSpeed ()
 	}
 	else if (Settings.SkipFrames == AUTO_FRAMERATE /* && !game_fast_forward */)
 	{
+		// frame_time is in getSysTime units: 42.667 microseconds.
+		uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
+		sync_last = syncnow;
+		if (++skip_rate > auto_equivalent_skip)
+		{
+			skip_rate = 0;
+			IPPU.RenderThisFrame = TRUE;
+			// Are we early?
+			syncdif = sync_next - syncnow;
+			if (syncdif > 0)
+			{
+				// Are we VERY early? Say, 3 entire frames...
+				if (syncdif >= frame_time * 3)
+					auto_equivalent_skip -= 2;
+				// or one
+				else if (syncdif >= frame_time)
+					auto_equivalent_skip--;
+				ds2_setCPUclocklevel(0);
+				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
+				set_cpu_clock(clock_speed_number);
+				S9xProcessSound (0);
+				// After that little delay, what time is it?
+				syncnow = getSysTime();
+			}
+			else
+			{
+				// We're late.
+				// If we're over half a second late, we were
+				// paused, so do nothing.
+				if (syncdif <= -11719 /* 500.0 ms late or more */)
+					sync_next = syncnow + frame_time * (auto_equivalent_skip + 1);
+				else if (auto_equivalent_skip < 7)
+					auto_equivalent_skip++;
+			}
+			if (auto_equivalent_skip >= 8)
+				// If we're skipping loads, rebase time to now.
+				sync_next = syncnow + frame_time * (auto_equivalent_skip + 1);
+			else
+				// Otherwise, keep track of partial-frame
+				// latencies for a bit more.
+				sync_next += frame_time * (auto_equivalent_skip + 1);
+		}
+		else
+		{
+			IPPU.RenderThisFrame = FALSE;
+		}
+
+#if 0
 		// frame_time is in getSysTime units: 42.667 microseconds.
 		uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
 		if (sync_last > syncnow) // Overflow occurred! (every 50 hrs)
@@ -729,7 +777,7 @@ void S9xSyncSpeed ()
 			IPPU.RenderThisFrame = TRUE;
 			sync_next += frame_time;
 		}
-#if 0
+/*
 		if(++framenum >= 60)
 		{
 			syncdif = syncnow - sync_last;
@@ -738,6 +786,7 @@ void S9xSyncSpeed ()
 			//printf("T %d %d\n", syncdif*42667/1000, realframe);
 			realframe = 0;
 		}
+*/
 #endif
 	}
 	else /* if (Settings.SkipFrames != AUTO_FRAMERATE && !game_fast_forward) */
