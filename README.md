@@ -69,6 +69,24 @@ To add cheats to the menu in a game, first load the game, then use the Cheats
 menu's "Load a cheat file" option. The option can be touched using the
 Touch Screen, but does not activate the menu. So press A.
 
+# Frame skipping
+
+In the Video & audio menu, the **Frame skipping** option allows you to select
+a number of frames to skip between rendered frames.
+* Setting this to 0 will show every single frame, but this will slow down the
+  game considerably, as the DSTWO would only have enough processing power to
+  emulate **and** render a few frames per second. It has enough power to
+  emulate all frames and render **some**, though.
+* Setting this to 10 will skip 10 frames and render one, but this will
+  severely desynchronise the audio. You will also find yourself unable to
+  perform actions during the correct frame with the controller.
+* Setting this to - (Keep up with the game) will make the emulator try to
+  render the game at its correct speed, dropping frames as needed (up to 8).
+
+It is recommended to start with frame skipping 4 (Show 1 frame every 5) and
+go to 3 or 2 if the game doesn't run with major slowdowns with them. If you
+don't like the slowdowns, return to frame skipping 4 or -.
+
 # The font
 
 The font used by CATSFC is now similar to the Pictochat font. To modify it,
