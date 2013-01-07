@@ -97,9 +97,13 @@
 #include "fs_api.h"
 #include "ds2_malloc.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 extern int cprintf(const char *fmt, ...);
+#ifdef __cplusplus
 }
+#endif
 
 #ifdef __WIN32__
 #include "..\wsnes9x.h"

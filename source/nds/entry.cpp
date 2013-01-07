@@ -343,6 +343,18 @@ void game_disableAudio()
 		S9xSetSoundMute (TRUE);
 	}
 }
+
+void game_set_frameskip()
+{
+	if( game_config.frameskip_value == 0)
+	{
+		Settings.SkipFrames = AUTO_FRAMERATE;
+	}
+	else
+	{
+		Settings.SkipFrames = game_config.frameskip_value - 1 /* 1 -> 0 and so on */;
+	}
+}
 	
 void init_sfc_setting(void)
 {
@@ -368,7 +380,6 @@ void init_sfc_setting(void)
     Settings.ShutdownMaster = TRUE;
     Settings.FrameTimePAL = 20000;
     Settings.FrameTimeNTSC = 16667;
-    Settings.FrameTime = Settings.FrameTimeNTSC;
     Settings.DisableSampleCaching = FALSE;
     Settings.DisableMasterVolume = FALSE;
     Settings.Mouse = TRUE;
@@ -449,10 +460,12 @@ int load_gamepak(char* file)
 	game_disableAudio();
 
 	CPU.Flags = 0;
-	S9xReset ();
 	// mdelay(50); // Delete this delay
 	if (!Memory.LoadROM (file))
 		return -1;
+	S9xReset ();
+
+	Settings.FrameTime = (Settings.PAL ? Settings.FrameTimePAL : Settings.FrameTimeNTSC);
 
 	Memory.LoadSRAM (S9xGetFilename (".srm"));
 	// mdelay(50); // Delete this delay
@@ -611,41 +624,18 @@ int sfc_main (int argc, char **argv)
     return (0);
 }
 
+static unsigned int sync_last= 0;
+static unsigned int sync_next = 0;
+static unsigned int framenum = 0;
+
+extern "C" u32 game_fast_forward;
+
+static unsigned int skip_rate= 0;
+
 void S9xSyncSpeed ()
 {
-#if 0
-#ifdef _NETPLAY_SUPPORT
-    if (Settings.NetPlay)
-    {
-	// XXX: Send joypad position update to server
-	// XXX: Wait for heart beat from server
-	S9xNetPlaySendJoypadUpdate (joypads [0]);
-	if (!S9xNetPlayCheckForHeartBeat ())
-	{
-	    do
-	    {
-		CHECK_SOUND ();
-//		S9xProcessEvents (FALSE);
-	    } while (!S9xNetPlayCheckForHeartBeat ());
-	    IPPU.RenderThisFrame = TRUE;
-	    IPPU.SkippedFrames = 0;
-	}
-	else
-	{
-	    if (IPPU.SkippedFrames < 10)
-	    {
-		IPPU.SkippedFrames++;
-		IPPU.RenderThisFrame = FALSE;
-	    }
-	    else
-	    {
-		IPPU.RenderThisFrame = TRUE;
-		IPPU.SkippedFrames = 0;
-	    }
-	}
-    }
-    else
-#endif
+	uint32 syncnow;
+	int32 syncdif;
 
 #if 0
     if (Settings.SoundSync == 2)
@@ -655,30 +645,135 @@ void S9xSyncSpeed ()
 	return;
     }
 #endif
+	syncnow = getSysTime();
 
+	if (game_fast_forward)
+	{
+		sync_last = syncnow;
+		sync_next = syncnow;
+
+		if(++skip_rate < 10)
+			IPPU.RenderThisFrame = false;
+		else
+		{
+			skip_rate = 0;
+			IPPU.RenderThisFrame = true;
+		}
+	}
+	else if (Settings.SkipFrames == AUTO_FRAMERATE /* && !game_fast_forward */)
+	{
+		// frame_time is in getSysTime units: 42.667 microseconds.
+		uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
+		if (sync_last > syncnow) // Overflow occurred! (every 50 hrs)
+		{
+			// Render this frame regardless, set the
+			// sync_next, and get the hell out.
+			IPPU.RenderThisFrame = TRUE;
+			sync_last = syncnow;
+			sync_next = syncnow + frame_time;
+			return;
+		}
+		sync_last = syncnow;
+		// If this is positive, we have syncdif*42.66 microseconds to
+		// spare.
+		// If this is negative, we're late by syncdif*42.66
+		// microseconds.
+		syncdif = sync_next - syncnow;
+		if (syncdif < 0 && syncdif >= -(frame_time / 2))
+		{
+			// We're late, but by less than half a frame. Draw it
+			// anyway. If the next frame is too late, it'll be
+			// skipped.
+			skip_rate = 0;
+			IPPU.RenderThisFrame = true;
+			sync_next += frame_time;
+		}
+		else if(syncdif < 0)
+		{
+			/*
+			 * If we're consistently late, delay up to 8 frames.
+			 * 
+			 * That really helps with certain games, such as
+			 * Super Mario RPG and Yoshi's Island.
+			 */
+			if(++skip_rate < 10)
+			{
+				if(syncdif >= -11719 /* not more than 500.0 ms late */)
+				{
+					IPPU.RenderThisFrame = FALSE;
+					sync_next += frame_time;
+				}
+				else
+				{	//lag more than 0.5s, maybe paused
+					IPPU.RenderThisFrame = TRUE;
+					sync_next = syncnow + frame_time;
+					framenum = 0;
+				}
+			}
+			else
+			{
+				skip_rate = 0;
+				IPPU.RenderThisFrame = TRUE;
+				sync_next = syncnow + frame_time;
+			}
+		}
+		else // Early
+		{
+			skip_rate = 0;
+			ds2_setCPUclocklevel(0);
+			if (syncdif > 0)
+				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
+			set_cpu_clock(clock_speed_number);
+			S9xProcessSound (0);
+
+			IPPU.RenderThisFrame = TRUE;
+			sync_next += frame_time;
+		}
 #if 0
-    if (Settings.TurboMode)
-    {
-        if(++IPPU.FrameSkip >= Settings.TurboSkipFrames)
-        {
-            IPPU.FrameSkip = 0;
-            IPPU.SkippedFrames = 0;
-            IPPU.RenderThisFrame = TRUE;
-        }
-        else
-        {
-            ++IPPU.SkippedFrames;
-            IPPU.RenderThisFrame = FALSE;
-        }
-        return;
-    }
+		if(++framenum >= 60)
+		{
+			syncdif = syncnow - sync_last;
+			sync_last = syncnow;
+			framenum = 0;
+			//printf("T %d %d\n", syncdif*42667/1000, realframe);
+			realframe = 0;
+		}
 #endif
+	}
+	else /* if (Settings.SkipFrames != AUTO_FRAMERATE && !game_fast_forward) */
+	{
+		// frame_time is in getSysTime units: 42.667 microseconds.
+		uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
+		sync_last = syncnow;
+		if (++skip_rate > Settings.SkipFrames)
+		{
+			skip_rate = 0;
+			IPPU.RenderThisFrame = TRUE;
+			// Are we early?
+			syncdif = sync_next - syncnow;
+			if (syncdif > 0)
+			{
+				ds2_setCPUclocklevel(0);
+				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
+				set_cpu_clock(clock_speed_number);
+				S9xProcessSound (0);
+				// After that little delay, what time is it?
+				syncnow = getSysTime();
+			}
+			sync_next = syncnow + frame_time * Settings.SkipFrames;
+		}
+		else
+		{
+			IPPU.RenderThisFrame = FALSE;
+		}
+	}
 
 #ifdef __sgi
     /* BS: saves on CPU usage */
     sginap(1);
 #endif
 
+#if 0
     /* Check events */
     
     static struct timeval next1 = {0, 0};

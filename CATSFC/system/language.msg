@@ -28,15 +28,13 @@ Options
 #MSG_MAIN_MENU_EXIT
 Exit
 #FMT_VIDEO_ASPECT_RATIO
-Aspect ratio    %s
+Aspect ratio       %s
 #FMT_VIDEO_FAST_FORWARD
-Fast-forward  %s
-#FMT_VIDEO_FRAME_SKIP_AUTOMATIC
-Frame skipping        %s
-#FMT_VIDEO_FRAME_SKIP_MANUAL
-Frame skipping        %d
+Fast-forward     %s
+#FMT_VIDEO_FRAME_SKIPPING
+Frame skipping    %s
 #FMT_AUDIO_SOUND
-Sound              %s
+Sound                 %s
 #MSG_SAVED_STATE_CREATE
 Create saved state
 #FMT_SAVED_STATE_LOAD
@@ -78,11 +76,31 @@ Select a game
 #MSG_VIDEO_ASPECT_RATIO_3
 [3] Middle, square pixels
 #MSG_VIDEO_ASPECT_RATIO_4
-[4] Entire screen, antialiased
-#MSG_FRAMESKIP_0
-Manual
-#MSG_FRAMESKIP_1
-Automatic
+[4] Entire screen, smoothed
+#MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC
+[-] Keep up with the game
+#MSG_VIDEO_FRAME_SKIPPING_0
+[0] Show all frames
+#MSG_VIDEO_FRAME_SKIPPING_1
+[1] Show 1 in 2 frames
+#MSG_VIDEO_FRAME_SKIPPING_2
+[2] Show 1 in 3 frames
+#MSG_VIDEO_FRAME_SKIPPING_3
+[3] Show 1 in 4 frames
+#MSG_VIDEO_FRAME_SKIPPING_4
+[4] Show 1 in 5 frames
+#MSG_VIDEO_FRAME_SKIPPING_5
+[5] Show 1 in 6 frames
+#MSG_VIDEO_FRAME_SKIPPING_6
+[6] Show 1 in 7 frames
+#MSG_VIDEO_FRAME_SKIPPING_7
+[7] Show 1 in 8 frames
+#MSG_VIDEO_FRAME_SKIPPING_8
+[8] Show 1 in 9 frames
+#MSG_VIDEO_FRAME_SKIPPING_9
+[9] Show 1 in 10 frames
+#MSG_VIDEO_FRAME_SKIPPING_10
+[10] Show 1 in 11 frames
 #MSG_GENERAL_OFF
 Off
 #MSG_GENERAL_ON
@@ -186,10 +204,8 @@ STARTCHINESESIM
 画面                       %s
 #FMT_VIDEO_FAST_FORWARD
 游戏快进                 %s
-#FMT_VIDEO_FRAME_SKIP_AUTOMATIC
+#FMT_VIDEO_FRAME_SKIPPING
 跳帧方式                 %s
-#FMT_VIDEO_FRAME_SKIP_MANUAL
-跳帧级别                 %d
 #FMT_AUDIO_SOUND
 声音开关                 %s
 #MSG_SAVED_STATE_CREATE
@@ -234,10 +250,30 @@ CPU主频                          %d
 显示模式 3
 #MSG_VIDEO_ASPECT_RATIO_4
 显示模式 4
-#MSG_FRAMESKIP_0
-手动
-#MSG_FRAMESKIP_1
-自动
+#MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC
+[-] Keep up with the game
+#MSG_VIDEO_FRAME_SKIPPING_0
+[0] Show all frames
+#MSG_VIDEO_FRAME_SKIPPING_1
+[1] Show 1 in 2 frames
+#MSG_VIDEO_FRAME_SKIPPING_2
+[2] Show 1 in 3 frames
+#MSG_VIDEO_FRAME_SKIPPING_3
+[3] Show 1 in 4 frames
+#MSG_VIDEO_FRAME_SKIPPING_4
+[4] Show 1 in 5 frames
+#MSG_VIDEO_FRAME_SKIPPING_5
+[5] Show 1 in 6 frames
+#MSG_VIDEO_FRAME_SKIPPING_6
+[6] Show 1 in 7 frames
+#MSG_VIDEO_FRAME_SKIPPING_7
+[7] Show 1 in 8 frames
+#MSG_VIDEO_FRAME_SKIPPING_8
+[8] Show 1 in 9 frames
+#MSG_VIDEO_FRAME_SKIPPING_9
+[9] Show 1 in 10 frames
+#MSG_VIDEO_FRAME_SKIPPING_10
+[10] Show 1 in 11 frames
 #MSG_GENERAL_OFF
 关
 #MSG_GENERAL_ON
@@ -345,10 +381,8 @@ Quitter
 Format d'image      %s
 #FMT_VIDEO_FAST_FORWARD
 Avance rapide       %s
-#FMT_VIDEO_FRAME_SKIP_AUTOMATIC
+#FMT_VIDEO_FRAME_SKIPPING
 Omission d'images  %s
-#FMT_VIDEO_FRAME_SKIP_MANUAL
-Images omises      %d
 #FMT_AUDIO_SOUND
 Son                         %s
 #MSG_SAVED_STATE_CREATE
@@ -392,11 +426,31 @@ Sélectionner un jeu
 #MSG_VIDEO_ASPECT_RATIO_3
 [3] Milieu, pixels carrés
 #MSG_VIDEO_ASPECT_RATIO_4
-[4] Écran entier anticrénelé
-#MSG_FRAMESKIP_0
-Manuelle
-#MSG_FRAMESKIP_1
-Automatique
+[4] Écran entier lissé
+#MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC
+[-] Suivre le jeu
+#MSG_VIDEO_FRAME_SKIPPING_0
+[0] N'omettre aucune image
+#MSG_VIDEO_FRAME_SKIPPING_1
+[1] Montrer 1 image sur 2
+#MSG_VIDEO_FRAME_SKIPPING_2
+[2] Montrer 1 image sur 3
+#MSG_VIDEO_FRAME_SKIPPING_3
+[3] Montrer 1 image sur 4
+#MSG_VIDEO_FRAME_SKIPPING_4
+[4] Montrer 1 image sur 5
+#MSG_VIDEO_FRAME_SKIPPING_5
+[5] Montrer 1 image sur 6
+#MSG_VIDEO_FRAME_SKIPPING_6
+[6] Montrer 1 image sur 7
+#MSG_VIDEO_FRAME_SKIPPING_7
+[7] Montrer 1 image sur 8
+#MSG_VIDEO_FRAME_SKIPPING_8
+[8] Montrer 1 image sur 9
+#MSG_VIDEO_FRAME_SKIPPING_9
+[9] Montrer 1 image sur 10
+#MSG_VIDEO_FRAME_SKIPPING_10
+[10] Montrer 1 image sur 11
 #MSG_GENERAL_OFF
 Hors fonction
 #MSG_GENERAL_ON
