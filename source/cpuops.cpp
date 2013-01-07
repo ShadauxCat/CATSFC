@@ -3415,6 +3415,35 @@ inline void CPUShutdown()
 #define CPUShutdown()
 #endif
 
+#ifdef CPU_SHUTDOWN
+#ifndef SA1_OPCODES
+inline void ForceShutdown()
+{
+	CPU.WaitAddress = NULL;
+	if (Settings.SA1)
+		S9xSA1ExecuteDuringSleep ();
+	CPU.Cycles = CPU.NextEvent;
+	if (IAPU.APUExecuting)
+	{
+		ICPU.CPUExecuting = FALSE;
+		do
+		{
+			APU_EXECUTE1();
+		} while (APU.Cycles < CPU.NextEvent);
+		ICPU.CPUExecuting = TRUE;
+	}
+}
+#else
+inline void ForceShutdown()
+{
+	SA1.Executing = FALSE;
+	SA1.CPUExecuting = FALSE;
+}
+#endif
+#else
+#define ForceShutdown()
+#endif
+
 /* BCC */
 static void Op90 (void)
 {
@@ -5048,22 +5077,201 @@ static void OpCB (void)
 #ifndef SA1_OPCODES
             CPU.Cycles += TWO_CYCLES;
 #endif
-    }
+        }
 #endif
     }
 #endif // SA1_OPCODES
 }
 
-// STP
+// Usually an STP opcode
+// SNESAdvance speed hack, not implemented in Snes9xTYL | Snes9x-Euphoria
 static void OpDB (void)
 {
+#if defined SNESADVANCE_SPEEDHACKS && defined CPU_SHUTDOWN
+	uint8 NextByte = *CPU.PC++;
+
+	ForceShutdown();
+
+	int8 BranchOffset = (NextByte & 0x7F) | ((NextByte & 0x40) << 1);
+	// ^ -64 .. +63, sign extend bit 6 into 7 for unpacking
+	long TargetAddress = ((int) (CPU.PC - CPU.PCBase) + BranchOffset) & 0xffff;
+
+	switch (NextByte & 0x80)
+	{
+	case 0x00: // BNE
+		BranchCheck1 ();
+		if (!CheckZero ()) {
+			CPU.PC = CPU.PCBase + TargetAddress;
+#ifdef VAR_CYCLES
+			CPU.Cycles += ONE_CYCLE;
+#else
+#ifndef SA1_OPCODES
+			CPU.Cycles++;
+#endif
+#endif
+			CPUShutdown ();
+		}
+		return;
+	case 0x80: // BEQ
+		BranchCheck2 ();
+		if (CheckZero ()) {
+			CPU.PC = CPU.PCBase + TargetAddress;
+#ifdef VAR_CYCLES
+			CPU.Cycles += ONE_CYCLE;
+#else
+#ifndef SA1_OPCODES
+			CPU.Cycles++;
+#endif
+#endif
+			CPUShutdown ();
+		}
+		return;
+	}
+#else
     CPU.PC--;
     CPU.Flags |= DEBUG_MODE_FLAG;
+#endif
 }
 
-// Reserved S9xOpcode
+// SNESAdvance speed hack, as implemented in Snes9xTYL / Snes9x-Euphoria
+// https://code.google.com/p/snes9x-euphoria/source/browse/trunk/src/cpuops.cpp
 static void Op42 (void)
 {
+#if defined SNESADVANCE_SPEEDHACKS && defined CPU_SHUTDOWN
+	uint8 NextByte = *CPU.PC++;
+
+	ForceShutdown();
+
+	int8 BranchOffset = 0xF0 | (NextByte & 0xF); // always negative
+	long TargetAddress = ((int) (CPU.PC - CPU.PCBase) + BranchOffset) & 0xffff;
+
+	switch (NextByte & 0xF0)
+	{
+	case 0x10: // BPL
+		BranchCheck1 ();
+		if (!CheckNegative ()) {
+			CPU.PC = CPU.PCBase + TargetAddress;
+#ifdef VAR_CYCLES
+			CPU.Cycles += ONE_CYCLE;
+#else
+#ifndef SA1_OPCODES
+			CPU.Cycles++;
+#endif
+#endif
+			CPUShutdown ();
+		}
+		return;
+	case 0x30: // BMI
+		BranchCheck1 ();
+		if (CheckNegative ()) {
+			CPU.PC = CPU.PCBase + TargetAddress;
+#ifdef VAR_CYCLES
+			CPU.Cycles += ONE_CYCLE;
+#else
+#ifndef SA1_OPCODES
+			CPU.Cycles++;
+#endif
+#endif
+			CPUShutdown ();
+		}
+		return;
+	case 0x50: // BVC
+		BranchCheck0 ();
+		if (!CheckOverflow ()) {
+			CPU.PC = CPU.PCBase + TargetAddress;
+#ifdef VAR_CYCLES
+			CPU.Cycles += ONE_CYCLE;
+#else
+#ifndef SA1_OPCODES
+			CPU.Cycles++;
+#endif
+#endif
+			CPUShutdown ();
+		}
+		return;
+	case 0x70: // BVS
+		BranchCheck0 ();
+		if (CheckOverflow ()) {
+			CPU.PC = CPU.PCBase + TargetAddress;
+#ifdef VAR_CYCLES
+			CPU.Cycles += ONE_CYCLE;
+#else
+#ifndef SA1_OPCODES
+			CPU.Cycles++;
+#endif
+#endif
+			CPUShutdown ();
+		}
+		return;
+	case 0x80: // BRA
+		CPU.PC = CPU.PCBase + TargetAddress;
+#ifdef VAR_CYCLES
+		CPU.Cycles += ONE_CYCLE;
+#else
+#ifndef SA1_OPCODES
+		CPU.Cycles++;
+#endif
+#endif
+		CPUShutdown ();
+		return;
+	case 0x90: // BCC
+		BranchCheck0 ();
+		if (!CheckCarry ()) {
+			CPU.PC = CPU.PCBase + TargetAddress;
+#ifdef VAR_CYCLES
+			CPU.Cycles += ONE_CYCLE;
+#else
+#ifndef SA1_OPCODES
+			CPU.Cycles++;
+#endif
+#endif
+			CPUShutdown ();
+		}
+		return;
+	case 0xB0: // BCS
+		BranchCheck0 ();
+		if (CheckCarry ()) {
+			CPU.PC = CPU.PCBase + TargetAddress;
+#ifdef VAR_CYCLES
+			CPU.Cycles += ONE_CYCLE;
+#else
+#ifndef SA1_OPCODES
+			CPU.Cycles++;
+#endif
+#endif
+			CPUShutdown ();
+		}
+		return;
+	case 0xD0: // BNE
+		BranchCheck1 ();
+		if (!CheckZero ()) {
+			CPU.PC = CPU.PCBase + TargetAddress;
+#ifdef VAR_CYCLES
+			CPU.Cycles += ONE_CYCLE;
+#else
+#ifndef SA1_OPCODES
+			CPU.Cycles++;
+#endif
+#endif
+			CPUShutdown ();
+		}
+		return;
+	case 0xF0: // BEQ
+		BranchCheck2 ();
+		if (CheckZero ()) {
+			CPU.PC = CPU.PCBase + TargetAddress;
+#ifdef VAR_CYCLES
+			CPU.Cycles += ONE_CYCLE;
+#else
+#ifndef SA1_OPCODES
+			CPU.Cycles++;
+#endif
+#endif
+			CPUShutdown ();
+		}
+		return;
+	}
+#endif
 }
 
 /*****************************************************************************/

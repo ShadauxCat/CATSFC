@@ -617,6 +617,20 @@ again:
 		S9xMessage(S9X_ERROR,S9X_ROM_CONFUSING_FORMAT_INFO, "Warning! Hacked Dump!");
 	}
 
+#ifdef SNESADVANCE_SPEEDHACKS
+	// Apply SNESAdvance speed hacks here
+	// For now, we just do these two, hardcoded:
+	if (strncmp("YOSHI'S ISLAND", (char *) &ROM[0x7FC0], 14) == 0)
+	{
+		ROM[0x00F4] = 0x42;
+		ROM[0x00F5] = 0x3B;
+	}
+	else if (strncmp("SUPER MARIOWORLD", (char *) &ROM[0x7FC0], 16) == 0)
+	{
+		ROM[0x006D] = 0x42;
+	}
+#endif
+
     int orig_hi_score, orig_lo_score;
     int hi_score, lo_score;
 	
