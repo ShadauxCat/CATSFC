@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "snes9x.h"
 
- 
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -78,7 +78,7 @@ GAME_CONFIG game_config;
 
 //save state file map
 char savestate_map[SAVE_STATE_SLOT_NUM];
-static unsigned int savestate_index;
+static u32 savestate_index;
 
 #define MAKE_MENU(name, init_function, passive_function, key_function, end_function, \
 	focus_option, screen_focus)												  \
@@ -2776,7 +2776,7 @@ u32 menu(u16 *screen)
 									(char*)&msg[MSG_VIDEO_ASPECT_RATIO_3],
 									(char*)&msg[MSG_VIDEO_ASPECT_RATIO_4]};
     
-    char *frameskip_options[] = { (char*)&msg[MSG_FRAMESKIP_0], (char*)&msg[MSG_FRAMESKIP_1] };
+    char *frameskip_options[] = { (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_0], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_1], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_2], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_3], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_4], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_5], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_6], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_7], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_8], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_9], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_10] };
 
     char *on_off_options[] = { (char*)&msg[MSG_GENERAL_OFF], (char*)&msg[MSG_GENERAL_ON] };
 
@@ -2800,7 +2800,10 @@ u32 menu(u16 *screen)
 		&game_fast_forward, 2, NULL, ACTION_TYPE, 2),
 		
 	/* 03 */	STRING_SELECTION_OPTION(game_disableAudio, NULL, &msg[FMT_AUDIO_SOUND], sound_seletion,
-		&game_enable_audio, 2, NULL, ACTION_TYPE, 3)
+		&game_enable_audio, 2, NULL, ACTION_TYPE, 3),
+		
+	/* 04 */	STRING_SELECTION_OPTION(game_set_frameskip, NULL, &msg[FMT_VIDEO_FRAME_SKIPPING], frameskip_options,
+		&game_config.frameskip_value, 12 /* auto (0) and 0..10 (1..11) make 12 option values */, NULL, ACTION_TYPE, 4)
 	};
 
 	MAKE_MENU(graphics, NULL, NULL, NULL, NULL, 0, 0);
@@ -4004,9 +4007,7 @@ void init_game_config(void)
 	game_config.clock_speed_number = 5;	// 396 MHz by default
 	clock_speed_number = 5;
 	game_config.graphic = 3; // By default, have a good-looking aspect ratio
-
-	game_config.gamepad_config_menu = BUTTON_ID_TOUCH;
-    memcpy(game_config.gamepad_config_map, gamepad_config_map_init, sizeof(gamepad_config_map_init));
+	game_config.frameskip_value = 0; // Automatic frame skipping
 
 	game_config.backward = 0;	//time backward disable
 	game_config.backward_time = 2;	//time backward granularity 1s
@@ -4063,9 +4064,8 @@ void load_game_config_file(void)
 	{
 		fread(&game_config, 1, sizeof(GAME_CONFIG), fp);
 
-		memcpy(gamepad_config_map, game_config.gamepad_config_map, sizeof(game_config.gamepad_config_map));
-		gamepad_config_menu = game_config.gamepad_config_menu;
 		clock_speed_number = game_config.clock_speed_number;
+		Settings.SkipFrames = (game_config.frameskip_value == 0 ? AUTO_FRAMERATE : game_config.frameskip_value - 1 /* 1 -> 0 and so on */);
 	}
 
 	fclose(fp);
@@ -4112,9 +4112,6 @@ int save_game_config_file(void)
     char *pt;
 
     if(gamepak_name[0] == 0) return -1;
-
-    memcpy(game_config.gamepad_config_map, gamepad_config_map, sizeof(game_config.gamepad_config_map));
-    game_config.gamepad_config_menu = gamepad_config_menu;
 
     sprintf(game_config_filename, "%s/%s", DEFAULT_CFG_DIR, gamepak_name);
     pt = strrchr(game_config_filename, '.');
