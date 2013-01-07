@@ -760,7 +760,7 @@ void S9xSyncSpeed ()
 				// After that little delay, what time is it?
 				syncnow = getSysTime();
 			}
-			sync_next = syncnow + frame_time * Settings.SkipFrames;
+			sync_next = syncnow + frame_time * (Settings.SkipFrames + 1);
 		}
 		else
 		{
@@ -1049,7 +1049,7 @@ void Init_Timer (void)
 }
 
 
-
+/*
 const unsigned int keymap[12] = {
 		0x80,		//KEY_A
 		0x8000,		//KEY_B
@@ -1064,6 +1064,7 @@ const unsigned int keymap[12] = {
 		0x40,		//KEY_X
 		0x4000		//KEY_Y
 	};
+*/
 
 unsigned int S9xReadJoypad (int which1)
 {
@@ -1077,6 +1078,7 @@ unsigned int S9xReadJoypad (int which1)
 		ds2_setSupend();
 		do {
 			ds2_getrawInput(&inputdata);
+			mdelay(1);
 		} while (inputdata.key & KEY_LID);
 		ds2_wakeup();
 		set_cpu_clock(clock_speed_number);
@@ -1089,12 +1091,28 @@ unsigned int S9xReadJoypad (int which1)
 	{
 		unsigned int key;
 		unsigned int i;
-	
-		key = 0;
+
+		                                           //   DS   ->  SNES
+		key  = (inputdata.key & KEY_A     ) <<  7; // 0x0001 -> 0x0080
+		key |= (inputdata.key & KEY_B     ) << 14; // 0x0002 -> 0x8000
+		key |= (inputdata.key & KEY_SELECT) << 11; // 0x0004 -> 0x2000
+		key |= (inputdata.key & KEY_START ) <<  9; // 0x0008 -> 0x1000
+		key |= (inputdata.key & KEY_UP    ) <<  5; // 0x0040 -> 0x0800
+		// 0x0010 -> 0x0100; 0x0020 -> 0x0200
+		// 0x0030 -> 0x0300
+		key |= (inputdata.key & (KEY_RIGHT | KEY_LEFT))  <<  4;
+		// 0x0100 -> 0x0010; 0x0200 -> 0x0020; 0x0400 -> 0x0040
+		// 0x0700 -> 0x0070
+		key |= (inputdata.key & (KEY_R | KEY_L | KEY_X)) >>  4;
+		// 0x0080 -> 0x0400; 0x0800 -> 0x4000
+		// 0x0880 -> 0x4400
+		key |= (inputdata.key & (KEY_DOWN | KEY_Y))      <<  3;
+/*
 		for(i= 0; i < 12; i++)	//remap key
 		{
 			key |= (inputdata.key & (1<<i)) ? keymap[i] : 0;
 		}
+*/
 
 		return (key | 0x80000000);
 	}
