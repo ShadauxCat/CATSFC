@@ -674,10 +674,10 @@ void S9xSyncSpeed ()
 			if (syncdif > 0)
 			{
 				// Are we VERY early? Say, 3 entire frames...
-				if (syncdif >= frame_time * 3)
+				if (syncdif >= frame_time * 3 && auto_equivalent_skip > 1)
 					auto_equivalent_skip -= 2;
 				// or one
-				else if (syncdif >= frame_time)
+				else if (syncdif >= frame_time && auto_equivalent_skip > 0)
 					auto_equivalent_skip--;
 				ds2_setCPUclocklevel(0);
 				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
