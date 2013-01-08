@@ -98,12 +98,10 @@
 #include "obc1.h"
 #include "seta.h"
 
-#ifndef NO_OPEN_BUS
 extern "C"
 {
 	extern uint8 OpenBus;
 }
-#endif
 
 uint8 S9xGetByte (uint32 Address)
 {
@@ -180,11 +178,7 @@ uint8 S9xGetByte (uint32 Address)
  #ifdef DEBUGGER
  		printf ("DEBUG R(B) %06x\n", Address);
  #endif
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 
 
 	default:
@@ -198,11 +192,7 @@ uint8 S9xGetByte (uint32 Address)
 #ifdef DEBUGGER
 		printf ("R(B) %06x\n", Address);
 #endif
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
     }
 }
 
@@ -210,13 +200,8 @@ uint16 S9xGetWord (uint32 Address)
 {
     if ((Address & 0x0fff) == 0x0fff)
     {
-#ifndef NO_OPEN_BUS
 		OpenBus = S9xGetByte (Address);
 		return (OpenBus | (S9xGetByte (Address + 1) << 8));
-#else
-		uint8 Split = S9xGetByte (Address);
-		return (Split | (S9xGetByte (Address + 1) << 8));
-#endif
     }
     int block;
     uint8 *GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
@@ -316,11 +301,7 @@ uint16 S9xGetWord (uint32 Address)
  #ifdef DEBUGGER
  		printf ("DEBUG R(W) %06x\n", Address);
  #endif
-#ifndef NO_OPEN_BUS
 		return (OpenBus | (OpenBus<<8));
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 
     default:
     case CMemory::MAP_NONE:
@@ -333,11 +314,7 @@ uint16 S9xGetWord (uint32 Address)
 #ifdef DEBUGGER
 		printf ("R(W) %06x\n", Address);
 #endif
-#ifndef NO_OPEN_BUS
 		return (OpenBus | (OpenBus<<8));
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
     }
 }
 

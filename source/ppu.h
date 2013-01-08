@@ -270,10 +270,8 @@ struct SPPU {
     // XXX Do these need to be added to snapshot.cpp?
     uint16 OAMWriteRegister;
     uint8 BGnxOFSbyte;
-#ifndef NO_OPEN_BUS
     uint8 OpenBus1;
     uint8 OpenBus2;
-#endif
 };
 
 #define CLIP_OR 0
