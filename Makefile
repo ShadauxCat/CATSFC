@@ -69,7 +69,7 @@ CFLAGS := -mips32 -mno-abicalls -fno-pic -fno-builtin \
 DEFS   := -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
           -DVAR_CYCLES -DCPU_SHUTDOWN -DSPC700_SHUTDOWN \
           -DNO_INLINE_SET_GET -DNOASM -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t' \
-          -DUNZIP_SUPPORT -DNO_OPEN_BUS
+          -DUNZIP_SUPPORT
 #         -DSYNC_JOYPAD_AT_HBLANK
 
 .PHONY: clean makedirs
