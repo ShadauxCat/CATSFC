@@ -23,6 +23,7 @@
 #include "ds2sound.h"
 
 void S9xProcessSound (unsigned int);
+void NDSSFCProduceSound (unsigned int);
 
 char *rom_filename = NULL;
 char *SDD1_pack = NULL;
@@ -456,9 +457,6 @@ extern "C" int load_gamepak(char* file);
 
 int load_gamepak(char* file)
 {
-	game_enable_audio = 1;
-	game_disableAudio();
-
 	CPU.Flags = 0;
 	// mdelay(50); // Delete this delay
 	if (!Memory.LoadROM (file))
@@ -538,6 +536,12 @@ int sfc_main (int argc, char **argv)
 
     S9xInitSound (Settings.SoundPlaybackRate, Settings.Stereo,
                   Settings.SoundBufferSize);
+	// Start a timer for the sound
+	initTimer(0 /* timer channel, 0 or 1 */,
+	          2000 /* period in microseconds */,
+	          NDSSFCProduceSound /* timer function, void (unsigned int) */,
+	          0 /* programmer-specified argument to ^ */);
+	runTimer(0 /* timer channel, 0 or 1 */);
 
 #ifdef GFX_MULTI_FORMAT
 //    S9xSetRenderPixelFormat (RGB565);
@@ -664,54 +668,6 @@ void S9xSyncSpeed ()
 	{
 		// frame_time is in getSysTime units: 42.667 microseconds.
 		uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
-		sync_last = syncnow;
-		if (++skip_rate > auto_equivalent_skip)
-		{
-			skip_rate = 0;
-			IPPU.RenderThisFrame = TRUE;
-			// Are we early?
-			syncdif = sync_next - syncnow;
-			if (syncdif > 0)
-			{
-				// Are we VERY early? Say, 3 entire frames...
-				if (syncdif >= frame_time * 3 && auto_equivalent_skip > 1)
-					auto_equivalent_skip -= 2;
-				// or one
-				else if (syncdif >= frame_time && auto_equivalent_skip > 0)
-					auto_equivalent_skip--;
-				ds2_setCPUclocklevel(0);
-				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
-				set_cpu_clock(clock_speed_number);
-				S9xProcessSound (0);
-				// After that little delay, what time is it?
-				syncnow = getSysTime();
-			}
-			else
-			{
-				// We're late.
-				// If we're over half a second late, we were
-				// paused, so do nothing.
-				if (syncdif <= -11719 /* 500.0 ms late or more */)
-					sync_next = syncnow + frame_time * (auto_equivalent_skip + 1);
-				else if (auto_equivalent_skip < 7)
-					auto_equivalent_skip++;
-			}
-			if (auto_equivalent_skip >= 8)
-				// If we're skipping loads, rebase time to now.
-				sync_next = syncnow + frame_time * (auto_equivalent_skip + 1);
-			else
-				// Otherwise, keep track of partial-frame
-				// latencies for a bit more.
-				sync_next += frame_time * (auto_equivalent_skip + 1);
-		}
-		else
-		{
-			IPPU.RenderThisFrame = FALSE;
-		}
-
-#if 0
-		// frame_time is in getSysTime units: 42.667 microseconds.
-		uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
 		if (sync_last > syncnow) // Overflow occurred! (every 50 hrs)
 		{
 			// Render this frame regardless, set the
@@ -755,7 +711,6 @@ void S9xSyncSpeed ()
 				{	//lag more than 0.5s, maybe paused
 					IPPU.RenderThisFrame = TRUE;
 					sync_next = syncnow + frame_time;
-					framenum = 0;
 				}
 			}
 			else
@@ -777,7 +732,7 @@ void S9xSyncSpeed ()
 			IPPU.RenderThisFrame = TRUE;
 			sync_next += frame_time;
 		}
-/*
+#if 0
 		if(++framenum >= 60)
 		{
 			syncdif = syncnow - sync_last;
@@ -786,7 +741,6 @@ void S9xSyncSpeed ()
 			//printf("T %d %d\n", syncdif*42667/1000, realframe);
 			realframe = 0;
 		}
-*/
 #endif
 	}
 	else /* if (Settings.SkipFrames != AUTO_FRAMERATE && !game_fast_forward) */
@@ -802,9 +756,7 @@ void S9xSyncSpeed ()
 			syncdif = sync_next - syncnow;
 			if (syncdif > 0)
 			{
-				ds2_setCPUclocklevel(0);
 				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
-				set_cpu_clock(clock_speed_number);
 				S9xProcessSound (0);
 				// After that little delay, what time is it?
 				syncnow = getSysTime();
@@ -924,6 +876,14 @@ bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
     return (TRUE);
 }
 
+/*
+ * In the interrupt model, calls to NDSSFCProduceSound could happen even
+ * when the CPU or APU is being reset or reloaded from a file. Prevent
+ * glitches and/or crashes (!) from occurring while sound is not being
+ * generated.
+ */
+bool8 IsSoundGenerated = FALSE;
+
 void S9xGenerateSound ()
 {
     int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
@@ -981,16 +941,19 @@ void S9xGenerateSound ()
     }
 
     block_signal = FALSE;
+	IsSoundGenerated = TRUE;
 
     if (pending_signal)
     {
-		S9xProcessSound (0);
+		// S9xProcessSound (0);
+		NDSSFCProduceSound (0);
 		pending_signal = FALSE;
     }
 }
 
 void S9xProcessSound (unsigned int)
 {
+#if 0
 	unsigned short *audiobuff;
 
 	if (so.mute_sound || !game_enable_audio)
@@ -1002,6 +965,110 @@ void S9xProcessSound (unsigned int)
 	/* Number of samples to generate now */
 	int sample_count = so.buffer_size;
 
+	if (so.sixteen_bit)
+	{
+		/* to prevent running out of buffer space,
+		* create less samples
+		*/
+		sample_count >>= 1;
+	}
+
+	if (block_signal)
+	{
+		pending_signal = TRUE;
+		return;
+	}
+
+//	block_generate_sound = TRUE;
+
+	audiobuff = (unsigned short*)ds2_getAudiobuff();
+	if(NULL == audiobuff)	//There are audio queue in sending or wait to send
+	{
+		return;
+	}
+
+	/* If we need more audio samples */
+	if (so.samples_mixed_so_far < sample_count)
+	{
+		/* Where to put the samples to */
+		unsigned byte_offset = so.play_position + 
+		(so.sixteen_bit ? (so.samples_mixed_so_far << 1) : so.samples_mixed_so_far);
+
+		//printf ("%d:", sample_count - so.samples_mixed_so_far); fflush (stdout);
+		if (Settings.SoundSync == 2)
+		{
+			/*memset (Buf + (byte_offset & SOUND_BUFFER_SIZE_MASK), 0,
+			sample_count - so.samples_mixed_so_far);*/
+		}
+		else
+		{
+			/* Mix the missing samples */
+			S9xMixSamplesO (Buf, sample_count - so.samples_mixed_so_far,
+				byte_offset & SOUND_BUFFER_SIZE_MASK);
+		}
+		so.samples_mixed_so_far = sample_count;
+	}
+
+//    if (!so.mute_sound)
+	{
+		unsigned bytes_to_write = sample_count;
+		if(so.sixteen_bit) bytes_to_write <<= 1;
+
+		unsigned byte_offset = so.play_position;
+		so.play_position += bytes_to_write;
+		so.play_position &= SOUND_BUFFER_SIZE_MASK; /* wrap to beginning */
+
+//		block_generate_sound = FALSE;
+
+		unsigned short *dst_pt = audiobuff;
+		unsigned short *dst_pt1 = dst_pt + DS2_BUFFER_SIZE;
+
+		/* Feed the samples to the soundcard until nothing is left */
+		for(;;)
+		{
+			int I = bytes_to_write;
+			if (byte_offset + I > SOUND_BUFFER_SIZE)
+			{
+				I = SOUND_BUFFER_SIZE - byte_offset;
+			}
+			if(I == 0) break;
+
+//			memcpy(dst_pt, (char *) Buf + byte_offset, I);
+//			dst_pt += I;
+
+			unsigned short *src_pt= (unsigned short*)(Buf + byte_offset);
+			for(int m= 0; m < I/4; m++)
+			{
+				*dst_pt++= *src_pt++;//(*src_pt++) <<1;
+				*dst_pt1++= *src_pt++;//(*src_pt++) <<1;
+			}
+
+			bytes_to_write -= I;
+			byte_offset += I;
+			byte_offset &= SOUND_BUFFER_SIZE_MASK; /* wrap */
+		}
+
+		ds2_updateAudio();
+
+		/* All data sent. */
+	}
+
+	so.samples_mixed_so_far -= sample_count;
+#endif
+}
+
+void NDSSFCProduceSound (unsigned int unused)
+{
+	unsigned short *audiobuff;
+
+	if (!IsSoundGenerated || so.mute_sound || !game_enable_audio)
+		return;
+
+	if(ds2_checkAudiobuff() > 4)
+		return;
+
+	/* Number of samples to generate now */
+	int sample_count = so.buffer_size;
 	if (so.sixteen_bit)
 	{
 		/* to prevent running out of buffer space,

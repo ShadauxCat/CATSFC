@@ -211,19 +211,8 @@ void S9xClearIRQ (uint32 source)
     CLEAR_IRQ_SOURCE (source);
 }
 
-static unsigned int sync_last= 0;
-static unsigned int sync_next = 0;
-static unsigned int framenum = 0;
-static unsigned int realframe = 0;
-
-extern "C" unsigned int game_fast_forward;
-static unsigned int skip_rate= 0;
-
 void S9xDoHBlankProcessing ()
 {
-	unsigned int syncnow;
-	unsigned int syncdif;
-
 #ifdef CPU_SHUTDOWN
     CPU.WaitCounter++;
 #endif
