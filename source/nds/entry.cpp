@@ -538,7 +538,7 @@ int sfc_main (int argc, char **argv)
                   Settings.SoundBufferSize);
 	// Start a timer for the sound
 	initTimer(0 /* timer channel, 0 or 1 */,
-	          2000 /* period in microseconds */,
+	          INTERRUPT_TIME /* period in microseconds */,
 	          NDSSFCProduceSound /* timer function, void (unsigned int) */,
 	          0 /* programmer-specified argument to ^ */);
 	runTimer(0 /* timer channel, 0 or 1 */);
@@ -1156,6 +1156,8 @@ void NDSSFCProduceSound (unsigned int unused)
 
 		/* All data sent. */
 	}
+
+	IsSoundGenerated = FALSE;
 
 	so.samples_mixed_so_far -= sample_count;
 }
