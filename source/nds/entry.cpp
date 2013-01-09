@@ -1061,7 +1061,7 @@ void NDSSFCProduceSound (unsigned int unused)
 {
 	unsigned short *audiobuff;
 
-	if (!IsSoundGenerated || so.mute_sound || !game_enable_audio)
+	if (Settings.Paused || !IsSoundGenerated || so.mute_sound || !game_enable_audio)
 		return;
 
 	if(ds2_checkAudiobuff() > 4)
