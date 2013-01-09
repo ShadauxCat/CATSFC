@@ -1651,7 +1651,8 @@ unsigned int frame_interval;
 --------------------------------------------------------*/
 u32 menu(u16 *screen)
 {
-	mdelay(50); // to prevent the touch key from being applied too soon?
+	stopTimer(0 /* timer interrupt channel for sound */);
+	mdelay(100); // to prevent ds2_setBacklight() from freezing/crashing
     gui_action_type gui_action;
     u32 i;
     u32 repeat;
@@ -3849,6 +3850,7 @@ u32 menu(u16 *screen)
 	ds2_setBacklight(2);
 
 	wait_Allkey_release(0);
+	runTimer(0 /* timer interrupt channel for sound */);
 
 	return return_value;
 }

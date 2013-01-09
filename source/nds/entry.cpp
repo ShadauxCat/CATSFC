@@ -613,8 +613,8 @@ int sfc_main (int argc, char **argv)
 
 			copy_screen((void*)screen, up_screen_addr, 0, 0, 256, 192);
 			menu(screen);
-			Settings.Paused = 0;
 			game_disableAudio();
+			Settings.Paused = 0;
 		}
 
 #ifdef JOYSTICK_SUPPORT
