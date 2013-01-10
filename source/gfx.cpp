@@ -892,8 +892,8 @@ void S9xSetInfoString (const char *string)
 
 inline void SelectTileRenderer (bool8 normal)
 {
-    if (normal)
-    {
+	if (normal)
+	{
 		if (IPPU.HalfWidthPixels)
 		{
 			DrawTilePtr = DrawTile16HalfWidth;
@@ -906,58 +906,51 @@ inline void SelectTileRenderer (bool8 normal)
 			DrawClippedTilePtr = DrawClippedTile16;
 			DrawLargePixelPtr = DrawLargePixel16;
 		}
-    }
-    else
-    {
-		if (GFX.r2131 & 0x80)
+	}
+	else
+	{
+		switch (GFX.r2131 & 0xC0)
 		{
-		    if (GFX.r2131 & 0x40)
-		    {
-				if (GFX.r2130 & 2)
-				{
-				    DrawTilePtr = DrawTile16Sub1_2;
-				    DrawClippedTilePtr = DrawClippedTile16Sub1_2;
-				}
-				else
-				{
-				    // Fixed colour substraction
-				    DrawTilePtr = DrawTile16FixedSub1_2;
-				    DrawClippedTilePtr = DrawClippedTile16FixedSub1_2;
-				}
-				DrawLargePixelPtr = DrawLargePixel16Sub1_2;
-		    }
-		    else
-		    {
-				DrawTilePtr = DrawTile16Sub;
-				DrawClippedTilePtr = DrawClippedTile16Sub;
-				DrawLargePixelPtr = DrawLargePixel16Sub;
-		    }
+		case 0x00:
+			DrawTilePtr = DrawTile16Add;
+			DrawClippedTilePtr = DrawClippedTile16Add;
+			DrawLargePixelPtr = DrawLargePixel16Add;
+			break;
+		case 0x40:
+			if (GFX.r2130 & 2)
+			{
+				DrawTilePtr = DrawTile16Add1_2;
+				DrawClippedTilePtr = DrawClippedTile16Add1_2;
+			}
+			else
+			{
+				// Fixed colour addition
+				DrawTilePtr = DrawTile16FixedAdd1_2;
+				DrawClippedTilePtr = DrawClippedTile16FixedAdd1_2;
+			}
+			DrawLargePixelPtr = DrawLargePixel16Add1_2;
+			break;
+		case 0x80:
+			DrawTilePtr = DrawTile16Sub;
+			DrawClippedTilePtr = DrawClippedTile16Sub;
+			DrawLargePixelPtr = DrawLargePixel16Sub;
+			break;
+		case 0xC0:
+			if (GFX.r2130 & 2)
+			{
+				DrawTilePtr = DrawTile16Sub1_2;
+				DrawClippedTilePtr = DrawClippedTile16Sub1_2;
+			}
+			else
+			{
+				// Fixed colour substraction
+				DrawTilePtr = DrawTile16FixedSub1_2;
+				DrawClippedTilePtr = DrawClippedTile16FixedSub1_2;
+			}
+			DrawLargePixelPtr = DrawLargePixel16Sub1_2;
+			break;
 		}
-		else
-		{
-		    if (GFX.r2131 & 0x40)
-		    {
-				if (GFX.r2130 & 2)
-				{
-				    DrawTilePtr = DrawTile16Add1_2;
-				    DrawClippedTilePtr = DrawClippedTile16Add1_2;
-				}
-				else
-				{
-				    // Fixed colour addition
-				    DrawTilePtr = DrawTile16FixedAdd1_2;
-				    DrawClippedTilePtr = DrawClippedTile16FixedAdd1_2;
-				}
-				DrawLargePixelPtr = DrawLargePixel16Add1_2;
-		    }
-		    else
-		    {
-				DrawTilePtr = DrawTile16Add;
-				DrawClippedTilePtr = DrawClippedTile16Add;
-				DrawLargePixelPtr = DrawLargePixel16Add;
-		    }
-		}
-    }
+	}
 }
 
 void S9xSetupOBJ ()
