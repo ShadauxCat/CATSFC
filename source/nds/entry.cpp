@@ -367,7 +367,9 @@ void init_sfc_setting(void)
 #endif
 
     Settings.SoundPlaybackRate = SNES9X_SRATE_ID;	// -> ds2sound.h for defs
+#ifndef FOREVER_STEREO
     Settings.Stereo = TRUE;
+#endif
     Settings.SoundBufferSize = DS2_BUFFER_SIZE;
     Settings.CyclesPercentage = 100;
     Settings.DisableSoundEcho = FALSE;
@@ -391,6 +393,9 @@ void init_sfc_setting(void)
     Settings.Transparency = TRUE;
 #ifndef FOREVER_16_BIT
     Settings.SixteenBit = TRUE;
+#endif
+#ifndef FOREVER_16_BIT_SOUND
+    Settings.SixteenBitSound = TRUE;
 #endif
 
     Settings.SupportHiRes = FALSE;
@@ -534,7 +539,12 @@ int sfc_main (int argc, char **argv)
     if (!S9xGraphicsInit())
 		OutOfMemory ();
 
-    S9xInitSound (Settings.SoundPlaybackRate, Settings.Stereo,
+    S9xInitSound (Settings.SoundPlaybackRate,
+#ifndef FOREVER_STEREO
+                  Settings.Stereo,
+#else
+                  TRUE,
+#endif
                   Settings.SoundBufferSize);
 	// Start a timer for the sound
 	initTimer(0 /* timer channel, 0 or 1 */,
@@ -857,8 +867,12 @@ void S9xSyncSpeed ()
 
 bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
 {
+#ifndef FOREVER_16_BIT_SOUND
 	so.sixteen_bit = TRUE;
+#endif
+#ifndef FOREVER_STEREO
     so.stereo = stereo;
+#endif
     so.playback_rate = SND_SAMPLE_RATE;
     S9xSetPlaybackRate (so.playback_rate);
 
@@ -867,9 +881,13 @@ bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
 
     if (buffer_size > MAX_BUFFER_SIZE / 4)
 	    buffer_size = MAX_BUFFER_SIZE / 4;
+#ifndef FOREVER_16_BIT_SOUND
     if (so.sixteen_bit)
+#endif
 	    buffer_size *= 2;
+#ifndef FOREVER_STEREO
     if (so.stereo)
+#endif
 	    buffer_size *= 2;
 
 	so.buffer_size = buffer_size;
@@ -893,8 +911,12 @@ void S9xGenerateSound ()
 {
     block_signal = TRUE;
 
+#ifndef FOREVER_16_BIT_SOUND
     int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
 			so.samples_mixed_so_far;
+#else
+    int bytes_so_far = so.samples_mixed_so_far << 1;
+#endif
 
 	if (bytes_so_far >= so.buffer_size)
 		goto end;
@@ -907,7 +929,9 @@ void S9xGenerateSound ()
 		int byte_count;
 
         so.err_counter &= FIXED_POINT_REMAINDER;
+#ifndef FOREVER_STEREO
 		if (so.stereo)
+#endif
 			sample_count <<= 1;
 		byte_offset = bytes_so_far + so.play_position;
 
@@ -915,14 +939,18 @@ void S9xGenerateSound ()
 		{
 			int sc = sample_count;
 			byte_count = sample_count;
+#ifndef FOREVER_16_BIT_SOUND
 			if (so.sixteen_bit)
+#endif
 				byte_count <<= 1;
 
 			if ((byte_offset & SOUND_BUFFER_SIZE_MASK) + byte_count > SOUND_BUFFER_SIZE)
 			{
 				sc = SOUND_BUFFER_SIZE - (byte_offset & SOUND_BUFFER_SIZE_MASK);
 				byte_count = sc;
+#ifndef FOREVER_16_BIT_SOUND
 				if (so.sixteen_bit)
+#endif
 					sc >>= 1;
 			}
 
@@ -932,15 +960,21 @@ void S9xGenerateSound ()
 				if (byte_count == 0)
 					break;
 				sc = byte_count;
+#ifndef FOREVER_16_BIT_SOUND
 				if (so.sixteen_bit)
+#endif
 					sc >>= 1;
 			}
 
 			S9xMixSamplesO (Buf, sc, byte_offset & SOUND_BUFFER_SIZE_MASK);
 			so.samples_mixed_so_far += sc;
 			sample_count -= sc;
+#ifndef FOREVER_16_BIT_SOUND
 			bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
 				so.samples_mixed_so_far;
+#else
+			bytes_so_far = so.samples_mixed_so_far << 1;
+#endif
 			byte_offset += byte_count;
 		} while (sample_count > 0);
     }
@@ -988,13 +1022,17 @@ void NDSSFCProduceSound (unsigned int unused)
 	/* Number of samples to generate now */
 	int sample_count;
 	sample_count = so.buffer_size;
+#ifndef FOREVER_16_BIT_SOUND
 	if (so.sixteen_bit)
 	{
+#endif
 		/* to prevent running out of buffer space,
 		* create less samples
 		*/
 		sample_count >>= 1;
+#ifndef FOREVER_16_BIT_SOUND
 	}
+#endif
 
 //	block_generate_sound = TRUE;
 
@@ -1008,8 +1046,13 @@ void NDSSFCProduceSound (unsigned int unused)
 	if (so.samples_mixed_so_far < sample_count)
 	{
 		/* Where to put the samples to */
+#ifndef FOREVER_16_BIT_SOUND
 		unsigned byte_offset = so.play_position + 
 		(so.sixteen_bit ? (so.samples_mixed_so_far << 1) : so.samples_mixed_so_far);
+#else
+		unsigned byte_offset = so.play_position + 
+		(so.samples_mixed_so_far << 1);
+#endif
 
 		//printf ("%d:", sample_count - so.samples_mixed_so_far); fflush (stdout);
 		if (Settings.SoundSync == 2)
@@ -1029,7 +1072,10 @@ void NDSSFCProduceSound (unsigned int unused)
 //    if (!so.mute_sound)
 	{
 		unsigned bytes_to_write = sample_count;
-		if(so.sixteen_bit) bytes_to_write <<= 1;
+#ifndef FOREVER_16_BIT_SOUND
+		if(so.sixteen_bit)
+#endif
+			bytes_to_write <<= 1;
 
 		unsigned byte_offset = so.play_position;
 		so.play_position += bytes_to_write;

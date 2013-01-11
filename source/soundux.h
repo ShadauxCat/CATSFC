@@ -124,8 +124,12 @@ typedef struct {
     int buffer_size;
     int noise_gen;
     bool8 mute_sound;
+#ifndef FOREVER_STEREO
     int stereo;
+#endif
+#ifndef FOREVER_16_BIT_SOUND
     bool8 sixteen_bit;
+#endif
     bool8 encoded;
 #ifdef __sun
     int last_eof;

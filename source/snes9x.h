@@ -328,9 +328,13 @@ struct SSettings{
     /* Sound options */
     uint32 SoundPlaybackRate;
     bool8  TraceSoundDSP;
+#ifndef FOREVER_STEREO
     bool8  Stereo;
+#endif
     bool8  ReverseStereo;
+#ifndef FOREVER_16_BIT_SOUND
     bool8  SixteenBitSound;
+#endif
     int    SoundBufferSize;
     int    SoundMixInterval;
     bool8  SoundEnvelopeHeightReading;
