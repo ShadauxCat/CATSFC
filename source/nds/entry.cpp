@@ -883,17 +883,21 @@ bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
  * glitches and/or crashes (!) from occurring while sound is not being
  * generated.
  */
-bool8 IsSoundGenerated = FALSE;
+static volatile bool8 IsSoundGenerated = FALSE;
+/*
+ * Also prevent an interrupt from triggering on top of another one.
+ */
+static volatile bool8 InInterrupt = FALSE;
 
 void S9xGenerateSound ()
 {
+    block_signal = TRUE;
+
     int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
 			so.samples_mixed_so_far;
 
 	if (bytes_so_far >= so.buffer_size)
-		return;
-
-    block_signal = TRUE;
+		goto end;
 
     so.err_counter += so.err_rate;
     if (so.err_counter >= FIXED_POINT)
@@ -941,135 +945,49 @@ void S9xGenerateSound ()
 		} while (sample_count > 0);
     }
 
-    block_signal = FALSE;
 	IsSoundGenerated = TRUE;
+
+end:
 
     if (pending_signal)
     {
+		block_signal = FALSE;
+		pending_signal = FALSE;
 		// S9xProcessSound (0);
 		NDSSFCProduceSound (0);
-		pending_signal = FALSE;
     }
+    else
+		block_signal = FALSE;
 }
 
 void S9xProcessSound (unsigned int)
 {
-#if 0
-	unsigned short *audiobuff;
-
-	if (so.mute_sound || !game_enable_audio)
-		return;
-
-	if(ds2_checkAudiobuff() > 4)
-		return;
-
-	/* Number of samples to generate now */
-	int sample_count = so.buffer_size;
-
-	if (so.sixteen_bit)
-	{
-		/* to prevent running out of buffer space,
-		* create less samples
-		*/
-		sample_count >>= 1;
-	}
-
-	if (block_signal)
-	{
-		pending_signal = TRUE;
-		return;
-	}
-
-//	block_generate_sound = TRUE;
-
-	audiobuff = (unsigned short*)ds2_getAudiobuff();
-	if(NULL == audiobuff)	//There are audio queue in sending or wait to send
-	{
-		return;
-	}
-
-	/* If we need more audio samples */
-	if (so.samples_mixed_so_far < sample_count)
-	{
-		/* Where to put the samples to */
-		unsigned byte_offset = so.play_position + 
-		(so.sixteen_bit ? (so.samples_mixed_so_far << 1) : so.samples_mixed_so_far);
-
-		//printf ("%d:", sample_count - so.samples_mixed_so_far); fflush (stdout);
-		if (Settings.SoundSync == 2)
-		{
-			/*memset (Buf + (byte_offset & SOUND_BUFFER_SIZE_MASK), 0,
-			sample_count - so.samples_mixed_so_far);*/
-		}
-		else
-		{
-			/* Mix the missing samples */
-			S9xMixSamplesO (Buf, sample_count - so.samples_mixed_so_far,
-				byte_offset & SOUND_BUFFER_SIZE_MASK);
-		}
-		so.samples_mixed_so_far = sample_count;
-	}
-
-//    if (!so.mute_sound)
-	{
-		unsigned bytes_to_write = sample_count;
-		if(so.sixteen_bit) bytes_to_write <<= 1;
-
-		unsigned byte_offset = so.play_position;
-		so.play_position += bytes_to_write;
-		so.play_position &= SOUND_BUFFER_SIZE_MASK; /* wrap to beginning */
-
-//		block_generate_sound = FALSE;
-
-		unsigned short *dst_pt = audiobuff;
-		unsigned short *dst_pt1 = dst_pt + DS2_BUFFER_SIZE;
-
-		/* Feed the samples to the soundcard until nothing is left */
-		for(;;)
-		{
-			int I = bytes_to_write;
-			if (byte_offset + I > SOUND_BUFFER_SIZE)
-			{
-				I = SOUND_BUFFER_SIZE - byte_offset;
-			}
-			if(I == 0) break;
-
-//			memcpy(dst_pt, (char *) Buf + byte_offset, I);
-//			dst_pt += I;
-
-			unsigned short *src_pt= (unsigned short*)(Buf + byte_offset);
-			for(int m= 0; m < I/4; m++)
-			{
-				*dst_pt++= *src_pt++;//(*src_pt++) <<1;
-				*dst_pt1++= *src_pt++;//(*src_pt++) <<1;
-			}
-
-			bytes_to_write -= I;
-			byte_offset += I;
-			byte_offset &= SOUND_BUFFER_SIZE_MASK; /* wrap */
-		}
-
-		ds2_updateAudio();
-
-		/* All data sent. */
-	}
-
-	so.samples_mixed_so_far -= sample_count;
-#endif
+	// Nothing here! See the interrupt handling code below.
 }
 
 void NDSSFCProduceSound (unsigned int unused)
 {
+	if (InInterrupt)
+		return;
+
+	InInterrupt = TRUE;
+	if (block_signal)
+	{
+		pending_signal = TRUE;
+		goto end;
+	}
+
 	unsigned short *audiobuff;
 
 	if (Settings.Paused || !IsSoundGenerated || so.mute_sound || !game_enable_audio)
-		return;
+		goto end;
 
 	if(ds2_checkAudiobuff() > 4)
-		return;
+		goto end;
 
 	/* Number of samples to generate now */
-	int sample_count = so.buffer_size;
+	int sample_count;
+	sample_count = so.buffer_size;
 	if (so.sixteen_bit)
 	{
 		/* to prevent running out of buffer space,
@@ -1078,18 +996,12 @@ void NDSSFCProduceSound (unsigned int unused)
 		sample_count >>= 1;
 	}
 
-	if (block_signal)
-	{
-		pending_signal = TRUE;
-		return;
-	}
-
 //	block_generate_sound = TRUE;
 
 	audiobuff = (unsigned short*)ds2_getAudiobuff();
 	if(NULL == audiobuff)	//There are audio queue in sending or wait to send
 	{
-		return;
+		goto end;
 	}
 
 	/* If we need more audio samples */
@@ -1161,6 +1073,9 @@ void NDSSFCProduceSound (unsigned int unused)
 	IsSoundGenerated = FALSE;
 
 	so.samples_mixed_so_far -= sample_count;
+
+end:
+	InInterrupt = FALSE;
 }
 
 void Init_Timer (void)
