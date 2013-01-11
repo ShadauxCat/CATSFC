@@ -609,6 +609,7 @@ int sfc_main (int argc, char **argv)
 		if (Settings.Paused)
 		{
 			S9xSetSoundMute (TRUE);
+			mdelay(50); // to allow time for the screen to be drawn
 			unsigned short screen[256*192];
 
 			copy_screen((void*)screen, up_screen_addr, 0, 0, 256, 192);

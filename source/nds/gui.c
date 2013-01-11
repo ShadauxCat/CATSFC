@@ -3847,6 +3847,7 @@ u32 menu(u16 *screen)
 	ds2_flipScreen(DOWN_SCREEN, 1);
 	copy_screen(up_screen_addr, (void*) screen, 0, 0, 256, 192);
 	ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
+	mdelay(100);
 	ds2_setBacklight(2);
 
 	wait_Allkey_release(0);
