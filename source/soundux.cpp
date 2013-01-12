@@ -1135,9 +1135,10 @@ void MixStereo (int sample_count)
 				}
 				else
 				{
-					for (;VL > 0; VL--)
-						if ((noise_gen <<= 1) & 0x80000000L)
-							noise_gen ^= 0x0040001L;
+					// Snes9x 1.53's SPC_DSP.cpp, by blargg
+					int feedback = (noise_gen << 13) ^ (noise_gen << 14);
+					noise_gen = (feedback & 0x4000) ^ (noise_gen >> 1);
+					VL = 0;
 					ch->sample = (noise_gen << 17) >> 17;
 					ch->interpolate = 0;
 				}
