@@ -64,7 +64,7 @@ CFLAGS := -mips32 -mno-abicalls -fno-pic -fno-builtin \
 	      -fno-exceptions -ffunction-sections -mno-long-calls \
 	      -msoft-float -G 4 \
           -O3 -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
-          -fweb -funroll-loops
+          -fweb
 
 DEFS   := -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
           -DVAR_CYCLES -DCPU_SHUTDOWN -DSPC700_SHUTDOWN \
