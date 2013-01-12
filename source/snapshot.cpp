@@ -377,10 +377,17 @@ static FreezeData SnapAPURegisters [] = {
 #define OFFSET(f) Offset(f,SSoundData *)
 
 static FreezeData SnapSoundData [] = {
+#ifndef FOREVER_FORWARD_STEREO
     {OFFSET (master_volume_left), 2, INT_V},
     {OFFSET (master_volume_right), 2, INT_V},
     {OFFSET (echo_volume_left), 2, INT_V},
     {OFFSET (echo_volume_right), 2, INT_V},
+#else
+    {OFFSET (master_volume [0]), 2, INT_V},
+    {OFFSET (master_volume [1]), 2, INT_V},
+    {OFFSET (echo_volume [0]), 2, INT_V},
+    {OFFSET (echo_volume [1]), 2, INT_V},
+#endif
     {OFFSET (echo_enable), 4, INT_V},
     {OFFSET (echo_feedback), 4, INT_V},
     {OFFSET (echo_ptr), 4, INT_V},

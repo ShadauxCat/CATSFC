@@ -188,10 +188,12 @@ typedef struct {
 
 typedef struct
 {
+#ifndef FOREVER_FORWARD_STEREO
     short master_volume_left; /* range is -128 .. 127 */
     short master_volume_right; /* range is -128 .. 127 */
     short echo_volume_left; /* range is -128 .. 127 */
     short echo_volume_right; /* range is -128 .. 127 */
+#endif
     int echo_enable;
     int echo_feedback; /* range is -128 .. 127 */
     int echo_ptr;
@@ -203,8 +205,8 @@ typedef struct
     uint32 dummy [3];
     Channel channels [NUM_CHANNELS];
     bool8 no_filter;
-    int master_volume [2]; /* for reverse stereo */
-    int echo_volume [2]; /* for reverse stereo */
+    int master_volume [2]; /* range is -128 .. 127 */
+    int echo_volume [2]; /* range is -128 .. 127 */
     int noise_hertz;
 } SSoundData;
 

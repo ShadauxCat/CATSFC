@@ -261,8 +261,10 @@ void S9xSetMasterVolume (short volume_left, short volume_right)
 {
     if (Settings.DisableMasterVolume || SNESGameFixes.EchoOnlyOutput)
     {
+#ifndef FOREVER_FORWARD_STEREO
 		SoundData.master_volume_left = 127;
 		SoundData.master_volume_right = 127;
+#endif
 		SoundData.master_volume [0] = SoundData.master_volume [1] = 127;
     }
     else
@@ -271,10 +273,15 @@ void S9xSetMasterVolume (short volume_left, short volume_right)
 		if (!so.stereo)
 			volume_left = (ABS (volume_right) + ABS (volume_left)) / 2;
 #endif
+#ifndef FOREVER_FORWARD_STEREO
 		SoundData.master_volume_left = volume_left;
 		SoundData.master_volume_right = volume_right;
 		SoundData.master_volume [Settings.ReverseStereo] = volume_left;
 		SoundData.master_volume [1 ^ Settings.ReverseStereo] = volume_right;
+#else
+		SoundData.master_volume [0] = volume_left;
+		SoundData.master_volume [1] = volume_right;
+#endif
     }
 }
 
@@ -284,10 +291,15 @@ void S9xSetEchoVolume (short volume_left, short volume_right)
     if (!so.stereo)
 		volume_left = (ABS (volume_right) + ABS (volume_left)) / 2;
 #endif
+#ifndef FOREVER_FORWARD_STEREO
     SoundData.echo_volume_left = volume_left;
     SoundData.echo_volume_right = volume_right;
     SoundData.echo_volume [Settings.ReverseStereo] = volume_left;
     SoundData.echo_volume [1 ^ Settings.ReverseStereo] = volume_right;
+#else
+    SoundData.echo_volume [0] = volume_left;
+    SoundData.echo_volume [1] = volume_right;
+#endif
 }
 
 void S9xSetEchoEnable (uint8 byte)
@@ -378,10 +390,12 @@ void S9xFixSoundAfterSnapshotLoad ()
 		SoundData.channels [i].previous [0] = (int32) SoundData.channels [i].previous16 [0];
 		SoundData.channels [i].previous [1] = (int32) SoundData.channels [i].previous16 [1];
     }
+#ifndef FOREVER_FORWARD_STEREO
     SoundData.master_volume [Settings.ReverseStereo] = SoundData.master_volume_left;
     SoundData.master_volume [1 ^ Settings.ReverseStereo] = SoundData.master_volume_right;
     SoundData.echo_volume [Settings.ReverseStereo] = SoundData.echo_volume_left;
     SoundData.echo_volume [1 ^ Settings.ReverseStereo] = SoundData.echo_volume_right;
+#endif
     IAPU.Scanline = 0;
 }
 
@@ -1157,12 +1171,19 @@ void MixStereo (int sample_count)
 			}
 
 			if (pitch_mod & (1 << (J + 1)))
-			wave [I / 2] = ch->sample * ch->envx;
+				wave [I / 2] = ch->sample * ch->envx;
 
+#ifndef FOREVER_FORWARD_STEREO
 			MixBuffer [I      ^ Settings.ReverseStereo] += VL;
 			MixBuffer [I + (1 ^ Settings.ReverseStereo)] += VR;
 			ch->echo_buf_ptr [I      ^ Settings.ReverseStereo] += VL;
 			ch->echo_buf_ptr [I + (1 ^ Settings.ReverseStereo)] += VR;
+#else
+			MixBuffer [I    ] += VL;
+			MixBuffer [I + 1] += VR;
+			ch->echo_buf_ptr [I    ] += VL;
+			ch->echo_buf_ptr [I + 1] += VR;
+#endif
 		}
 stereo_exit: ;
 	}
@@ -1840,10 +1861,12 @@ void S9xResetSound (bool8 full)
 	
     if (full)
     {
+#ifndef FOREVER_FORWARD_STEREO
 		SoundData.master_volume_left = 0;
 		SoundData.master_volume_right = 0;
 		SoundData.echo_volume_left = 0;
 		SoundData.echo_volume_right = 0;
+#endif
 		SoundData.echo_enable = 0;
 		SoundData.echo_write_enabled = 0;
 		SoundData.echo_channel_enable = 0;
@@ -1857,9 +1880,11 @@ void S9xResetSound (bool8 full)
 		SoundData.echo_volume[1] = 0;
 		SoundData.noise_hertz = 0;
     }
-	
+
+#ifndef FOREVER_FORWARD_STEREO
     SoundData.master_volume_left = 127;
     SoundData.master_volume_right = 127;
+#endif
     SoundData.master_volume [0] = SoundData.master_volume [1] = 127;
     if (so.playback_rate)
 		so.err_rate = (uint32) (FIXED_POINT * SNES_SCANLINE_TIME / (1.0 / so.playback_rate));
