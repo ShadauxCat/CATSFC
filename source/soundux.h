@@ -122,7 +122,8 @@ typedef struct {
     int sound_switch;
     int playback_rate;
     int buffer_size;
-    int noise_gen;
+    // int noise_gen;
+    // Moved to soundux.cpp's noise_gen; this doesn't need volatility! [Neb]
     bool8 mute_sound;
 #ifndef FOREVER_STEREO
     int stereo;

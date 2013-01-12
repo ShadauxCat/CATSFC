@@ -142,6 +142,8 @@ extern int Loop [16];
 extern long FilterValues[4][2];
 extern int NoiseFreq [32];
 
+static int noise_gen;
+
 #undef ABS
 #define ABS(a) ((a) < 0 ? -(a) : (a))
 
@@ -1134,9 +1136,9 @@ void MixStereo (int sample_count)
 				else
 				{
 					for (;VL > 0; VL--)
-						if ((so.noise_gen <<= 1) & 0x80000000L)
-							so.noise_gen ^= 0x0040001L;
-					ch->sample = (so.noise_gen << 17) >> 17;
+						if ((noise_gen <<= 1) & 0x80000000L)
+							noise_gen ^= 0x0040001L;
+					ch->sample = (noise_gen << 17) >> 17;
 					ch->interpolate = 0;
 				}
 
@@ -1833,7 +1835,7 @@ void S9xResetSound (bool8 full)
     FilterTaps [6] = 0;
     FilterTaps [7] = 0;
     so.mute_sound = TRUE;
-    so.noise_gen = 1;
+    noise_gen = 1;
     so.sound_switch = 255;
     so.samples_mixed_so_far = 0;
     so.play_position = 0;
