@@ -188,12 +188,12 @@ typedef struct {
 
 typedef struct
 {
-    short master_volume_left;
-    short master_volume_right;
-    short echo_volume_left;
-    short echo_volume_right;
+    short master_volume_left; /* range is -128 .. 127 */
+    short master_volume_right; /* range is -128 .. 127 */
+    short echo_volume_left; /* range is -128 .. 127 */
+    short echo_volume_right; /* range is -128 .. 127 */
     int echo_enable;
-    int echo_feedback;
+    int echo_feedback; /* range is -128 .. 127 */
     int echo_ptr;
     int echo_buffer_size;
     int echo_write_enabled;
@@ -203,8 +203,8 @@ typedef struct
     uint32 dummy [3];
     Channel channels [NUM_CHANNELS];
     bool8 no_filter;
-    int master_volume [2];
-    int echo_volume [2];
+    int master_volume [2]; /* for reverse stereo */
+    int echo_volume [2]; /* for reverse stereo */
     int noise_hertz;
 } SSoundData;
 
