@@ -373,7 +373,6 @@ void S9xFixSoundAfterSnapshotLoad ()
     {
 		SoundData.channels[i].needs_decode = TRUE;
 		S9xSetSoundFrequency (i, SoundData.channels[i].hertz);
-		SoundData.channels [i].envxx = SoundData.channels [i].envx << ENVX_SHIFT;
 		SoundData.channels [i].next_sample = 0;
 		SoundData.channels [i].interpolate = 0;
 		SoundData.channels [i].previous [0] = (int32) SoundData.channels [i].previous16 [0];
@@ -429,7 +428,6 @@ void S9xSetEnvelopeHeight (int channel, int level)
     Channel *ch = &SoundData.channels[channel];
 	
     ch->envx = level;
-    ch->envxx = level << ENVX_SHIFT;
 	
     ch->left_vol_level = (level * ch->volume_left) / 128;
     ch->right_vol_level = (level * ch->volume_right) / 128;
@@ -930,18 +928,17 @@ void MixStereo (int sample_count)
 			if (ch->env_error >= FIXED_POINT) 
 			{
 				uint32 step = ch->env_error >> FIXED_POINT_SHIFT;
+				int32 envx_shifted;
 
 				switch (ch->state)
 				{
 				case SOUND_ATTACK:
 					ch->env_error &= FIXED_POINT_REMAINDER;
 					ch->envx += step << 1;
-					ch->envxx = ch->envx << ENVX_SHIFT;
 
 					if (ch->envx >= 126)
 					{
 						ch->envx = 127;
-						ch->envxx = 127 << ENVX_SHIFT;
 						ch->state = SOUND_DECAY;
 						if (ch->sustain_level != 8) 
 						{
@@ -956,12 +953,13 @@ void MixStereo (int sample_count)
 					break;
 
 				case SOUND_DECAY:
+					envx_shifted = ch->envx << ENVX_SHIFT;
 					while (ch->env_error >= FIXED_POINT)
 					{
-						ch->envxx = (ch->envxx >> 8) * 255;
+						envx_shifted = (envx_shifted >> 8) * 255;
 						ch->env_error -= FIXED_POINT;
 					}
-					ch->envx = ch->envxx >> ENVX_SHIFT;
+					ch->envx = envx_shifted >> ENVX_SHIFT;
 					if (ch->envx <= ch->envx_target)
 					{
 						if (ch->envx <= 0)
@@ -975,12 +973,13 @@ void MixStereo (int sample_count)
 					break;
 
 				case SOUND_SUSTAIN:
+					envx_shifted = ch->envx << ENVX_SHIFT;
 					while (ch->env_error >= FIXED_POINT)
 					{
-						ch->envxx = (ch->envxx >> 8) * 255;
+						envx_shifted = (envx_shifted >> 8) * 255;
 						ch->env_error -= FIXED_POINT;
 					}
-					ch->envx = ch->envxx >> ENVX_SHIFT;
+					ch->envx = envx_shifted >> ENVX_SHIFT;
 					if (ch->envx <= 0)
 					{
 						S9xAPUSetEndOfSample (J, ch);
@@ -989,12 +988,13 @@ void MixStereo (int sample_count)
 					break;
 
 				case SOUND_RELEASE:
+					envx_shifted = ch->envx << ENVX_SHIFT;
 					while (ch->env_error >= FIXED_POINT)
 					{
-						ch->envxx -= (MAX_ENVELOPE_HEIGHT << ENVX_SHIFT) / 256;
+						envx_shifted -= (MAX_ENVELOPE_HEIGHT << ENVX_SHIFT) / 256;
 						ch->env_error -= FIXED_POINT;
 					}
-					ch->envx = ch->envxx >> ENVX_SHIFT;
+					ch->envx = envx_shifted >> ENVX_SHIFT;
 					if (ch->envx <= 0)
 					{
 						S9xAPUSetEndOfSample (J, ch);
@@ -1005,12 +1005,10 @@ void MixStereo (int sample_count)
 				case SOUND_INCREASE_LINEAR:
 					ch->env_error &= FIXED_POINT_REMAINDER;
 					ch->envx += step << 1;
-					ch->envxx = ch->envx << ENVX_SHIFT;
 
 					if (ch->envx >= 126)
 					{
 						ch->envx = 127;
-						ch->envxx = 127 << ENVX_SHIFT;
 						ch->state = SOUND_GAIN;
 						ch->mode = MODE_GAIN;
 						S9xSetEnvRate (ch, 0, -1, 0);
@@ -1020,24 +1018,23 @@ void MixStereo (int sample_count)
 				case SOUND_INCREASE_BENT_LINE:
 					if (ch->envx >= (MAX_ENVELOPE_HEIGHT * 3) / 4)
 					{
+						envx_shifted = ch->envx << ENVX_SHIFT;
 						while (ch->env_error >= FIXED_POINT)
 						{
-							ch->envxx += (MAX_ENVELOPE_HEIGHT << ENVX_SHIFT) / 256;
+							envx_shifted += (MAX_ENVELOPE_HEIGHT << ENVX_SHIFT) / 256;
 							ch->env_error -= FIXED_POINT;
 						}
-						ch->envx = ch->envxx >> ENVX_SHIFT;
+						ch->envx = envx_shifted >> ENVX_SHIFT;
 					}
 					else
 					{
 						ch->env_error &= FIXED_POINT_REMAINDER;
 						ch->envx += step << 1;
-						ch->envxx = ch->envx << ENVX_SHIFT;
 					}
 
 					if (ch->envx >= 126)
 					{
 						ch->envx = 127;
-						ch->envxx = 127 << ENVX_SHIFT;
 						ch->state = SOUND_GAIN;
 						ch->mode = MODE_GAIN;
 						S9xSetEnvRate (ch, 0, -1, 0);
@@ -1047,7 +1044,6 @@ void MixStereo (int sample_count)
 				case SOUND_DECREASE_LINEAR:
 					ch->env_error &= FIXED_POINT_REMAINDER;
 					ch->envx -= step << 1;
-					ch->envxx = ch->envx << ENVX_SHIFT;
 					if (ch->envx <= 0)
 					{
 						S9xAPUSetEndOfSample (J, ch);
@@ -1056,12 +1052,13 @@ void MixStereo (int sample_count)
 					break;
 
 				case SOUND_DECREASE_EXPONENTIAL:
+					envx_shifted = ch->envx << ENVX_SHIFT;
 					while (ch->env_error >= FIXED_POINT)
 					{
-						ch->envxx = (ch->envxx >> 8) * 255;
+						envx_shifted = (envx_shifted >> 8) * 255;
 						ch->env_error -= FIXED_POINT;
 					}
-					ch->envx = ch->envxx >> ENVX_SHIFT;
+					ch->envx = envx_shifted >> ENVX_SHIFT;
 					if (ch->envx <= 0)
 					{
 						S9xAPUSetEndOfSample (J, ch);
@@ -1800,7 +1797,7 @@ END_OF_FUNCTION(S9xMixSamples);
 
 void S9xResetSound (bool8 full)
 {
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < NUM_CHANNELS; i++)
     {
 		SoundData.channels[i].state = SOUND_SILENT;
 		SoundData.channels[i].mode = MODE_NONE;
@@ -1814,7 +1811,6 @@ void S9xResetSound (bool8 full)
 		SoundData.channels[i].env_error = 0;
 		SoundData.channels[i].erate = 0;
 		SoundData.channels[i].envx = 0;
-		SoundData.channels[i].envxx = 0;
 		SoundData.channels[i].left_vol_level = 0;
 		SoundData.channels[i].right_vol_level = 0;
 		SoundData.channels[i].direction = 0;
@@ -1979,7 +1975,6 @@ void S9xPlaySample (int channel)
     ch->state = SOUND_SILENT;
     ch->mode = MODE_NONE;
     ch->envx = 0;
-    ch->envxx = 0;
 	
     S9xFixEnvelope (channel,
 		APU.DSP [APU_GAIN  + (channel << 4)], 
@@ -2032,7 +2027,6 @@ void S9xPlaySample (int channel)
 			ch->right_vol_level = 0;
 			S9xSetEnvRate (ch, ch->attack_rate, 1, MAX_ENVELOPE_HEIGHT);
 		}
-		ch->envxx = ch->envx << ENVX_SHIFT;
 		break;
 		
     case MODE_GAIN:
