@@ -178,6 +178,7 @@ typedef struct {
     uint32 sample_pointer;
     int *echo_buf_ptr;
     int mode;
+    int32 envxx;
     signed short next_sample;
     int32 interpolate;
     int32 previous [2];
