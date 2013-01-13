@@ -928,7 +928,7 @@ void S9xGenerateSound ()
 		if (so.stereo)
 #endif
 			samples_to_write <<= 1;
-		int byte_offset = bytes_so_far + so.play_position;
+		int byte_offset = (bytes_so_far + so.play_position) & SOUND_BUFFER_SIZE_MASK;
 
 		so.err_counter &= FIXED_POINT_REMAINDER;
 
@@ -940,9 +940,9 @@ void S9xGenerateSound ()
 #endif
 				bytes_this_run <<= 1;
 
-			if ((byte_offset & SOUND_BUFFER_SIZE_MASK) + bytes_this_run > SOUND_BUFFER_SIZE)
+			if (byte_offset + bytes_this_run > SOUND_BUFFER_SIZE)
 			{
-				bytes_this_run = SOUND_BUFFER_SIZE - (byte_offset & SOUND_BUFFER_SIZE_MASK);
+				bytes_this_run = SOUND_BUFFER_SIZE - byte_offset;
 			}
 
 			if (bytes_so_far + bytes_this_run > so.buffer_size)
@@ -958,7 +958,7 @@ void S9xGenerateSound ()
 #endif
 				samples_this_run >>= 1;
 
-			S9xMixSamplesO (Buf, samples_this_run, byte_offset & SOUND_BUFFER_SIZE_MASK);
+			S9xMixSamples (Buf + byte_offset, samples_this_run);
 			so.samples_mixed_so_far += samples_this_run;
 			samples_to_write -= samples_this_run;
 #ifndef FOREVER_16_BIT_SOUND
@@ -1026,8 +1026,6 @@ void NDSSFCProduceSound (unsigned int unused)
 	}
 #endif
 
-//	block_generate_sound = TRUE;
-
 	audiobuff = (unsigned short*)ds2_getAudiobuff();
 	if(NULL == audiobuff)	//There are audio queue in sending or wait to send
 	{
@@ -1039,11 +1037,11 @@ void NDSSFCProduceSound (unsigned int unused)
 	{
 		/* Where to put the samples to */
 #ifndef FOREVER_16_BIT_SOUND
-		unsigned byte_offset = so.play_position + 
-		(so.sixteen_bit ? (so.samples_mixed_so_far << 1) : so.samples_mixed_so_far);
+		unsigned byte_offset = (so.play_position + 
+		(so.sixteen_bit ? (so.samples_mixed_so_far << 1) : so.samples_mixed_so_far)) & SOUND_BUFFER_SIZE_MASK;
 #else
-		unsigned byte_offset = so.play_position + 
-		(so.samples_mixed_so_far << 1);
+		unsigned byte_offset = (so.play_position + 
+		(so.samples_mixed_so_far << 1)) & SOUND_BUFFER_SIZE_MASK;
 #endif
 
 		//printf ("%d:", sample_count - so.samples_mixed_so_far); fflush (stdout);
@@ -1071,9 +1069,9 @@ void NDSSFCProduceSound (unsigned int unused)
 #endif
 					bytes_this_run <<= 1;
 
-				if ((byte_offset & SOUND_BUFFER_SIZE_MASK) + bytes_this_run > SOUND_BUFFER_SIZE)
+				if (byte_offset + bytes_this_run > SOUND_BUFFER_SIZE)
 				{
-					bytes_this_run = SOUND_BUFFER_SIZE - (byte_offset & SOUND_BUFFER_SIZE_MASK);
+					bytes_this_run = SOUND_BUFFER_SIZE - byte_offset;
 				}
 
 				if (bytes_so_far + bytes_this_run > so.buffer_size)
@@ -1089,7 +1087,7 @@ void NDSSFCProduceSound (unsigned int unused)
 #endif
 					samples_this_run >>= 1;
 
-				S9xMixSamplesO (Buf, samples_this_run, byte_offset & SOUND_BUFFER_SIZE_MASK);
+				S9xMixSamples (Buf + byte_offset, samples_this_run);
 				so.samples_mixed_so_far += samples_this_run;
 				samples_to_write -= samples_this_run;
 #ifndef FOREVER_16_BIT_SOUND
@@ -1112,10 +1110,7 @@ void NDSSFCProduceSound (unsigned int unused)
 			bytes_to_write <<= 1;
 
 		unsigned byte_offset = so.play_position;
-		so.play_position += bytes_to_write;
-		so.play_position &= SOUND_BUFFER_SIZE_MASK; /* wrap to beginning */
-
-//		block_generate_sound = FALSE;
+		so.play_position = (so.play_position + bytes_to_write) & SOUND_BUFFER_SIZE_MASK; /* wrap to beginning */
 
 		unsigned short *dst_pt = audiobuff;
 		unsigned short *dst_pt1 = dst_pt + DS2_BUFFER_SIZE;
@@ -1141,8 +1136,7 @@ void NDSSFCProduceSound (unsigned int unused)
 			}
 
 			bytes_to_write -= I;
-			byte_offset += I;
-			byte_offset &= SOUND_BUFFER_SIZE_MASK; /* wrap */
+			byte_offset = (byte_offset + I) & SOUND_BUFFER_SIZE_MASK; /* wrap */
 		}
 
 		ds2_updateAudio();
