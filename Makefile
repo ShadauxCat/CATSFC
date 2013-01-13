@@ -43,10 +43,10 @@ CPP_SOURCES = source/apu.cpp source/apudebug.cpp source/c4.cpp \
               source/dma.cpp source/dsp1.cpp \
               source/fxdbg.cpp source/fxemu.cpp source/fxinst.cpp \
               source/gfx.cpp source/globals.cpp source/loadzip.cpp \
-              source/memmap.cpp source/movie.cpp source/netplay.cpp \
+              source/memmap.cpp source/movie.cpp \
               source/obc1.cpp source/ppu.cpp \
               source/sa1.cpp source/sa1cpu.cpp source/screenshot.cpp \
-              source/sdd1.cpp source/sdd1emu.cpp source/server.cpp \
+              source/sdd1.cpp source/sdd1emu.cpp \
               source/seta010.cpp source/seta011.cpp source/seta018.cpp \
               source/seta.cpp source/snaporig.cpp source/snapshot.cpp \
               source/soundux.cpp \
