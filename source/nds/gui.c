@@ -1652,7 +1652,6 @@ unsigned int frame_interval;
 u32 menu(u16 *screen)
 {
 	stopTimer(0 /* timer interrupt channel for sound */);
-	mdelay(100); // to prevent ds2_setBacklight() from freezing/crashing
     gui_action_type gui_action;
     u32 i;
     u32 repeat;
@@ -3386,7 +3385,7 @@ u32 menu(u16 *screen)
 //----------------------------------------------------------------------------//
 //	Menu Start
 	ds2_setCPUclocklevel(0);
-	// mdelay(200); // Delete this delay
+	mdelay(100); // to prevent ds2_setBacklight() from crashing
 	ds2_setBacklight(3);
 	
 	
@@ -3419,13 +3418,11 @@ u32 menu(u16 *screen)
 	}
 
 	choose_menu(&main_menu);
+
 //	Menu loop
 	
 	while(repeat)
 	{
-	
-		
-	
 		display_option = current_menu->options;
 		string_select= 0;
 
@@ -3844,13 +3841,14 @@ u32 menu(u16 *screen)
 	set_cpu_clock(clock_speed_number);
 	
 	ds2_clearScreen(DOWN_SCREEN, 0);
-	ds2_flipScreen(DOWN_SCREEN, 1);
+	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 	copy_screen(up_screen_addr, (void*) screen, 0, 0, 256, 192);
 	ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
-	mdelay(100);
+	wait_Allkey_release(0);
+
+	mdelay(100); // to prevent ds2_setBacklight() from crashing
 	ds2_setBacklight(2);
 
-	wait_Allkey_release(0);
 	runTimer(0 /* timer interrupt channel for sound */);
 
 	return return_value;
