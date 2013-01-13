@@ -35,7 +35,6 @@ static u8 Buf[MAX_BUFFER_SIZE];
 #define FIXED_POINT_REMAINDER 0xffff
 
 static volatile bool8 block_signal = FALSE;
-static volatile bool8 block_generate_sound = FALSE;
 static volatile bool8 pending_signal = FALSE;
 
 static void Init_Timer (void);
@@ -909,88 +908,82 @@ static volatile bool8 InInterrupt = FALSE;
 
 void S9xGenerateSound ()
 {
-    block_signal = TRUE;
+	block_signal = TRUE;
 
 #ifndef FOREVER_16_BIT_SOUND
-    int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
-			so.samples_mixed_so_far;
+	int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
+		so.samples_mixed_so_far;
 #else
-    int bytes_so_far = so.samples_mixed_so_far << 1;
+	int bytes_so_far = so.samples_mixed_so_far << 1;
 #endif
 
 	if (bytes_so_far >= so.buffer_size)
 		goto end;
 
-    so.err_counter += so.err_rate;
-    if (so.err_counter >= FIXED_POINT)
-    {
-        int sample_count = so.err_counter >> FIXED_POINT_SHIFT;
-		int byte_offset;
-		int byte_count;
-
-        so.err_counter &= FIXED_POINT_REMAINDER;
+	so.err_counter += so.err_rate;
+	if (so.err_counter >= FIXED_POINT)
+	{
+		// Write this many samples overall
+		int samples_to_write = so.err_counter >> FIXED_POINT_SHIFT;
 #ifndef FOREVER_STEREO
 		if (so.stereo)
 #endif
-			sample_count <<= 1;
-		byte_offset = bytes_so_far + so.play_position;
+			samples_to_write <<= 1;
+		int byte_offset = bytes_so_far + so.play_position;
+
+		so.err_counter &= FIXED_POINT_REMAINDER;
 
 		do
 		{
-			int sc = sample_count;
-			byte_count = sample_count;
+			int bytes_this_run = samples_to_write;
 #ifndef FOREVER_16_BIT_SOUND
 			if (so.sixteen_bit)
 #endif
-				byte_count <<= 1;
+				bytes_this_run <<= 1;
 
-			if ((byte_offset & SOUND_BUFFER_SIZE_MASK) + byte_count > SOUND_BUFFER_SIZE)
+			if ((byte_offset & SOUND_BUFFER_SIZE_MASK) + bytes_this_run > SOUND_BUFFER_SIZE)
 			{
-				sc = SOUND_BUFFER_SIZE - (byte_offset & SOUND_BUFFER_SIZE_MASK);
-				byte_count = sc;
-#ifndef FOREVER_16_BIT_SOUND
-				if (so.sixteen_bit)
-#endif
-					sc >>= 1;
+				bytes_this_run = SOUND_BUFFER_SIZE - (byte_offset & SOUND_BUFFER_SIZE_MASK);
 			}
 
-			if (bytes_so_far + byte_count > so.buffer_size)
+			if (bytes_so_far + bytes_this_run > so.buffer_size)
 			{
-				byte_count = so.buffer_size - bytes_so_far;
-				if (byte_count == 0)
+				bytes_this_run = so.buffer_size - bytes_so_far;
+				if (bytes_this_run == 0)
 					break;
-				sc = byte_count;
-#ifndef FOREVER_16_BIT_SOUND
-				if (so.sixteen_bit)
-#endif
-					sc >>= 1;
 			}
 
-			S9xMixSamplesO (Buf, sc, byte_offset & SOUND_BUFFER_SIZE_MASK);
-			so.samples_mixed_so_far += sc;
-			sample_count -= sc;
+			int samples_this_run = bytes_this_run;
 #ifndef FOREVER_16_BIT_SOUND
-			bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
-				so.samples_mixed_so_far;
-#else
-			bytes_so_far = so.samples_mixed_so_far << 1;
+			if (so.sixteen_bit)
 #endif
-			byte_offset += byte_count;
-		} while (sample_count > 0);
-    }
+				samples_this_run >>= 1;
+
+			S9xMixSamplesO (Buf, samples_this_run, byte_offset & SOUND_BUFFER_SIZE_MASK);
+			so.samples_mixed_so_far += samples_this_run;
+			samples_to_write -= samples_this_run;
+#ifndef FOREVER_16_BIT_SOUND
+			bytes_so_far += so.sixteen_bit ? (samples_this_run << 1) :
+				samples_this_run;
+#else
+			bytes_so_far += samples_this_run << 1;
+#endif
+			byte_offset = (byte_offset + bytes_this_run) & SOUND_BUFFER_SIZE_MASK;
+		} while (samples_to_write > 0);
+	}
 
 	IsSoundGenerated = TRUE;
 
 end:
 
-    if (pending_signal)
-    {
+	if (pending_signal)
+	{
 		block_signal = FALSE;
 		pending_signal = FALSE;
 		// S9xProcessSound (0);
 		NDSSFCProduceSound (0);
-    }
-    else
+	}
+	else
 		block_signal = FALSE;
 }
 
@@ -1063,10 +1056,52 @@ void NDSSFCProduceSound (unsigned int unused)
 		else
 		{
 			/* Mix the missing samples */
-			S9xMixSamplesO (Buf, sample_count - so.samples_mixed_so_far,
-				byte_offset & SOUND_BUFFER_SIZE_MASK);
+#ifndef FOREVER_16_BIT_SOUND
+			int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
+				so.samples_mixed_so_far;
+#else
+			int bytes_so_far = so.samples_mixed_so_far << 1;
+#endif
+
+			uint32 samples_to_write = sample_count - so.samples_mixed_so_far;
+			do
+			{
+				int bytes_this_run = samples_to_write;
+#ifndef FOREVER_16_BIT_SOUND
+				if (so.sixteen_bit)
+#endif
+					bytes_this_run <<= 1;
+
+				if ((byte_offset & SOUND_BUFFER_SIZE_MASK) + bytes_this_run > SOUND_BUFFER_SIZE)
+				{
+					bytes_this_run = SOUND_BUFFER_SIZE - (byte_offset & SOUND_BUFFER_SIZE_MASK);
+				}
+
+				if (bytes_so_far + bytes_this_run > so.buffer_size)
+				{
+					bytes_this_run = so.buffer_size - bytes_so_far;
+					if (bytes_this_run == 0)
+						break;
+				}
+
+				int samples_this_run = bytes_this_run;
+#ifndef FOREVER_16_BIT_SOUND
+				if (so.sixteen_bit)
+#endif
+					samples_this_run >>= 1;
+
+				S9xMixSamplesO (Buf, samples_this_run, byte_offset & SOUND_BUFFER_SIZE_MASK);
+				so.samples_mixed_so_far += samples_this_run;
+				samples_to_write -= samples_this_run;
+#ifndef FOREVER_16_BIT_SOUND
+				bytes_so_far += so.sixteen_bit ? (samples_this_run << 1) :
+					samples_this_run;
+#else
+				bytes_so_far += samples_this_run << 1;
+#endif
+				byte_offset = (byte_offset + bytes_this_run) & SOUND_BUFFER_SIZE_MASK;
+			} while (samples_to_write > 0);
 		}
-		so.samples_mixed_so_far = sample_count;
 	}
 
 //    if (!so.mute_sound)
