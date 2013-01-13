@@ -3838,7 +3838,6 @@ u32 menu(u16 *screen)
 		save_game_config_file();
 	}
 	save_emu_config_file();
-	set_cpu_clock(clock_speed_number);
 	
 	ds2_clearScreen(DOWN_SCREEN, 0);
 	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
@@ -3848,6 +3847,8 @@ u32 menu(u16 *screen)
 
 	mdelay(100); // to prevent ds2_setBacklight() from crashing
 	ds2_setBacklight(2);
+
+	set_cpu_clock(clock_speed_number);
 
 	runTimer(0 /* timer interrupt channel for sound */);
 
