@@ -891,7 +891,7 @@ void DecodeBlock (Channel *ch)
 }
 
 
-void MixStereo (int sample_count)
+static inline void MixStereo (int sample_count)
 {
 	static int wave[SOUND_BUFFER_SIZE];
 
@@ -1152,7 +1152,6 @@ void MixStereo (int sample_count)
 					// Snes9x 1.53's SPC_DSP.cpp, by blargg
 					int feedback = (noise_gen << 13) ^ (noise_gen << 14);
 					noise_gen = (feedback & 0x4000) ^ (noise_gen >> 1);
-					VL = 0;
 					ch->sample = (noise_gen << 17) >> 17;
 					ch->interpolate = 0;
 				}
@@ -1197,7 +1196,7 @@ END_OF_FUNCTION(MixStereo);
 #endif
 
 #ifndef FOREVER_STEREO
-void MixMono (int sample_count)
+static inline void MixMono (int sample_count)
 {
     static int wave[SOUND_BUFFER_SIZE];
 
