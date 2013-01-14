@@ -798,17 +798,11 @@ u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
 		screen_addr = down_screen_addr;
 
     i= SCREEN_WIDTH/2 - box_width - 2;
-//    drawbox(screen_address, i, sy-1, i+box_width-1, sy+FONTS_HEIGHT, COLOR16(8, 8, 8));
-//    drawboxfill(screen_address, i+1, sy, i+box_width-2, sy+FONTS_HEIGHT-1, COLOR16(15, 15, 15));
 	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 49, 128);
-//    draw_string_vcenter(screen_address, i+1, sy+1, box_width, COLOR_WHITE, yes);
     draw_string_vcenter((unsigned short*)screen_addr, 51, 130, 73, COLOR_WHITE, yes);
 
     i= SCREEN_WIDTH/2 + 3;
-//    drawbox(screen_address, i, sy-1, i+box_width-1, sy+FONTS_HEIGHT, COLOR16(8, 8, 8));
-//    drawboxfill(screen_address, i+1, sy, i+box_width-2, sy+FONTS_HEIGHT-1, COLOR16(15, 15, 15));
 	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 136, 128);
-//    draw_string_vcenter(screen_address, i+1, sy+1, box_width, COLOR_WHITE, no);
     draw_string_vcenter((unsigned short*)screen_addr, 138, 130, 73, COLOR_WHITE, no);
 
 	ds2_flipScreen(screen, 2);
@@ -829,8 +823,7 @@ u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
 				gui_action = CURSOR_BACK;
 		}
 	}
-//        OSTimeDly(OS_TICKS_PER_SEC/10);
-		mdelay(100);
+	mdelay(16);
     }
 
     if (gui_action == CURSOR_SELECT)
