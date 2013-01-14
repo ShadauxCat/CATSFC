@@ -813,6 +813,7 @@ u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
         gui_action = get_gui_input();
 	if (gui_action == CURSOR_TOUCH)
 	{
+		struct key_buf inputdata;
 		ds2_getrawInput(&inputdata);
 		// Turn it into a SELECT (A) or BACK (B) if the button is touched.
 		if (inputdata.y >= 128 && inputdata.y < 128 + ICON_BUTTON.y)
