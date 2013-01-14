@@ -77,8 +77,8 @@ EMU_CONFIG emu_config;
 GAME_CONFIG game_config;
 
 //save state file map
-char savestate_map[SAVE_STATE_SLOT_NUM];
-static u32 savestate_index;
+static u32 savestate_index; // current selection in the saved states menu
+static u32 latest_save; // Slot number of the latest (in time) save for this game
 
 #define MAKE_MENU(name, init_function, passive_function, key_function, end_function, \
 	focus_option, screen_focus)												  \
@@ -282,8 +282,8 @@ u32 gamepad_config_menu;
 static void get_savestate_filelist(void);
 static FILE* get_savestate_snapshot(char *savestate_filename);
 static void get_savestate_filename(u32 slot, char *name_buffer);
-static u32 get_savestate_slot(void);
-static void reorder_savestate_slot(void);
+static uint8 SavedStateSquareX (u32 slot);
+static bool8 SavedStateFileExists (u32 slot);
 void get_newest_savestate(char *name_buffer);
 static int sort_function(const void *dest_str_ptr, const void *src_str_ptr);
 static u32 parse_line(char *current_line, char *current_str);
@@ -1863,31 +1863,28 @@ u32 menu(u16 *screen)
 		get_savestate_filename(slot_index, tmp_filename);
 		sprintf(line_buffer, "%s/%s", DEFAULT_RTS_DIR, tmp_filename);
 		remove(line_buffer);
-		if(savestate_map[slot_index] > 0)
-			savestate_map[slot_index]= -savestate_map[slot_index];
-		reorder_savestate_slot();
 	}
 
     void savestate_selitem(u32 selected, u32 y_pos)
     {
         u32 k;
 
-        for(k= 0; k < 10; k++)	//Only display 10 slot
+        for(k= 0; k < SAVE_STATE_SLOT_NUM; k++)
         {
-			if(selected != k)
-			{
-				if(savestate_map[k] > 0)	//full
-					show_icon((unsigned short*)down_screen_addr, &ICON_NSTATEFULL, 28+k*21, y_pos);
-				else
-					show_icon((unsigned short*)down_screen_addr, &ICON_NSTATEEMPTY, 28+k*21, y_pos);
-			}
-			else	//Highlight
-			{
-				if(savestate_map[k] > 0)	//full
-					show_icon((unsigned short*)down_screen_addr, &ICON_STATEFULL, 28+k*21, y_pos);
-				else
-					show_icon((unsigned short*)down_screen_addr, &ICON_STATEEMPTY, 28+k*21, y_pos);
-			}
+		struct gui_iconlist *icon;
+		bool8 Exists = SavedStateFileExists (k);
+		uint8 X = SavedStateSquareX (k);
+
+		if (selected == k && Exists)
+			icon = &ICON_STATEFULL;
+		else if (selected == k && !Exists)
+			icon = &ICON_STATEEMPTY;
+		else if (selected != k && Exists)
+			icon = &ICON_NSTATEFULL;
+		else if (selected != k && !Exists)
+			icon = &ICON_NSTATEEMPTY;
+
+		show_icon((unsigned short *) down_screen_addr, icon, X, y_pos);
         }
     }
 
@@ -1944,16 +1941,8 @@ u32 menu(u16 *screen)
 		unsigned int selected;
 
 		selected = -1;
-		//write save
-        slot_index= get_savestate_slot();
 
-        sprintf(line_buffer, "%d", (slot_index+2) > SAVE_STATE_SLOT_NUM ? SAVE_STATE_SLOT_NUM : (slot_index+2));
-        PRINT_STRING_BG(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, 146, 40 + 0*27);
-		if(current_option_num == 1)
-			selected = slot_index+1;
-
-		//Read save
-		if(current_option_num == 2)
+		if(current_option_num == 1 /* write */ || current_option_num == 2 /* read */)
 			selected = savestate_index;
 
 		savestate_selitem(selected, 93);
@@ -2019,28 +2008,19 @@ u32 menu(u16 *screen)
 	{
 		if(gui_action == CURSOR_SELECT)
 		{
-			//The slot is empty
 			if(!first_load)
 			{
-				u32 key;
-				s32 slot_index;
-
-				slot_index= get_savestate_slot();
-				//the slot already have a savestate file
-				if(slot_index >= 9)
+				if (SavedStateFileExists (savestate_index))
 				{
 					draw_message(down_screen_addr, NULL, 28, 31, 227, 165, 0);
 					draw_string_vcenter(down_screen_addr, 36, 74, 190, COLOR_MSSG, msg[MSG_SAVESTATE_FULL]);
 					if(draw_yesno_dialog(DOWN_SCREEN, 115, msg[MSG_GENERAL_CONFIRM_WITH_A], msg[MSG_GENERAL_CANCEL_WITH_B]) == 0)
 						return;
 
-					clear_savestate_slot(0);
+					clear_savestate_slot(savestate_index);
 				}
-				else
-					slot_index += 1;
 
-				savestate_map[slot_index]= -savestate_map[slot_index];
-				get_savestate_filename(slot_index, tmp_filename);
+				get_savestate_filename(savestate_index, tmp_filename);
 
 				draw_message(down_screen_addr, NULL, 28, 31, 227, 165, 0);
 				draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CREATING]);
@@ -2052,12 +2032,10 @@ u32 menu(u16 *screen)
 				if(flag < 0)
 				{
 					draw_string_vcenter(down_screen_addr, 36, 74, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CREATION_FAILED]);
-					savestate_map[slot_index]= -savestate_map[slot_index];
 				}
 				else
 				{
 					draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CREATION_SUCCEEDED]);
-					savestate_index = slot_index;
 				}
 
 				ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
@@ -2066,7 +2044,7 @@ u32 menu(u16 *screen)
 				reorder_latest_file();
 				save_game_config_file();
 
-				// mdelay(500); // Delete this delay
+				mdelay(500); // let the progress message linger
 			}
 		}
 	}
@@ -2085,8 +2063,7 @@ u32 menu(u16 *screen)
 			else
 				bg_screenp_color = COLOR_BG;
 
-			//Slot not emtpy
-			if(savestate_map[savestate_index] > 0)
+			if(SavedStateFileExists(savestate_index))
 			{
 				get_savestate_filename(savestate_index, tmp_filename);
 				sprintf(line_buffer, "%s/%s", DEFAULT_RTS_DIR, tmp_filename);
@@ -2122,7 +2099,10 @@ u32 menu(u16 *screen)
 						draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_LOAD_SUCCEEDED]);
 					}
 					else
+					{
 						draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_LOAD_FAILED]);
+						mdelay(500); // let the failure show
+					}
 				}
 				else	//load screen snapshot
 				{
@@ -2133,7 +2113,7 @@ u32 menu(u16 *screen)
 			{
 				ds2_clearScreen(UP_SCREEN, COLOR_BLACK);
 				draw_string_vcenter(up_screen_addr, 36, 75, 190, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT]);
-				ds2_flipScreen(UP_SCREEN, 1);
+				ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 			}
 		}
 	}
@@ -2160,7 +2140,7 @@ u32 menu(u16 *screen)
 
 				flag= 0;
 				for(i= 0; i < SAVE_STATE_SLOT_NUM; i++)
-					if(savestate_map[i] > 0)
+					if (SavedStateFileExists (i))
 					{flag= 1; break;}
 
 				if(flag)
@@ -2173,8 +2153,6 @@ u32 menu(u16 *screen)
 							get_savestate_filename(i, tmp_filename);
 							sprintf(line_buffer, "%s/%s", DEFAULT_RTS_DIR, tmp_filename);
 							remove(line_buffer);
-							if(savestate_map[i] > 0)
-								savestate_map[i]= -savestate_map[i];
 						}
 						savestate_index= 0;
 					}
@@ -2191,9 +2169,9 @@ u32 menu(u16 *screen)
 			{
 				draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
 
-				if(savestate_map[delette_savestate_num] > 0)
+				if(SavedStateFileExists(delette_savestate_num))
 				{
-					sprintf(line_buffer, msg[FMT_DIALOG_SAVED_STATE_DELETE_ONE], delette_savestate_num);
+					sprintf(line_buffer, msg[FMT_DIALOG_SAVED_STATE_DELETE_ONE], delette_savestate_num + 1);
 					draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, line_buffer);
 
 					if(draw_yesno_dialog(DOWN_SCREEN, 115, msg[MSG_GENERAL_CONFIRM_WITH_A], msg[MSG_GENERAL_CANCEL_WITH_B])) {
@@ -2834,10 +2812,10 @@ u32 menu(u16 *screen)
 	{
 	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_SAVED_STATES], NULL, 0),
 
-	/* 01 */ ACTION_OPTION(menu_save_state, NULL, &msg[MSG_SAVED_STATE_CREATE], NULL, 1),
+	/* 01 */ NUMERIC_SELECTION_ACTION_OPTION(menu_save_state, NULL, &msg[FMT_SAVED_STATE_CREATE], &savestate_index, SAVE_STATE_SLOT_NUM, NULL, 1),
 
 	/* 02 */ NUMERIC_SELECTION_ACTION_OPTION(menu_load_state, NULL,
-        &msg[FMT_SAVED_STATE_LOAD], &savestate_index, 10, NULL, 2),
+        &msg[FMT_SAVED_STATE_LOAD], &savestate_index, SAVE_STATE_SLOT_NUM, NULL, 2),
 
 	/* 03 */ SUBMENU_OPTION(&gamestate_delette_menu, &msg[MSG_SAVED_STATE_DELETE_GENERAL], NULL, 5),
 	};
@@ -3622,13 +3600,22 @@ u32 menu(u16 *screen)
 						u32 current_option_val = *(current_option->current_option);
 						u32 old_option_val = current_option_val;
 
-						if(inputdata.x <= 23 || inputdata.x > 233)
+						// This row has SAVE_STATE_SLOT_NUM cells for save states, each ICON_STATEFULL.x pixels wide.
+						// The left side of a square is at SavedStateSquareX(slot).
+						bool8 found_state = FALSE;
+						int i;
+						for (i = 0; i < SAVE_STATE_SLOT_NUM; i++)
+						{
+							uint8 StartX = SavedStateSquareX (i);
+							if (inputdata.x >= StartX && inputdata.x < StartX + ICON_STATEFULL.x)
+							{
+								current_option_val = i;
+								found_state = TRUE;
+								break;
+							}
+						}
+						if(!found_state)
 							break;
-						// |  |  |  |  |  |  |  |  |  |  |
-						// 23 44 65 86 ... (+21)         233
-						// This row has 10 cells for save states, each 21
-						// pixels wide.
-						current_option_val = (inputdata.x - 23) / 21;
 
 						*(current_option->current_option) = current_option_val;
 
@@ -3672,13 +3659,22 @@ u32 menu(u16 *screen)
 						u32 current_option_val = *(current_option->current_option);
 						u32 old_option_val = current_option_val;
 
-						if(inputdata.x <= 23 || inputdata.x > 233)
+						// This row has SAVE_STATE_SLOT_NUM cells for save states, each ICON_STATEFULL.x pixels wide.
+						// The left side of a square is at SavedStateSquareX(slot).
+						bool8 found_state = FALSE;
+						int i;
+						for (i = 0; i < SAVE_STATE_SLOT_NUM; i++)
+						{
+							uint8 StartX = SavedStateSquareX (i);
+							if (inputdata.x >= StartX && inputdata.x < StartX + ICON_STATEFULL.x)
+							{
+								current_option_val = i;
+								found_state = TRUE;
+								break;
+							}
+						}
+						if(!found_state)
 							break;
-						// |  |  |  |  |  |  |  |  |  |  |
-						// 23 44 65 86 ... (+21)         233
-						// This row has 10 cells for save states, each 21
-						// pixels wide.
-						current_option_val = (inputdata.x - 23) / 21;
 
 						*(current_option->current_option) = current_option_val;
 
@@ -4015,10 +4011,6 @@ void init_game_config(void)
 	game_config.backward_time = 2;	//time backward granularity 1s
 
     savestate_index= 0;
-    for(i= 0; i < SAVE_STATE_SLOT_NUM; i++)
-    {
-        savestate_map[i]= (char)(-(i+1));	//empty
-    }
 }
 
 /*--------------------------------------------------------
@@ -4250,19 +4242,16 @@ static int rtc_time_cmp(struct rtc *t1, struct rtc *t2)
 
 static void get_savestate_filelist(void)
 {
-	struct rtc  current_time[SAVE_STATE_SLOT_NUM];
 	int i;
 	char savestate_path[MAX_PATH];
 	char postdrix[8];
 	char *pt;
 	FILE *fp;
 	unsigned int n, m;
-
-	memset((char*)current_time, 0xFF, sizeof(current_time));
-	for(i= 0; i < SAVE_STATE_SLOT_NUM; i++)
-	{
-		savestate_map[i]= (char)(-(i+1));
-	}
+	// Which is the latest?
+	/* global */ latest_save = -1;
+	struct rtc latest_save_time, current_time;
+	memset(&latest_save_time, 0, sizeof (struct rtc));
 
 	sprintf(savestate_path, "%s/%s", DEFAULT_RTS_DIR, gamepak_name);
 	pt= strrchr(savestate_path, '.');
@@ -4282,33 +4271,17 @@ static void get_savestate_filelist(void)
 
 			fseek(fp, n, SEEK_SET);
 			/* Read back the time stamp */
-			fread((char*)&current_time[i], 1, sizeof(struct rtc), fp);
-			savestate_map[i] = (char)(i+1);
-
+			fread((char*)&current_time, 1, sizeof(struct rtc), fp);
+			if (rtc_time_cmp (&current_time, &latest_save_time) > 0)
+			{
+				latest_save = i;
+				latest_save_time = current_time;
+			}
 			fclose(fp);
 		}
 	}
 
-	int k, reslut;
-	struct rtc current_time_tmp;
-	for(i= 0; i < SAVE_STATE_SLOT_NUM-1; i++)
-	{
-		for(k=0; k < SAVE_STATE_SLOT_NUM-1-i; k++)
-		{
-			reslut= rtc_time_cmp(&current_time[k], &current_time[k+1]);
-			if(reslut > 0)
-			{
-				current_time_tmp = current_time[k];
-				current_time[k] = current_time[k+1];
-				current_time[k+1] = current_time_tmp;
-				reslut = savestate_map[k];
-				savestate_map[k] = savestate_map[k+1];
-				savestate_map[k+1] = reslut;
-			}
-		}
-	}
-
-	savestate_index= get_savestate_slot();
+	savestate_index= latest_save;
 	if(savestate_index < 0) savestate_index = 0;
 }
 
@@ -4317,7 +4290,7 @@ static void get_savestate_filename(u32 slot, char *name_buffer)
 	char savestate_ext[16];
 	char *pt;
 
-	sprintf(savestate_ext, "_%d.rts", savestate_map[slot]);
+	sprintf(savestate_ext, "_%d.rts", slot+1);
 	pt = strrchr(gamepak_name, '/');
 	if(NULL == pt)
 		pt = gamepak_name;
@@ -4327,53 +4300,36 @@ static void get_savestate_filename(u32 slot, char *name_buffer)
 	change_ext(pt, name_buffer, savestate_ext);
 }
 
-static u32 get_savestate_slot(void)
+uint8 SavedStateSquareX (u32 slot)
 {
-    s32 i;
-    char *ptr;
-
-    i= SAVE_STATE_SLOT_NUM -1;
-    ptr= savestate_map;
-    while(i >= 0)
-    {
-        if(ptr[i] > 0) break;
-		i--;
-    }
-
-    return i;
+	return (SCREEN_WIDTH * (slot + 1) / (SAVE_STATE_SLOT_NUM + 1))
+		- ICON_STATEFULL.x / 2;
 }
 
-static void reorder_savestate_slot(void)
+bool8 SavedStateFileExists (u32 slot)
 {
-    u32 x, y;
-    char *ptr;
-    s32 tmp;
-    
-    ptr= savestate_map;
-    for(x= 0; x < SAVE_STATE_SLOT_NUM; x++)
-    {
-        tmp= ptr[x];
-        if(tmp< 0)
-        {
-            for(y= x+1; y< SAVE_STATE_SLOT_NUM; y++)
-                ptr[y-1]= ptr[y];
-            ptr[SAVE_STATE_SLOT_NUM-1]= tmp;	//empty are moved to last
-        }
-    }
+	char BaseName [_MAX_PATH + 1];
+	char FullName [_MAX_PATH + 1];
+	get_savestate_filename(slot, BaseName);
+	sprintf(FullName, "%s/%s", DEFAULT_RTS_DIR, BaseName);
+	FILE *SavedStateFile = fopen(FullName, "r");
+	bool8 Result = SavedStateFile != NULL;
+	if (Result)
+	{
+		fclose(SavedStateFile);
+	}
+	return Result;
 }
 
 void get_newest_savestate(char *name_buffer)
 {
-    int i;
-
-    i= get_savestate_slot();
-    if (i < 0)
+    if (latest_save < 0)
     {
         name_buffer[0]= '\0';
         return;
     }
 
-    get_savestate_filename(i, name_buffer);
+    get_savestate_filename(latest_save, name_buffer);
 }
 
 static u32 parse_line(char *current_line, char *current_str)

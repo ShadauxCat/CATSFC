@@ -35,8 +35,8 @@ Fast-forward     %s
 Frame skipping    %s
 #FMT_AUDIO_SOUND
 Sound                 %s
-#MSG_SAVED_STATE_CREATE
-Create saved state
+#FMT_SAVED_STATE_CREATE
+Create saved state      %d
 #FMT_SAVED_STATE_LOAD
 Load saved state          %d
 #MSG_SAVED_STATE_DELETE_GENERAL
@@ -201,17 +201,17 @@ STARTCHINESESIM
 #MSG_MAIN_MENU_EXIT
 退出模拟器
 #FMT_VIDEO_ASPECT_RATIO
-画面                       %s
+画面                         %s
 #FMT_VIDEO_FAST_FORWARD
 游戏快进                 %s
 #FMT_VIDEO_FRAME_SKIPPING
 跳帧方式                 %s
 #FMT_AUDIO_SOUND
 声音开关                 %s
-#MSG_SAVED_STATE_CREATE
-写入存档
+#FMT_SAVED_STATE_CREATE
+写入存档                 %d
 #FMT_SAVED_STATE_LOAD
-读取存档                        %d
+读取存档                 %d
 #MSG_SAVED_STATE_DELETE_GENERAL
 删除存档
 #FMT_CHEAT_PAGE
@@ -381,8 +381,8 @@ Avance rapide       %s
 Omission d'images  %s
 #FMT_AUDIO_SOUND
 Son                         %s
-#MSG_SAVED_STATE_CREATE
-Créer une sauvegarde
+#FMT_SAVED_STATE_CREATE
+Créer la sauvegarde       %d
 #FMT_SAVED_STATE_LOAD
 Charger la sauvegarde   %d
 #MSG_SAVED_STATE_DELETE_GENERAL
