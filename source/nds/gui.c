@@ -2034,7 +2034,9 @@ u32 menu(u16 *screen)
 				draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CREATING]);
 				ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
+				ds2_setCPUclocklevel(13);
 				int flag = save_state(tmp_filename, (void*)screen);
+				ds2_setCPUclocklevel(0);
 				//clear message
 				draw_message(down_screen_addr, NULL, 28, 31, 227, 96, 0);
 				if(flag < 0)
@@ -2101,7 +2103,9 @@ u32 menu(u16 *screen)
 					draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
 					draw_string_vcenter(up_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_LOADING]);
 
+					ds2_setCPUclocklevel(13);
 					int flag = load_state(tmp_filename);
+					ds2_setCPUclocklevel(0);
 					if(0 == flag)
 					{
 						return_value = 1;
@@ -2116,7 +2120,9 @@ u32 menu(u16 *screen)
 				}
 				else	//load screen snapshot
 				{
+					ds2_setCPUclocklevel(13);
 					load_game_stat_snapshot(tmp_filename);
+					ds2_setCPUclocklevel(0);
 				}
 			}
 			else
