@@ -1239,7 +1239,7 @@ u32 play_screen_snapshot(void)
         //construct filelist_info struct
 		manage_filelist_info(&filelist_info, -1);
 
-        if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes(A)", "No(B)"))
+        if(draw_yesno_dialog(DOWN_SCREEN, 115, msg[MSG_GENERAL_CONFIRM_WITH_A], msg[MSG_GENERAL_CANCEL_WITH_B]))
             return 1;
         else 
             return 0;
@@ -2031,7 +2031,7 @@ u32 menu(u16 *screen)
 				{
 					draw_message(down_screen_addr, NULL, 28, 31, 227, 165, 0);
 					draw_string_vcenter(down_screen_addr, 36, 74, 190, COLOR_MSSG, msg[MSG_SAVESTATE_FULL]);
-					if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes(A)", "No(B)") == 0)
+					if(draw_yesno_dialog(DOWN_SCREEN, 115, msg[MSG_GENERAL_CONFIRM_WITH_A], msg[MSG_GENERAL_CANCEL_WITH_B]) == 0)
 						return;
 
 					clear_savestate_slot(0);
@@ -2165,7 +2165,7 @@ u32 menu(u16 *screen)
 
 				if(flag)
 				{
-					if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes(A)", "No(B)"))
+					if(draw_yesno_dialog(DOWN_SCREEN, 115, msg[MSG_GENERAL_CONFIRM_WITH_A], msg[MSG_GENERAL_CANCEL_WITH_B]))
 					{
 						wait_Allkey_release(0);
 						for(i= 0; i < SAVE_STATE_SLOT_NUM; i++)
@@ -2196,7 +2196,7 @@ u32 menu(u16 *screen)
 					sprintf(line_buffer, msg[FMT_DIALOG_SAVED_STATE_DELETE_ONE], delette_savestate_num);
 					draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, line_buffer);
 
-					if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes(A)", "No(B)")) {
+					if(draw_yesno_dialog(DOWN_SCREEN, 115, msg[MSG_GENERAL_CONFIRM_WITH_A], msg[MSG_GENERAL_CANCEL_WITH_B])) {
 						wait_Allkey_release(0);
 						clear_savestate_slot(delette_savestate_num);
 }
@@ -2650,7 +2650,7 @@ u32 menu(u16 *screen)
         draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
         draw_string_vcenter(down_screen_addr, 36, 70, 190, COLOR_MSSG, msg[MSG_DIALOG_RESET]);
 
-        if(draw_yesno_dialog(DOWN_SCREEN, 115, "Yes", "No"))
+        if(draw_yesno_dialog(DOWN_SCREEN, 115, msg[MSG_GENERAL_CONFIRM_WITH_A], msg[MSG_GENERAL_CANCEL_WITH_B]))
         {
 			wait_Allkey_release(0);
             draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);

@@ -105,6 +105,10 @@ Select a game
 Off
 #MSG_GENERAL_ON
 On
+#MSG_GENERAL_CONFIRM_WITH_A
+[A] Confirm
+#MSG_GENERAL_CANCEL_WITH_B
+[B] Cancel
 #MSG_AUDIO_ENABLED
 On
 #MSG_AUDIO_MUTED
@@ -115,17 +119,15 @@ No game is currently loaded
 <None loaded here>
 #MSG_SAVESTATE_FULL
 The current slot holds a state.\n
-Do you wish to overwrite it?\n
-[A] Overwrite  [B] Cancel
+Do you wish to overwrite it?
 #MSG_PROGRESS_SAVED_STATE_CREATING
 Saving state...
 #MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
-Failed!\n
-[A] Retry  [B] Cancel
+Failed!
 #MSG_PROGRESS_SAVED_STATE_CREATION_SUCCEEDED
 OK!
 #MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT
-No saved state is in the selected slot
+No saved state here
 #MSG_PROGRESS_SAVED_STATE_CORRUPTED
 The game state file is not found or is corrupt.
 #MSG_PROGRESS_SAVED_STATE_LOADING
@@ -139,11 +141,9 @@ Delete all saved states
 #FMT_SAVED_STATE_DELETE_ONE
 Delete saved state %d
 #MSG_DELETE_ALL_SAVESTATE_WARING
-Really delete all saved states?\n
-[A] Confirm  [B] Cancel
+Really delete all saved states?
 #FMT_DIALOG_SAVED_STATE_DELETE_ONE
-Really delete saved state %d?\n
-[A] Confirm  [B] Cancel
+Really delete saved state %d?
 #MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY
 There's already nothing here.
 #MSG_PROGRESS_SCREENSHOT_CREATING
@@ -278,6 +278,10 @@ CPU主频                          %d
 关
 #MSG_GENERAL_ON
 开
+#MSG_GENERAL_CONFIRM_WITH_A
+[A] 确认
+#MSG_GENERAL_CANCEL_WITH_B
+[B] 取消
 #MSG_AUDIO_ENABLED
 开
 #MSG_AUDIO_MUTED
@@ -288,15 +292,11 @@ CPU主频                          %d
 <没有加载>
 #MSG_SAVESTATE_FULL
 当前存档槽已有存档文件,\n
-覆盖已有存档吗?\n
-按 A 键覆盖\n
-按 B 键取消
+覆盖已有存档吗?
 #MSG_PROGRESS_SAVED_STATE_CREATING
 正在写入...
 #MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
-写入存档失败!\n
-按 A 键重试\n
-按 B 键取消
+写入存档失败!
 #MSG_PROGRESS_SAVED_STATE_CREATION_SUCCEEDED
 写入存档成功!
 #MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT
@@ -314,13 +314,9 @@ CPU主频                          %d
 #FMT_SAVED_STATE_DELETE_ONE
 删除当前游戏的一个存档         %d
 #MSG_DIALOG_SAVED_STATE_DELETE_ALL
-确定要删除所有存档吗？\n
-按 A 键确定 \n
-按 B 键取消
+确定要删除所有存档吗？
 #FMT_DIALOG_SAVED_STATE_DELETE_ONE
-确定要删除存档槽 %d 的存档吗? \n
-按 A 键确定 \n
-按 B 键取消
+确定要删除存档槽 %d 的存档吗?
 #MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY
 没有存档可删除
 #MSG_PROGRESS_SCREENSHOT_CREATING
@@ -455,6 +451,10 @@ Sélectionner un jeu
 Hors fonction
 #MSG_GENERAL_ON
 En fonction
+#MSG_GENERAL_CONFIRM_WITH_A
+[A] Confirmer
+#MSG_GENERAL_CANCEL_WITH_B
+[B] Annuler
 #MSG_AUDIO_ENABLED
 Activé
 #MSG_AUDIO_MUTED
@@ -465,17 +465,15 @@ Aucun jeu n'est actuellement chargé
 <Aucun chargé ici>
 #MSG_SAVESTATE_FULL
 Il y a une sauvegarde dans cet emplacement.\n
-Voulez-vous l'écraser?\n
-[A] Écraser  [B] Annuler
+Voulez-vous l'écraser?
 #MSG_PROGRESS_SAVED_STATE_CREATING
 Sauvegarde en cours...
 #MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
-Échec!\n
-[A] Réessayer  [B] Annuler
+Échec!
 #MSG_PROGRESS_SAVED_STATE_CREATION_SUCCEEDED
 Terminé!
 #MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT
-Aucune sauvegarde dans cet emplacement
+Aucune sauvegarde ici
 #MSG_PROGRESS_SAVED_STATE_CORRUPTED
 Le fichier de sauvegarde est introuvable ou corrompu.
 #MSG_PROGRESS_SAVED_STATE_LOADING
@@ -489,11 +487,9 @@ Supprimer toutes les sauvegardes
 #FMT_SAVED_STATE_DELETE_ONE
 Supprimer l'emplacement %d
 #MSG_DELETE_ALL_SAVESTATE_WARING
-Supprimer toutes les sauvegardes?\n
-[A] Confirmer  [B] Annuler
+Supprimer toutes les sauvegardes?
 #FMT_DIALOG_SAVED_STATE_DELETE_ONE
-Supprimer l'emplacement %d?\n
-[A] Confirmer  [B] Annuler
+Supprimer l'emplacement %d?
 #MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY
 Cet emplacement est déjà vide.
 #MSG_PROGRESS_SCREENSHOT_CREATING
