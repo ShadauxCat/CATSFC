@@ -753,7 +753,7 @@ void draw_dialog(void* screen_addr, u32 sx, u32 sy, u32 ex, u32 ey)
 }
 
 /*
-*	Draw yer or no dialog
+*	Draw yes or no dialog
 */
 u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
 {
@@ -817,6 +817,18 @@ u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
     while((gui_action != CURSOR_SELECT)  && (gui_action != CURSOR_BACK))
     {
         gui_action = get_gui_input();
+	if (gui_action == CURSOR_TOUCH)
+	{
+		ds2_getrawInput(&inputdata);
+		// Turn it into a SELECT (A) or BACK (B) if the button is touched.
+		if (inputdata.y >= 128 && inputdata.y < 128 + ICON_BUTTON.y)
+		{
+			if (inputdata.x >= 49 && inputdata.x < 49 + ICON_BUTTON.x)
+				gui_action = CURSOR_SELECT;
+			else if (inputdata.x >= 136 && inputdata.x < 136 + ICON_BUTTON.x)
+				gui_action = CURSOR_BACK;
+		}
+	}
 //        OSTimeDly(OS_TICKS_PER_SEC/10);
 		mdelay(100);
     }
