@@ -2533,8 +2533,10 @@ u32 menu(u16 *screen)
 
     void menu_load_cheat_file()
     {
-        char *file_ext[] = { ".cht", NULL };
-        u32 i, string_num, string_len;
+	if (!first_load)
+	{
+		char *file_ext[] = { ".cht", NULL };
+		u32 i, string_num, string_len;
 		int flag;
 
 		if(load_file(file_ext, tmp_filename, DEFAULT_CHEAT_DIR) != -1)
@@ -2557,6 +2559,7 @@ u32 menu(u16 *screen)
 			cheat_menu_init();
 
 		}
+	}
     }
 
     void save_screen_snapshot()
