@@ -1509,7 +1509,7 @@ int load_state(char* file)
 	fread(up_screen_addr, 1, 256*192*2, fp);
 	fclose(fp);
 
-	ds2_flipScreen(UP_SCREEN, 1);
+	ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 
 	return 0;
 }
@@ -1542,7 +1542,7 @@ int load_game_stat_snapshot(char* file)
 	}
 
 	fclose(fp);
-	ds2_flipScreen(UP_SCREEN, 1);
+	ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 	return 0;
 }
 
