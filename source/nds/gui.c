@@ -2811,7 +2811,7 @@ u32 menu(u16 *screen)
 	/* 01 */ ACTION_OPTION(delette_savestate, NULL, &msg[MSG_SAVED_STATE_DELETE_ALL], NULL, 1),
 
 	/* 02 */ NUMERIC_SELECTION_ACTION_OPTION(delette_savestate, NULL,
-		&msg[FMT_SAVED_STATE_DELETE_ONE], &delette_savestate_num, 10, NULL, 2)
+		&msg[FMT_SAVED_STATE_DELETE_ONE], &delette_savestate_num, SAVE_STATE_SLOT_NUM, NULL, 2)
 	};
 
 	MAKE_MENU(gamestate_delette, NULL, gamestate_delette_menu_passive, NULL, NULL, 0, 0);
