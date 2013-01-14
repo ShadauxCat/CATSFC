@@ -61,7 +61,7 @@ char *language_options[] = { (char *) &lang[0], (char *) &lang[1], (char *) &lan
 
 #define NDSSFC_VERSION "1.18"
 
-#define SAVE_STATE_SLOT_NUM		10
+#define SAVE_STATE_SLOT_NUM		16
 
 #define LANGUAGE_PACK   "SYSTEM/language.msg"
 #define EMU_CONFIG_FILENAME "SYSTEM/ndssfc.cfg"
@@ -79,6 +79,8 @@ GAME_CONFIG game_config;
 //save state file map
 static u32 savestate_index; // current selection in the saved states menu
 static u32 latest_save; // Slot number of the latest (in time) save for this game
+static bool8 SavedStateExistenceCached [SAVE_STATE_SLOT_NUM]; // [I] == TRUE if Cache[I] is meaningful
+static bool8 SavedStateExistenceCache [SAVE_STATE_SLOT_NUM];
 
 #define MAKE_MENU(name, init_function, passive_function, key_function, end_function, \
 	focus_option, screen_focus)												  \
@@ -284,6 +286,7 @@ static FILE* get_savestate_snapshot(char *savestate_filename);
 static void get_savestate_filename(u32 slot, char *name_buffer);
 static uint8 SavedStateSquareX (u32 slot);
 static bool8 SavedStateFileExists (u32 slot);
+static void SavedStateCacheInvalidate (void);
 void get_newest_savestate(char *name_buffer);
 static int sort_function(const void *dest_str_ptr, const void *src_str_ptr);
 static u32 parse_line(char *current_line, char *current_str);
@@ -1863,6 +1866,7 @@ u32 menu(u16 *screen)
 		get_savestate_filename(slot_index, tmp_filename);
 		sprintf(line_buffer, "%s/%s", DEFAULT_RTS_DIR, tmp_filename);
 		remove(line_buffer);
+		SavedStateCacheInvalidate ();
 	}
 
     void savestate_selitem(u32 selected, u32 y_pos)
@@ -1891,7 +1895,7 @@ u32 menu(u16 *screen)
 	void game_state_menu_passive()
 	{
 		unsigned short color;
-		unsigned int line[3] = {0, 1, 3};
+		unsigned int line[3] = {0, 2, 4};
 
 		//draw background
 		show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
@@ -1938,14 +1942,18 @@ u32 menu(u16 *screen)
         }
 
 		int slot_index;
-		unsigned int selected;
+		unsigned int selected_write, selected_read;
 
-		selected = -1;
+		selected_write = -1;
+		selected_read = -1;
 
-		if(current_option_num == 1 /* write */ || current_option_num == 2 /* read */)
-			selected = savestate_index;
+		if(current_option_num == 1 /* write */)
+			selected_write = savestate_index;
+		if(current_option_num == 2 /* read */)
+			selected_read = savestate_index;
 
-		savestate_selitem(selected, 93);
+		savestate_selitem(selected_write, 66);
+		savestate_selitem(selected_read, 120);
 	}
 
     u32 delette_savestate_num= 0;
@@ -2043,6 +2051,8 @@ u32 menu(u16 *screen)
 				//save game config
 				reorder_latest_file();
 				save_game_config_file();
+
+				SavedStateCacheInvalidate ();
 
 				mdelay(500); // let the progress message linger
 			}
@@ -2153,6 +2163,7 @@ u32 menu(u16 *screen)
 							get_savestate_filename(i, tmp_filename);
 							sprintf(line_buffer, "%s/%s", DEFAULT_RTS_DIR, tmp_filename);
 							remove(line_buffer);
+							SavedStateCacheInvalidate ();
 						}
 						savestate_index= 0;
 					}
@@ -3583,19 +3594,21 @@ u32 menu(u16 *screen)
 					if(inputdata.y <= 33)
 						break;
 					else if(inputdata.y <= 60)
+						break; // "Create saved state"
+					else if(inputdata.y <= 87) // Save cell
 						current_option_num = 1;
-					else if(inputdata.y <= 87)
-						break;
 					else if(inputdata.y <= 114)
+						break; // "Load saved state"
+					else if(inputdata.y <= 141) // Load cell
 						current_option_num = 2;
-					else if(inputdata.y <= 141)
+					else if(inputdata.y <= 168) // Del...
 						current_option_num = 3;
 					else
 						break;
 					
 					current_option = current_menu->options + current_option_num;
 					
-					if(current_option_num == 2)
+					if(current_option_num == 1 /* write */ || current_option_num == 2 /* read */)
 					{
 						u32 current_option_val = *(current_option->current_option);
 						u32 old_option_val = current_option_val;
@@ -4263,6 +4276,7 @@ static void get_savestate_filelist(void)
 		fp= fopen(savestate_path, "r");
 		if (fp != NULL)
 		{
+			SavedStateExistenceCache [i] = TRUE;
 			m = fread((void*)&n, 1, 4, fp);
 			if(m < 4) {
 				fclose(fp);
@@ -4279,6 +4293,10 @@ static void get_savestate_filelist(void)
 			}
 			fclose(fp);
 		}
+		else
+			SavedStateExistenceCache [i] = FALSE;
+
+		SavedStateExistenceCached [i] = TRUE;
 	}
 
 	savestate_index= latest_save;
@@ -4308,6 +4326,9 @@ uint8 SavedStateSquareX (u32 slot)
 
 bool8 SavedStateFileExists (u32 slot)
 {
+	if (SavedStateExistenceCached [slot])
+		return SavedStateExistenceCache [slot];
+
 	char BaseName [_MAX_PATH + 1];
 	char FullName [_MAX_PATH + 1];
 	get_savestate_filename(slot, BaseName);
@@ -4318,7 +4339,16 @@ bool8 SavedStateFileExists (u32 slot)
 	{
 		fclose(SavedStateFile);
 	}
+	SavedStateExistenceCache [slot] = Result;
+	SavedStateExistenceCached [slot] = TRUE;
 	return Result;
+}
+
+void SavedStateCacheInvalidate (void)
+{
+	int i;
+	for (i = 0; i < SAVE_STATE_SLOT_NUM; i++)
+		SavedStateExistenceCached [i] = FALSE;
 }
 
 void get_newest_savestate(char *name_buffer)
@@ -4482,7 +4512,14 @@ void gui_init(u32 lang_id)
 	int flag;
 
 	ds2_setCPUclocklevel(13); // Crank it up. When the menu starts, -> 0.
-	printf_clock();
+
+	// Start with no saved state existing, as no game is loaded yet.
+	int i;
+	for (i = 0; i < SAVE_STATE_SLOT_NUM; i++)
+	{
+		SavedStateExistenceCached [i] = TRUE;
+		SavedStateExistenceCached [i] = FALSE;
+	}
 
     //Find the "CATSFC" system directory
     DIR *current_dir;
