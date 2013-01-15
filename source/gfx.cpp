@@ -663,18 +663,9 @@ void S9xStartScreenRefresh ()
 			IPPU.Interlace = (Memory.FillRAM[0x2133] & 1);
 		if (Settings.SupportHiRes && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.Interlace))
 		{
-			if (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.Interlace)
-			{
-				IPPU.RenderedScreenWidth = 512;
-				IPPU.DoubleWidthPixels = TRUE;
-				IPPU.HalfWidthPixels = FALSE;
-			}
-			else
-			{
-				IPPU.RenderedScreenWidth = 256;
-				IPPU.DoubleWidthPixels = FALSE;
-				IPPU.HalfWidthPixels = FALSE;
-			}
+			IPPU.RenderedScreenWidth = 512;
+			IPPU.DoubleWidthPixels = TRUE;
+			IPPU.HalfWidthPixels = FALSE;
 
 			if (IPPU.Interlace)
 			{
@@ -707,13 +698,13 @@ void S9xStartScreenRefresh ()
 				GFX.PPLx2 = GFX.PPL << 1;
 			}
 		}
-		else if (!Settings.SupportHiRes && (PPU.BGMode == 5))
+		else if (!Settings.SupportHiRes && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.Interlace))
 		{
+			IPPU.RenderedScreenWidth = 256;
+			IPPU.DoubleWidthPixels = FALSE;
 			// Secret of Mana displays menus with mode 5.
 			// Make them readable.
-			IPPU.DoubleWidthPixels = FALSE;
 			IPPU.HalfWidthPixels = TRUE;
-			IPPU.DoubleHeightPixels = FALSE;
 		}
 		else
 		{
@@ -3740,6 +3731,27 @@ void S9xUpdateScreen ()
 					GFX.Pitch2);
 			}
 		}
+    }
+    else if (!Settings.SupportHiRes)
+    {
+	if (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.Interlace)
+	{
+		if (!IPPU.HalfWidthPixels)
+		{
+			// The game has switched from lo-res to hi-res mode part way down
+			// the screen. Hi-res pixels must now be drawn at half width.
+			IPPU.HalfWidthPixels = TRUE;
+		}
+	}
+	else
+	{
+		if (IPPU.HalfWidthPixels)
+		{
+			// The game has switched from hi-res to lo-res mode part way down
+			// the screen. Lo-res pixels must now be drawn at FULL width.
+			IPPU.HalfWidthPixels = FALSE;
+		}
+	}
     }
 	
     uint32 black = BLACK | (BLACK << 16);
