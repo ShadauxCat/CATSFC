@@ -1665,9 +1665,9 @@ u32 menu(u16 *screen)
     // ^ Holds the index inside Cheat, as a number in an ASCIIZ string
     char* cheat_data_ptr[MAX_CHEATS_T];
 
-    MENU_TYPE *current_menu;
-    MENU_OPTION_TYPE *current_option;
-    MENU_OPTION_TYPE *display_option;
+    MENU_TYPE *current_menu = NULL;
+    MENU_OPTION_TYPE *current_option = NULL;
+    MENU_OPTION_TYPE *display_option = NULL;
     
     u32 current_option_num;
 //    u32 parent_option_num;
