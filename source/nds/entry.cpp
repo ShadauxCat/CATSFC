@@ -23,6 +23,7 @@
 #include "ds2sound.h"
 
 void S9xProcessSound (unsigned int);
+void NDSSFCProduceSound (unsigned int);
 
 char *rom_filename = NULL;
 char *SDD1_pack = NULL;
@@ -544,6 +545,13 @@ int sfc_main (int argc, char **argv)
                   TRUE,
 #endif
                   Settings.SoundBufferSize);
+	// Start a timer for the sound
+	initTimer(0 /* timer channel, 0 or 1 */,
+	          INTERRUPT_TIME /* period in microseconds */,
+	          NDSSFCProduceSound /* timer function, void (unsigned int) */,
+	          0 /* programmer-specified argument to ^ */);
+	runTimer(0 /* timer channel, 0 or 1 */);
+
 #ifdef GFX_MULTI_FORMAT
 //    S9xSetRenderPixelFormat (RGB565);
     S9xSetRenderPixelFormat (BGR555);
@@ -885,6 +893,18 @@ bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
     return (TRUE);
 }
 
+/*
+ * In the interrupt model, calls to NDSSFCProduceSound could happen even
+ * when the CPU or APU is being reset or reloaded from a file. Prevent
+ * glitches and/or crashes (!) from occurring while sound is not being
+ * generated.
+ */
+static volatile bool8 IsSoundGenerated = FALSE;
+/*
+ * Also prevent an interrupt from triggering on top of another one.
+ */
+static volatile bool8 InInterrupt = FALSE;
+
 void S9xGenerateSound ()
 {
 	block_signal = TRUE;
@@ -951,13 +971,16 @@ void S9xGenerateSound ()
 		} while (samples_to_write > 0);
 	}
 
+	IsSoundGenerated = TRUE;
+
 end:
 
 	if (pending_signal)
 	{
 		block_signal = FALSE;
 		pending_signal = FALSE;
-		S9xProcessSound (0);
+		// S9xProcessSound (0);
+		NDSSFCProduceSound (0);
 	}
 	else
 		block_signal = FALSE;
@@ -965,19 +988,28 @@ end:
 
 void S9xProcessSound (unsigned int)
 {
+	// Nothing here! See the interrupt handling code below.
+}
+
+void NDSSFCProduceSound (unsigned int unused)
+{
+	if (InInterrupt)
+		return;
+
+	InInterrupt = TRUE;
 	if (block_signal)
 	{
 		pending_signal = TRUE;
-		return;
+		goto end;
 	}
 
 	unsigned short *audiobuff;
 
-	if (Settings.Paused || so.mute_sound || !game_enable_audio)
-		return;
+	if (Settings.Paused || !IsSoundGenerated || so.mute_sound || !game_enable_audio)
+		goto end;
 
 	if(ds2_checkAudiobuff() > 4)
-		return;
+		goto end;
 
 	/* Number of samples to generate now */
 	int sample_count;
@@ -997,7 +1029,7 @@ void S9xProcessSound (unsigned int)
 	audiobuff = (unsigned short*)ds2_getAudiobuff();
 	if(NULL == audiobuff)	//There are audio queue in sending or wait to send
 	{
-		return;
+		goto end;
 	}
 
 	/* If we need more audio samples */
@@ -1112,7 +1144,12 @@ void S9xProcessSound (unsigned int)
 		/* All data sent. */
 	}
 
+	IsSoundGenerated = FALSE;
+
 	so.samples_mixed_so_far -= sample_count;
+
+end:
+	InInterrupt = FALSE;
 }
 
 void Init_Timer (void)
