@@ -36,8 +36,7 @@ static u8 Buf[MAX_BUFFER_SIZE];
 
 static volatile bool8 block_signal = FALSE;
 static volatile bool8 pending_signal = FALSE;
-
-static void Init_Timer (void);
+static volatile bool8 DelayingForEarlyFrame = FALSE;
 
 void S9xMessage (int /*type*/, int /*number*/, const char *message)
 {
@@ -156,7 +155,7 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		default:
 		{
 			unsigned char *src, *dst;
-			unsigned int m, n;
+			unsigned int m;
 
 			src = GFX.Screen;
 			dst = (unsigned char*)up_screen_addr;
@@ -561,41 +560,6 @@ int sfc_main (int argc, char **argv)
     uint32 JoypadSkip = 0;
 #endif
 
-//    Init_Timer ();
-
-    /* FIXME: Is someone using this dead code, or should it go? */
-#if 0
-    {
-	FILE *fs = fopen ("test.bin", "r");
-	if (fs)
-	{
-	    memset (IAPU.RAM, 0, 1024 * 64);
-	    int bytes = fread (IAPU.RAM + 1024, 1, 13, fs);
-	    bytes = fread (IAPU.RAM + 1024, 1, 1024 * 63, fs);
-	    fclose (fs);
-#ifdef SPCTOOL
-	    _FixSPC (1024, 0, 0, 0, 0, 0xff);
-#else
-	    IAPU.PC = IAPU.RAM + 1024;
-#endif
-	    APU.Flags ^= TRACE_FLAG;
-	    extern FILE *apu_trace;
-	    if (APU.Flags & TRACE_FLAG)
-	    {
-#ifdef SPCTOOL
-		printf ("ENABLED\n");
-		_SetSPCDbg (TraceSPC);                   //Install debug handler
-#endif
-		if (apu_trace == NULL)
-		    apu_trace = fopen ("aputrace.log", "wb");
-	    }
-	    CPU.Cycles = 1024 * 10;
-	    APU_EXECUTE ();
-	    exit (0);
-	}
-    }
-#endif
-
 	Settings.Paused = 1;
 
     while (1)
@@ -732,10 +696,12 @@ void S9xSyncSpeed ()
 		else // Early
 		{
 			skip_rate = 0;
+			DelayingForEarlyFrame = TRUE;
 			ds2_setCPUclocklevel(0);
 			if (syncdif > 0)
 				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
 			set_cpu_clock(clock_speed_number);
+			DelayingForEarlyFrame = FALSE;
 			S9xProcessSound (0);
 
 			IPPU.RenderThisFrame = TRUE;
@@ -765,7 +731,11 @@ void S9xSyncSpeed ()
 			syncdif = sync_next - syncnow;
 			if (syncdif > 0)
 			{
+				DelayingForEarlyFrame = TRUE;
+				ds2_setCPUclocklevel(0);
 				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
+				set_cpu_clock(clock_speed_number);
+				DelayingForEarlyFrame = FALSE;
 				S9xProcessSound (0);
 				// After that little delay, what time is it?
 				syncnow = getSysTime();
@@ -997,6 +967,9 @@ void NDSSFCProduceSound (unsigned int unused)
 		return;
 
 	InInterrupt = TRUE;
+	if (DelayingForEarlyFrame)
+		set_cpu_clock(clock_speed_number);
+
 	if (block_signal)
 	{
 		pending_signal = TRUE;
@@ -1149,13 +1122,11 @@ void NDSSFCProduceSound (unsigned int unused)
 	so.samples_mixed_so_far -= sample_count;
 
 end:
+	if (DelayingForEarlyFrame)
+		ds2_setCPUclocklevel(0);
+
 	InInterrupt = FALSE;
 }
-
-void Init_Timer (void)
-{
-}
-
 
 /*
 const unsigned int keymap[12] = {
@@ -1198,7 +1169,6 @@ unsigned int S9xReadJoypad (int which1)
 	if(which1 < 1)
 	{
 		unsigned int key;
-		unsigned int i;
 
 		                                           //   DS   ->  SNES
 		key  = (inputdata.key & KEY_A     ) <<  7; // 0x0001 -> 0x0080
