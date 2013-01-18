@@ -932,16 +932,16 @@ void S9xProcessSound (unsigned int)
 	if (block_signal)
 	{
 		pending_signal = TRUE;
-		return;
+		goto end;
 	}
 
 	unsigned short *audiobuff;
 
 	if (Settings.Paused || so.mute_sound || !game_enable_audio)
-		return;
+		goto end;
 
 	if(ds2_checkAudiobuff() > 4)
-		return;
+		goto end;
 
 	/* Number of samples to generate now */
 	int sample_count;
@@ -961,7 +961,7 @@ void S9xProcessSound (unsigned int)
 	audiobuff = (unsigned short*)ds2_getAudiobuff();
 	if(NULL == audiobuff)	//There are audio queue in sending or wait to send
 	{
-		return;
+		goto end;
 	}
 
 	/* If we need more audio samples */
