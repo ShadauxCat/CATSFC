@@ -1654,7 +1654,6 @@ unsigned int frame_interval;
 --------------------------------------------------------*/
 u32 menu(u16 *screen)
 {
-	stopTimer(0 /* timer interrupt channel for sound */);
     gui_action_type gui_action;
     u32 i;
     u32 repeat;
@@ -3862,8 +3861,6 @@ u32 menu(u16 *screen)
 	ds2_setBacklight(2);
 
 	set_cpu_clock(clock_speed_number);
-
-	runTimer(0 /* timer interrupt channel for sound */);
 
 	return return_value;
 }
