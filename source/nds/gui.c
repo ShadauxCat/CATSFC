@@ -3570,10 +3570,10 @@ u32 menu(u16 *screen)
 
 					current_option = current_menu->options + current_option_num;
 
-					if(current_option -> option_type & HIDEN_TYPE)
+					if(!current_option)
 						break;
 
-					if(!current_option)
+					if(current_option -> option_type & HIDEN_TYPE)
 						break;
 
 					if(current_menu->key_function)
