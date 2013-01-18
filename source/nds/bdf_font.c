@@ -80,35 +80,6 @@ static u32 bitmap_code(unsigned char *code, unsigned char *bitmap)
 
 /*-----------------------------------------------------------------------------
 ------------------------------------------------------------------------------*/
-static u32 hatoi(char *string)
-{
-    char *pt;
-    u32 ret, num;
-    
-    pt= string;
-    ret= 0;
-    while(*pt)
-    {
-        num= (((u32)*pt) & 0xFF) - 0x30;
-        if(num <= 0x9)
-            ret= (ret<<4) | num;
-        else if(num <= 0x16)
-        {
-            if(num >= 0x11)
-                ret= (ret<<4) | (num-0x7);
-            else
-                break;
-        }
-        else
-            break;
-        pt++;
-    }
-
-    return ret;
-}
-
-/*-----------------------------------------------------------------------------
-------------------------------------------------------------------------------*/
 /*
 * example
 *
@@ -906,27 +877,6 @@ char* utf8decode(char *utf8, u16 *ucs)
     /* currently we don't support chars above U-FFFF */
     *ucs = (code < 0x10000) ? code : 0;
     return utf8;
-}
-
-static u8 utf8_ucs2(const char *utf8, u16 *ucs)
-{
-	char *pt = (char*)utf8;
-
-	while(*pt !='\0')
-	{
-		pt = utf8decode(pt, ucs++);
-	}
-	*ucs = '\0';
-	return 0;
-}
-
-static u32 ucslen(const u16 *ucs)
-{
-	u32 len = 0;
-
-	while(ucs[len] != '\0')
-		len++;
-	return len;
 }
 
 unsigned char* skip_utf8_unit(unsigned char* utf8, unsigned int num)

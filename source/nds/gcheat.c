@@ -59,7 +59,7 @@ int NDSSFCLoadCheatFile(const char* filename)
 			fclose(fp);
 			return -2;
 		}
-		*ptr++; // Past the comma
+		ptr++; // Past the comma
 
 		if (*ptr && *ptr == '"')
 			ptr++; // Starting quote of b.
@@ -72,7 +72,7 @@ int NDSSFCLoadCheatFile(const char* filename)
 			return -2;
 		}
 		*ptr = '\0'; // End the codes there
-		*ptr++; // Past the comma
+		ptr++; // Past the comma
 
 		uint32 i = 0;
 		description = ptr; // Skip starting " in description

@@ -214,7 +214,6 @@ void DSP4_Op01()
 		int16 index, lcv;
 		int16 py_dy=0, px_dx=0;
 		int16 y_out, x_out;
-		int8 envelope = DSP4.parameters[6];// | (DSP4.parameters[7]<<8);
 
 		// ignore invalid data
 		if((uint16) plane == 0x8001) continue;
@@ -425,7 +424,6 @@ void DSP4_Op07()
 		project_y2 = DSP4_READ_WORD(2);
 		// ? = DSP4_READ_WORD(4);
 		project_x2 = DSP4_READ_WORD(6);
-		int8 envelope = DSP4.parameters[8];// | (DSP4.parameters[9]<<8);
 
 		// ignore invalid data
 		if((uint16) plane == 0x8001) continue;
@@ -624,8 +622,6 @@ void DSP4_Op08()
 		// envelope guidelines (one frame only)
 		int16 envelope1 = DSP4_READ_WORD(0x0a);
 		int16 envelope2 = DSP4_READ_WORD(0x0c);
-		int16 envelope3 = DSP4_READ_WORD(0x0e);
-		int16 envelope4 = DSP4_READ_WORD(0x10);
 
 		// ignore invalid data
 		if((uint16) plane == 0x8001) continue;
@@ -679,7 +675,7 @@ void DSP4_Op08()
 		{
 			int16 index=0, lcv;
 			int16 left_inc=0,right_inc=0;
-			int16 dx1,dx2,dx3,dx4;
+			int16 dx1=0,dx2=0,dx3,dx4;
 
 			// # segments to traverse
 			segments = abs(y_left - path_y[0]);
@@ -966,7 +962,6 @@ void DSP4_Op0D()
 		int16 index, lcv;
 		int16 py_dy=0, px_dx=0;
 		int16 y_out, x_out;
-		int8 envelope = DSP4.parameters[6];// | (DSP4.parameters[7]<<8);
 
 		// ignore invalid data
 		if((uint16) plane == 0x8001) continue;

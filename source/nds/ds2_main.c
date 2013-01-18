@@ -21,6 +21,7 @@
 #include "console.h"
 #include "fs_api.h"
 #include "ds2io.h"
+#include "ds2_cpu.h"
 #include "ds2_timer.h"
 #include "ds2_malloc.h"
 #include "ds2sound.h"

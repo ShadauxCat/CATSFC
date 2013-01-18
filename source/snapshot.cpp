@@ -529,7 +529,7 @@ static FreezeData SnapS7RTC [] = {
 	{OFFSET (last_used),4,INT_V}
 };
 
-static char ROMFilename [_MAX_PATH];
+//static char ROMFilename [_MAX_PATH];
 //static char SnapshotFilename [_MAX_PATH];
 
 void FreezeStruct (STREAM stream, char *name, void *base, FreezeData *fields,
@@ -553,8 +553,6 @@ bool8 Snapshot (const char *filename)
 
 bool8 S9xFreezeGame (const char *filename)
 {
-    STREAM stream = NULL;
-
 	FILE* fp;
 	fp = fopen(filename, "w");
 	if(NULL == fp)
@@ -732,7 +730,7 @@ int S9xUnfreezeFromStream (STREAM stream)
     int result;
 	
     int version;
-    int len = strlen (SNAPSHOT_MAGIC) + 1 + 4 + 1;
+    unsigned int len = strlen (SNAPSHOT_MAGIC) + 1 + 4 + 1;
     if (READ_STREAM (buffer, len, stream) != len)
 		return (WRONG_FORMAT);
     if (strncmp (buffer, SNAPSHOT_MAGIC, strlen (SNAPSHOT_MAGIC)) != 0)

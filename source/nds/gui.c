@@ -25,12 +25,14 @@
 
 #include "port.h"
 #include "ds2_types.h"
+#include "ds2_timer.h"
 #include "ds2io.h"
 #include "ds2_malloc.h"
 #include "ds2_cpu.h"
 #include "fs_api.h"
 #include "key.h"
 #include "gui.h"
+#include "entry.h"
 #include "draw.h"
 #include "message.h"
 #include "bitmap.h"
@@ -282,7 +284,6 @@ u32 gamepad_config_menu;
 /******************************************************************************
  ******************************************************************************/
 static void get_savestate_filelist(void);
-static FILE* get_savestate_snapshot(char *savestate_filename);
 static void get_savestate_filename(u32 slot, char *name_buffer);
 static uint8 SavedStateSquareX (u32 slot);
 static bool8 SavedStateFileExists (u32 slot);
@@ -620,7 +621,6 @@ static int load_file_list(struct FILE_LIST_INFO *filelist_infop)
     unsigned int num_files;
     unsigned int num_dirs;
     char **wildcards;
-	char utf8[512+256];
 
     if(filelist_infop -> current_path == NULL)
         return -1;
@@ -1753,7 +1753,7 @@ u32 menu(u16 *screen)
 			ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 			ds2_setCPUclocklevel(13);
-			int load_result = load_gamepak(&line_buffer);
+			int load_result = load_gamepak(line_buffer);
 			ds2_setCPUclocklevel(0);
 			if(load_result == -1)
 			{
@@ -1895,7 +1895,6 @@ u32 menu(u16 *screen)
 
 	void game_state_menu_passive()
 	{
-		unsigned short color;
 		unsigned int line[3] = {0, 2, 4};
 
 		//draw background
@@ -1942,7 +1941,6 @@ u32 menu(u16 *screen)
 			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 23, 40 + line[i]*27);
         }
 
-		int slot_index;
 		unsigned int selected_write, selected_read;
 
 		selected_write = -1;
@@ -1960,7 +1958,6 @@ u32 menu(u16 *screen)
     u32 delette_savestate_num= 0;
 	void gamestate_delette_menu_passive()
 	{
-		unsigned short color;
 		unsigned int line[2] = {0, 1};
 
 		//draw background
@@ -2237,8 +2234,7 @@ u32 menu(u16 *screen)
 				S9xRemoveCheat(i);
 		}
 		// Save current cheat selections to the cheat binary file.
-		strcpy(line_buffer, (char *) S9xGetFilename (".chb"));
-		S9xSaveCheatFile (line_buffer); // cheat binary
+		S9xSaveCheatFile (S9xGetFilename (".chb"));
 	}
 
 	void dynamic_cheat_key()
@@ -2344,7 +2340,7 @@ u32 menu(u16 *screen)
 					draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200, 
 						COLOR_TRANS, COLOR_ACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
 				}
-		        break;
+		        	break;
 
 			case CURSOR_RIGHT:
 				dynamic_cheat_scroll_value= -5;
@@ -2352,7 +2348,10 @@ u32 menu(u16 *screen)
 
 			case CURSOR_LEFT:
 				dynamic_cheat_scroll_value= 5;
-	        	break;
+	        		break;
+
+			default:
+				break;
 		}
 	}
 
@@ -2462,9 +2461,8 @@ u32 menu(u16 *screen)
 	void cheat_option_passive()
 	{
 		unsigned short color;
-		unsigned char tmp_buf[512];
+		char tmp_buf[512];
 		unsigned int len;
-		unsigned char *pt;
 
 		if(display_option == current_option)
 			color= COLOR_ACTIVE_ITEM;
@@ -2532,7 +2530,6 @@ u32 menu(u16 *screen)
 	if (!first_load)
 	{
 		char *file_ext[] = { ".cht", NULL };
-		u32 i, string_num, string_len;
 		int flag;
 
 		if(load_file(file_ext, tmp_filename, DEFAULT_CHEAT_DIR) != -1)
@@ -2540,8 +2537,7 @@ u32 menu(u16 *screen)
 			sprintf(line_buffer, "%s/%s", DEFAULT_CHEAT_DIR, tmp_filename);
 			flag = NDSSFCLoadCheatFile(line_buffer);
 
-			strcpy(line_buffer, (char *) S9xGetFilename (".chb"));
-			S9xSaveCheatFile (line_buffer); // cheat binary
+			S9xSaveCheatFile (S9xGetFilename (".chb")); // cheat binary
 
 			if(0 != flag)
 			{	//load cheat file failure
@@ -3169,8 +3165,6 @@ u32 menu(u16 *screen)
     void latest_game_menu_passive()
     {
         u32 k;
-		unsigned short color;
-
 		//draw background
 		show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
 		show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
@@ -4023,8 +4017,6 @@ u32 load_font()
 --------------------------------------------------------*/
 void init_game_config(void)
 {
-    u32 i;
-
 	game_config.clock_speed_number = 5;	// 396 MHz by default
 	clock_speed_number = 5;
 	game_config.graphic = 3; // By default, have a good-looking aspect ratio
@@ -4033,7 +4025,7 @@ void init_game_config(void)
 	game_config.backward = 0;	//time backward disable
 	game_config.backward_time = 2;	//time backward granularity 1s
 
-    savestate_index= 0;
+	savestate_index= 0;
 }
 
 /*--------------------------------------------------------
@@ -4372,44 +4364,6 @@ void get_newest_savestate(char *name_buffer)
     get_savestate_filename(latest_save, name_buffer);
 }
 
-static u32 parse_line(char *current_line, char *current_str)
-{
-	char *line_ptr;
-	char *line_ptr_new;
-
-	line_ptr = current_line;
-	/* NULL or comment or other */
-	if((current_line[0] == 0) || (current_line[0] == '#') || (current_line[0] != '!'))
-		return -1;
-
-	line_ptr++;
-
-	line_ptr_new = strchr(line_ptr, '\r');
-	while (line_ptr_new != NULL)
-	{
-		*line_ptr_new = '\n';
-		line_ptr_new = strchr(line_ptr, '\r');
-	}
-
-	line_ptr_new = strchr(line_ptr, '\n');
-	if (line_ptr_new == NULL)
-		return -1;
-
-	*line_ptr_new = 0;
-
-	// "\n" to '\n'
-	line_ptr_new = strstr(line_ptr, "\\n");
-	while (line_ptr_new != NULL)
-	{
-		*line_ptr_new = '\n';
-		memmove((line_ptr_new + 1), (line_ptr_new + 2), (strlen(line_ptr_new + 2) + 1));
-		line_ptr_new = strstr(line_ptr_new, "\\n");
-	}
-
-	strcpy(current_str, line_ptr);
-	return 0;
-}
-
 static void get_timestamp_string(char *buffer, u16 msg_id, u16 year, u16 mon, 
     u16 day, u16 wday, u16 hour, u16 min, u16 sec, u32 msec)
 {
@@ -4420,19 +4374,6 @@ static void get_timestamp_string(char *buffer, u16 msg_id, u16 year, u16 mon,
 
     sprintf(buffer, "%s %02d/%02d/%04d %02d:%02d:%02d", weekday_strings[wday], 
         day, mon, year, hour, min, sec);
-}
-
-static void get_time_string(char *buff, struct rtc *rtcp)
-{
-    get_timestamp_string(buff, 0,
-                            rtcp -> year +2000,
-                            rtcp -> month,
-                            rtcp -> day,
-                            rtcp -> weekday,
-                            rtcp -> hours,
-                            rtcp -> minutes,
-                            rtcp -> seconds,
-                            0);
 }
 
 static u32 save_ss_bmp(u16 *image)

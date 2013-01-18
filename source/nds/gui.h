@@ -167,6 +167,7 @@ extern u32 menu(u16 *original_screen);
 extern void game_disableAudio();
 extern void game_set_frameskip();
 extern void set_cpu_clock(u32 num);
+extern int load_language_msg(char *filename, u32 language);
 
 #ifdef __cplusplus
 }

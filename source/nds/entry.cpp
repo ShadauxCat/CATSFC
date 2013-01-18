@@ -20,6 +20,7 @@
 
 #include "draw.h"
 #include "gui.h"
+#include "entry.h"
 #include "ds2sound.h"
 
 void S9xProcessSound (unsigned int);
@@ -413,12 +414,6 @@ void init_sfc_setting(void)
 	Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
 }
 
-extern "C" {
-	int game_load_state(char* file);
-	int game_save_state(char* file);
-	void S9xAutoSaveSRAM ();
-}
-
 void S9xAutoSaveSRAM ()
 {
     Memory.SaveSRAM (S9xGetFilename (".srm"));
@@ -448,15 +443,11 @@ int game_save_state(char* file)
 	return flag;
 }
 
-extern "C" void game_restart(void);
-
 void game_restart(void)
 {
 	CPU.Flags = 0;
 	S9xReset ();
 }
-
-extern "C" int load_gamepak(char* file);
 
 int load_gamepak(char* file)
 {
@@ -640,7 +631,7 @@ void S9xSyncSpeed ()
 	else if (Settings.SkipFrames == AUTO_FRAMERATE /* && !game_fast_forward */)
 	{
 		// frame_time is in getSysTime units: 42.667 microseconds.
-		uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
+		int32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
 		if (sync_last > syncnow) // Overflow occurred! (every 50 hrs)
 		{
 			// Render this frame regardless, set the
