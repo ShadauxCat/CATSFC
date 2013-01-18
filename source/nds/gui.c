@@ -3126,10 +3126,11 @@ u32 menu(u16 *screen)
 
 	void tools_menu_init()
 	{
-		if(game_config.backward)
+		/* if(game_config.backward)
 			tools_options[4].option_type &= ~HIDEN_TYPE;
 		else
-			tools_options[4].option_type |= HIDEN_TYPE;
+			tools_options[4].option_type |= HIDEN_TYPE; */
+		// OUT OF BOUNDS MEMORY ACCESS, REENABLE IF NEEDED [NEB]
 	}
 
 	int lastest_game_menu_scroll_value;
