@@ -14,7 +14,7 @@
 //   underflows.
 // * not exactly 16667 (NTSC 60 FPS) or 20000 (PAL 50 FPS), because then
 //   the automatic frame skipper will be extremely messed up.
-#define INTERRUPT_TIME_4 15360 /* 15360 tested working */
+#define INTERRUPT_TIME_4 13312 /* 15360 tested working, but underflows */
 #define INTERRUPT_TIME_5  8000 /* like the SNES! tested working, but slow */
 #define INTERRUPT_TIME_6  4000 /* tested working, slow because of upsampling */
 #define INTERRUPT_TIME_7  4000 /* tested working, slow because of upsampling */
