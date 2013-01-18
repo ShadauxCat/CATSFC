@@ -79,8 +79,8 @@ EMU_CONFIG emu_config;
 GAME_CONFIG game_config;
 
 //save state file map
-static u32 savestate_index; // current selection in the saved states menu
-static u32 latest_save; // Slot number of the latest (in time) save for this game
+static uint32 savestate_index; // current selection in the saved states menu
+static int32 latest_save; // Slot number of the latest (in time) save for this game, or -1 if none
 static bool8 SavedStateExistenceCached [SAVE_STATE_SLOT_NUM]; // [I] == TRUE if Cache[I] is meaningful
 static bool8 SavedStateExistenceCache [SAVE_STATE_SLOT_NUM];
 
@@ -4298,8 +4298,10 @@ static void get_savestate_filelist(void)
 		SavedStateExistenceCached [i] = TRUE;
 	}
 
-	savestate_index= latest_save;
-	if(savestate_index < 0) savestate_index = 0;
+	if(latest_save < 0)
+		savestate_index = 0;
+	else
+		savestate_index = latest_save;
 }
 
 static void get_savestate_filename(u32 slot, char *name_buffer)
