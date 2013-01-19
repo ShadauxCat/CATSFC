@@ -91,29 +91,25 @@ struct gui_iconlist gui_icon_list[]= {
 	/* 18 */ {"snexito", 52, 52, NULL},
 
 	/* 19 */ {"sunnof", 16, 16, NULL},
-	/* 20 */ {"snewo", 89, 38, NULL},
-	/* 21 */ {"snnewo", 89, 38, NULL},
-	/* 22 */ {"sreseto", 86, 38, NULL},
-	/* 23 */ {"snreseto", 86, 38, NULL},
-	/* 24 */ {"sreteno", 81, 38, NULL},
-	/* 25 */ {"snreteno", 81, 38, NULL},
-	/* 26 */ {"smaybgo", 256, 192, NULL},
+	/* 20 */ {"smaini", 85, 38, NULL},
+	/* 21 */ {"snmaini", 85, 38, NULL},
+	/* 22 */ {"smaybgo", 256, 192, NULL},
 
-	/* 27 */ {"sticon", 29, 13, NULL},
-	/* 28 */ {"ssubbg", 256, 192, NULL},
+	/* 23 */ {"sticon", 29, 13, NULL},
+	/* 24 */ {"ssubbg", 256, 192, NULL},
 
-	/* 29 */ {"subsela", 245, 22, NULL},
-	/* 30 */ {"subselb", 245, 22, NULL},
-	/* 31 */ {"sfullo", 12, 12, NULL},
-	/* 32 */ {"snfullo", 12, 12, NULL},
-	/* 33 */ {"semptyo", 12, 12, NULL},
-	/* 34 */ {"snemptyo", 12, 12, NULL},
-	/* 35 */ {"fdoto", 16, 16, NULL},
-	/* 36 */ {"backo", 19, 13, NULL},
-	/* 37 */ {"nbacko", 19, 13, NULL},
-	/* 38 */ {"chtfile", 16, 15, NULL},
-	/* 39 */ {"smsgfr", 193, 111, NULL},
-	/* 40 */ {"sbutto", 76, 16, NULL}
+	/* 25 */ {"subsela", 245, 22, NULL},
+	/* 26 */ {"subselb", 245, 22, NULL},
+	/* 27 */ {"sfullo", 12, 12, NULL},
+	/* 28 */ {"snfullo", 12, 12, NULL},
+	/* 29 */ {"semptyo", 12, 12, NULL},
+	/* 30 */ {"snemptyo", 12, 12, NULL},
+	/* 31 */ {"fdoto", 16, 16, NULL},
+	/* 32 */ {"backo", 19, 13, NULL},
+	/* 33 */ {"nbacko", 19, 13, NULL},
+	/* 34 */ {"chtfile", 16, 15, NULL},
+	/* 35 */ {"smsgfr", 193, 111, NULL},
+	/* 36 */ {"sbutto", 76, 16, NULL}
                         };
 
 

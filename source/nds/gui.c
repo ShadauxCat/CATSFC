@@ -2990,92 +2990,95 @@ u32 menu(u16 *screen)
 		//Audio/Video
 		strcpy(line_buffer, *(display_option->display_string));
 		if(display_option++ == current_option) {
-			show_icon(down_screen_addr, &ICON_AVO, 22, 2);
-			show_icon(down_screen_addr, &ICON_MSEL, 11, 57);
+			show_icon(down_screen_addr, &ICON_AVO, 19, 2);
+			show_icon(down_screen_addr, &ICON_MSEL, 5, 57);
 		}
 		else {
-			show_icon(down_screen_addr, &ICON_NAVO, 22, 2);
-			show_icon(down_screen_addr, &ICON_MNSEL, 11, 57);
+			show_icon(down_screen_addr, &ICON_NAVO, 19, 2);
+			show_icon(down_screen_addr, &ICON_MNSEL, 5, 57);
 		}
-		draw_string_vcenter(down_screen_addr, 13, 57, 76, COLOR_WHITE, line_buffer);
+		draw_string_vcenter(down_screen_addr, 7, 57, 75, COLOR_WHITE, line_buffer);
 
 		//Save
 		strcpy(line_buffer, *(display_option->display_string));
 		if(display_option++ == current_option) {
-			show_icon(down_screen_addr, &ICON_SAVO, 102, 2);
-			show_icon(down_screen_addr, &ICON_MSEL, 92, 57);
+			show_icon(down_screen_addr, &ICON_SAVO, 103, 2);
+			show_icon(down_screen_addr, &ICON_MSEL, 89, 57);
 		}
 		else {
-			show_icon(down_screen_addr, &ICON_NSAVO, 102, 2);
-			show_icon(down_screen_addr, &ICON_MNSEL, 92, 57);
+			show_icon(down_screen_addr, &ICON_NSAVO, 103, 2);
+			show_icon(down_screen_addr, &ICON_MNSEL, 89, 57);
 		}
-		draw_string_vcenter(down_screen_addr, 95, 57, 72, COLOR_WHITE, line_buffer);
+		draw_string_vcenter(down_screen_addr, 91, 57, 75, COLOR_WHITE, line_buffer);
 
 		//Cheat
 		strcpy(line_buffer, *(display_option->display_string));
 		if(display_option++ == current_option) {
-			show_icon(down_screen_addr, &ICON_CHEAT, 182, 2);
+			show_icon(down_screen_addr, &ICON_CHEAT, 187, 2);
 			show_icon(down_screen_addr, &ICON_MSEL, 173, 57);
 		}
 		else {
-			show_icon(down_screen_addr, &ICON_NCHEAT, 182, 2);
+			show_icon(down_screen_addr, &ICON_NCHEAT, 187, 2);
 			show_icon(down_screen_addr, &ICON_MNSEL, 173, 57);
 		}
-		draw_string_vcenter(down_screen_addr, 176, 57, 68, COLOR_WHITE, line_buffer);
+		draw_string_vcenter(down_screen_addr, 175, 57, 75, COLOR_WHITE, line_buffer);
 
 		//Tools
 		strcpy(line_buffer, *(display_option->display_string));
 		if(display_option++ == current_option) {
-			show_icon(down_screen_addr, &ICON_TOOL, 22, 75);
-			show_icon(down_screen_addr, &ICON_MSEL, 11, 131);
+			show_icon(down_screen_addr, &ICON_TOOL, 19, 75);
+			show_icon(down_screen_addr, &ICON_MSEL, 5, 131);
 		}
 		else {
-			show_icon(down_screen_addr, &ICON_NTOOL, 22, 75);
-			show_icon(down_screen_addr, &ICON_MNSEL, 11, 131);
+			show_icon(down_screen_addr, &ICON_NTOOL, 19, 75);
+			show_icon(down_screen_addr, &ICON_MNSEL, 5, 131);
 		}
-		draw_string_vcenter(down_screen_addr, 14, 131, 68, COLOR_WHITE, line_buffer);
+		draw_string_vcenter(down_screen_addr, 7, 131, 75, COLOR_WHITE, line_buffer);
 
 		//Other
 		strcpy(line_buffer, *(display_option->display_string));
 		if(display_option++ == current_option) {
-			show_icon(down_screen_addr, &ICON_OTHER, 102, 75);
-			show_icon(down_screen_addr, &ICON_MSEL, 92, 131);
+			show_icon(down_screen_addr, &ICON_OTHER, 103, 75);
+			show_icon(down_screen_addr, &ICON_MSEL, 89, 131);
 		}
 		else {
-			show_icon(down_screen_addr, &ICON_NOTHER, 102, 75);
-			show_icon(down_screen_addr, &ICON_MNSEL, 92, 131);
+			show_icon(down_screen_addr, &ICON_NOTHER, 103, 75);
+			show_icon(down_screen_addr, &ICON_MNSEL, 89, 131);
 		}
-		draw_string_vcenter(down_screen_addr, 95, 131, 68, COLOR_WHITE, line_buffer);
+		draw_string_vcenter(down_screen_addr, 91, 131, 75, COLOR_WHITE, line_buffer);
 
 		//Exit
 		strcpy(line_buffer, *(display_option->display_string));
 		if(display_option++ == current_option) {
-			show_icon(down_screen_addr, &ICON_EXIT, 182, 75);
+			show_icon(down_screen_addr, &ICON_EXIT, 187, 75);
 			show_icon(down_screen_addr, &ICON_MSEL, 173, 131);
 		}
 		else {
-			show_icon(down_screen_addr, &ICON_NEXIT, 182, 75);	
+			show_icon(down_screen_addr, &ICON_NEXIT, 187, 75);	
 			show_icon(down_screen_addr, &ICON_MNSEL, 173, 131);
 		}
-		draw_string_vcenter(down_screen_addr, 176, 131, 68, COLOR_WHITE, line_buffer);
+		draw_string_vcenter(down_screen_addr, 175, 131, 75, COLOR_WHITE, line_buffer);
 
 		//New
 		if(display_option++ == current_option)
-			show_icon(down_screen_addr, &ICON_NEW, 0, 154);
+			show_icon(down_screen_addr, &ICON_MAINITEM, 0, 154);
 		else
-			show_icon(down_screen_addr, &ICON_NNEW, 0, 154);
+			show_icon(down_screen_addr, &ICON_NMAINITEM, 0, 154);
+		draw_string_vcenter(down_screen_addr, 0, 165, 85, COLOR_WHITE, msg[MSG_MAIN_MENU_NEW_GAME]);
 
 		//Restart
 		if(display_option++ == current_option)
-			show_icon(down_screen_addr, &ICON_RETURN, 89, 154);
+			show_icon(down_screen_addr, &ICON_MAINITEM, 85, 154);
 		else
-			show_icon(down_screen_addr, &ICON_NRETURN, 89, 154);
+			show_icon(down_screen_addr, &ICON_NMAINITEM, 85, 154);
+		draw_string_vcenter(down_screen_addr, 85, 165, 85, COLOR_WHITE, msg[MSG_MAIN_MENU_RETURN_TO_GAME]);
 
 		//Return
 		if(display_option++ == current_option)
-			show_icon(down_screen_addr, &ICON_RESET, 170, 154);
+			show_icon(down_screen_addr, &ICON_MAINITEM, 170, 154);
 		else
-			show_icon(down_screen_addr, &ICON_NRESET, 170, 154);
+			show_icon(down_screen_addr, &ICON_NMAINITEM, 170, 154);
+		draw_string_vcenter(down_screen_addr, 170, 165, 85, COLOR_WHITE, msg[MSG_MAIN_MENU_RESET_GAME]);
 	}
 
     void main_menu_key()
