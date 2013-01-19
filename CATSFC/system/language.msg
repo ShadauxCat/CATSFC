@@ -77,6 +77,13 @@ Go to main menu
 Temporary fast-forward
 #MSG_HOTKEY_SOUND_TOGGLE
 Toggle sound
+#MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
+Press the buttons you wish to use to perform\n
+this action.
+#MSG_HOTKEY_DELETE_WITH_A
+[A] Clear
+#MSG_HOTKEY_CANCEL_WITH_B
+[B] Cancel
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 Recently played games
 #MSG_LOAD_GAME_FROM_CARD
@@ -266,6 +273,13 @@ Go to main menu
 Temporary fast-forward
 #MSG_HOTKEY_SOUND_TOGGLE
 Toggle sound
+#MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
+Press the buttons you wish to use to perform\n
+this action.
+#MSG_HOTKEY_DELETE_WITH_A
+[A] Clear
+#MSG_HOTKEY_CANCEL_WITH_B
+[B] Cancel
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 最近玩过的游戏
 #MSG_LOAD_GAME_FROM_CARD
@@ -455,6 +469,13 @@ Menu principal
 Avance rapide temporaire
 #MSG_HOTKEY_SOUND_TOGGLE
 (Dés)activer le son
+#MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
+Appuyez sur les boutons que vous voulez utiliser\n
+pour effectuer cette action.
+#MSG_HOTKEY_DELETE_WITH_A
+[A] Effacer
+#MSG_HOTKEY_CANCEL_WITH_B
+[B] Annuler
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 Jeux joués récemment
 #MSG_LOAD_GAME_FROM_CARD

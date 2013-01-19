@@ -53,6 +53,9 @@ enum MSG
 	MSG_HOTKEY_MAIN_MENU,               // currently unused
 	MSG_HOTKEY_TEMPORARY_FAST_FORWARD,  // currently unused
 	MSG_HOTKEY_SOUND_TOGGLE,            // currently unused
+	MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS, // currently unused
+	MSG_HOTKEY_DELETE_WITH_A,           // currently unused
+	MSG_HOTKEY_CANCEL_WITH_B,           // currently unused
 	MSG_LOAD_GAME_RECENTLY_PLAYED,
 	MSG_LOAD_GAME_FROM_CARD,
 	MSG_LOAD_GAME_MENU_TITLE,

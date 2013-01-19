@@ -145,6 +145,8 @@ extern char rom_path[MAX_PATH];
 
 extern u32 game_enable_audio;
 extern u32 clock_speed_number;
+extern u32 game_fast_forward;
+extern u32 temporary_fast_forward;
 
 /******************************************************************************
  ******************************************************************************/

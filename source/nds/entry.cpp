@@ -588,8 +588,6 @@ static unsigned int sync_last= 0;
 static unsigned int sync_next = 0;
 static unsigned int auto_equivalent_skip = 0;
 
-extern "C" u32 game_fast_forward;
-
 static unsigned int skip_rate= 0;
 
 void S9xSyncSpeed ()
@@ -607,7 +605,7 @@ void S9xSyncSpeed ()
 #endif
 	syncnow = getSysTime();
 
-	if (game_fast_forward)
+	if (game_fast_forward || temporary_fast_forward /* hotkey is held */)
 	{
 		sync_last = syncnow;
 		sync_next = syncnow;
@@ -620,7 +618,7 @@ void S9xSyncSpeed ()
 			IPPU.RenderThisFrame = true;
 		}
 	}
-	else if (Settings.SkipFrames == AUTO_FRAMERATE /* && !game_fast_forward */)
+	else if (Settings.SkipFrames == AUTO_FRAMERATE /* && !game_fast_forward && !temporary_fast_forward */)
 	{
 		// frame_time is in getSysTime units: 42.667 microseconds.
 		int32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
@@ -701,7 +699,7 @@ void S9xSyncSpeed ()
 		}
 #endif
 	}
-	else /* if (Settings.SkipFrames != AUTO_FRAMERATE && !game_fast_forward) */
+	else /* if (Settings.SkipFrames != AUTO_FRAMERATE && !game_fast_forward && !temporary_fast_forward) */
 	{
 		// frame_time is in getSysTime units: 42.667 microseconds.
 		uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;

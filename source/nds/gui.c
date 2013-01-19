@@ -84,6 +84,16 @@ static int32 latest_save; // Slot number of the latest (in time) save for this g
 static bool8 SavedStateExistenceCached [SAVE_STATE_SLOT_NUM]; // [I] == TRUE if Cache[I] is meaningful
 static bool8 SavedStateExistenceCache [SAVE_STATE_SLOT_NUM];
 
+// These are U+05C8 and subsequent codepoints encoded in UTF-8.
+const uint8 HOTKEY_A_DISPLAY[] = {0xD7, 0x88, 0x00};
+const uint8 HOTKEY_B_DISPLAY[] = {0xD7, 0x89, 0x00};
+const uint8 HOTKEY_X_DISPLAY[] = {0xD7, 0x8A, 0x00};
+const uint8 HOTKEY_Y_DISPLAY[] = {0xD7, 0x8B, 0x00};
+const uint8 HOTKEY_L_DISPLAY[] = {0xD7, 0x8C, 0x00};
+const uint8 HOTKEY_R_DISPLAY[] = {0xD7, 0x8D, 0x00};
+const uint8 HOTKEY_START_DISPLAY[] = {0xD7, 0x8E, 0x00};
+const uint8 HOTKEY_SELECT_DISPLAY[] = {0xD7, 0x8F, 0x00};
+
 #define MAKE_MENU(name, init_function, passive_function, key_function, end_function, \
 	focus_option, screen_focus)												  \
   MENU_TYPE name##_menu =                                                     \
@@ -270,6 +280,7 @@ char DEFAULT_CFG_DIR[MAX_PATH];
 char DEFAULT_SS_DIR[MAX_PATH];
 char DEFAULT_CHEAT_DIR[MAX_PATH];
 u32 game_fast_forward= 0;
+u32 temporary_fast_forward = 0;
 u32 game_enable_audio = 1;
 
 

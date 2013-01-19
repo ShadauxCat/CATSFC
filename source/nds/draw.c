@@ -830,6 +830,84 @@ u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
 }
 
 /*
+*	Draw hotkey dialog
+*	Returns DS keys pressed, as in ds2io.h.
+*/
+u32 draw_hotkey_dialog(enum SCREEN_ID screen, u32 sy, char *clear, char *cancel)
+{
+    u16 unicode[8];
+    u32 len, width, box_width, i;
+    char *string;
+	void* screen_addr;
+
+    len= 0;
+    string= clear;
+    while(*string)
+    {
+        string= utf8decode(string, &unicode[len]);
+        if(unicode[len] != 0x0D && unicode[len] != 0x0A)
+        {
+            if(len < 8) len++;
+            else break;
+        }
+    }
+    width= BDF_cut_unicode(unicode, len, 0, 3);
+    
+    len= 0;
+    string= cancel;
+    while(*string)
+    {
+        string= utf8decode(string, &unicode[len]);
+        if(unicode[len] != 0x0D && unicode[len] != 0x0A)
+        {
+            if(len < 8) len++;
+            else    break;
+        }
+    }
+    i= BDF_cut_unicode(unicode, len, 0, 3);
+
+    if(width < i)   width= i;
+    box_width= 64;
+    if(box_width < (width +6)) box_width = width +6;
+
+	if(screen & UP_MASK)
+		screen_addr = up_screen_addr;
+	else
+		screen_addr = down_screen_addr;
+
+    i= SCREEN_WIDTH/2 - box_width - 2;
+	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 49, 128);
+    draw_string_vcenter((unsigned short*)screen_addr, 51, 130, 73, COLOR_WHITE, clear);
+
+    i= SCREEN_WIDTH/2 + 3;
+	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 136, 128);
+    draw_string_vcenter((unsigned short*)screen_addr, 138, 130, 73, COLOR_WHITE, cancel);
+
+	ds2_flipScreen(screen, 2);
+
+	// While there are no keys pressed, wait for keys.
+	struct key_buf inputdata;
+	do {
+		mdelay(1);
+		ds2_getrawInput(&inputdata);
+	} while (inputdata.key == 0);
+
+	// Now, while there are keys pressed, keep a tally of keys that have
+	// been pressed. (IGNORE TOUCH AND LID! Otherwise, closing the lid or
+	// touching to get to the menu will do stuff the user doesn't expect.
+	// Also ignore the direction pad because every game uses it.)
+	u32 TotalKeys = inputdata.key;
+
+	do {
+		mdelay(1);
+		ds2_getrawInput(&inputdata);
+		TotalKeys |= inputdata.key & ~(KEY_TOUCH | KEY_LID | KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT);
+	} while (inputdata.key != 0);
+
+	return TotalKeys;
+}
+
+/*
 *	Drawing progress bar
 */
 static enum SCREEN_ID _progress_screen_id;
