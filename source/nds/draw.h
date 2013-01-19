@@ -146,7 +146,7 @@ extern struct gui_iconlist gui_icon_list[];
 #define ICON_NBACK			gui_icon_list[33]
 #define ICON_CHTFILE		gui_icon_list[34]
 #define ICON_MSG			gui_icon_list[35]
-#define ICON_BUTTON			gui_icon_list[46]
+#define ICON_BUTTON			gui_icon_list[36]
 
 /******************************************************************************
  *
