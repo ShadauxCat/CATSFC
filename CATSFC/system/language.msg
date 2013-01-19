@@ -53,6 +53,10 @@ Cheat code page %d
 Load cheat file
 #MSG_TOOLS_SCREENSHOT_GENERAL
 Screenshots...
+#MSG_TOOLS_GLOBAL_HOTKEY_GENERAL
+Global hotkeys...
+#MSG_TOOLS_GAME_HOTKEY_GENERAL
+Game-specific hotkey overrides...
 #FMT_OPTIONS_LANGUAGE
 Language                          %s
 #FMT_OPTIONS_CPU_FREQUENCY
@@ -67,6 +71,12 @@ Version information
 Save a screenshot
 #MSG_SCREENSHOT_BROWSE
 Browse screenshots
+#MSG_HOTKEY_MAIN_MENU
+Go to main menu
+#MSG_HOTKEY_TEMPORARY_FAST_FORWARD
+Temporary fast-forward
+#MSG_HOTKEY_SOUND_TOGGLE
+Toggle sound
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 Recently played games
 #MSG_LOAD_GAME_FROM_CARD
@@ -232,6 +242,10 @@ STARTCHINESESIM
 加载作弊代码文件
 #MSG_TOOLS_SCREENSHOT_GENERAL
 屏幕快照
+#MSG_TOOLS_GLOBAL_HOTKEY_GENERAL
+Global hotkeys...
+#MSG_TOOLS_GAME_HOTKEY_GENERAL
+Game-specific hotkey overrides...
 #FMT_OPTIONS_LANGUAGE
 语言                               %s
 #FMT_OPTIONS_CPU_FREQUENCY
@@ -246,6 +260,12 @@ CPU主频                          %d
 保存屏幕快照
 #MSG_SCREENSHOT_BROWSE
 浏览屏幕快照
+#MSG_HOTKEY_MAIN_MENU
+Go to main menu
+#MSG_HOTKEY_TEMPORARY_FAST_FORWARD
+Temporary fast-forward
+#MSG_HOTKEY_SOUND_TOGGLE
+Toggle sound
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 最近玩过的游戏
 #MSG_LOAD_GAME_FROM_CARD
@@ -411,6 +431,10 @@ Page de codes de triche : %d
 Charger un fichier de triche
 #MSG_TOOLS_SCREENSHOT_GENERAL
 Captures d'écran...
+#MSG_TOOLS_GLOBAL_HOTKEY_GENERAL
+Raccourcis globaux...
+#MSG_TOOLS_GAME_HOTKEY_GENERAL
+Raccourcis pour le jeu actuel...
 #FMT_OPTIONS_LANGUAGE
 Langue                              %s
 #FMT_OPTIONS_CPU_FREQUENCY
@@ -425,6 +449,12 @@ Version
 Créer une capture d'écran
 #MSG_SCREENSHOT_BROWSE
 Parcourir les captures d'écran
+#MSG_HOTKEY_MAIN_MENU
+Menu principal
+#MSG_HOTKEY_TEMPORARY_FAST_FORWARD
+Avance rapide temporaire
+#MSG_HOTKEY_SOUND_TOGGLE
+(Dés)activer le son
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 Jeux joués récemment
 #MSG_LOAD_GAME_FROM_CARD
