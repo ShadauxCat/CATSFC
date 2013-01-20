@@ -1194,8 +1194,8 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 	//deconstruct filelist_info struct
 	manage_filelist_info(&filelist_info, -1);
 
-	ds2_clearScreen(DOWN_SCREEN, COLOR_BLACK);
-	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
+	// ds2_clearScreen(DOWN_SCREEN, COLOR_BLACK);
+	// ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 	return return_value;
 }
