@@ -66,8 +66,7 @@ old format used in Mightymo's BSNES Cheat Code Pack.
 This is because the directory display does not handle more than 512 files.
 
 To add cheats to the menu in a game, first load the game, then use the Cheats
-menu's "Load a cheat file" option. The option can be touched using the
-Touch Screen, but does not activate the menu. So press A.
+menu's "Load a cheat file" option.
 
 # Frame skipping
 
