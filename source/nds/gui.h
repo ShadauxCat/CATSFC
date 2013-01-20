@@ -40,6 +40,10 @@ struct _EMU_CONFIG
   char rom_file[256];
   char rom_path[256];
   char latest_file[5][512];
+  u32 HotkeyReturnToMenu;
+  u32 HotkeyTemporaryFastForward;
+  u32 HotkeyToggleSound;
+  u32 Reserved[61];
 };
 
 struct _GAME_CONFIG
@@ -52,55 +56,10 @@ struct _GAME_CONFIG
 	u32 Reserved1;
 	u32 backward;
 	u32 backward_time;
-	u32  Reserved2;
-	u32  Reserved3;
-	u32  Reserved4;
-	u32  Reserved5;
-	u32  Reserved6;
-	u32  Reserved7;
-	u32  Reserved8;
-	u32  Reserved9;
-	u32  Reserved10;
-	u32  Reserved11;
-	u32  Reserved12;
-	u32  Reserved13;
-	u32  Reserved14;
-	u32  Reserved15;
-	u32  Reserved16;
-	u32  Reserved17;
-	u32  Reserved18;
-	u32  Reserved19;
-	u32  Reserved20;
-	u32  Reserved21;
-	u32  Reserved22;
-	u32  Reserved23;
-	u32  Reserved24;
-	u32  Reserved25;
-	u32  Reserved26;
-	u32  Reserved27;
-	u32  Reserved28;
-	u32  Reserved29;
-	u32  Reserved30;
-	u32  Reserved31;
-	u32  Reserved32;
-
-	u32  Reserved33;
-	u32  Reserved34;
-	u32  Reserved35;
-	u32  Reserved36;
-	u32  Reserved37;
-	u32  Reserved38;
-	u32  Reserved39;
-	u32  Reserved40;
-	u32  Reserved41;
-	u32  Reserved42;
-	u32  Reserved43;
-	u32  Reserved44;
-	u32  Reserved45;
-	u32  Reserved46;
-	u32  Reserved47;
-	u32  Reserved48;
-	u32  Reserved49;
+	u32 HotkeyReturnToMenu;
+	u32 HotkeyTemporaryFastForward;
+	u32 HotkeyToggleSound;
+	u32  Reserved2[45];
 };
 
 typedef enum

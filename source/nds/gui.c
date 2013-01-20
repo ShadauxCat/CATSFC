@@ -4153,6 +4153,7 @@ int load_emu_config_file(void)
 		pt[EMU_CONFIG_HEADER_SIZE]= 0;
 		if(!strcmp(pt, EMU_CONFIG_HEADER))
 		{
+			memset(&emu_config, 0, sizeof(emu_config));
 			fread(&emu_config, 1, sizeof(emu_config), fp);
 			fclose(fp);
 			return 0;
