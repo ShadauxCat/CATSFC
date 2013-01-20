@@ -3619,26 +3619,27 @@ u32 menu(u16 *screen)
 				/* Save states */
 				else if(current_menu == (main_menu.options + 1)->sub_menu)
 				{
+					u32 next_option_num;
 					if(inputdata.y <= 33)
 						break;
 					else if(inputdata.y <= 60)
 						break; // "Create saved state"
 					else if(inputdata.y <= 87) // Save cell
-						current_option_num = 1;
+						next_option_num = 1;
 					else if(inputdata.y <= 114)
 						break; // "Load saved state"
 					else if(inputdata.y <= 141) // Load cell
-						current_option_num = 2;
+						next_option_num = 2;
 					else if(inputdata.y <= 168) // Del...
-						current_option_num = 3;
+						next_option_num = 3;
 					else
 						break;
 					
-					current_option = current_menu->options + current_option_num;
+					struct _MENU_OPTION_TYPE *next_option = current_menu->options + next_option_num;
 					
-					if(current_option_num == 1 /* write */ || current_option_num == 2 /* read */)
+					if(next_option_num == 1 /* write */ || next_option_num == 2 /* read */)
 					{
-						u32 current_option_val = *(current_option->current_option);
+						u32 current_option_val = *(next_option->current_option);
 						u32 old_option_val = current_option_val;
 
 						// This row has SAVE_STATE_SLOT_NUM cells for save states, each ICON_STATEFULL.x pixels wide.
@@ -3657,6 +3658,9 @@ u32 menu(u16 *screen)
 						}
 						if(!found_state)
 							break;
+
+						current_option_num = next_option_num;
+						current_option = next_option;
 
 						*(current_option->current_option) = current_option_val;
 
@@ -3679,9 +3683,13 @@ u32 menu(u16 *screen)
 					}
 					
 					gui_action = CURSOR_SELECT;
-					if(current_option -> option_type & HIDEN_TYPE)
+					if(next_option -> option_type & HIDEN_TYPE)
 						break;
-					else if(current_option->option_type & ACTION_TYPE)
+
+					current_option_num = next_option_num;
+					current_option = next_option;
+
+					if(current_option->option_type & ACTION_TYPE)
 						current_option->action_function();
 					else if(current_option->option_type & SUBMENU_TYPE)
 						choose_menu(current_option->sub_menu);
@@ -3689,22 +3697,23 @@ u32 menu(u16 *screen)
 				/* Delete state sub menu */
 				else if(current_menu == ((main_menu.options + 1)->sub_menu->options + 3)->sub_menu)
 				{
+					u32 next_option_num;
 					if(inputdata.y <= 33)
 						break;
 					else if(inputdata.y <= 60)
-						current_option_num = 1;
+						next_option_num = 1;
 					else if(inputdata.y <= 87)
 						break;
 					else if(inputdata.y <= 114)
-						current_option_num = 2;
+						next_option_num = 2;
 					else
 						break;
 					
-					current_option = current_menu->options + current_option_num;
+					struct _MENU_OPTION_TYPE *next_option = current_menu->options + next_option_num;
 					
-					if(current_option_num == 2)
+					if(next_option_num == 2)
 					{
-						u32 current_option_val = *(current_option->current_option);
+						u32 current_option_val = *(next_option->current_option);
 						u32 old_option_val = current_option_val;
 
 						// This row has SAVE_STATE_SLOT_NUM cells for save states, each ICON_STATEFULL.x pixels wide.
@@ -3724,6 +3733,9 @@ u32 menu(u16 *screen)
 						if(!found_state)
 							break;
 
+						current_option_num = next_option_num;
+						current_option = next_option;
+
 						*(current_option->current_option) = current_option_val;
 
 						if(current_option_val == old_option_val)
@@ -3738,9 +3750,13 @@ u32 menu(u16 *screen)
 					}
 					
 					gui_action = CURSOR_SELECT;
-					if(current_option -> option_type & HIDEN_TYPE)
+					if(next_option -> option_type & HIDEN_TYPE)
 						break;
-					else if(current_option->option_type & ACTION_TYPE)
+
+					current_option_num = next_option_num;
+					current_option = next_option;
+
+					if(current_option->option_type & ACTION_TYPE)
 						current_option->action_function();
 					else if(current_option->option_type & SUBMENU_TYPE)
 						choose_menu(current_option->sub_menu);
@@ -3757,13 +3773,19 @@ u32 menu(u16 *screen)
 					// ___ 60        above or below these are ignored.
 					// . . . (+27)   The row between 33 and 60 is [1], though!
 					// ___ 192
-					current_option_num = (inputdata.y - 33) / 27 + 1;
-
-					current_option = current_menu->options + current_option_num;
-
-					if(current_option -> option_type & HIDEN_TYPE)
+					u32 next_option_num = (inputdata.y - 33) / 27 + 1;
+					if (next_option_num > current_menu->num_options)
 						break;
-					else if(current_option->option_type & ACTION_TYPE)
+
+					struct _MENU_OPTION_TYPE *next_option = current_menu->options + current_option_num;
+
+					if(next_option -> option_type & HIDEN_TYPE)
+						break;
+
+					current_option_num = next_option_num;
+					current_option = next_option;
+
+					if(current_option->option_type & ACTION_TYPE)
 						current_option->action_function();
 					else if(current_option->option_type & SUBMENU_TYPE)
 						choose_menu(current_option->sub_menu);
