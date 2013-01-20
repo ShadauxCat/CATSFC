@@ -808,6 +808,14 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 		gui_action = get_gui_input();
 		int mod;
 
+		// Get KEY_RIGHT and KEY_LEFT separately to allow scrolling
+		// the selected file name faster.
+		ds2_getrawInput(&inputdata);
+		if (inputdata.key & KEY_RIGHT)
+			redraw = -3;
+		else if (inputdata.key & KEY_LEFT)
+			redraw = 3;
+
 		switch(gui_action)
 		{
 			case CURSOR_TOUCH:
@@ -969,13 +977,11 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 
 				break;
 			}
-			//scroll string
+			//scroll string (see above the switch)
 			case CURSOR_RIGHT:
-				redraw = -5;
-				break;
-			//scroll string
+				/* fall through */
+			//scroll string (see above the switch)
 			case CURSOR_LEFT:
-				redraw = 5;
 				break;
 
 			case CURSOR_SELECT:
@@ -1128,7 +1134,6 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			}
 
 			redraw = 0;
-			ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 		} //end if(0 != redraw)
 		else if(0 != redraw) {
 			unsigned int m, n;
@@ -1156,7 +1161,6 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			}
 
 			draw_hscroll(m+1, redraw);
-			ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 			redraw = 0;
 		}
 
@@ -1176,10 +1180,11 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			{
 				if(draw_hscroll(0, 1) <= 1) path_scroll = 0x8000; //scroll left
 			}
-			ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 		}
 
-		mdelay(50);			//about 50ms
+		ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
+
+		mdelay(20);			//about 50ms
 	} //end while(repeat)
 
 	unsigned int i;
