@@ -3668,6 +3668,13 @@ u32 menu(u16 *screen)
 							else if(current_option->option_type & SUBMENU_TYPE)
 								choose_menu(current_option->sub_menu);
 						}
+						else
+						{
+							// Initial selection of a saved state
+							// needs to show its screenshot
+							if(current_option->option_type & ACTION_TYPE)
+								current_option->action_function();
+						}
 						break;
 					}
 					
