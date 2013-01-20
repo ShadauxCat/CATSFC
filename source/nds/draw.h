@@ -69,7 +69,7 @@
 #define COLOR_BG32          COLOR32(2*8,  4*8,  10*8)
 #define COLOR_ROM_INFO      COLOR16(22, 18, 26)
 #define COLOR_ACTIVE_ITEM   COLOR16(31, 31, 31)
-#define COLOR_INACTIVE_ITEM COLOR16(13, 20, 18)
+#define COLOR_INACTIVE_ITEM COLOR16(11,  7, 19)
 #define COLOR_HELP_TEXT     COLOR16(16, 20, 24)
 #define COLOR_DIALOG        COLOR16(31, 31, 31)
 #define COLOR_DIALOG_SHADOW COLOR16( 0,  2,  8)
@@ -136,17 +136,16 @@ extern struct gui_iconlist gui_icon_list[];
 #define ICON_SUBBG			gui_icon_list[24]
 
 #define ICON_SUBSELA		gui_icon_list[25]
-#define ICON_SUBSELB		gui_icon_list[26]
-#define ICON_STATEFULL		gui_icon_list[27]
-#define ICON_NSTATEFULL		gui_icon_list[28]
-#define ICON_STATEEMPTY		gui_icon_list[29]
-#define ICON_NSTATEEMPTY	gui_icon_list[30]
-#define ICON_DOTDIR			gui_icon_list[31]
-#define ICON_BACK			gui_icon_list[32]
-#define ICON_NBACK			gui_icon_list[33]
-#define ICON_CHTFILE		gui_icon_list[34]
-#define ICON_MSG			gui_icon_list[35]
-#define ICON_BUTTON			gui_icon_list[36]
+#define ICON_STATEFULL		gui_icon_list[26]
+#define ICON_NSTATEFULL		gui_icon_list[27]
+#define ICON_STATEEMPTY		gui_icon_list[28]
+#define ICON_NSTATEEMPTY	gui_icon_list[29]
+#define ICON_DOTDIR			gui_icon_list[30]
+#define ICON_BACK			gui_icon_list[31]
+#define ICON_NBACK			gui_icon_list[32]
+#define ICON_CHTFILE		gui_icon_list[33]
+#define ICON_MSG			gui_icon_list[34]
+#define ICON_BUTTON			gui_icon_list[35]
 
 /******************************************************************************
  *

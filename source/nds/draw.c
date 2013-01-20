@@ -99,7 +99,6 @@ struct gui_iconlist gui_icon_list[]= {
 	/* 24 */ {"ssubbg", 256, 192, NULL},
 
 	/* 25 */ {"subsela", 245, 22, NULL},
-	/* 26 */ {"subselb", 245, 22, NULL},
 	/* 27 */ {"sfullo", 12, 12, NULL},
 	/* 28 */ {"snfullo", 12, 12, NULL},
 	/* 29 */ {"semptyo", 12, 12, NULL},
