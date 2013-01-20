@@ -142,7 +142,7 @@ void drawhline(void* screen_addr, u32 sx, u32 ex, u32 y, u32 color)
 {
 	u32 x;
 	u32 width  = (ex - sx) + 1;
-	volatile u16 *dst = VRAM_POS(screen_addr, sx, y);
+	u16 *dst = VRAM_POS(screen_addr, sx, y);
 
 	for (x = 0; x < width; x++)
 		*dst++ = (u16)color;
@@ -155,7 +155,7 @@ void drawvline(void* screen_addr, u32 x, u32 sy, u32 ey, u32 color)
 {
 	int y;
 	int height = (ey - sy) + 1;
-	volatile u16 *dst = VRAM_POS(screen_addr, x, sy);
+	u16 *dst = VRAM_POS(screen_addr, x, sy);
 
 	for (y = 0; y < height; y++)
 	{
@@ -183,7 +183,7 @@ void drawboxfill(void* screen_addr, u32 sx, u32 sy, u32 ex, u32 ey, u32 color)
 	u32 x, y;
 	u32 width  = (ex - sx) + 1;
 	u32 height = (ey - sy) + 1;
-	volatile u16 *dst = VRAM_POS(screen_addr, sx, sy);
+	u16 *dst = VRAM_POS(screen_addr, sx, sy);
 
 	for (y = 0; y < height; y++)
 	{

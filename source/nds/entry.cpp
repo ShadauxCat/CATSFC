@@ -34,10 +34,6 @@ static u8 Buf[MAX_BUFFER_SIZE];
 #define FIXED_POINT_SHIFT 16
 #define FIXED_POINT_REMAINDER 0xffff
 
-static volatile bool8 block_signal = FALSE;
-static volatile bool8 pending_signal = FALSE;
-static volatile bool8 DelayingForEarlyFrame = FALSE;
-
 void S9xMessage (int /*type*/, int /*number*/, const char *message)
 {
 #if 1
@@ -677,12 +673,10 @@ void S9xSyncSpeed ()
 		else // Early
 		{
 			skip_rate = 0;
-			DelayingForEarlyFrame = TRUE;
 			ds2_setCPUclocklevel(0);
 			if (syncdif > 0)
 				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
 			set_cpu_clock(clock_speed_number);
-			DelayingForEarlyFrame = FALSE;
 			S9xProcessSound (0);
 
 			IPPU.RenderThisFrame = TRUE;
@@ -712,11 +706,9 @@ void S9xSyncSpeed ()
 			syncdif = sync_next - syncnow;
 			if (syncdif > 0)
 			{
-				DelayingForEarlyFrame = TRUE;
 				ds2_setCPUclocklevel(0);
 				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
 				set_cpu_clock(clock_speed_number);
-				DelayingForEarlyFrame = FALSE;
 				S9xProcessSound (0);
 				// After that little delay, what time is it?
 				syncnow = getSysTime();
@@ -846,8 +838,6 @@ bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
 
 void S9xGenerateSound ()
 {
-	block_signal = TRUE;
-
 #ifndef FOREVER_16_BIT_SOUND
 	int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
 		so.samples_mixed_so_far;
@@ -856,7 +846,7 @@ void S9xGenerateSound ()
 #endif
 
 	if (bytes_so_far >= so.buffer_size)
-		goto end;
+		return;
 
 	so.err_counter += so.err_rate;
 	if (so.err_counter >= FIXED_POINT)
@@ -909,37 +899,17 @@ void S9xGenerateSound ()
 			byte_offset = (byte_offset + bytes_this_run) & SOUND_BUFFER_SIZE_MASK;
 		} while (samples_to_write > 0);
 	}
-
-end:
-
-	if (pending_signal)
-	{
-		block_signal = FALSE;
-		pending_signal = FALSE;
-		S9xProcessSound (0);
-	}
-	else
-		block_signal = FALSE;
 }
 
 void S9xProcessSound (unsigned int)
 {
-	if (DelayingForEarlyFrame)
-		set_cpu_clock(clock_speed_number);
-
-	if (block_signal)
-	{
-		pending_signal = TRUE;
-		goto end;
-	}
-
 	unsigned short *audiobuff;
 
-	if (Settings.Paused || so.mute_sound || !game_enable_audio)
-		goto end;
+	if (so.mute_sound || !game_enable_audio)
+		return;
 
 	if(ds2_checkAudiobuff() > 4)
-		goto end;
+		return;
 
 	/* Number of samples to generate now */
 	int sample_count;
@@ -959,7 +929,7 @@ void S9xProcessSound (unsigned int)
 	audiobuff = (unsigned short*)ds2_getAudiobuff();
 	if(NULL == audiobuff)	//There are audio queue in sending or wait to send
 	{
-		goto end;
+		return;
 	}
 
 	/* If we need more audio samples */
@@ -1075,10 +1045,6 @@ void S9xProcessSound (unsigned int)
 	}
 
 	so.samples_mixed_so_far -= sample_count;
-
-end:
-	if (DelayingForEarlyFrame)
-		ds2_setCPUclocklevel(0);
 }
 
 /*
