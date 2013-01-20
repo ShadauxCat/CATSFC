@@ -2566,7 +2566,7 @@ u32 menu(u16 *screen)
 
     void save_screen_snapshot()
     {
-        if((gui_action == CURSOR_SELECT))
+        if(gui_action == CURSOR_SELECT)
         {
             if(bg_screenp != NULL)
             {
@@ -3574,15 +3574,20 @@ u32 menu(u16 *screen)
 					// ___ 60        above or below these are ignored.
 					// . . . (+27)   The row between 33 and 60 is [1], though!
 					// ___ 192
-					current_option_num = (inputdata.y - 33) / 27 + 1;
+					u32 next_option_num = (inputdata.y - 33) / 27 + 1;
+					struct _MENU_OPTION_TYPE *next_option = current_menu->options + next_option_num;
 
+					if (next_option_num >= current_menu->num_options)
+						break;
+
+					if(!next_option)
+						break;
+
+					if(next_option -> option_type & HIDEN_TYPE)
+						break;
+
+					current_option_num = next_option_num;
 					current_option = current_menu->options + current_option_num;
-
-					if(!current_option)
-						break;
-
-					if(current_option -> option_type & HIDEN_TYPE)
-						break;
 
 					if(current_menu->key_function)
 					{
@@ -3591,6 +3596,7 @@ u32 menu(u16 *screen)
 					}
 					else if(current_option->option_type & (NUMBER_SELECTION_TYPE | STRING_SELECTION_TYPE))
 					{
+						gui_action = CURSOR_RIGHT;
 						u32 current_option_val = *(current_option->current_option);
 
 						if(current_option_val <  current_option->num_options -1)
@@ -3602,6 +3608,8 @@ u32 menu(u16 *screen)
 						if(current_option->action_function)
 							current_option->action_function();
 					}
+					else if(current_option->option_type & ACTION_TYPE)
+						current_option->action_function();
 				}
 				/* Save states */
 				else if(current_menu == (main_menu.options + 1)->sub_menu)
