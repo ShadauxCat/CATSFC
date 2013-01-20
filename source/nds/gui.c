@@ -2720,7 +2720,7 @@ u32 menu(u16 *screen)
             ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
             load_language_msg(LANGUAGE_PACK, emu_config.language);    
-            gui_change_icon(emu_config.language);
+            // gui_change_icon(emu_config.language); // uncomment if images change per language [Neb]
 
             if(first_load)
             {
