@@ -166,6 +166,21 @@ extern "C" void DecodeBlockAsm2 (int8 *, int16 *, int32 *, int32 *);
 #define LAST_SAMPLE 0xffffff
 #define JUST_PLAYED_LAST_SAMPLE(c) ((c)->sample_pointer >= LAST_SAMPLE)
 
+const int16 SQUARE_WAVE_SAMPLE[16] = {32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,};
+
+void S9xSetEightBitConsoleSound (bool8 Enabled)
+{
+	if (Settings.EightBitConsoleSound != Enabled)
+	{
+		Settings.EightBitConsoleSound = Enabled;
+		int i;
+		for (i = 0; i < 8; i++)
+		{
+			SoundData.channels[i].needs_decode = TRUE;
+		}
+	}
+}
+
 STATIC inline uint8 *S9xGetSampleAddress (int sample_number)
 {
     uint32 addr = (((APU.DSP[APU_DIR] << 8) + (sample_number << 2)) & 0xffff);
@@ -804,7 +819,7 @@ void DecodeBlock (Channel *ch)
     signed char sample1, sample2;
     unsigned char i;
     bool invalid_header;
-	
+
     if (Settings.AltSampleDecode)
     {
 		if (Settings.AltSampleDecode < 3)
@@ -820,74 +835,87 @@ void DecodeBlock (Channel *ch)
 		ch->block = ch->decoded;
 		return;
     }
-    signed char *compressed = (signed char *) &IAPU.RAM [ch->block_pointer];
-	
-    filter = *compressed;
-    if ((ch->last_block = filter & 1))
-		ch->loop = (filter & 2) != 0;
-	
-	compressed++;
-	signed short *raw = ch->block = ch->decoded;
-	
-	// Seperate out the header parts used for decoding
 
-	shift = filter >> 4;
-	
-	// Header validity check: if range(shift) is over 12, ignore
-	// all bits of the data for that block except for the sign bit of each
-	invalid_header = (shift >= 0xD);
-
-	filter = filter&0x0c;
-
-	int32 prev0 = ch->previous [0];
-	int32 prev1 = ch->previous [1];
-	
-	for (i = 8; i != 0; i--)
+	if (Settings.EightBitConsoleSound)
 	{
-		sample1 = *compressed++;
-		sample2 = sample1 << 4;
-		//Sample 2 = Bottom Nibble, Sign Extended.
-		sample2 >>= 4;
-		//Sample 1 = Top Nibble, shifted down and Sign Extended.
-		sample1 >>= 4;
-			if (invalid_header) { sample1>>=3; sample2>>=3; }
-		
-		for (int nybblesmp = 0; nybblesmp<2; nybblesmp++){
-			out=(((nybblesmp) ? sample2 : sample1) << shift);
-			out >>= 1;
-			
-			switch(filter)
-			{
-				case 0x00:
-					// Method0 - [Smp]
-					break;
-				
-				case 0x04:
-					// Method1 - [Delta]+[Smp-1](15/16)
-					out+=(prev0>>1)+((-prev0)>>5);
-					break;
-				
-				case 0x08:
-					// Method2 - [Delta]+[Smp-1](61/32)-[Smp-2](15/16)
-					out+=(prev0)+((-(prev0 +(prev0>>1)))>>5)-(prev1>>1)+(prev1>>5);
-					break;
-				
-				default:
-					// Method3 - [Delta]+[Smp-1](115/64)-[Smp-2](13/16)
-					out+=(prev0)+((-(prev0 + (prev0<<2) + (prev0<<3)))>>7)-(prev1>>1)+((prev1+(prev1>>1))>>4);
-					break;
-				
-			}
-			CLIP16(out);
-				*raw++ = (signed short)(out<<1);
-			prev1=(signed short)prev0;
-			prev0=(signed short)(out<<1);
-		}
+		signed char *compressed = (signed char *) &IAPU.RAM [ch->block_pointer];
+
+		filter = *compressed;
+		if ((ch->last_block = filter & 1))
+			ch->loop = (filter & 2) != 0;
+		ch->block = ch->decoded;
+		memcpy(ch->decoded, SQUARE_WAVE_SAMPLE, sizeof(SQUARE_WAVE_SAMPLE));
 	}
-	ch->previous [0] = prev0;
-	ch->previous [1] = prev1;
+	else
+	{
+	    signed char *compressed = (signed char *) &IAPU.RAM [ch->block_pointer];
 	
-    ch->block_pointer += 9;
+	    filter = *compressed;
+	    if ((ch->last_block = filter & 1))
+			ch->loop = (filter & 2) != 0;
+	
+		compressed++;
+		signed short *raw = ch->block = ch->decoded;
+	
+		// Seperate out the header parts used for decoding
+
+		shift = filter >> 4;
+	
+		// Header validity check: if range(shift) is over 12, ignore
+		// all bits of the data for that block except for the sign bit of each
+		invalid_header = (shift >= 0xD);
+
+		filter = filter&0x0c;
+
+		int32 prev0 = ch->previous [0];
+		int32 prev1 = ch->previous [1];
+	
+		for (i = 8; i != 0; i--)
+		{
+			sample1 = *compressed++;
+			sample2 = sample1 << 4;
+			//Sample 2 = Bottom Nibble, Sign Extended.
+			sample2 >>= 4;
+			//Sample 1 = Top Nibble, shifted down and Sign Extended.
+			sample1 >>= 4;
+				if (invalid_header) { sample1>>=3; sample2>>=3; }
+		
+			for (int nybblesmp = 0; nybblesmp<2; nybblesmp++){
+				out=(((nybblesmp) ? sample2 : sample1) << shift);
+				out >>= 1;
+			
+				switch(filter)
+				{
+					case 0x00:
+						// Method0 - [Smp]
+						break;
+				
+					case 0x04:
+						// Method1 - [Delta]+[Smp-1](15/16)
+						out+=(prev0>>1)+((-prev0)>>5);
+						break;
+				
+					case 0x08:
+						// Method2 - [Delta]+[Smp-1](61/32)-[Smp-2](15/16)
+						out+=(prev0)+((-(prev0 +(prev0>>1)))>>5)-(prev1>>1)+(prev1>>5);
+						break;
+				
+					default:
+						// Method3 - [Delta]+[Smp-1](115/64)-[Smp-2](13/16)
+						out+=(prev0)+((-(prev0 + (prev0<<2) + (prev0<<3)))>>7)-(prev1>>1)+((prev1+(prev1>>1))>>4);
+						break;
+				
+				}
+				CLIP16(out);
+					*raw++ = (signed short)(out<<1);
+				prev1=(signed short)prev0;
+				prev0=(signed short)(out<<1);
+			}
+		}
+		ch->previous [0] = prev0;
+		ch->previous [1] = prev1;
+	}
+	ch->block_pointer += 9;
 }
 
 

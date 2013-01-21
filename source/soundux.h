@@ -220,6 +220,8 @@ typedef struct
 
 EXTERN_C SSoundData SoundData;
 
+void S9xSetEightBitConsoleSound (bool8 Enabled);
+
 void S9xSetSoundVolume (int channel, short volume_left, short volume_right);
 void S9xSetSoundFrequency (int channel, int hertz);
 void S9xSetSoundHertz (int channel, int hertz);

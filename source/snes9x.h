@@ -337,11 +337,11 @@ struct SSettings{
 #ifndef FOREVER_16_BIT_SOUND
     bool8  SixteenBitSound;
 #endif
+    bool8  EightBitConsoleSound;  // due to caching, this needs S9xSetEightBitConsoleSound()
     int    SoundBufferSize;
     int    SoundMixInterval;
     bool8  SoundEnvelopeHeightReading;
     bool8  DisableSoundEcho;
-    bool8  DisableSampleCaching;
     bool8  DisableMasterVolume;
     bool8  SoundSync;
     bool8  InterpolatedSound;

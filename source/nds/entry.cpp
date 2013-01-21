@@ -370,6 +370,7 @@ void init_sfc_setting(void)
 	//sound settings
     Settings.APUEnabled = Settings.NextAPUEnabled = TRUE;
 	Settings.FixFrequency = 1;
+	S9xSetEightBitConsoleSound (TRUE);
 
 
     Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
@@ -377,7 +378,6 @@ void init_sfc_setting(void)
     Settings.ShutdownMaster = TRUE;
     Settings.FrameTimePAL = 20000;
     Settings.FrameTimeNTSC = 16667;
-    Settings.DisableSampleCaching = FALSE;
     Settings.DisableMasterVolume = FALSE;
     Settings.Mouse = TRUE;
     Settings.SuperScope = TRUE;
