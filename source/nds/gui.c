@@ -3777,7 +3777,7 @@ u32 menu(u16 *screen)
 					if (next_option_num > current_menu->num_options)
 						break;
 
-					struct _MENU_OPTION_TYPE *next_option = current_menu->options + current_option_num;
+					struct _MENU_OPTION_TYPE *next_option = current_menu->options + next_option_num;
 
 					if(next_option -> option_type & HIDEN_TYPE)
 						break;
