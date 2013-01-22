@@ -166,8 +166,6 @@ extern "C" void DecodeBlockAsm2 (int8 *, int16 *, int32 *, int32 *);
 #define LAST_SAMPLE 0xffffff
 #define JUST_PLAYED_LAST_SAMPLE(c) ((c)->sample_pointer >= LAST_SAMPLE)
 
-const int16 SQUARE_WAVE_SAMPLE[16] = {32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,};
-
 void S9xSetEightBitConsoleSound (bool8 Enabled)
 {
 	if (Settings.EightBitConsoleSound != Enabled)
@@ -838,13 +836,93 @@ void DecodeBlock (Channel *ch)
 
 	if (Settings.EightBitConsoleSound)
 	{
-		signed char *compressed = (signed char *) &IAPU.RAM [ch->block_pointer];
-
-		filter = *compressed;
-		if ((ch->last_block = filter & 1))
+	    signed char *compressed = (signed char *) &IAPU.RAM [ch->block_pointer];
+	
+	    filter = *compressed;
+	    if ((ch->last_block = filter & 1))
 			ch->loop = (filter & 2) != 0;
-		ch->block = ch->decoded;
-		memcpy(ch->decoded, SQUARE_WAVE_SAMPLE, sizeof(SQUARE_WAVE_SAMPLE));
+	
+		compressed++;
+		signed short *raw = ch->block = ch->decoded;
+	
+		// Seperate out the header parts used for decoding
+
+		shift = filter >> 4;
+	
+		// Header validity check: if range(shift) is over 12, ignore
+		// all bits of the data for that block except for the sign bit of each
+		invalid_header = (shift >= 0xD);
+
+		filter = filter&0x0c;
+
+		int32 prev0 = ch->previous [0];
+		int32 prev1 = ch->previous [1];
+
+		int16 amplitude = 0;
+	
+		for (i = 8; i != 0; i--)
+		{
+			sample1 = *compressed++;
+			sample2 = sample1 << 4;
+			//Sample 2 = Bottom Nibble, Sign Extended.
+			sample2 >>= 4;
+			//Sample 1 = Top Nibble, shifted down and Sign Extended.
+			sample1 >>= 4;
+				if (invalid_header) { sample1>>=3; sample2>>=3; }
+		
+			for (int nybblesmp = 0; nybblesmp<2; nybblesmp++){
+				out=(((nybblesmp) ? sample2 : sample1) << shift);
+				out >>= 1;
+			
+				switch(filter)
+				{
+					case 0x00:
+						// Method0 - [Smp]
+						break;
+				
+					case 0x04:
+						// Method1 - [Delta]+[Smp-1](15/16)
+						out+=(prev0>>1)+((-prev0)>>5);
+						break;
+				
+					case 0x08:
+						// Method2 - [Delta]+[Smp-1](61/32)-[Smp-2](15/16)
+						out+=(prev0)+((-(prev0 +(prev0>>1)))>>5)-(prev1>>1)+(prev1>>5);
+						break;
+				
+					default:
+						// Method3 - [Delta]+[Smp-1](115/64)-[Smp-2](13/16)
+						out+=(prev0)+((-(prev0 + (prev0<<2) + (prev0<<3)))>>7)-(prev1>>1)+((prev1+(prev1>>1))>>4);
+						break;
+				
+				}
+				CLIP16(out);
+				int16 result = (signed short)(out<<1);
+				if (abs(result) > amplitude)
+					amplitude = abs(result);
+				prev1=(signed short)prev0;
+				prev0=(signed short)(out<<1);
+			}
+		}
+		ch->previous [0] = prev0;
+		ch->previous [1] = prev1;
+		// Make it a square wave with an amplitude equivalent to that
+		// of the highest amplitude sample of the block.
+		/* for (i = 0; i < 8; i++)
+			ch->decoded[i] = amplitude;
+		for (i = 8; i < 16; i++)
+			ch->decoded[i] = -amplitude; */
+		// Make it a triangle wave with an amplitude equivalent to that
+		// of the highest amplitude sample of the block.
+		ch->decoded[0] =  ch->decoded[8]  = 0;
+		ch->decoded[1] =  ch->decoded[7]  = amplitude / 4;
+		ch->decoded[2] =  ch->decoded[6]  = amplitude / 2;
+		ch->decoded[3] =  ch->decoded[5]  = amplitude * 3 / 4;
+		ch->decoded[4] =  amplitude;
+		ch->decoded[9] =  ch->decoded[15] = -(amplitude / 4);
+		ch->decoded[10] = ch->decoded[14] = -(amplitude / 2);
+		ch->decoded[11] = ch->decoded[13] = -(amplitude * 3 / 4);
+		ch->decoded[12] = -amplitude;
 	}
 	else
 	{
