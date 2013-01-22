@@ -3615,6 +3615,8 @@ u32 menu(u16 *screen)
 					}
 					else if(current_option->option_type & ACTION_TYPE)
 						current_option->action_function();
+					else if(current_option->option_type & SUBMENU_TYPE)
+						choose_menu(current_option->sub_menu);
 				}
 				/* Save states */
 				else if(current_menu == (main_menu.options + 1)->sub_menu)
@@ -3894,6 +3896,10 @@ u32 menu(u16 *screen)
 
 		ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 	} // end while
+
+	if (current_menu && current_menu->end_function)
+		current_menu->end_function();
+
 	destroy_dynamic_cheats();
 	if(bg_screenp != NULL) free((void*)bg_screenp);
 	
