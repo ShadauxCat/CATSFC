@@ -1,4 +1,4 @@
-CATSFC version 1.22, 2013-01-20
+CATSFC version 1.23, 2013-01-22
 
 A Super Nintendo emulator for the Supercard DSTWO.
 
@@ -85,6 +85,28 @@ a number of frames to skip between rendered frames.
 It is recommended to start with frame skipping 4 (Show 1 frame every 5) and
 go to 3 or 2 if the game doesn't run with major slowdowns with them. If you
 don't like the slowdowns, return to frame skipping 4 or -.
+
+# Hotkeys
+
+You can set buttons to press to perform certain actions. For each action,
+there is a *global hotkey* and a *game-specific override hotkey*. You might,
+for example, want to have the R button bound to Temporary fast-forward, but
+a specific game uses R for something important. In that case, you can set the
+global hotkey to R and make an override with X for that game.
+
+Hotkeys are sent to the current game as well as to their corresponding action.
+The criterion for a hotkey is met when **at least** all of its buttons are
+held. Additional keys are sent to the game and can trigger another hotkey.
+For example, setting a hotkey to L and another to R+X, then pressing L+R+X+Y
+will trigger both and send L+R+X+Y to the game.
+
+Available actions are:
+* Go to main menu. In addition to tapping the Touch Screen to return to
+  the main menu, you can set a hotkey to do the same.
+* Temporary fast-forward. While this hotkey is held, the fast-forward option
+  will be forced on.
+* Toggle sound. Each time this hotkey is held, the sound will be disabled if
+  it's currently enabled, and vice-versa.
 
 # The font
 
