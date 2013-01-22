@@ -1710,6 +1710,19 @@ u32 menu(u16 *screen)
 	auto void time_period_passive();
 	auto void time_period_action();
 	auto void tools_menu_init();
+	auto void obtain_hotkey (u32 *HotkeyBitfield);
+	auto void set_global_hotkey_return_to_menu();
+	auto void set_global_hotkey_temporary_fast_forward();
+	auto void set_global_hotkey_toggle_sound();
+	auto void set_game_specific_hotkey_return_to_menu();
+	auto void set_game_specific_hotkey_temporary_fast_forward();
+	auto void set_game_specific_hotkey_toggle_sound();
+	auto void global_hotkey_return_to_menu_passive();
+	auto void global_hotkey_temporary_fast_forward_passive();
+	auto void global_hotkey_toggle_sound_passive();
+	auto void game_specific_hotkey_return_to_menu_passive();
+	auto void game_specific_hotkey_temporary_fast_forward_passive();
+	auto void game_specific_hotkey_toggle_sound_passive();
 	auto void load_default_setting();
 	auto void check_gbaemu_version();
 	auto void load_lastest_played();
@@ -2468,9 +2481,9 @@ u32 menu(u16 *screen)
 	{
 	}
 
-#define CHEAT_NUMBER_X 26
-#define CHEAT_DESC_X   52
-#define CHEAT_DESC_SX  163
+#define CHEAT_NUMBER_X 23
+#define CHEAT_DESC_X   49
+#define CHEAT_DESC_SX  166
 #define CHEAT_ACTIVE_X 225
 
 	void cheat_option_passive()
@@ -2891,6 +2904,39 @@ u32 menu(u16 *screen)
     };
 
     MAKE_MENU(tools_screensnap, NULL, NULL, NULL, NULL, 0, 0);
+
+  /*--------------------------------------------------------
+     Tools - Global hotkeys
+  --------------------------------------------------------*/
+    MENU_OPTION_TYPE tools_global_hotkeys_options[] =
+    {
+	/* 00 */ SUBMENU_OPTION(&tools_menu, &msg[MSG_TOOLS_GLOBAL_HOTKEY_GENERAL], NULL, 0),
+
+	/* 01 */ ACTION_OPTION(set_global_hotkey_return_to_menu, global_hotkey_return_to_menu_passive, &msg[MSG_HOTKEY_MAIN_MENU], NULL, 1),
+
+	/* 02 */ ACTION_OPTION(set_global_hotkey_temporary_fast_forward, global_hotkey_temporary_fast_forward_passive, &msg[MSG_HOTKEY_TEMPORARY_FAST_FORWARD], NULL, 2),
+
+	/* 03 */ ACTION_OPTION(set_global_hotkey_toggle_sound, global_hotkey_toggle_sound_passive, &msg[MSG_HOTKEY_SOUND_TOGGLE], NULL, 3)
+    };
+
+    MAKE_MENU(tools_global_hotkeys, NULL, NULL, NULL, NULL, 0, 0);
+
+  /*--------------------------------------------------------
+     Tools - Game-specific hotkey overrides
+  --------------------------------------------------------*/
+    MENU_OPTION_TYPE tools_game_specific_hotkeys_options[] =
+    {
+	/* 00 */ SUBMENU_OPTION(&tools_menu, &msg[MSG_TOOLS_GAME_HOTKEY_GENERAL], NULL, 0),
+
+	/* 01 */ ACTION_OPTION(set_game_specific_hotkey_return_to_menu, game_specific_hotkey_return_to_menu_passive, &msg[MSG_HOTKEY_MAIN_MENU], NULL, 1),
+
+	/* 02 */ ACTION_OPTION(set_game_specific_hotkey_temporary_fast_forward, game_specific_hotkey_temporary_fast_forward_passive, &msg[MSG_HOTKEY_TEMPORARY_FAST_FORWARD], NULL, 2),
+
+	/* 03 */ ACTION_OPTION(set_game_specific_hotkey_toggle_sound, game_specific_hotkey_toggle_sound_passive, &msg[MSG_HOTKEY_SOUND_TOGGLE], NULL, 3)
+    };
+
+    MAKE_MENU(tools_game_specific_hotkeys, NULL, NULL, NULL, NULL, 0, 0);
+
   /*--------------------------------------------------------
      Tools
   --------------------------------------------------------*/
@@ -2899,6 +2945,10 @@ u32 menu(u16 *screen)
 	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_TOOLS], NULL, 0),
 
 	/* 01 */ SUBMENU_OPTION(&tools_screensnap_menu, &msg[MSG_TOOLS_SCREENSHOT_GENERAL], NULL, 1),
+
+	/* 02 */ SUBMENU_OPTION(&tools_global_hotkeys_menu, &msg[MSG_TOOLS_GLOBAL_HOTKEY_GENERAL], NULL, 2),
+
+	/* 03 */ SUBMENU_OPTION(&tools_game_specific_hotkeys_menu, &msg[MSG_TOOLS_GAME_HOTKEY_GENERAL], NULL, 3)
 
 //	/* 02 */ SUBMENU_OPTION(&tools_keyremap_menu, &msg[MSG_SUB_MENU_31], NULL, 2),
 
@@ -3145,6 +3195,114 @@ u32 menu(u16 *screen)
 		else
 			tools_options[4].option_type |= HIDEN_TYPE; */
 		// OUT OF BOUNDS MEMORY ACCESS, REENABLE IF NEEDED [NEB]
+		if (first_load)
+			tools_options[3] /* game hotkeys */.option_type |= HIDEN_TYPE;
+		else
+			tools_options[3] /* game hotkeys */.option_type &= ~HIDEN_TYPE;
+	}
+
+	void obtain_hotkey (u32 *HotkeyBitfield)
+	{
+		draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
+		draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS]);
+
+		u32 Keys = draw_hotkey_dialog(DOWN_SCREEN, 115, msg[MSG_HOTKEY_DELETE_WITH_A], msg[MSG_HOTKEY_CANCEL_WITH_B]);
+		if (Keys == KEY_B)
+			; // unmodified
+		else if (Keys == KEY_A)
+			*HotkeyBitfield = 0; // clear
+		else
+			*HotkeyBitfield = Keys; // set
+	}
+
+	void set_global_hotkey_return_to_menu()
+	{
+		obtain_hotkey(&emu_config.HotkeyReturnToMenu);
+	}
+
+	void set_global_hotkey_temporary_fast_forward()
+	{
+		obtain_hotkey(&emu_config.HotkeyTemporaryFastForward);
+	}
+
+	void set_global_hotkey_toggle_sound()
+	{
+		obtain_hotkey(&emu_config.HotkeyToggleSound);
+	}
+
+	void set_game_specific_hotkey_return_to_menu()
+	{
+		obtain_hotkey(&game_config.HotkeyReturnToMenu);
+	}
+
+	void set_game_specific_hotkey_temporary_fast_forward()
+	{
+		obtain_hotkey(&game_config.HotkeyTemporaryFastForward);
+	}
+
+	void set_game_specific_hotkey_toggle_sound()
+	{
+		obtain_hotkey(&game_config.HotkeyToggleSound);
+	}
+
+#define HOTKEY_CONTENT_X 156
+	void hotkey_option_passive_common(u32 HotkeyBitfield)
+	{
+		unsigned short color;
+		char tmp_buf[512];
+		unsigned int len;
+
+		if(display_option == current_option)
+			color= COLOR_ACTIVE_ITEM;
+		else
+			color= COLOR_INACTIVE_ITEM;
+
+		strcpy(tmp_buf, *(display_option->display_string));
+		PRINT_STRING_BG(down_screen_addr, tmp_buf, color, COLOR_TRANS, 23, 40 + display_option-> line_number*27);
+
+		// Construct a UTF-8 string showing the buttons in the
+		// bitfield.
+		tmp_buf[0] = '\0';
+		if (HotkeyBitfield & KEY_L)      strcpy(tmp_buf, HOTKEY_L_DISPLAY);
+		if (HotkeyBitfield & KEY_R)      strcat(tmp_buf, HOTKEY_R_DISPLAY);
+		if (HotkeyBitfield & KEY_A)      strcat(tmp_buf, HOTKEY_A_DISPLAY);
+		if (HotkeyBitfield & KEY_B)      strcat(tmp_buf, HOTKEY_B_DISPLAY);
+		if (HotkeyBitfield & KEY_Y)      strcat(tmp_buf, HOTKEY_Y_DISPLAY);
+		if (HotkeyBitfield & KEY_X)      strcat(tmp_buf, HOTKEY_X_DISPLAY);
+		if (HotkeyBitfield & KEY_START)  strcat(tmp_buf, HOTKEY_START_DISPLAY);
+		if (HotkeyBitfield & KEY_SELECT) strcat(tmp_buf, HOTKEY_SELECT_DISPLAY);
+
+		PRINT_STRING_BG(down_screen_addr, tmp_buf, color, COLOR_TRANS, HOTKEY_CONTENT_X, 40 + display_option-> line_number*27);
+	}
+
+	void global_hotkey_return_to_menu_passive()
+	{
+		hotkey_option_passive_common(emu_config.HotkeyReturnToMenu);
+	}
+
+	void global_hotkey_temporary_fast_forward_passive()
+	{
+		hotkey_option_passive_common(emu_config.HotkeyTemporaryFastForward);
+	}
+
+	void global_hotkey_toggle_sound_passive()
+	{
+		hotkey_option_passive_common(emu_config.HotkeyToggleSound);
+	}
+
+	void game_specific_hotkey_return_to_menu_passive()
+	{
+		hotkey_option_passive_common(game_config.HotkeyReturnToMenu);
+	}
+
+	void game_specific_hotkey_temporary_fast_forward_passive()
+	{
+		hotkey_option_passive_common(game_config.HotkeyTemporaryFastForward);
+	}
+
+	void game_specific_hotkey_toggle_sound_passive()
+	{
+		hotkey_option_passive_common(game_config.HotkeyToggleSound);
 	}
 
 	int lastest_game_menu_scroll_value;
