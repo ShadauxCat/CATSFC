@@ -416,24 +416,25 @@ void S9xSetFilterCoefficient (int tap, int value)
 void S9xSetSoundADSR (int channel, int attack_rate, int decay_rate,
 					  int sustain_rate, int sustain_level, int release_rate)
 {
-    SoundData.channels[channel].attack_rate = attack_rate;
-    SoundData.channels[channel].decay_rate = decay_rate;
-    SoundData.channels[channel].sustain_rate = sustain_rate;
-    SoundData.channels[channel].release_rate = release_rate;
-    SoundData.channels[channel].sustain_level = sustain_level + 1;
+    Channel *ch = &SoundData.channels[channel];
+    ch->attack_rate = attack_rate;
+    ch->decay_rate = decay_rate;
+    ch->sustain_rate = sustain_rate;
+    ch->release_rate = release_rate;
+    ch->sustain_level = sustain_level + 1;
 	
     switch (SoundData.channels[channel].state)
     {
     case SOUND_ATTACK:
-		S9xSetEnvelopeRate (channel, attack_rate, 1, 127);
+		S9xSetEnvRate (ch, attack_rate, 1, 127);
 		break;
 		
     case SOUND_DECAY:
-		S9xSetEnvelopeRate (channel, decay_rate, -1,
+		S9xSetEnvRate (ch, decay_rate, -1,
 			(MAX_ENVELOPE_HEIGHT * (sustain_level + 1)) >> 3);
 		break;
     case SOUND_SUSTAIN:
-		S9xSetEnvelopeRate (channel, sustain_rate, -1, 0);
+		S9xSetEnvRate (ch, sustain_rate, -1, 0);
 		break;
     }
 }
