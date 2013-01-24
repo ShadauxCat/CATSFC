@@ -1064,6 +1064,8 @@ const unsigned int keymap[12] = {
 	};
 */
 
+static bool8 SoundToggleWasHeld = FALSE;
+
 unsigned int S9xReadJoypad (int which1)
 {
     struct key_buf inputdata;
@@ -1082,8 +1084,30 @@ unsigned int S9xReadJoypad (int which1)
 		set_cpu_clock(clock_speed_number);
 	}
 
-	if(inputdata.key & KEY_TOUCH)	//Active menu
+	u32 HotkeyReturnToMenu = game_config.HotkeyReturnToMenu != 0 ? game_config.HotkeyReturnToMenu : emu_config.HotkeyReturnToMenu;
+	u32 HotkeyTemporaryFastForward = game_config.HotkeyTemporaryFastForward != 0 ? game_config.HotkeyTemporaryFastForward : emu_config.HotkeyTemporaryFastForward;
+	u32 HotkeyToggleSound = game_config.HotkeyToggleSound != 0 ? game_config.HotkeyToggleSound : emu_config.HotkeyToggleSound;
+
+	if(inputdata.key & KEY_TOUCH ||
+		(HotkeyReturnToMenu && ((inputdata.key & HotkeyReturnToMenu) == HotkeyReturnToMenu))
+	)	//Active menu
 		Settings.Paused = 1;
+
+	temporary_fast_forward =
+		(HotkeyTemporaryFastForward && ((inputdata.key & HotkeyTemporaryFastForward) == HotkeyTemporaryFastForward))
+	;
+
+	bool8 SoundToggleIsHeld = 
+		(HotkeyToggleSound && ((inputdata.key & HotkeyToggleSound) == HotkeyToggleSound))
+	;
+
+	if (SoundToggleIsHeld && !SoundToggleWasHeld)
+	{
+		game_enable_audio = !game_enable_audio;
+		game_disableAudio();
+	}
+
+	SoundToggleWasHeld = SoundToggleIsHeld;
 
 	if(which1 < 1)
 	{

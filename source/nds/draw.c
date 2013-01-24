@@ -883,8 +883,14 @@ u32 draw_hotkey_dialog(enum SCREEN_ID screen, u32 sy, char *clear, char *cancel)
 
 	ds2_flipScreen(screen, 2);
 
-	// While there are no keys pressed, wait for keys.
+	// This function has been started by a key press. Wait for it to end.
 	struct key_buf inputdata;
+	do {
+		mdelay(1);
+		ds2_getrawInput(&inputdata);
+	} while (inputdata.key != 0);
+
+	// While there are no keys pressed, wait for keys.
 	do {
 		mdelay(1);
 		ds2_getrawInput(&inputdata);
@@ -894,13 +900,25 @@ u32 draw_hotkey_dialog(enum SCREEN_ID screen, u32 sy, char *clear, char *cancel)
 	// been pressed. (IGNORE TOUCH AND LID! Otherwise, closing the lid or
 	// touching to get to the menu will do stuff the user doesn't expect.
 	// Also ignore the direction pad because every game uses it.)
-	u32 TotalKeys = inputdata.key;
+	u32 TotalKeys = 0;
 
 	do {
+		TotalKeys |= inputdata.key & ~(KEY_TOUCH | KEY_LID | KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT);
+		// If there's a touch on either button, turn it into a
+		// clear (A) or cancel (B) request.
+		if (inputdata.key & KEY_TOUCH)
+		{
+			if (inputdata.y >= 128 && inputdata.y < 128 + ICON_BUTTON.y)
+			{
+				if (inputdata.x >= 49 && inputdata.x < 49 + ICON_BUTTON.x)
+					return KEY_A;
+				else if (inputdata.x >= 136 && inputdata.x < 136 + ICON_BUTTON.x)
+					return KEY_B;
+			}
+		}
 		mdelay(1);
 		ds2_getrawInput(&inputdata);
-		TotalKeys |= inputdata.key & ~(KEY_TOUCH | KEY_LID | KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT);
-	} while (inputdata.key != 0);
+	} while (inputdata.key != 0 || TotalKeys == 0);
 
 	return TotalKeys;
 }

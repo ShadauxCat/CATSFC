@@ -78,8 +78,7 @@ Temporary fast-forward
 #MSG_HOTKEY_SOUND_TOGGLE
 Toggle sound
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
-Press the buttons you wish to use to perform\n
-this action.
+Press the buttons you wish to use to perform this action.
 #MSG_HOTKEY_DELETE_WITH_A
 [A] Clear
 #MSG_HOTKEY_CANCEL_WITH_B
@@ -141,8 +140,7 @@ No game is currently loaded
 #MSG_CHEAT_ELEMENT_NOT_LOADED
 <None loaded here>
 #MSG_SAVESTATE_FULL
-The current slot holds a state.\n
-Do you wish to overwrite it?
+The current slot holds a state. Do you wish to overwrite it?
 #MSG_PROGRESS_SAVED_STATE_CREATING
 Saving state...
 #MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
@@ -274,8 +272,7 @@ Temporary fast-forward
 #MSG_HOTKEY_SOUND_TOGGLE
 Toggle sound
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
-Press the buttons you wish to use to perform\n
-this action.
+Press the buttons you wish to use to perform this action.
 #MSG_HOTKEY_DELETE_WITH_A
 [A] Clear
 #MSG_HOTKEY_CANCEL_WITH_B
@@ -337,8 +334,7 @@ this action.
 #MSG_CHEAT_ELEMENT_NOT_LOADED
 <没有加载>
 #MSG_SAVESTATE_FULL
-当前存档槽已有存档文件,\n
-覆盖已有存档吗?
+当前存档槽已有存档文件,覆盖已有存档吗?
 #MSG_PROGRESS_SAVED_STATE_CREATING
 正在写入...
 #MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
@@ -470,8 +466,7 @@ Avance rapide temporaire
 #MSG_HOTKEY_SOUND_TOGGLE
 (Dés)activer le son
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
-Appuyez sur les boutons que vous voulez utiliser\n
-pour effectuer cette action.
+Appuyez sur les boutons que vous voulez utiliser pour effectuer cette action.
 #MSG_HOTKEY_DELETE_WITH_A
 [A] Effacer
 #MSG_HOTKEY_CANCEL_WITH_B
@@ -533,8 +528,7 @@ Aucun jeu n'est actuellement chargé
 #MSG_CHEAT_ELEMENT_NOT_LOADED
 <Aucun chargé ici>
 #MSG_SAVESTATE_FULL
-Il y a une sauvegarde dans cet emplacement.\n
-Voulez-vous l'écraser?
+Il y a une sauvegarde dans cet emplacement. Voulez-vous l'écraser?
 #MSG_PROGRESS_SAVED_STATE_CREATING
 Sauvegarde en cours...
 #MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
