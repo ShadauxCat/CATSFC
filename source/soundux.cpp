@@ -131,18 +131,20 @@
 #include "memmap.h"
 #include "cpuexec.h"
 
-extern int Echo [24000];
-extern int DummyEchoBuffer [SOUND_BUFFER_SIZE];
-extern int MixBuffer [SOUND_BUFFER_SIZE];
-extern int EchoBuffer [SOUND_BUFFER_SIZE];
-extern int FilterTaps [8];
+extern int32 Echo [24000];
+extern int32 DummyEchoBuffer [SOUND_BUFFER_SIZE];
+extern int32 MixBuffer [SOUND_BUFFER_SIZE];
+extern int32 EchoBuffer [SOUND_BUFFER_SIZE];
+extern int32 FilterTaps [8];
+static uint8 FilterTapDefinitionBitfield;
+// In the above, bit I is set if FilterTaps[I] is non-zero.
 extern unsigned long Z;
-extern int Loop [16];
+extern int32 Loop [16];
 
 extern long FilterValues[4][2];
-extern int NoiseFreq [32];
+extern int32 NoiseFreq [32];
 
-static int noise_gen;
+static int32 noise_gen;
 
 #undef ABS
 #define ABS(a) ((a) < 0 ? -(a) : (a))
@@ -402,15 +404,11 @@ void S9xFixSoundAfterSnapshotLoad ()
 
 void S9xSetFilterCoefficient (int tap, int value)
 {
-    FilterTaps [tap & 7] = value;
-    SoundData.no_filter = (FilterTaps [0] == 127 || FilterTaps [0] == 0) && 
-		FilterTaps [1] == 0   &&
-		FilterTaps [2] == 0   &&
-		FilterTaps [3] == 0   &&
-		FilterTaps [4] == 0   &&
-		FilterTaps [5] == 0   &&
-		FilterTaps [6] == 0   &&
-		FilterTaps [7] == 0;
+	FilterTaps [tap & 7] = value;
+	if (value == 0 || (tap == 0 && value == 127))
+		FilterTapDefinitionBitfield &= ~(1 << (tap & 7));
+	else
+		FilterTapDefinitionBitfield |= 1 << (tap & 7);
 }
 
 void S9xSetSoundADSR (int channel, int attack_rate, int decay_rate,
@@ -891,10 +889,337 @@ void DecodeBlock (Channel *ch)
     ch->block_pointer += 9;
 }
 
+/*
+ * The layout of loops in this function is optimised for outputting a few
+ * samples, reducing the number of memory accesses per sample-channel pair.
+ * For each SAMPLE, each channel is mixed into CPU registers and
+ * assigned to the mix buffer.
+ */
+static inline void MixStereo_ReversedLoop (int sample_count)
+{
+	int pitch_mod = SoundData.pitch_mod & ~APU.DSP[APU_NON];
+	int32 VL[8], VR[8];
+	int32 PreviousChannelSample;
 
+	for (uint32 I = 0; I < (uint32) sample_count; I += 2)
+	{
+		int32 OutputLeft = 0, OutputRight = 0;
+
+		for (uint32 J = 0; J < NUM_CHANNELS; J++) 
+		{
+			Channel *ch = &SoundData.channels[J];
+
+			if (ch->state == SOUND_SILENT || !(so.sound_switch & (1 << J)))
+				continue;
+
+			unsigned long freq0 = ch->frequency;
+
+			//		freq0 = (unsigned long) ((double) freq0 * 0.985);//uncommented by jonathan gevaryahu, as it is necessary for most cards in linux
+			freq0 = freq0 * 985/1000;
+
+			bool8 mod = pitch_mod & (1 << J);
+
+			if (I == 0)
+			{
+				if (ch->needs_decode) 
+				{
+					DecodeBlock(ch);
+					ch->needs_decode = FALSE;
+					ch->sample = ch->block[0];
+					ch->sample_pointer = freq0 >> FIXED_POINT_SHIFT;
+					if (ch->sample_pointer == 0)
+						ch->sample_pointer = 1;
+					if (ch->sample_pointer > SOUND_DECODE_LENGTH)
+						ch->sample_pointer = SOUND_DECODE_LENGTH - 1;
+
+					ch->next_sample=ch->block[ch->sample_pointer];
+					ch->interpolate = 0;
+
+					if (Settings.InterpolatedSound && freq0 < FIXED_POINT && !mod)
+						ch->interpolate = ((ch->next_sample - ch->sample) * 
+							(long) freq0) / (long) FIXED_POINT;
+				}
+				VL [J] = (ch->sample * ch-> left_vol_level) / 128;
+				VR [J] = (ch->sample * ch->right_vol_level) / 128;
+			}
+
+			unsigned long freq = freq0;
+
+			if (mod)
+				freq = PITCH_MOD(freq, PreviousChannelSample);
+
+			ch->env_error += ch->erate;
+			if (ch->env_error >= FIXED_POINT) 
+			{
+				uint32 step = ch->env_error >> FIXED_POINT_SHIFT;
+
+				switch (ch->state)
+				{
+				case SOUND_ATTACK:
+					ch->env_error &= FIXED_POINT_REMAINDER;
+					ch->envx += step << 1;
+					ch->envxx = ch->envx << ENVX_SHIFT;
+
+					if (ch->envx >= 126)
+					{
+						ch->envx = 127;
+						ch->envxx = 127 << ENVX_SHIFT;
+						ch->state = SOUND_DECAY;
+						if (ch->sustain_level != 8) 
+						{
+							S9xSetEnvRate (ch, ch->decay_rate, -1,
+								(MAX_ENVELOPE_HEIGHT * ch->sustain_level)
+							>> 3);
+							break;
+						}
+						ch->state = SOUND_SUSTAIN;
+						S9xSetEnvRate (ch, ch->sustain_rate, -1, 0);
+					}
+					break;
+
+				case SOUND_DECAY:
+					while (ch->env_error >= FIXED_POINT)
+					{
+						ch->envxx = (ch->envxx >> 8) * 255;
+						ch->env_error -= FIXED_POINT;
+					}
+					ch->envx = ch->envxx >> ENVX_SHIFT;
+					if (ch->envx <= ch->envx_target)
+					{
+						if (ch->envx <= 0)
+						{
+							S9xAPUSetEndOfSample (J, ch);
+							goto stereo_exit;
+						}
+						ch->state = SOUND_SUSTAIN;
+						S9xSetEnvRate (ch, ch->sustain_rate, -1, 0);
+					}
+					break;
+
+				case SOUND_SUSTAIN:
+					while (ch->env_error >= FIXED_POINT)
+					{
+						ch->envxx = (ch->envxx >> 8) * 255;
+						ch->env_error -= FIXED_POINT;
+					}
+					ch->envx = ch->envxx >> ENVX_SHIFT;
+					if (ch->envx <= 0)
+					{
+						S9xAPUSetEndOfSample (J, ch);
+						goto stereo_exit;
+					}
+					break;
+
+				case SOUND_RELEASE:
+					while (ch->env_error >= FIXED_POINT)
+					{
+						ch->envxx -= (MAX_ENVELOPE_HEIGHT << ENVX_SHIFT) / 256;
+						ch->env_error -= FIXED_POINT;
+					}
+					ch->envx = ch->envxx >> ENVX_SHIFT;
+					if (ch->envx <= 0)
+					{
+						S9xAPUSetEndOfSample (J, ch);
+						goto stereo_exit;
+					}
+					break;
+
+				case SOUND_INCREASE_LINEAR:
+					ch->env_error &= FIXED_POINT_REMAINDER;
+					ch->envx += step << 1;
+					ch->envxx = ch->envx << ENVX_SHIFT;
+
+					if (ch->envx >= 126)
+					{
+						ch->envx = 127;
+						ch->envxx = 127 << ENVX_SHIFT;
+						ch->state = SOUND_GAIN;
+						ch->mode = MODE_GAIN;
+						S9xSetEnvRate (ch, 0, -1, 0);
+					}
+					break;
+
+				case SOUND_INCREASE_BENT_LINE:
+					if (ch->envx >= (MAX_ENVELOPE_HEIGHT * 3) / 4)
+					{
+						while (ch->env_error >= FIXED_POINT)
+						{
+							ch->envxx += (MAX_ENVELOPE_HEIGHT << ENVX_SHIFT) / 256;
+							ch->env_error -= FIXED_POINT;
+						}
+						ch->envx = ch->envxx >> ENVX_SHIFT;
+					}
+					else
+					{
+						ch->env_error &= FIXED_POINT_REMAINDER;
+						ch->envx += step << 1;
+						ch->envxx = ch->envx << ENVX_SHIFT;
+					}
+
+					if (ch->envx >= 126)
+					{
+						ch->envx = 127;
+						ch->envxx = 127 << ENVX_SHIFT;
+						ch->state = SOUND_GAIN;
+						ch->mode = MODE_GAIN;
+						S9xSetEnvRate (ch, 0, -1, 0);
+					}
+					break;
+
+				case SOUND_DECREASE_LINEAR:
+					ch->env_error &= FIXED_POINT_REMAINDER;
+					ch->envx -= step << 1;
+					ch->envxx = ch->envx << ENVX_SHIFT;
+					if (ch->envx <= 0)
+					{
+						S9xAPUSetEndOfSample (J, ch);
+						goto stereo_exit;
+					}
+					break;
+
+				case SOUND_DECREASE_EXPONENTIAL:
+					while (ch->env_error >= FIXED_POINT)
+					{
+						ch->envxx = (ch->envxx >> 8) * 255;
+						ch->env_error -= FIXED_POINT;
+					}
+					ch->envx = ch->envxx >> ENVX_SHIFT;
+					if (ch->envx <= 0)
+					{
+						S9xAPUSetEndOfSample (J, ch);
+						goto stereo_exit;
+					}
+					break;
+
+				case SOUND_GAIN:
+					S9xSetEnvRate (ch, 0, -1, 0);
+					break;
+				}
+				ch-> left_vol_level = (ch->envx * ch->volume_left) / 128;
+				ch->right_vol_level = (ch->envx * ch->volume_right) / 128;
+				VL [J] = (ch->sample * ch-> left_vol_level) / 128;
+				VR [J] = (ch->sample * ch->right_vol_level) / 128;
+			}
+
+			ch->count += freq;
+			if (ch->count >= FIXED_POINT)
+			{
+				VL [J] = ch->count >> FIXED_POINT_SHIFT;
+				ch->sample_pointer += VL [J];
+				ch->count &= FIXED_POINT_REMAINDER;
+
+				ch->sample = ch->next_sample;
+				if (ch->sample_pointer >= SOUND_DECODE_LENGTH)
+				{
+					if (JUST_PLAYED_LAST_SAMPLE(ch))
+					{
+						S9xAPUSetEndOfSample (J, ch);
+						goto stereo_exit;
+					}
+					do
+					{
+						ch->sample_pointer -= SOUND_DECODE_LENGTH;
+						if (ch->last_block)
+						{
+							if (!ch->loop)
+							{
+								ch->sample_pointer = LAST_SAMPLE;
+								ch->next_sample = ch->sample;
+								break;
+							}
+							else
+							{
+								S9xAPUSetEndX (J);
+								ch->last_block = FALSE;
+								uint8 *dir = S9xGetSampleAddress (ch->sample_number);
+								ch->block_pointer = READ_WORD(dir + 2);
+							}
+						}
+						DecodeBlock (ch);
+					} while (ch->sample_pointer >= SOUND_DECODE_LENGTH);
+					if (!JUST_PLAYED_LAST_SAMPLE (ch))
+						ch->next_sample = ch->block [ch->sample_pointer];
+				}
+				else
+					ch->next_sample = ch->block [ch->sample_pointer];
+
+				if (ch->type == SOUND_SAMPLE)
+				{
+					if (Settings.InterpolatedSound && freq < FIXED_POINT && !mod)
+					{
+						ch->interpolate = ((ch->next_sample - ch->sample) * 
+						(long) freq) / (long) FIXED_POINT;
+						ch->sample = (int16) (ch->sample + (((ch->next_sample - ch->sample) * 
+						(long) (ch->count)) / (long) FIXED_POINT));
+					}		  
+					else
+						ch->interpolate = 0;
+				}
+				else
+				{
+					// Snes9x 1.53's SPC_DSP.cpp, by blargg
+					int feedback = (noise_gen << 13) ^ (noise_gen << 14);
+					noise_gen = (feedback & 0x4000) ^ (noise_gen >> 1);
+					ch->sample = (noise_gen << 17) >> 17;
+					ch->interpolate = 0;
+				}
+
+				VL [J] = (ch->sample * ch-> left_vol_level) / 128;
+				VR [J] = (ch->sample * ch->right_vol_level) / 128;
+			}
+			else
+			{
+				if (ch->interpolate)
+				{
+					int32 s = (int32) ch->sample + ch->interpolate;
+
+					CLIP16(s);
+					ch->sample = (int16) s;
+					VL [J] = (ch->sample * ch-> left_vol_level) / 128;
+					VR [J] = (ch->sample * ch->right_vol_level) / 128;
+				}
+			}
+
+			OutputLeft += VL [J];
+			OutputRight += VR [J];
+
+			if (pitch_mod & (1 << (J + 1)))
+				PreviousChannelSample = ch->sample * ch->envx;
+
+#ifndef FOREVER_FORWARD_STEREO
+			ch->echo_buf_ptr [I      ^ Settings.ReverseStereo ] += VL [J];
+			ch->echo_buf_ptr [I + (1 ^ Settings.ReverseStereo)] += VR [J];
+#else
+			ch->echo_buf_ptr [I    ] += VL [J];
+			ch->echo_buf_ptr [I + 1] += VR [J];
+#endif
+stereo_exit:
+			;
+		}
+#ifndef FOREVER_FORWARD_STEREO
+		MixBuffer [I      ^ Settings.ReverseStereo ] = OutputLeft;
+		MixBuffer [I + (1 ^ Settings.ReverseStereo)] = OutputRight;
+#else
+		MixBuffer [I    ] = OutputLeft;
+		MixBuffer [I + 1] = OutputRight;
+#endif
+	}
+}
+
+#ifdef __DJGPP
+END_OF_FUNCTION(MixStereo_ReversedLoop);
+#endif
+
+/*
+ * The layout of loops in this function is optimised for outputting a lot of
+ * samples, quickly ignoring channels that are muted so that they're not
+ * processed any further before the function returns.
+ * For each CHANNEL, samples are mixed into the mix buffer until the channel
+ * is muted or the sample count is met.
+ */
 static inline void MixStereo (int sample_count)
 {
-	static int wave[SOUND_BUFFER_SIZE];
+	static int32 wave[SOUND_BUFFER_SIZE];
 
 	int pitch_mod = SoundData.pitch_mod & ~APU.DSP[APU_NON];
 
@@ -1502,15 +1827,22 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 	
     if (!so.mute_sound)
     {
-		memset (MixBuffer, 0, sample_count * sizeof (MixBuffer [0]));
 		if (SoundData.echo_enable)
 			memset (EchoBuffer, 0, sample_count * sizeof (EchoBuffer [0]));
 
 #ifndef FOREVER_STEREO
 		if (so.stereo)
+		{
 #endif
-			MixStereo (sample_count);
+			if (sample_count < 12)
+				MixStereo_ReversedLoop (sample_count);
+			else
+			{
+				memset (MixBuffer, 0, sample_count * sizeof (MixBuffer [0]));
+				MixStereo (sample_count);
+			}
 #ifndef FOREVER_STEREO
+		}
 		else
 			MixMono (sample_count);
 #endif
@@ -1537,7 +1869,7 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 				{
 #endif
 					// 16-bit stereo sound with echo enabled ...
-					if (SoundData.no_filter)
+					if (FilterTapDefinitionBitfield == 0)
 					{
 						// ... but no filter defined.
 						for (J = 0; J < sample_count; J++)
@@ -1567,13 +1899,13 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 							
 							Loop [(Z - 0) & 15] = E;
 							E =  E                    * FilterTaps [0];
-							E += Loop [(Z -  2) & 15] * FilterTaps [1];
-							E += Loop [(Z -  4) & 15] * FilterTaps [2];
-							E += Loop [(Z -  6) & 15] * FilterTaps [3];
-							E += Loop [(Z -  8) & 15] * FilterTaps [4];
-							E += Loop [(Z - 10) & 15] * FilterTaps [5];
-							E += Loop [(Z - 12) & 15] * FilterTaps [6];
-							E += Loop [(Z - 14) & 15] * FilterTaps [7];
+							if (FilterTapDefinitionBitfield & 0x02) E += Loop [(Z -  2) & 15] * FilterTaps [1];
+							if (FilterTapDefinitionBitfield & 0x04) E += Loop [(Z -  4) & 15] * FilterTaps [2];
+							if (FilterTapDefinitionBitfield & 0x08) E += Loop [(Z -  6) & 15] * FilterTaps [3];
+							if (FilterTapDefinitionBitfield & 0x10) E += Loop [(Z -  8) & 15] * FilterTaps [4];
+							if (FilterTapDefinitionBitfield & 0x20) E += Loop [(Z - 10) & 15] * FilterTaps [5];
+							if (FilterTapDefinitionBitfield & 0x40) E += Loop [(Z - 12) & 15] * FilterTaps [6];
+							if (FilterTapDefinitionBitfield & 0x80) E += Loop [(Z - 14) & 15] * FilterTaps [7];
 							E /= 128;
 							Z++;
 							
@@ -1596,7 +1928,7 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 				else
 				{
 					// 16-bit mono sound with echo enabled...
-					if (SoundData.no_filter)
+					if (FilterTapDefinitionBitfield == 0)
 					{
 						// ... no filter defined
 						for (J = 0; J < sample_count; J++)
@@ -1625,13 +1957,13 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 							
 							Loop [(Z - 0) & 7] = E;
 							E =  E                  * FilterTaps [0];
-							E += Loop [(Z - 1) & 7] * FilterTaps [1];
-							E += Loop [(Z - 2) & 7] * FilterTaps [2];
-							E += Loop [(Z - 3) & 7] * FilterTaps [3];
-							E += Loop [(Z - 4) & 7] * FilterTaps [4];
-							E += Loop [(Z - 5) & 7] * FilterTaps [5];
-							E += Loop [(Z - 6) & 7] * FilterTaps [6];
-							E += Loop [(Z - 7) & 7] * FilterTaps [7];
+							if (FilterTapDefinitionBitfield & 0x02) E += Loop [(Z - 1) & 7] * FilterTaps [1];
+							if (FilterTapDefinitionBitfield & 0x04) E += Loop [(Z - 2) & 7] * FilterTaps [2];
+							if (FilterTapDefinitionBitfield & 0x08) E += Loop [(Z - 3) & 7] * FilterTaps [3];
+							if (FilterTapDefinitionBitfield & 0x10) E += Loop [(Z - 4) & 7] * FilterTaps [4];
+							if (FilterTapDefinitionBitfield & 0x20) E += Loop [(Z - 5) & 7] * FilterTaps [5];
+							if (FilterTapDefinitionBitfield & 0x40) E += Loop [(Z - 6) & 7] * FilterTaps [6];
+							if (FilterTapDefinitionBitfield & 0x80) E += Loop [(Z - 7) & 7] * FilterTaps [7];
 							E /= 128;
 							Z++;
 							
@@ -1691,7 +2023,7 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 					if (so.stereo)
 					{
 						// 8-bit stereo sound with echo enabled...
-						if (SoundData.no_filter)
+						if (FilterTapDefinitionBitfield == 0)
 						{
 							// ... but no filter
 							for (J = 0; J < sample_count; J++)
@@ -1720,13 +2052,13 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 								
 								Loop [(Z - 0) & 15] = E;
 								E =  E                    * FilterTaps [0];
-								E += Loop [(Z -  2) & 15] * FilterTaps [1];
-								E += Loop [(Z -  4) & 15] * FilterTaps [2];
-								E += Loop [(Z -  6) & 15] * FilterTaps [3];
-								E += Loop [(Z -  8) & 15] * FilterTaps [4];
-								E += Loop [(Z - 10) & 15] * FilterTaps [5];
-								E += Loop [(Z - 12) & 15] * FilterTaps [6];
-								E += Loop [(Z - 14) & 15] * FilterTaps [7];
+								if (FilterTapDefinitionBitfield & 0x02) E += Loop [(Z -  2) & 15] * FilterTaps [1];
+								if (FilterTapDefinitionBitfield & 0x04) E += Loop [(Z -  4) & 15] * FilterTaps [2];
+								if (FilterTapDefinitionBitfield & 0x08) E += Loop [(Z -  6) & 15] * FilterTaps [3];
+								if (FilterTapDefinitionBitfield & 0x10) E += Loop [(Z -  8) & 15] * FilterTaps [4];
+								if (FilterTapDefinitionBitfield & 0x20) E += Loop [(Z - 10) & 15] * FilterTaps [5];
+								if (FilterTapDefinitionBitfield & 0x40) E += Loop [(Z - 12) & 15] * FilterTaps [6];
+								if (FilterTapDefinitionBitfield & 0x80) E += Loop [(Z - 14) & 15] * FilterTaps [7];
 								E /= 128;
 								Z++;
 								
@@ -1747,7 +2079,7 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 					else
 					{
 						// 8-bit mono sound with echo enabled...
-						if (SoundData.no_filter)
+						if (FilterTapDefinitionBitfield == 0)
 						{
 							// ... but no filter.
 							for (J = 0; J < sample_count; J++)
@@ -1775,13 +2107,13 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 								
 								Loop [(Z - 0) & 7] = E;
 								E =  E                  * FilterTaps [0];
-								E += Loop [(Z - 1) & 7] * FilterTaps [1];
-								E += Loop [(Z - 2) & 7] * FilterTaps [2];
-								E += Loop [(Z - 3) & 7] * FilterTaps [3];
-								E += Loop [(Z - 4) & 7] * FilterTaps [4];
-								E += Loop [(Z - 5) & 7] * FilterTaps [5];
-								E += Loop [(Z - 6) & 7] * FilterTaps [6];
-								E += Loop [(Z - 7) & 7] * FilterTaps [7];
+								if (FilterTapDefinitionBitfield & 0x02) E += Loop [(Z - 1) & 7] * FilterTaps [1];
+								if (FilterTapDefinitionBitfield & 0x04) E += Loop [(Z - 2) & 7] * FilterTaps [2];
+								if (FilterTapDefinitionBitfield & 0x08) E += Loop [(Z - 3) & 7] * FilterTaps [3];
+								if (FilterTapDefinitionBitfield & 0x10) E += Loop [(Z - 4) & 7] * FilterTaps [4];
+								if (FilterTapDefinitionBitfield & 0x20) E += Loop [(Z - 5) & 7] * FilterTaps [5];
+								if (FilterTapDefinitionBitfield & 0x40) E += Loop [(Z - 6) & 7] * FilterTaps [6];
+								if (FilterTapDefinitionBitfield & 0x80) E += Loop [(Z - 7) & 7] * FilterTaps [7];
 								E /= 128;
 								Z++;
 								
@@ -1894,7 +2226,7 @@ void S9xResetSound (bool8 full)
 		so.err_rate = (uint32) (FIXED_POINT * SNES_SCANLINE_TIME / (1.0 / so.playback_rate));
     else
 		so.err_rate = 0;
-    SoundData.no_filter = TRUE;
+    FilterTapDefinitionBitfield = 0;
 }
 
 void S9xSetPlaybackRate (uint32 playback_rate)
