@@ -855,8 +855,12 @@ void S9xDoDMA (uint8 Channel)
     IAPU.APUExecuting = Settings.APUEnabled;
     APU_EXECUTE ();
 #endif
-    while (CPU.Cycles > CPU.NextEvent)
-		S9xDoHBlankProcessing ();
+	if (Settings.SuperFX)
+		while (CPU.Cycles > CPU.NextEvent)
+			S9xDoHBlankProcessing_SFX ();
+	else /* if (!Settings.SuperFX) */
+		while (CPU.Cycles > CPU.NextEvent)
+			S9xDoHBlankProcessing_NoSFX ();
 
 	if(Settings.SPC7110&&spc7110_dma)
 	{

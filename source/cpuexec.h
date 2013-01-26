@@ -93,9 +93,13 @@
 #include "memmap.h"
 #include "65c816.h"
 
-#define DO_HBLANK_CHECK() \
+#define DO_HBLANK_CHECK_SFX() \
     if (CPU.Cycles >= CPU.NextEvent) \
-	S9xDoHBlankProcessing ();
+	S9xDoHBlankProcessing_SFX ();
+
+#define DO_HBLANK_CHECK_NoSFX() \
+    if (CPU.Cycles >= CPU.NextEvent) \
+	S9xDoHBlankProcessing_NoSFX ();
 
 struct SOpcodes {
 #ifdef __WIN32__
@@ -126,7 +130,8 @@ START_EXTERN_C
 void S9xMainLoop (void);
 void S9xReset (void);
 void S9xSoftReset (void);
-void S9xDoHBlankProcessing ();
+void S9xDoHBlankProcessing_SFX ();
+void S9xDoHBlankProcessing_NoSFX ();
 void S9xClearIRQ (uint32);
 void S9xSetIRQ (uint32);
 
