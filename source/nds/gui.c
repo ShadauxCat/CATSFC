@@ -3727,7 +3727,6 @@ u32 menu(u16 *screen)
 				&& current_menu != ((main_menu.options +1)->sub_menu->options + 3)->sub_menu
 				&& current_menu != (main_menu.options +3)->sub_menu 
 				&& current_menu != ((main_menu.options +3)->sub_menu->options + 1)->sub_menu
-				&& current_menu != ((main_menu.options +3)->sub_menu->options + 2)->sub_menu
 				&& current_menu != (main_menu.options +6)->sub_menu
 				&& current_menu != ((main_menu.options +6)->sub_menu->options + 2)->sub_menu)
 				{
