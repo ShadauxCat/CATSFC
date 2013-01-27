@@ -899,7 +899,7 @@ static inline void MixStereo_ReversedLoop (int sample_count)
 {
 	int pitch_mod = SoundData.pitch_mod & ~APU.DSP[APU_NON];
 	int32 VL[8], VR[8];
-	int32 PreviousChannelSample;
+	int32 PreviousChannelSample = 0;
 
 	for (uint32 I = 0; I < (uint32) sample_count; I += 2)
 	{
