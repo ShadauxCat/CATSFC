@@ -2188,6 +2188,7 @@ void S9xResetSound (bool8 full)
     FilterTaps [5] = 0;
     FilterTaps [6] = 0;
     FilterTaps [7] = 0;
+    FilterTapDefinitionBitfield = 0;
     so.mute_sound = TRUE;
     noise_gen = 1;
     so.sound_switch = 255;
@@ -2226,7 +2227,6 @@ void S9xResetSound (bool8 full)
 		so.err_rate = (uint32) (FIXED_POINT * SNES_SCANLINE_TIME / (1.0 / so.playback_rate));
     else
 		so.err_rate = 0;
-    FilterTapDefinitionBitfield = 0;
 }
 
 void S9xSetPlaybackRate (uint32 playback_rate)
