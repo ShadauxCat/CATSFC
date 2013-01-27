@@ -324,6 +324,21 @@ gui_action_type get_gui_input(void)
 
 	key = getKey();
 
+	if (key & KEY_LID)
+	{
+		ds2_setSupend();
+		struct key_buf inputdata;
+		do {
+			ds2_getrawInput(&inputdata);
+			mdelay(1);
+		} while (inputdata.key & KEY_LID);
+		ds2_wakeup();
+		// In the menu, the lower screen's backlight needs to be on,
+		// and it is on right away after resuming from suspend.
+		// mdelay(100); // needed to avoid ds2_setBacklight crashing
+		// ds2_setBacklight(3);
+	}
+
 	switch(key)
 	{
 		case KEY_UP:
