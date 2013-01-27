@@ -1081,6 +1081,10 @@ unsigned int S9xReadJoypad (int which1)
 			mdelay(1);
 		} while (inputdata.key & KEY_LID);
 		ds2_wakeup();
+		// Before starting to emulate again, turn off the lower
+		// screen's backlight.
+		mdelay(100); // needed to avoid ds2_setBacklight crashing
+		ds2_setBacklight(2);
 		set_cpu_clock(clock_speed_number);
 	}
 
