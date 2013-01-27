@@ -435,53 +435,52 @@ void change_ext(char *src, char *buffer, char *extension)
 --------------------------------------------------------*/
 static int sort_function(const void *dest_str_ptr, const void *src_str_ptr)
 {
-	char *dest_str = *((char **)dest_str_ptr);
-	char *src_str = *((char **)src_str_ptr);
+	char *dest_str = ((char *)dest_str_ptr);
+	char *src_str = ((char *)src_str_ptr);
 
 	// For files and directories, . and .. sort first.
-	if(src_str[0] == '.')
+	if(src_str[0] == '.' && dest_str[0] != '.')
 		return 1;
 
-	if(dest_str[0] == '.')
+	if(dest_str[0] == '.' && src_str[0] != '.')
 		return -1;
 
 	return strcasecmp(dest_str, src_str);
 }
 
-static int my_array_partion(void *array, int left, int right)
+static int my_array_partion(void **array, int left, int right)
 {
-    unsigned int pivot= *((unsigned int*)array + left);
+	// Choose a pivot, left <= pivot <= right
+	unsigned int pivotIndex = left + (right - left) / 2;
 
-    while(left < right)
-    {
-        while(sort_function((void*)((unsigned int*)array+left), (void*)((unsigned int *)array+right)) < 0) {
-            right--;
-        }
+	// Move pivot value to the end
+	void *temp = array[pivotIndex];
+	array[pivotIndex] = array[right];
+	array[right] = temp;
 
-        if(right== left) break;
-        *((unsigned int*)array + left) = *((unsigned int*)array + right);
-        *((unsigned int*)array + right) = pivot;
+	// Move values that sort before the pivot value to before the new
+	// pivot's location
+	unsigned int storeIndex = left, i;
+	for (i = left; i <= right - 1; i++)
+	{
+		if (sort_function(array[i], array[right]) < 0)
+		{
+			temp = array[i];
+			array[i] = array[storeIndex];
+			array[storeIndex] = temp;
+			storeIndex++;
+		}
+	}
 
-        if(left < right)
-        {
-            left++;
-            if(right== left) break;
-        }
+	// Move the pivot value to its correct location
+	temp = array[storeIndex];
+	array[storeIndex] = array[right];
+	array[right] = temp;
 
-        while(sort_function((void*)((unsigned int*)array+right), (void*)((unsigned int *)array+left)) > 0) {
-            left++;
-        }
-
-        if(left== right) break;
-        *((unsigned int*)array + right) = *((unsigned int*)array + left);
-        *((unsigned int*)array + left) = pivot;
-        right--;
-    }
-
-    return left;
+	return storeIndex;
 }
 
-static void my_qsort(void *array, int left, int right)
+static void my_qsort(void **array, int left, int right)
 {
     if(left < right)
     {
@@ -748,9 +747,9 @@ static int load_file_list(struct FILE_LIST_INFO *filelist_infop)
 #if 0
     my_qsort((void *)file_list, 0, num_files-1);
 #else	//to support ".." directory, but take it as file
-    my_qsort((void *)file_list, 1, num_files-1);
+    my_qsort((void **)file_list, 1, num_files-1);
 #endif
-    my_qsort((void *)dir_list, 0, num_dirs-1);
+    my_qsort((void **)dir_list, 0, num_dirs-1);
 
     return 0;
 }
