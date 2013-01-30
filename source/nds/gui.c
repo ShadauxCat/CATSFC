@@ -4335,6 +4335,10 @@ int load_emu_config_file(void)
 			fclose(fp);
 			return 0;
 		}
+		else
+		{
+			fclose(fp);
+		}
 	}
 
 	//have no confiure file, set default
