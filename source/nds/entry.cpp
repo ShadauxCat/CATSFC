@@ -403,7 +403,7 @@ void init_sfc_setting(void)
 #endif
     Settings.ApplyCheats = TRUE;
     Settings.TurboMode = FALSE;
-    Settings.TurboSkipFrames = 40;
+    Settings.TurboSkipFrames = 10;
     Settings.StretchScreenshots = 1;
 
 	Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
@@ -608,7 +608,7 @@ void S9xSyncSpeed ()
 		sync_last = syncnow;
 		sync_next = syncnow;
 
-		if(++skip_rate < 10)
+		if(++skip_rate < Settings.TurboSkipFrames)
 			IPPU.RenderThisFrame = false;
 		else
 		{
