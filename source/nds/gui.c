@@ -1682,7 +1682,7 @@ unsigned int frame_interval;
 /*--------------------------------------------------------
 	Main Menu
 --------------------------------------------------------*/
-u32 menu(u16 *screen)
+u32 menu(u16 *screen, bool8 FirstInvocation)
 {
     gui_action_type gui_action;
     u32 i;
@@ -3568,9 +3568,11 @@ u32 menu(u16 *screen)
 //----------------------------------------------------------------------------//
 //	Menu Start
 	ds2_setCPUclocklevel(0);
-	mdelay(100); // to prevent ds2_setBacklight() from crashing
-	ds2_setBacklight(3);
-	
+	if (!FirstInvocation)
+	{ // assume that the backlight is already at 3 when the emulator starts
+		mdelay(100); // to prevent ds2_setBacklight() from crashing
+		ds2_setBacklight(3);
+	}
 	
 	wait_Allkey_release(0);
     bg_screenp= (u16*)malloc(256*192*2);

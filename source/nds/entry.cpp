@@ -540,6 +540,7 @@ int sfc_main (int argc, char **argv)
 #endif
 
 	Settings.Paused = 1;
+	bool8 FirstInvocation = TRUE;
 
     while (1)
     {
@@ -564,7 +565,8 @@ int sfc_main (int argc, char **argv)
 			unsigned short screen[256*192];
 
 			copy_screen((void*)screen, up_screen_addr, 0, 0, 256, 192);
-			menu(screen);
+			menu(screen, FirstInvocation);
+			FirstInvocation = FALSE;
 			game_disableAudio();
 			Settings.Paused = 0;
 		}

@@ -124,7 +124,7 @@ extern GAME_CONFIG	game_config;
 /******************************************************************************
  ******************************************************************************/
 extern void gui_init(u32 lang_id);
-extern u32 menu(u16 *original_screen);
+extern u32 menu(u16 *original_screen, bool8 FirstInvocation);
 extern void game_disableAudio();
 extern void game_set_frameskip();
 extern void set_cpu_clock(u32 num);
