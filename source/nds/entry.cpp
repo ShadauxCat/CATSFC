@@ -677,6 +677,7 @@ void S9xSyncSpeed ()
 			skip_rate = 0;
 			ds2_setCPUclocklevel(0);
 			if (syncdif > 0)
+				// TODO Turn this delay into a ProcessSound loop?
 				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
 			set_cpu_clock(clock_speed_number);
 			S9xProcessSound (0);
@@ -709,6 +710,7 @@ void S9xSyncSpeed ()
 			if (syncdif > 0)
 			{
 				ds2_setCPUclocklevel(0);
+				// TODO Turn this delay into a ProcessSound loop?
 				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
 				set_cpu_clock(clock_speed_number);
 				S9xProcessSound (0);
@@ -903,6 +905,9 @@ void S9xGenerateSound ()
 	}
 }
 
+#define SOUND_EMISSION_INTERVAL ((unsigned int) ((((unsigned long long) DS2_BUFFER_SIZE * 1000000) / SND_SAMPLE_RATE) * 3 / 128))
+unsigned int LastSoundEmissionTime = 0;
+
 void S9xProcessSound (unsigned int)
 {
 	unsigned short *audiobuff;
@@ -910,143 +915,164 @@ void S9xProcessSound (unsigned int)
 	if (so.mute_sound || !game_enable_audio)
 		return;
 
-	if(ds2_checkAudiobuff() > 4)
-		return;
-
-	/* Number of samples to generate now */
-	int sample_count;
-	sample_count = so.buffer_size;
-#ifndef FOREVER_16_BIT_SOUND
-	if (so.sixteen_bit)
+	if(ds2_checkAudiobuff() > AUDIO_BUFFER_COUNT / 2)
 	{
-#endif
-		/* to prevent running out of buffer space,
-		* create less samples
-		*/
-		sample_count >>= 1;
-#ifndef FOREVER_16_BIT_SOUND
-	}
-#endif
-
-	audiobuff = (unsigned short*)ds2_getAudiobuff();
-	if(NULL == audiobuff)	//There are audio queue in sending or wait to send
-	{
+		LastSoundEmissionTime++;
 		return;
 	}
 
-	/* If we need more audio samples */
-	if (so.samples_mixed_so_far < sample_count)
+	unsigned int Now = getSysTime();
+	if (Now - LastSoundEmissionTime >= SOUND_EMISSION_INTERVAL)
 	{
-		/* Where to put the samples to */
-#ifndef FOREVER_16_BIT_SOUND
-		unsigned byte_offset = (so.play_position + 
-		(so.sixteen_bit ? (so.samples_mixed_so_far << 1) : so.samples_mixed_so_far)) & SOUND_BUFFER_SIZE_MASK;
-#else
-		unsigned byte_offset = (so.play_position + 
-		(so.samples_mixed_so_far << 1)) & SOUND_BUFFER_SIZE_MASK;
-#endif
-
-		//printf ("%d:", sample_count - so.samples_mixed_so_far); fflush (stdout);
-		if (Settings.SoundSync == 2)
+		if (Now - LastSoundEmissionTime >= 11719 /* 500 milliseconds */)
 		{
-			/*memset (Buf + (byte_offset & SOUND_BUFFER_SIZE_MASK), 0,
-			sample_count - so.samples_mixed_so_far);*/
+			LastSoundEmissionTime = Now;
+			// We were probably paused. Restart sending sound with an
+			// empty buffer.
+			do {
+				audiobuff = (unsigned short*)ds2_getAudiobuff();
+			} while (audiobuff == NULL); //There are audio queue in sending or wait to send
+
+			memset(audiobuff, 0, DS2_BUFFER_SIZE);
+
+			ds2_updateAudio();
+			// And then the real audio. (fall through)
 		}
 		else
 		{
-			/* Mix the missing samples */
-#ifndef FOREVER_16_BIT_SOUND
-			int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
-				so.samples_mixed_so_far;
-#else
-			int bytes_so_far = so.samples_mixed_so_far << 1;
-#endif
-
-			uint32 samples_to_write = sample_count - so.samples_mixed_so_far;
-			do
-			{
-				int bytes_this_run = samples_to_write;
-#ifndef FOREVER_16_BIT_SOUND
-				if (so.sixteen_bit)
-#endif
-					bytes_this_run <<= 1;
-
-				if (byte_offset + bytes_this_run > SOUND_BUFFER_SIZE)
-				{
-					bytes_this_run = SOUND_BUFFER_SIZE - byte_offset;
-				}
-
-				if (bytes_so_far + bytes_this_run > so.buffer_size)
-				{
-					bytes_this_run = so.buffer_size - bytes_so_far;
-					if (bytes_this_run == 0)
-						break;
-				}
-
-				int samples_this_run = bytes_this_run;
-#ifndef FOREVER_16_BIT_SOUND
-				if (so.sixteen_bit)
-#endif
-					samples_this_run >>= 1;
-
-				S9xMixSamples (Buf + byte_offset, samples_this_run);
-				so.samples_mixed_so_far += samples_this_run;
-				samples_to_write -= samples_this_run;
-#ifndef FOREVER_16_BIT_SOUND
-				bytes_so_far += so.sixteen_bit ? (samples_this_run << 1) :
-					samples_this_run;
-#else
-				bytes_so_far += samples_this_run << 1;
-#endif
-				byte_offset = (byte_offset + bytes_this_run) & SOUND_BUFFER_SIZE_MASK;
-			} while (samples_to_write > 0);
+			LastSoundEmissionTime += SOUND_EMISSION_INTERVAL;
 		}
-	}
-
-//    if (!so.mute_sound)
-	{
-		unsigned bytes_to_write = sample_count;
+		/* Number of samples to generate now */
+		int sample_count = so.buffer_size;
 #ifndef FOREVER_16_BIT_SOUND
-		if(so.sixteen_bit)
-#endif
-			bytes_to_write <<= 1;
-
-		unsigned byte_offset = so.play_position;
-		so.play_position = (so.play_position + bytes_to_write) & SOUND_BUFFER_SIZE_MASK; /* wrap to beginning */
-
-		unsigned short *dst_pt = audiobuff;
-		unsigned short *dst_pt1 = dst_pt + DS2_BUFFER_SIZE;
-
-		/* Feed the samples to the soundcard until nothing is left */
-		for(;;)
+		if (so.sixteen_bit)
 		{
-			int I = bytes_to_write;
-			if (byte_offset + I > SOUND_BUFFER_SIZE)
+#endif
+			/* to prevent running out of buffer space,
+			* create less samples
+			*/
+			sample_count >>= 1;
+#ifndef FOREVER_16_BIT_SOUND
+		}
+#endif
+
+		do {
+			audiobuff = (unsigned short*)ds2_getAudiobuff();
+		} while (audiobuff == NULL); //There are audio queue in sending or wait to send
+
+		/* If we need more audio samples */
+		if (so.samples_mixed_so_far < sample_count)
+		{
+			/* Where to put the samples to */
+#ifndef FOREVER_16_BIT_SOUND
+			unsigned byte_offset = (so.play_position + 
+			(so.sixteen_bit ? (so.samples_mixed_so_far << 1) : so.samples_mixed_so_far)) & SOUND_BUFFER_SIZE_MASK;
+#else
+			unsigned byte_offset = (so.play_position + 
+			(so.samples_mixed_so_far << 1)) & SOUND_BUFFER_SIZE_MASK;
+#endif
+
+			if (Settings.SoundSync == 2)
 			{
-				I = SOUND_BUFFER_SIZE - byte_offset;
+				/*memset (Buf + (byte_offset & SOUND_BUFFER_SIZE_MASK), 0,
+				sample_count - so.samples_mixed_so_far);*/
 			}
-			if(I == 0) break;
-
-//			memcpy(dst_pt, (char *) Buf + byte_offset, I);
-//			dst_pt += I;
-
-			unsigned short *src_pt= (unsigned short*)(Buf + byte_offset);
-			for(int m= 0; m < I/4; m++)
+			else
 			{
-				*dst_pt++= *src_pt++;//(*src_pt++) <<1;
-				*dst_pt1++= *src_pt++;//(*src_pt++) <<1;
-			}
+				/* Mix the missing samples */
+#ifndef FOREVER_16_BIT_SOUND
+				int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
+					so.samples_mixed_so_far;
+#else
+				int bytes_so_far = so.samples_mixed_so_far << 1;
+#endif
 
-			bytes_to_write -= I;
-			byte_offset = (byte_offset + I) & SOUND_BUFFER_SIZE_MASK; /* wrap */
+				uint32 samples_to_write = sample_count - so.samples_mixed_so_far;
+				do
+				{
+					int bytes_this_run = samples_to_write;
+#ifndef FOREVER_16_BIT_SOUND
+					if (so.sixteen_bit)
+#endif
+						bytes_this_run <<= 1;
+
+					if (byte_offset + bytes_this_run > SOUND_BUFFER_SIZE)
+					{
+						bytes_this_run = SOUND_BUFFER_SIZE - byte_offset;
+					}
+
+					if (bytes_so_far + bytes_this_run > so.buffer_size)
+					{
+						bytes_this_run = so.buffer_size - bytes_so_far;
+						if (bytes_this_run == 0)
+							break;
+					}
+
+					int samples_this_run = bytes_this_run;
+#ifndef FOREVER_16_BIT_SOUND
+					if (so.sixteen_bit)
+#endif
+						samples_this_run >>= 1;
+
+					S9xMixSamples (Buf + byte_offset, samples_this_run);
+					so.samples_mixed_so_far += samples_this_run;
+					samples_to_write -= samples_this_run;
+#ifndef FOREVER_16_BIT_SOUND
+					bytes_so_far += so.sixteen_bit ? (samples_this_run << 1) :
+						samples_this_run;
+#else
+					bytes_so_far += samples_this_run << 1;
+#endif
+					byte_offset = (byte_offset + bytes_this_run) & SOUND_BUFFER_SIZE_MASK;
+				} while (samples_to_write > 0);
+			}
 		}
 
-		ds2_updateAudio();
+	//    if (!so.mute_sound)
+		{
+			unsigned bytes_to_write = sample_count;
+#ifndef FOREVER_16_BIT_SOUND
+			if(so.sixteen_bit)
+#endif
+				bytes_to_write <<= 1;
 
-		/* All data sent. */
+			unsigned byte_offset = so.play_position;
+			so.play_position = (so.play_position + bytes_to_write) & SOUND_BUFFER_SIZE_MASK; /* wrap to beginning */
+
+			unsigned short *dst_pt = audiobuff;
+			unsigned short *dst_pt1 = dst_pt + DS2_BUFFER_SIZE;
+
+			/* Feed the samples to the soundcard until nothing is left */
+			for(;;)
+			{
+				int I = bytes_to_write;
+				if (byte_offset + I > SOUND_BUFFER_SIZE)
+				{
+					I = SOUND_BUFFER_SIZE - byte_offset;
+				}
+				if(I == 0) break;
+
+	//			memcpy(dst_pt, (char *) Buf + byte_offset, I);
+	//			dst_pt += I;
+
+				unsigned short *src_pt= (unsigned short*)(Buf + byte_offset);
+				for(int m= 0; m < I/4; m++)
+				{
+					*dst_pt++= *src_pt++;//(*src_pt++) <<1;
+					*dst_pt1++= *src_pt++;//(*src_pt++) <<1;
+				}
+
+				bytes_to_write -= I;
+				byte_offset = (byte_offset + I) & SOUND_BUFFER_SIZE_MASK; /* wrap */
+			}
+
+			ds2_updateAudio();
+
+			/* All data sent. */
+		}
+
+		so.samples_mixed_so_far -= sample_count;
 	}
-
-	so.samples_mixed_so_far -= sample_count;
 }
 
 /*
