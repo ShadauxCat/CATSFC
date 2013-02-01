@@ -675,12 +675,13 @@ void S9xSyncSpeed ()
 		else // Early
 		{
 			skip_rate = 0;
-			ds2_setCPUclocklevel(0);
 			if (syncdif > 0)
-				// TODO Turn this delay into a ProcessSound loop?
-				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
-			set_cpu_clock(clock_speed_number);
-			S9xProcessSound (0);
+			{
+				do {
+					S9xProcessSound (0);
+					syncdif = sync_next - getSysTime();
+				} while (syncdif > 0);
+			}
 
 			IPPU.RenderThisFrame = TRUE;
 			sync_next += frame_time;
@@ -709,11 +710,10 @@ void S9xSyncSpeed ()
 			syncdif = sync_next - syncnow;
 			if (syncdif > 0)
 			{
-				ds2_setCPUclocklevel(0);
-				// TODO Turn this delay into a ProcessSound loop?
-				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
-				set_cpu_clock(clock_speed_number);
-				S9xProcessSound (0);
+				do {
+					S9xProcessSound (0);
+					syncdif = sync_next - getSysTime();
+				} while (syncdif > 0);
 				// After that little delay, what time is it?
 				syncnow = getSysTime();
 			}
@@ -910,8 +910,6 @@ unsigned int LastSoundEmissionTime = 0;
 
 void S9xProcessSound (unsigned int)
 {
-	unsigned short *audiobuff;
-
 	if (so.mute_sound || !game_enable_audio)
 		return;
 
@@ -920,6 +918,8 @@ void S9xProcessSound (unsigned int)
 		LastSoundEmissionTime++;
 		return;
 	}
+
+	unsigned short *audiobuff;
 
 	unsigned int Now = getSysTime();
 	if (Now - LastSoundEmissionTime >= SOUND_EMISSION_INTERVAL)
@@ -933,7 +933,18 @@ void S9xProcessSound (unsigned int)
 				audiobuff = (unsigned short*)ds2_getAudiobuff();
 			} while (audiobuff == NULL); //There are audio queue in sending or wait to send
 
-			memset(audiobuff, 0, DS2_BUFFER_SIZE);
+			memset(audiobuff, 0, DS2_BUFFER_SIZE
+#ifndef FOREVER_STEREO
+				<< (so.stereo ? 1 : 0)
+#else
+				<< 1
+#endif
+#ifndef FOREVER_16_BIT_SOUND
+				<< (so.sixteen_bit ? 1 : 0)
+#else
+				<< 1
+#endif
+			);
 
 			ds2_updateAudio();
 			// And then the real audio. (fall through)
