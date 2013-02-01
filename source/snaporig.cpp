@@ -313,12 +313,14 @@ static int ReadOrigSnapshot (STREAM snap)
     PPU.OBJSizeSelect = OrigPPU.OBJSizeSelect;
     PPU.OBJNameBase = OrigPPU.OBJNameBase;
     PPU.OAMReadFlip = OrigPPU.OAMReadFlip;
-    memmove (PPU.OAMData, OrigPPU.OAMData, sizeof (PPU.OAMData));
+    // memmove converted: Different data segments [Neb]
+    memcpy (PPU.OAMData, OrigPPU.OAMData, sizeof (PPU.OAMData));
     PPU.VTimerEnabled = OrigPPU.VTimerEnabled;
     PPU.HTimerEnabled = OrigPPU.HTimerEnabled;
     PPU.HTimerPosition = OrigPPU.HTimerPosition;
     PPU.Mosaic = OrigPPU.Mosaic;
-    memmove (PPU.BGMosaic, OrigPPU.BGMosaic, sizeof (PPU.BGMosaic));
+    // memmove converted: Different data segments [Neb]
+    memcpy (PPU.BGMosaic, OrigPPU.BGMosaic, sizeof (PPU.BGMosaic));
     PPU.Mode7HFlip = OrigPPU.Mode7HFlip;
     PPU.Mode7VFlip = OrigPPU.Mode7VFlip;
     PPU.Mode7Repeat = OrigPPU.Mode7Repeat;

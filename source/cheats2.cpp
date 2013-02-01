@@ -128,6 +128,7 @@ void S9xDeleteCheat (uint32 which1)
 	if (Cheat.c [which1].enabled)
 	    S9xRemoveCheat (which1);
 
+	// memmove required: Overlapping addresses [Neb]
 	memmove (&Cheat.c [which1], &Cheat.c [which1 + 1],
 		 sizeof (Cheat.c [0]) * (Cheat.num_cheats - which1 - 1));
 	Cheat.num_cheats--; //MK: This used to set it to 0??

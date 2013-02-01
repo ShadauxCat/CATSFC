@@ -214,6 +214,7 @@ void S9xDeinterleaveType1(int TotalFileSize, uint8 * base)
 		blocks [i * 2] = i + nblocks;
 		blocks [i * 2 + 1] = i;
 	}
+	// DS2 DMA notes: base may or may not be 32-byte aligned
 	uint8 *tmp = (uint8 *) malloc (0x8000);
 	if (tmp)
 	{
@@ -223,10 +224,14 @@ void S9xDeinterleaveType1(int TotalFileSize, uint8 * base)
 			{
 				if (blocks [j] == i)
 				{
-					memmove (tmp, &base [blocks [j] * 0x8000], 0x8000);
-					memmove (&base [blocks [j] * 0x8000], 
+					// memmove converted: Different mallocs [Neb]
+					memcpy (tmp, &base [blocks [j] * 0x8000], 0x8000);
+					// memmove converted: Different addresses, or identical for blocks[i] == blocks[j] [Neb]
+					// DS2 DMA notes: Don't do DMA at all if blocks[i] == blocks[j]
+					memcpy (&base [blocks [j] * 0x8000],
 						&base [blocks [i] * 0x8000], 0x8000);
-					memmove (&base [blocks [i] * 0x8000], tmp, 0x8000);
+					// memmove converted: Different mallocs [Neb]
+					memcpy (&base [blocks [i] * 0x8000], tmp, 0x8000);
 					uint8 b = blocks [j];
 					blocks [j] = blocks [i];
 					blocks [i] = b;
@@ -250,13 +255,18 @@ void S9xDeinterleaveGD24(int TotalFileSize, uint8 * base)
 		SET_UI_COLOR(0,255,255);
 	}
 
+	// DS2 DMA notes: base may or may not be 32-byte aligned
 	uint8 *tmp = (uint8 *) malloc (0x80000);
 	if (tmp)
 	{
-		memmove(tmp, &base[0x180000], 0x80000);
-		memmove(&base[0x180000], &base[0x200000], 0x80000);
-		memmove(&base[0x200000], &base[0x280000], 0x80000);
-		memmove(&base[0x280000], tmp, 0x80000);
+		// memmove converted: Different mallocs [Neb]
+		memcpy(tmp, &base[0x180000], 0x80000);
+		// memmove converted: Different addresses [Neb]
+		memcpy(&base[0x180000], &base[0x200000], 0x80000);
+		// memmove converted: Different addresses [Neb]
+		memcpy(&base[0x200000], &base[0x280000], 0x80000);
+		// memmove converted: Different mallocs [Neb]
+		memcpy(&base[0x280000], tmp, 0x80000);
 		free ((char *) tmp);
 
 		S9xDeinterleaveType1(TotalFileSize, base);
@@ -399,10 +409,13 @@ char *CMemory::Safe (const char *s)
 /**********************************************************************************************/
 bool8 CMemory::Init ()
 {
+    // DS2 DMA notes: These would do well to be allocated with 32 extra bytes
+    // so they can be 32-byte aligned. [Neb]
     RAM	    = (uint8 *) malloc (0x20000);
     SRAM    = (uint8 *) malloc (0x20000);
     VRAM    = (uint8 *) malloc (0x10000);
     ROM     = (uint8 *) malloc (MAX_ROM_SIZE + 0x200 + 0x8000);
+    // DS2 DMA notes: Can this be sped up with DMA from a block of zeroes? [Neb]
 	memset (RAM, 0, 0x20000);
 	memset (SRAM, 0, 0x20000);
 	memset (VRAM, 0, 0x10000);
@@ -453,7 +466,8 @@ bool8 CMemory::Init ()
     SuperFX.nRomBanks = (2 * 1024 * 1024) / (32 * 1024);
     SuperFX.pvRom = (uint8 *) ROM;
 #endif
-	
+
+    // DS2 DMA notes: Can this be sped up with DMA from a block of zeroes? [Neb]
     ZeroMemory (IPPU.TileCache [TILE_2BIT], MAX_2BIT_TILES * 128);
     ZeroMemory (IPPU.TileCache [TILE_4BIT], MAX_4BIT_TILES * 128);
     ZeroMemory (IPPU.TileCache [TILE_8BIT], MAX_8BIT_TILES * 128);
@@ -627,6 +641,8 @@ again:
 		((hi_score > lo_score && ScoreHiROM (TRUE) > hi_score) ||
 		(hi_score <= lo_score && ScoreLoROM (TRUE) > lo_score)))
     {
+		// memmove required: Overlapping addresses [Neb]
+		// DS2 DMA notes: Can be split into 512-byte DMA blocks [Neb]
 		memmove (Memory.ROM, Memory.ROM + 512, TotalFileSize - 512);
 		TotalFileSize -= 512;
 		S9xMessage (S9X_INFO, S9X_HEADER_WARNING, 
@@ -871,6 +887,7 @@ uint32 CMemory::FileLoader (uint8* buffer, const char* filename, int32 maxsize)
     _makepath (fname, drive, dir, name, ext);
 	
 #ifdef __WIN32__
+	// memmove required: Overlapping addresses [Neb]
     memmove (&ext [0], &ext[1], 4);
 #endif
 
@@ -936,11 +953,13 @@ uint32 CMemory::FileLoader (uint8* buffer, const char* filename, int32 maxsize)
 			FileSize = fread (ptr, 1, maxsize + 0x200 - (ptr - ROM), ROMFile);
 			fclose (ROMFile);
 			
-			int calc_size = (FileSize / 0x2000) * 0x2000;
+			int calc_size = FileSize & ~0x1FFF; // round to the lower 0x2000
 		
 			if ((FileSize - calc_size == 512 && !Settings.ForceNoHeader) ||
 				Settings.ForceHeader)
 			{
+				// memmove required: Overlapping addresses [Neb]
+				// DS2 DMA notes: Can be split into 512-byte DMA blocks [Neb]
 				memmove (ptr, ptr + 512, calc_size);
 				HeaderCount++;
 				FileSize -= 512;
@@ -958,6 +977,7 @@ uint32 CMemory::FileLoader (uint8* buffer, const char* filename, int32 maxsize)
 				more = TRUE;
 				ext [0]++;
 #ifdef __WIN32__
+				// memmove required: Overlapping addresses [Neb]
 		        memmove (&ext [1], &ext [0], 4);
 			    ext [0] = '.';
 #endif
@@ -972,6 +992,7 @@ uint32 CMemory::FileLoader (uint8* buffer, const char* filename, int32 maxsize)
 				more = TRUE;
 				name [len - 1]++;
 #ifdef __WIN32__
+				// memmove required: Overlapping addresses [Neb]
 				memmove (&ext [1], &ext [0], 4);
 				ext [0] = '.';
 #endif
@@ -1180,7 +1201,8 @@ void S9xDeinterleaveType2 (bool8 reset)
 		blocks [i] = (i & ~0xF) | ((i & 3) << 2) |
 			((i & 12) >> 2);
     }
-	
+
+	// DS2 DMA notes: ROM needs to be 32-byte aligned [Neb]
     uint8 *tmp = (uint8 *) malloc (0x10000);
 	
     if (tmp)
@@ -1191,10 +1213,14 @@ void S9xDeinterleaveType2 (bool8 reset)
 			{
 				if (blocks [j] == i)
 				{
-					memmove (tmp, &Memory.ROM [blocks [j] * 0x10000], 0x10000);
-					memmove (&Memory.ROM [blocks [j] * 0x10000], 
+					// memmove converted: Different mallocs [Neb]
+					memcpy (tmp, &Memory.ROM [blocks [j] * 0x10000], 0x10000);
+					// memmove converted: Different addresses, or identical if blocks[i] == blocks[j] [Neb]
+					// DS2 DMA notes: Don't do DMA at all if blocks[i] == blocks[j] [Neb]
+					memcpy (&Memory.ROM [blocks [j] * 0x10000],
 						&Memory.ROM [blocks [i] * 0x10000], 0x10000);
-					memmove (&Memory.ROM [blocks [i] * 0x10000], tmp, 0x10000);
+					// memmove converted: Different mallocs [Neb]
+					memcpy (&Memory.ROM [blocks [i] * 0x10000], tmp, 0x10000);
 					uint8 b = blocks [j];
 					blocks [j] = blocks [i];
 					blocks [i] = b;
@@ -1605,6 +1631,8 @@ bool8 CMemory::LoadSRAM (const char *filename)
 			if (len - size == 512)
 			{
 				// S-RAM file has a header - remove it
+				// memmove required: Overlapping addresses [Neb]
+				// DS2 DMA notes: Can be split into 512-byte DMA blocks [Neb]
 				memmove (::SRAM, ::SRAM + 512, size);
 			}
 			if (len == size + SRTC_SRAM_PAD)
@@ -1705,7 +1733,8 @@ void CMemory::ResetSpeedMap()
 
 void CMemory::WriteProtectROM ()
 {
-    memmove ((void *) WriteMap, (void *) Map, sizeof (Map));
+	// memmove converted: Different mallocs [Neb]
+    memcpy ((void *) WriteMap, (void *) Map, sizeof (Map));
     for (int c = 0; c < 0x1000; c++)
     {
 		if (BlockIsROM [c])
@@ -2545,8 +2574,10 @@ void CMemory::SuperFXROMMap ()
     // block is repeated twice in each 64K block.
     for (c = 0; c < 64; c++)
     {
-		memmove (&ROM [0x200000 + c * 0x10000], &ROM [c * 0x8000], 0x8000);
-		memmove (&ROM [0x208000 + c * 0x10000], &ROM [c * 0x8000], 0x8000);
+		// memmove converted: Different addresses [Neb]
+		memcpy (&ROM [0x200000 + c * 0x10000], &ROM [c * 0x8000], 0x8000);
+		// memmove converted: Different addresses [Neb]
+		memcpy (&ROM [0x208000 + c * 0x10000], &ROM [c * 0x8000], 0x8000);
     }
 	
     WriteProtectROM ();
@@ -2612,8 +2643,10 @@ void CMemory::SA1ROMMap ()
     WriteProtectROM ();
 	
     // Now copy the map and correct it for the SA1 CPU.
-    memmove ((void *) SA1.WriteMap, (void *) WriteMap, sizeof (WriteMap));
-    memmove ((void *) SA1.Map, (void *) Map, sizeof (Map));
+	// memmove converted: Different mallocs [Neb]
+    memcpy ((void *) SA1.WriteMap, (void *) WriteMap, sizeof (WriteMap));
+	// memmove converted: Different mallocs [Neb]
+    memcpy ((void *) SA1.Map, (void *) Map, sizeof (Map));
 	
     // Banks 00->3f and 80->bf
     for (c = 0; c < 0x400; c += 16)
@@ -3025,8 +3058,10 @@ void CMemory::GNextROMMap ()
     WriteProtectROM ();
 	
     // Now copy the map and correct it for the SA1 CPU.
-    memmove ((void *) SA1.WriteMap, (void *) WriteMap, sizeof (WriteMap));
-    memmove ((void *) SA1.Map, (void *) Map, sizeof (Map));
+	// memmove converted: Different mallocs [Neb]
+    memcpy ((void *) SA1.WriteMap, (void *) WriteMap, sizeof (WriteMap));
+	// memmove converted: Different mallocs [Neb]
+    memcpy ((void *) SA1.Map, (void *) Map, sizeof (Map));
 	
     // Banks 00->3f and 80->bf
     for (c = 0; c < 0x400; c += 16)
@@ -4385,9 +4420,11 @@ void CMemory::ParseSNESHeader(uint8* RomHeader)
 		ROMChecksum = RomHeader [0x2e] + (RomHeader [0x2f] << 8);
 		ROMComplementChecksum = RomHeader [0x2c] + (RomHeader [0x2d] << 8);
 		ROMRegion= RomHeader[0x29];
-		memmove (ROMId, &RomHeader [0x2], 4);
+		// memmove converted: Different mallocs [Neb]
+		memcpy (ROMId, &RomHeader [0x2], 4);
 		if(RomHeader[0x2A]==0x33)
-			memmove (CompanyId, &RomHeader [0], 2);
+			// memmove converted: Different mallocs [Neb]
+			memcpy (CompanyId, &RomHeader [0], 2);
 		else sprintf(CompanyId, "%02X", RomHeader[0x2A]);
 }
 

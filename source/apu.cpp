@@ -177,8 +177,12 @@ void S9xResetAPU ()
     ZeroMemory (IAPU.CachedSamples, 0x40000);
     ZeroMemory (APU.OutPorts, 4);
     IAPU.DirectPage = IAPU.RAM;
-    memmove (&IAPU.RAM [0xffc0], APUROM, sizeof (APUROM));
-    memmove (APU.ExtraRAM, APUROM, sizeof (APUROM));
+    // memmove converted: Different mallocs [Neb]
+    // DS2 DMA notes: The APU ROM is not 32-byte aligned [Neb]
+    memcpy (&IAPU.RAM [0xffc0], APUROM, sizeof (APUROM));
+    // memmove converted: Different mallocs [Neb]
+    // DS2 DMA notes: The APU ROM is not 32-byte aligned [Neb]
+    memcpy (APU.ExtraRAM, APUROM, sizeof (APUROM));
     IAPU.PC = IAPU.RAM + IAPU.RAM [0xfffe] + (IAPU.RAM [0xffff] << 8);
     APU.Cycles = 0;
     IAPU.Registers.YA.W = 0;
@@ -874,7 +878,9 @@ void S9xSetAPUControl (uint8 byte)
     {
 		if (!APU.ShowROM)
 		{
-			memmove (&IAPU.RAM [0xffc0], APUROM, sizeof (APUROM));
+			// memmove converted: Different mallocs [Neb]
+			// DS2 DMA notes: The APU ROM is not 32-byte aligned [Neb]
+			memcpy (&IAPU.RAM [0xffc0], APUROM, sizeof (APUROM));
 			APU.ShowROM = TRUE;
 		}
     }
@@ -883,7 +889,9 @@ void S9xSetAPUControl (uint8 byte)
 		if (APU.ShowROM)
 		{
 			APU.ShowROM = FALSE;
-			memmove (&IAPU.RAM [0xffc0], APU.ExtraRAM, sizeof (APUROM));
+			// memmove converted: Different mallocs [Neb]
+			// DS2 DMA notes: The APU ROM is not 32-byte aligned [Neb]
+			memcpy (&IAPU.RAM [0xffc0], APU.ExtraRAM, sizeof (APUROM));
 		}
     }
     IAPU.RAM [0xf1] = byte;
