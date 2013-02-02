@@ -117,9 +117,9 @@ static unsigned char pll_m_n[CPU_MAX_LEVEL_EX + 1][6] = {
 
         {34-2, 2-2, 0, 2, 2, 2},    //14   404, 132, 1/3
         {35-2, 2-2, 0, 2, 2, 2},    //15   420, 132, 1/3
-        {36-2, 2-2, 0, 2, 2, 2},    //16   438, 132, 1/3
-        {37-2, 2-2, 0, 2, 2, 2},    //17   444, 132, 1/3
-        {38-2, 2-2, 0, 2, 2, 2},    //18   456, 132, 1/3
+        {36-2, 2-2, 0, 3, 3, 3},    //16   438, 132, 1/3
+        {37-2, 2-2, 0, 3, 3, 3},    //17   444, 132, 1/3
+        {38-2, 2-2, 0, 3, 3, 3},    //18   456, 132, 1/3
         //{39-2, 2-2, 0, 2, 2, 2},        //468, instant crash!
     };
 
@@ -187,6 +187,36 @@ static void detect_clockNew(void){
     _pllout = (__cpm_get_pllm() + 2)* EXTAL_CLK / (__cpm_get_plln() + 2);
     _iclk = _pllout / FR2n[__cpm_get_cdiv()];
 }
+
+
+//udelay overclock
+void ds2_udelay(unsigned int usec)
+{
+    unsigned int i = usec * (_iclk / 2000000);
+
+    __asm__ __volatile__ (
+        "\t.set noreorder\n"
+        "1:\n\t"
+        "bne\t%0, $0, 1b\n\t"
+        "addi\t%0, %0, -1\n\t"
+        ".set reorder\n"
+        : "=r" (i)
+        : "0" (i)
+    );
+}
+
+//mdelay overclock
+void ds2_mdelay(unsigned int msec)
+{
+    int i;
+    for(i=0;i<msec;i++)
+    {
+        ds2_udelay(1000);
+    }
+}
+
+
+
 
 int ds2_getCPUClock(void){
     return (_pllout/1000/1000);
