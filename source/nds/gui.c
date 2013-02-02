@@ -28,7 +28,7 @@
 #include "ds2_timer.h"
 #include "ds2io.h"
 #include "ds2_malloc.h"
-#include "ds2_cpu.h"
+#include "ds2_cpuclock.h"
 #include "fs_api.h"
 #include "key.h"
 #include "gui.h"
@@ -1653,10 +1653,10 @@ int save_state(char* file, void* screen)
 
 void set_cpu_clock(u32 num)
 {
-	u32 clock_speed_table[6] = {6, 9, 10, 11, 12, 13};	//240, 300, 336, 360, 384, 394
+	u32 clock_speed_table[11] = {6, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};	//240, 300, 336, 360, 384, 394, <overclock> 404, 420, 438, 444, 456
 
-	if(num <= 5)
-		ds2_setCPUclocklevel(clock_speed_table[num]);
+	if(num <= 10)
+		ds2_setCPULevel(clock_speed_table[num]);
 }
 
 void savefast_int(void)
@@ -1761,7 +1761,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 	void menu_exit()
 	{
-		ds2_setCPUclocklevel(13); // Crank it up, leave quickly
+		ds2_setCPULevel(13); // Crank it up, leave quickly
         if(gamepak_name[0] != 0)
         {
 			game_config.clock_speed_number = clock_speed_number;
@@ -1794,9 +1794,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_LOADING_GAME]);
 			ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
-			ds2_setCPUclocklevel(13);
+			ds2_setCPULevel(13);
 			int load_result = load_gamepak(line_buffer);
-			ds2_setCPUclocklevel(0);
+			ds2_setCPULevel(0);
 			if(load_result == -1)
 			{
 				first_load = 1;
@@ -1862,9 +1862,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_LOADING_GAME]);
 		ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
-		ds2_setCPUclocklevel(13);
+		ds2_setCPULevel(13);
 		int load_result = load_gamepak(args[1]);
-		ds2_setCPUclocklevel(0);
+		ds2_setCPULevel(0);
 
 		if(load_result == -1)
 		{
@@ -2074,9 +2074,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CREATING]);
 				ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
-				ds2_setCPUclocklevel(13);
+				ds2_setCPULevel(13);
 				int flag = save_state(tmp_filename, (void*)screen);
-				ds2_setCPUclocklevel(0);
+				ds2_setCPULevel(0);
 				//clear message
 				draw_message(down_screen_addr, NULL, 28, 31, 227, 96, 0);
 				if(flag < 0)
@@ -2143,9 +2143,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
 					draw_string_vcenter(up_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_LOADING]);
 
-					ds2_setCPUclocklevel(13);
+					ds2_setCPULevel(13);
 					int flag = load_state(tmp_filename);
-					ds2_setCPUclocklevel(0);
+					ds2_setCPULevel(0);
 					if(0 == flag)
 					{
 						return_value = 1;
@@ -2160,9 +2160,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				}
 				else	//load screen snapshot
 				{
-					ds2_setCPUclocklevel(13);
+					ds2_setCPULevel(13);
 					load_game_stat_snapshot(tmp_filename);
-					ds2_setCPUclocklevel(0);
+					ds2_setCPULevel(0);
 				}
 			}
 			else
@@ -2732,7 +2732,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     {
         if(gui_action == CURSOR_LEFT || gui_action == CURSOR_RIGHT)
         {
-            ds2_setCPUclocklevel(13); // crank it up
+            ds2_setCPULevel(13); // crank it up
             if(bg_screenp != NULL)
             {
                 bg_screenp_color = COLOR16(43, 11, 11);
@@ -2757,7 +2757,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
             }
 
             save_emu_config_file();
-            ds2_setCPUclocklevel(0); // and back down
+            ds2_setCPULevel(0); // and back down
             wait_Allkey_release(0);
         }
     }
@@ -2813,6 +2813,8 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 									(char*)&msg[MSG_VIDEO_ASPECT_RATIO_4]};
     
     char *frameskip_options[] = { (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_0], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_1], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_2], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_3], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_4], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_5], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_6], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_7], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_8], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_9], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_10] };
+    
+    char *cpu_frequency_options[] = { (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_0], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_1], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_2], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_3], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_4], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_5], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_6], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_7], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_8], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_9], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_10] };
 
     char *fluidity_options[] = { (char*)&msg[MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO], (char*)&msg[MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO] };
 
@@ -2988,8 +2990,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	{
 	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_OPTIONS], NULL, 0),
 
-	//CPU speed
-	/* 01 */ NUMERIC_SELECTION_OPTION(NULL, &msg[FMT_OPTIONS_CPU_FREQUENCY], &clock_speed_number, 6, NULL, 1),
+	//CPU speed (string: shows MHz)
+    /* 01 */ STRING_SELECTION_OPTION(NULL, NULL, &msg[FMT_OPTIONS_CPU_FREQUENCY], cpu_frequency_options, 
+        &clock_speed_number, 11, NULL, PASSIVE_TYPE, 1),
 
 	/* 02 */ STRING_SELECTION_OPTION(language_set, NULL, &msg[FMT_OPTIONS_LANGUAGE], language_options, 
         &emu_config.language, sizeof(language_options) / sizeof(language_options[0]) /* number of possible languages */, NULL, ACTION_TYPE, 2),
@@ -3497,9 +3500,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 		ext_pos = emu_config.latest_file[current_option_num -1];
 
-		ds2_setCPUclocklevel(13);
+		ds2_setCPULevel(13);
 		int load_result = load_gamepak(ext_pos);
-		ds2_setCPUclocklevel(0);
+		ds2_setCPULevel(0);
 
 		if(load_result == -1) {
 			first_load = 1;
@@ -3572,7 +3575,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 //----------------------------------------------------------------------------//
 //	Menu Start
-	ds2_setCPUclocklevel(0);
+	ds2_setCPULevel(0);
 	if (!FirstInvocation)
 	{ // assume that the backlight is already at 3 when the emulator starts
 		mdelay(100); // to prevent ds2_setBacklight() from crashing
@@ -4708,7 +4711,7 @@ void gui_init(u32 lang_id)
 {
 	int flag;
 
-	ds2_setCPUclocklevel(13); // Crank it up. When the menu starts, -> 0.
+	ds2_setCPULevel(13); // Crank it up. When the menu starts, -> 0.
 
 	// Start with no saved state existing, as no game is loaded yet.
 	int i;
@@ -4767,12 +4770,12 @@ void gui_init(u32 lang_id)
 	}
 
 	// Experimental branch warning
-	ds2_setCPUclocklevel(0);
+	ds2_setCPULevel(0);
 	draw_message(down_screen_addr, NULL, 28, 31, 227, 165, 0);
 	draw_string_vcenter(down_screen_addr, 36, 74, 190, COLOR_MSSG, "This is the EXPERIMENTAL branch of CATSFC. Do you wish to run this version of the emulator?");
 	if(draw_yesno_dialog(DOWN_SCREEN, 115, "[A] Run", "[B] Exit") == 0)
 		quit();
-	ds2_setCPUclocklevel(13);
+	ds2_setCPULevel(13);
 
 	load_emu_config_file();
 	lang_id = emu_config.language;
