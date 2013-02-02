@@ -99,6 +99,7 @@ $(START_O): $(START_ASM)
 	$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $<
 
 makedirs:
+	-rm -rf $(PLUGIN_DIR)
 	cp -r CATSFC $(PLUGIN_DIR)
 	cp catsfc.bmp $(OUTPUT).bmp
 	cp catsfc.ini $(OUTPUT).ini
