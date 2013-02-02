@@ -1,4 +1,4 @@
-CATSFC version 1.25, 2013-02-01
+CATSFC version 1.26, 2013-02-02
 
 A Super Nintendo emulator for the Supercard DSTWO.
 
