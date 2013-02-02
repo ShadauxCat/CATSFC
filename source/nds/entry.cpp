@@ -86,7 +86,7 @@ void S9xParseDisplayArg (char **argv, int &ind, int)
 
 void S9xExit ()
 {
-  ds2_setCPUclocklevel(13); // Crank it up to exit quickly
+  HighFrequencyCPU(); // Crank it up to exit quickly
   if(Settings.SPC7110)
     (*CleanUp7110)();
 
@@ -1125,7 +1125,7 @@ unsigned int S9xReadJoypad (int which1)
 
 	if (inputdata.key & KEY_LID)
 	{
-		ds2_setCPUclocklevel(0);
+		LowFrequencyCPU();
 		ds2_setSupend();
 		do {
 			ds2_getrawInput(&inputdata);
@@ -1136,7 +1136,7 @@ unsigned int S9xReadJoypad (int which1)
 		// screen's backlight.
 		mdelay(100); // needed to avoid ds2_setBacklight crashing
 		ds2_setBacklight(2);
-		set_cpu_clock(clock_speed_number);
+		GameFrequencyCPU();
 	}
 
 	u32 HotkeyReturnToMenu = game_config.HotkeyReturnToMenu != 0 ? game_config.HotkeyReturnToMenu : emu_config.HotkeyReturnToMenu;
