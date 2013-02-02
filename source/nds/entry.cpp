@@ -922,7 +922,7 @@ unsigned int LastSoundEmissionTime = 0;
 
 void S9xProcessSound (unsigned int)
 {
-	if (so.mute_sound || !game_enable_audio)
+	if (!game_enable_audio)
 		return;
 
 	if(ds2_checkAudiobuff() > AUDIO_BUFFER_COUNT * 3/4)
