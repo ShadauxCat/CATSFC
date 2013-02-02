@@ -67,9 +67,9 @@
 #define COLOR_ERROR         COLOR16(31,  0,  0)
 #define COLOR_BG            COLOR16(2,  4,  10)
 #define COLOR_BG32          COLOR32(2*8,  4*8,  10*8)
-#define COLOR_ROM_INFO      COLOR16(22, 18, 26)
+#define COLOR_ROM_INFO      COLOR16(24, 0, 0)
 #define COLOR_ACTIVE_ITEM   COLOR16(31, 31, 31)
-#define COLOR_INACTIVE_ITEM COLOR16(11,  7, 19)
+#define COLOR_INACTIVE_ITEM COLOR16(16, 0, 0)
 #define COLOR_HELP_TEXT     COLOR16(16, 20, 24)
 #define COLOR_DIALOG        COLOR16(31, 31, 31)
 #define COLOR_DIALOG_SHADOW COLOR16( 0,  2,  8)
@@ -81,7 +81,7 @@
 #define COLOR_GREEN3        COLOR16( 0, 12, 0 )
 #define COLOR_GREEN4        COLOR16( 0, 6, 0 )
 #define COLOR_RED           COLOR16( 31, 0, 0 )
-#define COLOR_MSSG			COLOR16( 16, 8, 29)
+#define COLOR_MSSG			COLOR16( 24, 0, 0)
 /******************************************************************************
  *
  ******************************************************************************/

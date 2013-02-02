@@ -61,7 +61,7 @@ char *language_options[] = { (char *) &lang[0], (char *) &lang[1], (char *) &lan
  ******************************************************************************/
 #define SUBMENU_ROW_NUM	6
 
-#define NDSSFC_VERSION "1.25"
+#define NDSSFC_VERSION "experimental"
 
 #define SAVE_STATE_SLOT_NUM		16
 
@@ -4718,29 +4718,29 @@ void gui_init(u32 lang_id)
 		SavedStateExistenceCached [i] = FALSE;
 	}
 
-    //Find the "CATSFC" system directory
+    //Find the "EXPSFC" system directory (EXPSFC stands for Experimental SFC)
     DIR *current_dir;
 
-    strcpy(main_path, "fat:/CATSFC");
+    strcpy(main_path, "fat:/EXPSFC");
     current_dir = opendir(main_path);
     if(current_dir)
         closedir(current_dir);
     else
     {
-        strcpy(main_path, "fat:/_SYSTEM/PLUGINS/CATSFC");
+        strcpy(main_path, "fat:/_SYSTEM/PLUGINS/EXPSFC");
         current_dir = opendir(main_path);
         if(current_dir)
             closedir(current_dir);
         else
         {
             strcpy(main_path, "fat:");
-            if(search_dir("CATSFC", main_path) == 0)
+            if(search_dir("EXPSFC", main_path) == 0)
             {
-                printf("Found CATSFC directory\r\nDossier CATSFC trouve\r\n\r\n%s\r\n", main_path);
+                printf("Found EXPSFC directory\r\nDossier EXPSFC trouve\r\n\r\n%s\r\n", main_path);
             }
             else
             {
-				err_msg(DOWN_SCREEN, "/CATSFC: Directory missing\r\nPress any key to return to\r\nthe menu\r\n\r\n/CATSFC: Dossier manquant\r\nAppuyer sur une touche pour\r\nretourner au menu");
+				err_msg(DOWN_SCREEN, "/EXPSFC: Directory missing\r\nPress any key to return to\r\nthe menu\r\n\r\n/EXPSFC: Dossier manquant\r\nAppuyer sur une touche pour\r\nretourner au menu");
                 goto gui_init_err;
             }
         }
@@ -4765,6 +4765,14 @@ void gui_init(u32 lang_id)
 		err_msg(DOWN_SCREEN, message);
 		goto gui_init_err;
 	}
+
+	// Experimental branch warning
+	ds2_setCPUclocklevel(0);
+	draw_message(down_screen_addr, NULL, 28, 31, 227, 165, 0);
+	draw_string_vcenter(down_screen_addr, 36, 74, 190, COLOR_MSSG, "This is the EXPERIMENTAL branch of CATSFC. Do you wish to run this version of the emulator?");
+	if(draw_yesno_dialog(DOWN_SCREEN, 115, "[A] Run", "[B] Exit") == 0)
+		quit();
+	ds2_setCPUclocklevel(13);
 
 	load_emu_config_file();
 	lang_id = emu_config.language;

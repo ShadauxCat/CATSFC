@@ -19,8 +19,8 @@ START_ASM   := $(DS2SDKPATH)/specs/start.S
 START_O     := start.o
 
 # - - - Names - - -
-OUTPUT      := catsfc
-PLUGIN_DIR  := CATSFC
+OUTPUT      := expsfc
+PLUGIN_DIR  := EXPSFC
 
 # - - - Tools - - -
 CC           = $(CROSS)gcc
@@ -99,6 +99,9 @@ $(START_O): $(START_ASM)
 	$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $<
 
 makedirs:
+	cp -r CATSFC $(PLUGIN_DIR)
+	cp catsfc.bmp $(OUTPUT).bmp
+	cp catsfc.ini $(OUTPUT).ini
 	-mkdir $(PLUGIN_DIR)/gamepak
 	-mkdir $(PLUGIN_DIR)/gamecht
 	-mkdir $(PLUGIN_DIR)/gamerts
