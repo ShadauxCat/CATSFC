@@ -26,7 +26,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "ds2_malloc.h"
-#include "ds2_cpu.h"
+#include "ds2_cpuclock.h"
 #include "bdf_font.h"
 #include "gui.h"
 #include "bitmap.h"
@@ -818,7 +818,7 @@ u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
 				gui_action = CURSOR_BACK;
 		}
 	}
-	mdelay(16);
+	ds2_mdelay(16);
     }
 
     if (gui_action == CURSOR_SELECT)
@@ -886,13 +886,13 @@ u32 draw_hotkey_dialog(enum SCREEN_ID screen, u32 sy, char *clear, char *cancel)
 	// This function has been started by a key press. Wait for it to end.
 	struct key_buf inputdata;
 	do {
-		mdelay(1);
+		ds2_mdelay(1);
 		ds2_getrawInput(&inputdata);
 	} while (inputdata.key != 0);
 
 	// While there are no keys pressed, wait for keys.
 	do {
-		mdelay(1);
+		ds2_mdelay(1);
 		ds2_getrawInput(&inputdata);
 	} while (inputdata.key == 0);
 
@@ -916,7 +916,7 @@ u32 draw_hotkey_dialog(enum SCREEN_ID screen, u32 sy, char *clear, char *cancel)
 					return KEY_B;
 			}
 		}
-		mdelay(1);
+		ds2_mdelay(1);
 		ds2_getrawInput(&inputdata);
 	} while (inputdata.key != 0 || TotalKeys == 0);
 
@@ -1007,7 +1007,7 @@ void show_progress(char *text)
 	ds2_flipScreen(_progress_screen_id, 2);
 
 //  OSTimeDly(progress_wait);
-	mdelay(500);
+	ds2_mdelay(500);
 }
 
 /*

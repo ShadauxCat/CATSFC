@@ -459,7 +459,7 @@ void game_restart(void)
 int load_gamepak(char* file)
 {
 	CPU.Flags = 0;
-	// mdelay(50); // Delete this delay
+	// ds2_mdelay(50); // Delete this delay
 	if (!Memory.LoadROM (file))
 		return -1;
 	S9xReset ();
@@ -467,7 +467,7 @@ int load_gamepak(char* file)
 	Settings.FrameTime = (Settings.PAL ? Settings.FrameTimePAL : Settings.FrameTimeNTSC);
 
 	Memory.LoadSRAM (S9xGetFilename (".srm"));
-	// mdelay(50); // Delete this delay
+	// ds2_mdelay(50); // Delete this delay
 	S9xLoadCheatFile (S9xGetFilename (".chb")); // cheat binary file, as opposed to text
 
 #ifdef _NETPLAY_SUPPORT
@@ -514,7 +514,7 @@ int load_gamepak(char* file)
     }
 */
 
-	// mdelay(50); // Delete this delay
+	// ds2_mdelay(50); // Delete this delay
 
 	return 0;
 }
@@ -1129,12 +1129,12 @@ unsigned int S9xReadJoypad (int which1)
 		ds2_setSupend();
 		do {
 			ds2_getrawInput(&inputdata);
-			mdelay(1);
+			ds2_mdelay(1);
 		} while (inputdata.key & KEY_LID);
 		ds2_wakeup();
 		// Before starting to emulate again, turn off the lower
 		// screen's backlight.
-		mdelay(100); // needed to avoid ds2_setBacklight crashing
+		ds2_mdelay(100); // needed to avoid ds2_setBacklight crashing
 		ds2_setBacklight(2);
 		set_cpu_clock(clock_speed_number);
 	}

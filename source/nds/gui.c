@@ -330,12 +330,12 @@ gui_action_type get_gui_input(void)
 		struct key_buf inputdata;
 		do {
 			ds2_getrawInput(&inputdata);
-			mdelay(1);
+			ds2_mdelay(1);
 		} while (inputdata.key & KEY_LID);
 		ds2_wakeup();
 		// In the menu, the lower screen's backlight needs to be on,
 		// and it is on right away after resuming from suspend.
-		// mdelay(100); // needed to avoid ds2_setBacklight crashing
+		// ds2_mdelay(100); // needed to avoid ds2_setBacklight crashing
 		// ds2_setBacklight(3);
 	}
 
@@ -1198,7 +1198,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 
 		ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
-		mdelay(20);			//about 50ms
+		ds2_mdelay(20);			//about 50ms
 	} //end while(repeat)
 
 	unsigned int i;
@@ -1424,7 +1424,7 @@ u32 play_screen_snapshot(void)
             }
 
 			if(gui_action != CURSOR_BACK)
-				mdelay(100);
+				ds2_mdelay(100);
             if(!pause)
                 ticks ++;
         }
@@ -2096,7 +2096,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 				SavedStateCacheInvalidate ();
 
-				mdelay(500); // let the progress message linger
+				ds2_mdelay(500); // let the progress message linger
 			}
 		}
 	}
@@ -2132,7 +2132,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					if(gui_action == CURSOR_SELECT)
 						wait_Anykey_press(0);
 					else
-						mdelay(1000);
+						ds2_mdelay(1000);
 					return;
 				}
 
@@ -2155,7 +2155,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					else
 					{
 						draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_LOAD_FAILED]);
-						mdelay(500); // let the failure show
+						ds2_mdelay(500); // let the failure show
 					}
 				}
 				else	//load screen snapshot
@@ -2219,7 +2219,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
 					draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY]);
 					ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
-					mdelay(500);
+					ds2_mdelay(500);
 				}
 			}
 			else if(current_option_num == 2)    //delette single
@@ -2240,7 +2240,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY]);
 					ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
-					mdelay(500);
+					ds2_mdelay(500);
 				}
 			}
 		}
@@ -2618,13 +2618,13 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
                 else
                     draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_PROGRESS_SCREENSHOT_CREATION_FAILED]);
                 ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
-				mdelay(500);
+				ds2_mdelay(500);
             }
             else
             {
                 draw_string_vcenter(down_screen_addr, 36, 90, 190, COLOR_MSSG, msg[MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT]);
                 ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
-				mdelay(500);
+				ds2_mdelay(500);
             }
         }
     }
@@ -2705,7 +2705,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
             draw_string_vcenter(up_screen_addr, 0, 80, 256, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_GAME_LOADED]);
 			ds2_flipScreen(UP_SCREEN, 1);
 
-			// mdelay(500); // Delete this delay
+			// ds2_mdelay(500); // Delete this delay
         }
     }
 
@@ -3578,7 +3578,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	ds2_setCPULevel(0);
 	if (!FirstInvocation)
 	{ // assume that the backlight is already at 3 when the emulator starts
-		mdelay(100); // to prevent ds2_setBacklight() from crashing
+		ds2_mdelay(100); // to prevent ds2_setBacklight() from crashing
 		ds2_setBacklight(3);
 	}
 	
@@ -4100,7 +4100,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 	wait_Allkey_release(0);
 
-	mdelay(100); // to prevent ds2_setBacklight() from crashing
+	ds2_mdelay(100); // to prevent ds2_setBacklight() from crashing
 	ds2_setBacklight(2);
 
 	set_cpu_clock(clock_speed_number);

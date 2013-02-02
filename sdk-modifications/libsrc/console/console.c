@@ -457,7 +457,7 @@ cprintf("switch to another screen\n");
 			default: break;
 		}
 
-		mdelay(20);
+		ds2_mdelay(20);
 	} while(key != KEY_Y);
 
 cprintf("exit console mode\n");
