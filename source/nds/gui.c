@@ -2762,7 +2762,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
         }
     }
 
+#ifndef DISABLE_FREE_SPACE
 	unsigned int freespace;
+#endif
     void show_card_space ()
     {
         u32 line_num;
@@ -2772,6 +2774,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
         line_num= display_option-> line_number;
         PRINT_STRING_BG(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, 27,
             40 + (display_option->line_number)*27);
+#ifndef DISABLE_FREE_SPACE
 
 		num_byte = freespace;
 
@@ -2801,6 +2804,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
             else
                 strcat(line_buffer, ".0 GB");
         }
+#else
+	sprintf(line_buffer, "???");
+#endif
 
         PRINT_STRING_BG(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, 147,
             40 + (display_option->line_number)*27);
@@ -3549,11 +3555,13 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
     void others_menu_init()
     {
+#ifndef DISABLE_FREE_SPACE
 		unsigned int total, used;
 
 		//get card space info
 		freespace = 0;
 		fat_getDiskSpaceInfo("fat:", &total, &used, &freespace);
+#endif
     }
 
 	void choose_menu(MENU_TYPE *new_menu)
