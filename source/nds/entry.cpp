@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #include "ds2_types.h"
-#include "ds2_cpu.h"
+#include "ds2_cpuclock.h"
 #include "ds2_timer.h"
 #include "ds2io.h"
 #include "fs_api.h"
@@ -86,7 +86,7 @@ void S9xParseDisplayArg (char **argv, int &ind, int)
 
 void S9xExit ()
 {
-  ds2_setCPUclocklevel(13); // Crank it up to exit quickly
+  ds2_setCPULevel(13); // Crank it up to exit quickly (394 MHz, nominal)
   if(Settings.SPC7110)
     (*CleanUp7110)();
 
@@ -1125,7 +1125,7 @@ unsigned int S9xReadJoypad (int which1)
 
 	if (inputdata.key & KEY_LID)
 	{
-		ds2_setCPUclocklevel(0);
+		ds2_setCPULevel(0);
 		ds2_setSupend();
 		do {
 			ds2_getrawInput(&inputdata);

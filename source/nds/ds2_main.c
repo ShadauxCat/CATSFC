@@ -21,7 +21,7 @@
 #include "console.h"
 #include "fs_api.h"
 #include "ds2io.h"
-#include "ds2_cpu.h"
+#include "ds2_cpuclock.h"
 #include "ds2_timer.h"
 #include "ds2_malloc.h"
 #include "ds2sound.h"
@@ -47,7 +47,7 @@ void ddump_mem(unsigned char* addr, unsigned int len)
 void ds2_main(void)
 {
 	int err;
-	ds2_setCPUclocklevel(13);
+	ds2_setCPULevel(13); // 394 MHz, nominal
 	//Initial video and audio and other input and output
 	err = ds2io_initb(DS2_BUFFER_SIZE, SND_SAMPLE_RATE, 0, 0);
 	if(err) goto _failure;
