@@ -86,6 +86,24 @@ It is recommended to start with frame skipping 4 (Show 1 frame every 5) and
 go to 3 or 2 if the game doesn't run with major slowdowns with them. If you
 don't like the slowdowns, return to frame skipping 4 or -.
 
+# Fluidity
+
+Fluidity is an option you can find under the Video & audio menu in a game.
+By default, video fluidity is preferred over audio fluidity in games.
+
+* Preferring video fluidity makes audio skip certain notes, up to
+  23 milliseconds, in order to render more video. In many games, this
+  difference is not audible.
+  Use this option if you want to play games that require precise controls or
+  fluid imagery more than precise audio emulation. You can also use this option
+  when watching game introductions, endings and cutscenes.
+* Preferring audio fluidity makes video skip certain images, up to
+  166 milliseconds, in order to render audio closer to 32,000 times per second.
+  Use this option if you want to play games mainly for their soundtracks, or in
+  a game's sound test mode. You can also use this option to experiment with the
+  green berry glitch in Super Mario World that makes TIME go over and under 100
+  units constantly and makes the music play very fast.
+
 # Hotkeys
 
 You can set buttons to press to perform certain actions. For each action,

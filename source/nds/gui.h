@@ -59,7 +59,8 @@ struct _GAME_CONFIG
 	u32 HotkeyReturnToMenu;
 	u32 HotkeyTemporaryFastForward;
 	u32 HotkeyToggleSound;
-	u32  Reserved2[45];
+	u32 SoundSync;
+	u32  Reserved2[44];
 };
 
 typedef enum
@@ -127,6 +128,7 @@ extern void gui_init(u32 lang_id);
 extern u32 menu(u16 *original_screen, bool8 FirstInvocation);
 extern void game_disableAudio();
 extern void game_set_frameskip();
+extern void game_set_fluidity();
 extern void set_cpu_clock(u32 num);
 extern int load_language_msg(char *filename, u32 language);
 

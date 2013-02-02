@@ -33,6 +33,12 @@ Tools
 Options
 #MSG_MAIN_MENU_EXIT
 Exit
+#FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
+Fluidity                %s
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
+Prefer fluid video
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
+Prefer fluid audio
 #FMT_VIDEO_ASPECT_RATIO
 Aspect ratio       %s
 #FMT_VIDEO_FAST_FORWARD
@@ -40,7 +46,7 @@ Fast-forward     %s
 #FMT_VIDEO_FRAME_SKIPPING
 Frame skipping    %s
 #FMT_AUDIO_SOUND
-Sound                 %s
+Sound                  %s
 #FMT_SAVED_STATE_CREATE
 Create saved state      %d
 #FMT_SAVED_STATE_LOAD
@@ -227,6 +233,12 @@ STARTCHINESESIM
 综合设置
 #MSG_MAIN_MENU_EXIT
 退出模拟器
+#FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
+Fluidity                     %s
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
+Prefer fluid video
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
+Prefer fluid audio
 #FMT_VIDEO_ASPECT_RATIO
 画面                         %s
 #FMT_VIDEO_FAST_FORWARD
@@ -421,8 +433,14 @@ Outils
 Options
 #MSG_MAIN_MENU_EXIT
 Quitter
+#FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
+Fluidité                   %s
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
+Préférer la vidéo fluide
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
+Préférer l'audio fluide
 #FMT_VIDEO_ASPECT_RATIO
-Format d'image      %s
+Format d'image     %s
 #FMT_VIDEO_FAST_FORWARD
 Avance rapide       %s
 #FMT_VIDEO_FRAME_SKIPPING

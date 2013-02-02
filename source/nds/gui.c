@@ -2814,6 +2814,8 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     
     char *frameskip_options[] = { (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_0], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_1], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_2], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_3], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_4], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_5], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_6], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_7], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_8], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_9], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_10] };
 
+    char *fluidity_options[] = { (char*)&msg[MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO], (char*)&msg[MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO] };
+
     char *on_off_options[] = { (char*)&msg[MSG_GENERAL_OFF], (char*)&msg[MSG_GENERAL_ON] };
 
     char *sound_seletion[] = { (char*)&msg[MSG_AUDIO_MUTED], (char*)&msg[MSG_AUDIO_ENABLED] };
@@ -2838,8 +2840,11 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	/* 03 */	STRING_SELECTION_OPTION(game_disableAudio, NULL, &msg[FMT_AUDIO_SOUND], sound_seletion,
 		&game_enable_audio, 2, NULL, ACTION_TYPE, 3),
 		
-	/* 04 */	STRING_SELECTION_OPTION(game_set_frameskip, NULL, &msg[FMT_VIDEO_FRAME_SKIPPING], frameskip_options,
-		&game_config.frameskip_value, 12 /* auto (0) and 0..10 (1..11) make 12 option values */, NULL, ACTION_TYPE, 4)
+	/* 04 */	STRING_SELECTION_OPTION(game_set_fluidity, NULL, &msg[FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE], fluidity_options,
+		&game_config.SoundSync, 2, NULL, ACTION_TYPE, 4),
+		
+	/* 05 */	STRING_SELECTION_OPTION(game_set_frameskip, NULL, &msg[FMT_VIDEO_FRAME_SKIPPING], frameskip_options,
+		&game_config.frameskip_value, 12 /* auto (0) and 0..10 (1..11) make 12 option values */, NULL, ACTION_TYPE, 5)
 	};
 
 	MAKE_MENU(graphics, NULL, NULL, NULL, NULL, 0, 0);
@@ -4253,6 +4258,7 @@ void init_game_config(void)
 	clock_speed_number = 5;
 	game_config.graphic = 3; // By default, have a good-looking aspect ratio
 	game_config.frameskip_value = 0; // Automatic frame skipping
+	game_config.SoundSync = 0; // Prefer fluid images by default
 
 	game_config.backward = 0;	//time backward disable
 	game_config.backward_time = 2;	//time backward granularity 1s
@@ -4306,7 +4312,8 @@ void load_game_config_file(void)
 		fread(&game_config, 1, sizeof(GAME_CONFIG), fp);
 
 		clock_speed_number = game_config.clock_speed_number;
-		Settings.SkipFrames = (game_config.frameskip_value == 0 ? AUTO_FRAMERATE : game_config.frameskip_value - 1 /* 1 -> 0 and so on */);
+		game_set_frameskip();
+		game_set_fluidity();
 	}
 
 	fclose(fp);

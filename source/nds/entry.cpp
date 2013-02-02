@@ -350,6 +350,18 @@ void game_set_frameskip()
 		Settings.SkipFrames = game_config.frameskip_value - 1 /* 1 -> 0 and so on */;
 	}
 }
+
+void game_set_fluidity()
+{
+	if( game_config.SoundSync == 1)
+	{
+		Settings.SoundSync = TRUE;
+	}
+	else
+	{
+		Settings.SoundSync = FALSE;
+	}
+}
 	
 void init_sfc_setting(void)
 {
