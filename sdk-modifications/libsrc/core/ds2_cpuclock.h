@@ -10,8 +10,8 @@ extern "C" {
 
 extern int ds2_getCPUClock(void);
 extern int ds2_setCPULevel(unsigned int level);
-extern void udelayOC(unsigned int usec);
-extern void mdelayOC(unsigned int msec);
+extern void ds2_udelay(unsigned int usec);
+extern void ds2_mdelay(unsigned int msec);
 
 //#define ds2_setCPUclocklevel ds2_setCPULevel
 
