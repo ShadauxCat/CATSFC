@@ -1666,7 +1666,7 @@ void GameFrequencyCPU()
 	u32 clock_speed_table[6] = {6, 9, 10, 11, 12, 13};	//240, 300, 336, 360, 384, 396
 
 	if(clock_speed_number <= 5)
-		ds2_setCPULevel(clock_speed_table[clock_speed_number]);
+		ds2_setCPUclocklevel(clock_speed_table[clock_speed_number]);
 }
 
 void savefast_int(void)
