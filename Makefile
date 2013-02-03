@@ -35,7 +35,7 @@ C_SOURCES   = source/unzip/explode.c source/unzip/unreduce.c \
               source/unzip/unshrink.c source/unzip/unzip.c \
               source/nds/bdf_font.c source/nds/bitmap.c \
               source/nds/draw.c source/nds/ds2_main.c source/nds/gcheat.c \
-              source/nds/gui.c
+              source/nds/gui.c source/nds/dma_adj.c
 CPP_SOURCES = source/apu.cpp source/apudebug.cpp source/c4.cpp \
               source/c4emu.cpp source/cheats2.cpp source/cheats.cpp \
               source/clip.cpp source/cpu.cpp source/cpuexec.cpp \
@@ -70,7 +70,8 @@ DEFS   := -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
           -DVAR_CYCLES -DCPU_SHUTDOWN -DSPC700_SHUTDOWN \
           -DNO_INLINE_SET_GET -DNOASM -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t' \
           -DUNZIP_SUPPORT -DFOREVER_16_BIT_SOUND -DFOREVER_STEREO \
-          -DFOREVER_FORWARD_STEREO -DNO_VOLATILE_SOUND -DSYNC_JOYPAD_AT_HBLANK
+          -DFOREVER_FORWARD_STEREO -DNO_VOLATILE_SOUND \
+          -DSYNC_JOYPAD_AT_HBLANK -DDS2_DMA
 
 .PHONY: clean makedirs
 .SUFFIXES: .elf .dat .plg

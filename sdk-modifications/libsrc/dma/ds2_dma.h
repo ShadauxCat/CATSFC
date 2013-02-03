@@ -1,6 +1,10 @@
 #ifndef __DMA_H__
 #define __DMA_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //register a DMA transfer request
 //ch: channel id request, there are 6 channles, 
 //irq_handler: the DMA interruption handle
@@ -41,6 +45,10 @@ extern int dma_copy16Bit(int ch, void *dest, void *src, unsigned int size);
 extern int dma_isBusy(int ch);
 extern int dma_isFree(int ch);
 extern int dma_getFree(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //__DMA_H__
 

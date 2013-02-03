@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "dma.h"
+#include "ds2_dma.h"
 #include "ds2_types.h"
 
 #define MAX_DMA_NUM 6  /* max 6 channels */

@@ -23,6 +23,11 @@
 #include "entry.h"
 #include "ds2sound.h"
 
+#ifdef DS2_DMA
+#include "ds2_dma.h"
+#include "dma_adj.h"
+#endif
+
 void S9xProcessSound (unsigned int);
 
 char *rom_filename = NULL;
@@ -58,7 +63,11 @@ void S9xExtraUsage ()
 */
 void S9xDeinitDisplay (void)
 {
+#ifdef DS2_DMA
+    if(GFX.Screen) AlignedFree(GFX.Screen, PtrAdj.GFXScreen);
+#else
     if(GFX.Screen) free(GFX.Screen);
+#endif
     if(GFX.SubScreen) free(GFX.SubScreen);
     if(GFX.ZBuffer) free(GFX.ZBuffer);
     if(GFX.SubZBuffer) free(GFX.SubZBuffer);
@@ -69,7 +78,11 @@ void S9xInitDisplay (int, char **)
     int h = IMAGE_HEIGHT;
 
 	GFX.Pitch = IMAGE_WIDTH * 2;
+#ifdef DS2_DMA
+	GFX.Screen =    (unsigned char*) AlignedMalloc (GFX.Pitch * h, 32, &PtrAdj.GFXScreen);
+#else
 	GFX.Screen =	(unsigned char*) malloc (GFX.Pitch * h);
+#endif
 	GFX.SubScreen = (unsigned char*) malloc (GFX.Pitch * h);
 	GFX.ZBuffer = 	(unsigned char*) malloc ((GFX.Pitch >> 1) * h);
 	GFX.SubZBuffer =(unsigned char*) malloc ((GFX.Pitch >> 1) * h);
@@ -130,17 +143,35 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 	{
 		//Up
 		case 1:
+#ifdef DS2_DMA
+			dma_copy32Byte(5 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 32 * 2, 256 * 192 * 2);
+			dma_wait_finish(5);
+			dma_stop(5);
+#else
 		    memcpy(up_screen_addr, GFX.Screen+256*32*2, 256*192*2);
+#endif
 			break;
 
 		//Down
 		case 2:
+#ifdef DS2_DMA
+			dma_copy32Byte(5 /* channel: graphics */, up_screen_addr, GFX.Screen, 256 * 192 * 2);
+			dma_wait_finish(5);
+			dma_stop(5);
+#else
 		    memcpy(up_screen_addr, GFX.Screen, 256*192*2);
+#endif
 			break;
 
 		//Both
 		case 3:
+#ifdef DS2_DMA
+			dma_copy32Byte(5 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 16 * 2, 256 * 192 * 2);
+			dma_wait_finish(5);
+			dma_stop(5);
+#else
 		    memcpy(up_screen_addr, GFX.Screen+256*16*2, 256*192*2);
+#endif
 			break;
 			
 		case 4:
@@ -157,7 +188,13 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 			dst = (unsigned char*)up_screen_addr;
 			for(m = 0; m < 32; m++)
 			{
+#ifdef DS2_DMA
+				dma_copy32Byte(5 /* channel: graphics */, dst, src, 256 * 6 * 2);
+				dma_wait_finish(5);
+				dma_stop(5);
+#else
 				memcpy(dst, src, 256*6*2);
+#endif
 				dst += 256*6*2;
 				src += 256*7*2;
 			}
