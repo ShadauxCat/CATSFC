@@ -982,27 +982,8 @@ void S9xProcessSound (unsigned int)
 		if (Now - LastSoundEmissionTime >= 11719 /* 500 milliseconds */)
 		{
 			LastSoundEmissionTime = Now;
-			// We were probably paused. Restart sending sound with an
-			// empty buffer.
-			do {
-				audiobuff = (unsigned short*)ds2_getAudiobuff();
-			} while (audiobuff == NULL); //There are audio queue in sending or wait to send
-
-			memset(audiobuff, 0, DS2_BUFFER_SIZE
-#ifndef FOREVER_STEREO
-				<< (so.stereo ? 1 : 0)
-#else
-				<< 1
-#endif
-#ifndef FOREVER_16_BIT_SOUND
-				<< (so.sixteen_bit ? 1 : 0)
-#else
-				<< 1
-#endif
-			);
-
-			ds2_updateAudio();
-			// And then the real audio. (fall through)
+			// We were probably paused. Restart sending sound,
+			// synchronising from now.
 		}
 		else
 		{
