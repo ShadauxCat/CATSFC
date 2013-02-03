@@ -23,6 +23,10 @@
 #include "entry.h"
 #include "ds2sound.h"
 
+#ifdef DS2_DMA
+#include "ds2_dma.h"
+#endif
+
 void S9xProcessSound (unsigned int);
 
 char *rom_filename = NULL;
@@ -130,17 +134,35 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 	{
 		//Up
 		case 1:
+#ifdef DS2_DMA
+			ds2_DMAcopy_32Byte(1 /* channel */, up_screen_addr, GFX.Screen + 256 * 32 * 2, 256 * 192 * 2);
+			ds2_DMA_wait(1);
+			ds2_DMA_stop(1);
+#else
 		    memcpy(up_screen_addr, GFX.Screen+256*32*2, 256*192*2);
+#endif
 			break;
 
 		//Down
 		case 2:
+#ifdef DS2_DMA
+			ds2_DMAcopy_32Byte(1 /* channel */, up_screen_addr, GFX.Screen, 256 * 192 * 2);
+			ds2_DMA_wait(1);
+			ds2_DMA_stop(1);
+#else
 		    memcpy(up_screen_addr, GFX.Screen, 256*192*2);
+#endif
 			break;
 
 		//Both
 		case 3:
+#ifdef DS2_DMA
+			ds2_DMAcopy_32Byte(1 /* channel */, up_screen_addr, GFX.Screen + 256 * 16 * 2, 256 * 192 * 2);
+			ds2_DMA_wait(1);
+			ds2_DMA_stop(1);
+#else
 		    memcpy(up_screen_addr, GFX.Screen+256*16*2, 256*192*2);
+#endif
 			break;
 			
 		case 4:
@@ -157,7 +179,13 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 			dst = (unsigned char*)up_screen_addr;
 			for(m = 0; m < 32; m++)
 			{
+#ifdef DS2_DMA
+				ds2_DMAcopy_32Byte(1 /* channel */, dst, src, 256 * 6 * 2);
+				ds2_DMA_wait(1);
+				ds2_DMA_stop(1);
+#else
 				memcpy(dst, src, 256*6*2);
+#endif
 				dst += 256*6*2;
 				src += 256*7*2;
 			}

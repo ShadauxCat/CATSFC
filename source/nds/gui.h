@@ -24,7 +24,12 @@
 #include "fs_api.h"
 #include "gcheat.h"
 
+#ifdef DS2_DMA
+#define UP_SCREEN_UPDATE_METHOD   1
+#else
 #define UP_SCREEN_UPDATE_METHOD   0
+#endif
+
 #define DOWN_SCREEN_UPDATE_METHOD 2
 
 #define MAX_GAMEPAD_MAP 16
