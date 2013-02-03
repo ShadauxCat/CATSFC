@@ -144,6 +144,7 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		//Up
 		case 1:
 #ifdef DS2_DMA
+			__dcache_writeback_all();
 			dma_copy32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 32 * 2, 256 * 192 * 2);
 			dma_wait_finish(1);
 			dma_stop(1);
@@ -155,6 +156,7 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		//Down
 		case 2:
 #ifdef DS2_DMA
+			__dcache_writeback_all();
 			dma_copy32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen, 256 * 192 * 2);
 			dma_wait_finish(1);
 			dma_stop(1);
@@ -166,6 +168,7 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		//Both
 		case 3:
 #ifdef DS2_DMA
+			__dcache_writeback_all();
 			dma_copy32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 16 * 2, 256 * 192 * 2);
 			dma_wait_finish(1);
 			dma_stop(1);
@@ -181,8 +184,11 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 
 		default:
 		{
-			unsigned char *src, *dst;
-			unsigned int m;
+#ifdef DS2_DMA
+			__dcache_writeback_all();
+#endif
+			register unsigned char *src, *dst;
+			register unsigned int m;
 
 			src = GFX.Screen;
 			dst = (unsigned char*)up_screen_addr;
