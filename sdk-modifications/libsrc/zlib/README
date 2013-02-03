@@ -1,0 +1,1 @@
+This is a modified source release of zlib. zconf.h removes a reference to sys/types.h, which creates type conflicts on the DS2 SDK. For a pristine source release of zlib, please visit <http://zlib.net/>.

@@ -27,6 +27,18 @@ MIPS compiler (`gcc`), extract it to `/opt/ds2sdk`, follow the instructions,
 then download version 1.2 of the DS2 SDK and extract its files into
 `opt/ds2sdk`, overwriting version 0.13.
 
+Additionally, you will need to add the updated `zlib`, DMA
+(Direct Memory Access) and filesystem access routines provided by BassAceGold
+and recompile `libds2a.a`. To do this:
+
+> sudo rm -r /opt/ds2sdk/libsrc/{console,dma,fs,key,zlib,Makefile} /opt/ds2sdk/include
+> sudo cp -r sdk-modifications/{libsrc,include} /opt/ds2sdk
+> sudo chmod -R 600 /opt/ds2sdk/{libsrc,include}
+> sudo chmod -R a+rX /opt/ds2sdk/{libsrc,include}
+> cd /opt/ds2sdk/libsrc
+> sudo rm libds2a.a ../lib/libds2a.a
+> sudo make
+
 ## The MIPS compiler (`gcc`)
 You also need the MIPS compiler from the DS2 SDK.
 The Makefile expects it at `/opt/mipsel-4.1.2-nopic`, but you can move it
