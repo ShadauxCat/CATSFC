@@ -97,6 +97,9 @@ void S9xGraphicsMode ();
 char *S9xParseArgs (char **argv, int argc);
 void S9xParseArg (char **argv, int &index, int argc);
 void S9xExtraUsage ();
+#ifdef ACCUMULATE_JOYPAD
+void NDSSFCAccumulateJoypad ();
+#endif
 uint32 S9xReadJoypad (int which1_0_to_4);
 bool8 S9xReadMousePosition (int which1_0_to_1, int &x, int &y, uint32 &buttons);
 bool8 S9xReadSuperScopePosition (int &x, int &y, uint32 &buttons);

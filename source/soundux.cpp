@@ -1233,6 +1233,15 @@ static inline void MixMono (int sample_count)
 		
 		for (uint32 I = 0; I < (uint32) sample_count; I++)
 		{
+#ifdef ACCUMULATE_JOYPAD
+/*
+ * This call allows NDSSFC to synchronise the DS controller more often.
+ * If porting a later version of Snes9x into NDSSFC, it is essential to
+ * preserve it.
+ */
+			if ((I & 0x7F) == 0x7F)
+				NDSSFCAccumulateJoypad ();
+#endif
 			unsigned long freq = freq0;
 			
 			if (mod)
