@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "ds2_types.h"
+#include "ds2_cpu.h"
 #include "ds2_cpuclock.h"
 #include "ds2_timer.h"
 #include "ds2io.h"
