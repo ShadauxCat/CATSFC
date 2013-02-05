@@ -31,10 +31,10 @@ Additionally, you will need to add the updated `zlib`, DMA
 (Direct Memory Access) and filesystem access routines provided by BassAceGold
 and recompile `libds2a.a`. To do this:
 
-> sudo rm -r /opt/ds2sdk/libsrc/{console,core,fs,key,zlib,Makefile}
-> sudo cp -r sdk-modifications/libsrc /opt/ds2sdk
-> sudo chmod -R 600 /opt/ds2sdk/libsrc
-> sudo chmod -R a+rX /opt/ds2sdk/libsrc
+> sudo rm -r /opt/ds2sdk/libsrc/{console,core,fs,key,zlib,Makefile} /opt/ds2sdk/include
+> sudo cp -r sdk-modifications/{libsrc,include} /opt/ds2sdk
+> sudo chmod -R 600 /opt/ds2sdk/{libsrc,include}
+> sudo chmod -R a+rX /opt/ds2sdk/{libsrc,include}
 > cd /opt/ds2sdk/libsrc
 > sudo rm libds2a.a ../lib/libds2a.a
 > sudo make

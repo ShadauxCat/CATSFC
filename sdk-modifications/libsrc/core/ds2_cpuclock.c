@@ -192,7 +192,7 @@ static void detect_clockNew(void){
 //udelay overclock
 void ds2_udelay(unsigned int usec)
 {
-    /*unsigned int i = usec * (_iclk / 2000000);
+    unsigned int i = usec * (_iclk / 2000000);
 
     __asm__ __volatile__ (
         "\t.set noreorder\n"
@@ -202,17 +202,17 @@ void ds2_udelay(unsigned int usec)
         ".set reorder\n"
         : "=r" (i)
         : "0" (i)
-    );*/
+    );
 }
 
 //mdelay overclock
 void ds2_mdelay(unsigned int msec)
 {
-    /*int i;
+    int i;
     for(i=0;i<msec;i++)
     {
         ds2_udelay(1000);
-    }*/
+    }
 }
 
 
