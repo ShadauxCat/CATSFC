@@ -54,14 +54,16 @@ int getDirSize( const char * path, int includeSubdirs, unsigned int * dirSize )
     if( strlen(dirPath) > MAX_FILENAME_LENGTH )
         return false;
 
-    DIR_STATE_STRUCT *dir;	dir = fat_opendir((const char*)dirPath);
+    DIR_STATE_STRUCT *dir;
+	dir = fat_opendir((const char*)dirPath);
     if (dir == NULL)
-        return false;    
+        return false;
+    
     struct stat stat_buf;
 	DIR_ENTRY *currentEntry;
     char* filename;
 
-	while(fat_readdir_ex(dir, &stat_buf) != NULL)
+	while((currentEntry = fat_readdir_ex(dir, &stat_buf)) != NULL)
 	{
 		filename = currentEntry->d_name;
 

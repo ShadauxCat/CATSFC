@@ -399,8 +399,8 @@ typedef uLong FAR uLongf;
 #ifdef STDC
 #  ifndef Z_SOLO
 // #    include <sys/types.h>      /* for off_t */
-// Does not work with the DS2 SDK. There is a type conflict between sys/types.h
-// and fs_api.h.
+// Doesn't work on the DS2 SDK, because there are type conflicts between
+// sys/types.h and the filesystem API.//#    include <sys/types.h>      /* for off_t */
 #  endif
 #endif
 

@@ -145,9 +145,9 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		case 1:
 #ifdef DS2_DMA
 			__dcache_writeback_all();
-			dma_copy32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 32 * 2, 256 * 192 * 2);
-			dma_wait_finish(1);
-			dma_stop(1);
+			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 32 * 2, 256 * 192 * 2);
+			ds2_DMA_wait(1);
+			ds2_DMA_stop(1);
 #else
 		    memcpy(up_screen_addr, GFX.Screen+256*32*2, 256*192*2);
 #endif
@@ -157,9 +157,9 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		case 2:
 #ifdef DS2_DMA
 			__dcache_writeback_all();
-			dma_copy32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen, 256 * 192 * 2);
-			dma_wait_finish(1);
-			dma_stop(1);
+			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen, 256 * 192 * 2);
+			ds2_DMA_wait(1);
+			ds2_DMA_stop(1);
 #else
 		    memcpy(up_screen_addr, GFX.Screen, 256*192*2);
 #endif
@@ -169,9 +169,9 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		case 3:
 #ifdef DS2_DMA
 			__dcache_writeback_all();
-			dma_copy32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 16 * 2, 256 * 192 * 2);
-			dma_wait_finish(1);
-			dma_stop(1);
+			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 16 * 2, 256 * 192 * 2);
+			ds2_DMA_wait(1);
+			ds2_DMA_stop(1);
 #else
 		    memcpy(up_screen_addr, GFX.Screen+256*16*2, 256*192*2);
 #endif
@@ -195,9 +195,9 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 			for(m = 0; m < 32; m++)
 			{
 #ifdef DS2_DMA
-				dma_copy32Byte(1 /* channel: graphics */, dst, src, 256 * 6 * 2);
-				dma_wait_finish(1);
-				dma_stop(1);
+				ds2_DMAcopy_32Byte(1 /* channel: graphics */, dst, src, 256 * 6 * 2);
+				ds2_DMA_wait(1);
+				ds2_DMA_stop(1);
 #else
 				memcpy(dst, src, 256*6*2);
 #endif
@@ -987,7 +987,7 @@ void S9xProcessSound (unsigned int)
 	unsigned int Now = getSysTime();
 	if (Now - LastSoundEmissionTime >= SOUND_EMISSION_INTERVAL)
 	{
-		if(ds2_checkAudiobuff() > AUDIO_BUFFER_COUNT * 3/4)
+		if(ds2_checkAudiobuff() > 4)
 		{
 			LastSoundEmissionTime++;
 			return;

@@ -13,7 +13,7 @@ CONSOLE_DIR = $(TOPDIR)/console
 FS_DIR = $(TOPDIR)/fs
 KEY_DIR = $(TOPDIR)/key
 ZLIB_DIR = $(TOPDIR)/zlib
-DMA_DIR = $(TOPDIR)/dma
+CORE_DIR = $(TOPDIR)/core
 
 SRC :=
 
@@ -24,14 +24,17 @@ INCLUDES := -I../include
 INC := $(INCLUDES)
 
 CFLAGS := -mips32 -O3 -mno-abicalls -fno-pic -fno-builtin \
-	   -fno-exceptions -ffunction-sections -mlong-calls\
-	   -fomit-frame-pointer -msoft-float -G 4
-
+	   -fno-exceptions -ffunction-sections -mno-long-calls\
+	   -fomit-frame-pointer -msoft-float -G 4 \
+	   -fgcse-sm -fgcse-las -fgcse-after-reload \
+       -fweb -fpeel-loops
+		  
+		  
 include $(CONSOLE_DIR)/console.mk
 include $(FS_DIR)/fs.mk
 include $(KEY_DIR)/key.mk
 include $(ZLIB_DIR)/zlib.mk
-include $(DMA_DIR)/dma.mk
+include $(CORE_DIR)/core.mk
 
 #OBJS	:= $(addsuffix .o , $(basename $(notdir $(SRC))))
 #SOBJS	:= $(addsuffix .o , $(basename $(notdir $(SSRC))))

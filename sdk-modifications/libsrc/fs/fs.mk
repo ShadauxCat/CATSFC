@@ -14,7 +14,7 @@ SRC += $(FS_DIR)/cache.c	\
 		$(FS_DIR)/disc_io/disc.c	\
 		$(FS_DIR)/disc_io/io_ds2_mmcf.c	\
         $(FS_DIR)/ds2_fcntl.c	\
-        $(FS_DIR)/ds2_unistd.c	\
+        $(FS_DIR)/ds2_unistd.c
 
 SSRC +=
 

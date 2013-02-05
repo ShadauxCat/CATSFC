@@ -7,12 +7,14 @@ FS_DIR       = $(DS2SDKPATH)/libsrc/fs
 CONSOLE_DIR  = $(DS2SDKPATH)/libsrc/console
 KEY_DIR      = $(DS2SDKPATH)/libsrc/key
 ZLIB_DIR     = $(DS2SDKPATH)/libsrc/zlib
+CORE_DIR     = $(DS2SDKPATH)/libsrc/core
 
 LIBS        := $(DS2SDKPATH)/lib/libds2b.a -lc -lm -lgcc
 EXTLIBS     := $(DS2SDKPATH)/lib/libds2a.a
 
 INCLUDE     := -Isource -Isource/unzip -Isource/nds -I$(DS2SDKPATH)/include \
-               -I$(FS_DIR) -I$(CONSOLE_DIR) -I$(KEY_DIR) -I$(ZLIB_DIR)
+               -I$(FS_DIR) -I$(CONSOLE_DIR) -I$(KEY_DIR) -I$(ZLIB_DIR) \
+               -I$(CORE_DIR)
 
 LINK_SPEC   := $(DS2SDKPATH)/specs/link.xn
 START_ASM   := $(DS2SDKPATH)/specs/start.S
