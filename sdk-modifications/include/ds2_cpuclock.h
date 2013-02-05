@@ -13,7 +13,6 @@ extern int ds2_setCPULevel(unsigned int level);
 extern void ds2_udelay(unsigned int usec);
 extern void ds2_mdelay(unsigned int msec);
 
-//#define ds2_setCPUclocklevel ds2_setCPULevel
 
 #ifdef __cplusplus
 }

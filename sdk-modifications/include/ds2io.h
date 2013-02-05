@@ -8,7 +8,7 @@
 #define SCREEN_WIDTH	256
 #define SCREEN_HEIGHT	192
 
-#define	AUDIO_BUFFER_COUNT 16
+#define	AUDIO_BUFFER_COUNT 4 // in 1.2, that's 4, but in 0.13 it would be 16 [Neb]
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,7 +61,7 @@ struct rtc{
     volatile unsigned char seconds;		//0 to 59
 };
 
-struct key_buf 
+struct key_buf
 {
     unsigned short key;
     unsigned short x;
@@ -93,7 +93,7 @@ extern unsigned int audio_samples_per_trans;
 /*
 *	Function: initialize ds2 I/O(DS2 Input and Output) layer
 *	audio_samples_lenght: ds2io layer's audio buffer length, it unit is	sample
-*		which is fixed 4(ds2io use stereo and 16-bit audio) bytes, 
+*		which is fixed 4(ds2io use stereo and 16-bit audio) bytes,
 *		audio_samples_lenght sholud be 128*n, 128 <= audio_samples_lenght <= 4096
 *	NOTE: the audio sampling frequence be fixed to 44.1KHz, 2 channels 16-bit
 */
@@ -102,7 +102,7 @@ extern int ds2io_init(int audio_samples_lenght);
 /*
 *	Function: initialize ds2 I/O(DS2 Input and Output) layer (b version)
 *	audio_samples_lenght: ds2io layer's audio buffer length, it unit is	sample
-*		which is fixed 4(ds2io use stereo and 16-bit audio) bytes, 
+*		which is fixed 4(ds2io use stereo and 16-bit audio) bytes,
 *		audio_samples_lenght sholud be 128*n, 128 <= audio_samples_lenght <= 4096
 *	audio_samples_freq: audio samples frequence, it should be among 44100, 22050,
 *			11025
@@ -116,7 +116,7 @@ extern int ds2io_initb(int audio_samples_lenght, int audio_samples_freq, int res
 /*
 *	Function: update video data from buffer to screen, the ds2io layer have 2 video
 *		buffers for up screen and 2 video buffers for down screen, everytime
-*		ds2_flipScreen is called, up_screen_addr and/or down_buffer_addr 
+*		ds2_flipScreen is called, up_screen_addr and/or down_buffer_addr
 *		point to the other buffer, but not always do so, see below.
 *	screen_num: UP_SCREEN, only update up screen
 *				DOWN_SCREEN, only update down screen
@@ -127,7 +127,7 @@ extern int ds2io_initb(int audio_samples_lenght, int audio_samples_freq, int res
 *			and/or down_buffer_addr pointer. it will not sure the graphic just
 *			updated will appear on the screen
 *		when done = 1, it will WAIT untill the other buffer idle and change
-*			the pointers and returns. the graphic just updated will appear on 
+*			the pointers and returns. the graphic just updated will appear on
 *			the screen, but please noting the word "WAIT"
 *		when done = 2, it will WAIT untill the other buffer idle, then return
 *			without change the pointers, it is convenient for GUI drawing
@@ -152,7 +152,7 @@ extern int ds2_checkAudiobuff(void);
 /*
 *	Function: get audio buffer address
 *	NOTE: ds2_getAudiobuff may return NULL, even if ds2_checkAudiobuff() < AUDIO_BUFFER_COUNT.
-*		The fact are that, AUDIO_BUFFER_COUNT audio buffers are on NDS, the ds2io layer using 
+*		The fact are that, AUDIO_BUFFER_COUNT audio buffers are on NDS, the ds2io layer using
 *		2 other buffers transfering data to the AUDIO_BUFFER_COUNT audio buffers alternately,
 *		this function checks the 2 buffers in ds2io layers whether are occupied,
 *		it will return the address of the idle buffer, else it return NULL

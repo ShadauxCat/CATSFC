@@ -75,28 +75,46 @@ Copy modes
 
 extern int _dmaCopy(int ch, void *dest, void *src, unsigned int size, unsigned int flags);
 
-//copy from 32 bit source to 32 bit dest
-//data must be 32 byte aligned
+/*
+ * Copy 'size' bytes from src to dest, in blocks of 32 bytes.
+ * size is in bytes and must be a multiple of 32.
+ * Both src and dest must be aligned to 32 bytes.
+ * Returns 0 on failure, non-zero on success.
+ */
 #define ds2_DMAcopy_32Byte(ch, dest, src, size)\
   _dmaCopy(ch, dest, src, size, DMA_MODECOPY | DMA_MODE32BYTE)
 
-//copy from 16 bit source to 16 bit dest
-//data must be 16 byte aligned
+/*
+ * Copy 'size' bytes from src to dest, in blocks of 16 bytes.
+ * size is in bytes and must be a multiple of 16.
+ * Both src and dest must be aligned to 16 bytes.
+ * Returns 0 on failure, non-zero on success.
+ */
 #define ds2_DMAcopy_16Byte(ch, dest, src, size)\
   _dmaCopy(ch, dest, src, size, DMA_MODECOPY | DMA_MODE16BYTE);
 
-//copy from 32 bit source to 32 bit dest
-//data must be 32 bit aligned
+/*
+ * Copy 'size' bytes from src to dest, in blocks of 32 bits (4 bytes).
+ * size is in bytes and must be a multiple of 4.
+ * Both src and dest must be aligned to 32 bits (4 bytes).
+ * Returns 0 on failure, non-zero on success.
+ */
 #define ds2_DMAcopy_32Bit(ch, dest, src, size)\
   _dmaCopy(ch, dest, src, size, DMA_MODECOPY | DMA_MODE32BIT);
 
-//copy from 16 bit source to 16 bit dest
-//data must be 16 bit aligned
+/*
+ * Copy 'size' bytes from src to dest, in blocks of 16 bits (2 bytes).
+ * size is in bytes and must be a multiple of 2.
+ * Both src and dest must be aligned to 16 bits (2 bytes).
+ * Returns 0 on failure, non-zero on success.
+ */
 #define ds2_DMAcopy_16Bit(ch, dest, src, size)\
   _dmaCopy(ch, dest, src, size, DMA_MODECOPY | DMA_MODE16BIT)
 
-//copy from 8 bit source to 8 bit dest
-//data must be 8 bit aligned
+/*
+ * Copy 'size' individual bytes (8 bits at a time) from src to dest.
+ * Returns 0 on failure, non-zero on success.
+ */
 #define ds2_DMAcopy_8Bit(ch, dest, src, size)\
   _dmaCopy(ch, dest, src, size, DMA_MODECOPY | DMA_MODE8BIT)
 

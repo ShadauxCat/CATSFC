@@ -7,12 +7,14 @@ FS_DIR       = $(DS2SDKPATH)/libsrc/fs
 CONSOLE_DIR  = $(DS2SDKPATH)/libsrc/console
 KEY_DIR      = $(DS2SDKPATH)/libsrc/key
 ZLIB_DIR     = $(DS2SDKPATH)/libsrc/zlib
+CORE_DIR     = $(DS2SDKPATH)/libsrc/core
 
 LIBS        := $(DS2SDKPATH)/lib/libds2b.a -lc -lm -lgcc
 EXTLIBS     := $(DS2SDKPATH)/lib/libds2a.a
 
 INCLUDE     := -Isource -Isource/unzip -Isource/nds -I$(DS2SDKPATH)/include \
-               -I$(FS_DIR) -I$(CONSOLE_DIR) -I$(KEY_DIR) -I$(ZLIB_DIR)
+               -I$(FS_DIR) -I$(CONSOLE_DIR) -I$(KEY_DIR) -I$(ZLIB_DIR) \
+               -I$(CORE_DIR)
 
 LINK_SPEC   := $(DS2SDKPATH)/specs/link.xn
 START_ASM   := $(DS2SDKPATH)/specs/start.S
@@ -35,7 +37,7 @@ C_SOURCES   = source/unzip/explode.c source/unzip/unreduce.c \
               source/unzip/unshrink.c source/unzip/unzip.c \
               source/nds/bdf_font.c source/nds/bitmap.c \
               source/nds/draw.c source/nds/ds2_main.c source/nds/gcheat.c \
-              source/nds/gui.c
+              source/nds/gui.c source/nds/dma_adj.c
 CPP_SOURCES = source/apu.cpp source/apudebug.cpp source/c4.cpp \
               source/c4emu.cpp source/cheats2.cpp source/cheats.cpp \
               source/clip.cpp source/cpu.cpp source/cpuexec.cpp \
@@ -71,10 +73,7 @@ DEFS   := -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
           -DNO_INLINE_SET_GET -DNOASM -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t' \
           -DUNZIP_SUPPORT -DFOREVER_16_BIT_SOUND -DFOREVER_STEREO \
           -DFOREVER_FORWARD_STEREO -DNO_VOLATILE_SOUND \
-           -DDS2_DMA \
-          -DDISABLE_FREE_SPACE
-#         -DSYNC_JOYPAD_AT_HBLANK # creates too much communication (?)
-# -DDISABLE_FREE_SPACE is for the experimental branch only!
+          -DDS2_DMA
 
 .PHONY: clean makedirs
 .SUFFIXES: .elf .dat .plg

@@ -105,7 +105,7 @@
 #include "sa1.h"
 #include "spc7110.h"
 
-#ifdef SYNC_JOYPAD_AT_HBLANK
+#ifdef ACCUMULATE_JOYPAD
 #include "display.h"
 #endif
 
@@ -473,15 +473,14 @@ void S9xDoHBlankProcessing_SFX ()
     switch (CPU.WhichEvent)
     {
 		case HBLANK_START_EVENT:
-#ifdef SYNC_JOYPAD_AT_HBLANK
-		// Re-get the controls every hblank. A resolution algorithm in
-		// ppu.cpp will determine with greater accuracy whether a key was
-		// pressed or released during the frame.
-		uint32 i;
-		for (i = 0; i < 5; i++)
-		{
-			IPPU.JoypadsAtHBlanks [i][CPU.V_Counter] = S9xReadJoypad (i);
-		}
+#ifdef ACCUMULATE_JOYPAD
+/*
+ * This call allows NDSSFC to synchronise the DS controller more often.
+ * If porting a later version of Snes9x into NDSSFC, it is essential to
+ * preserve it.
+ */
+		if ((CPU.V_Counter & 0xF) == 0)
+			NDSSFCAccumulateJoypad ();
 #endif
 		if (IPPU.HDMA && CPU.V_Counter <= PPU.ScreenHeight)
 			IPPU.HDMA = S9xDoHDMA (IPPU.HDMA);
@@ -663,15 +662,13 @@ void S9xDoHBlankProcessing_NoSFX ()
     switch (CPU.WhichEvent)
     {
 		case HBLANK_START_EVENT:
-#ifdef SYNC_JOYPAD_AT_HBLANK
-		// Re-get the controls every hblank. A resolution algorithm in
-		// ppu.cpp will determine with greater accuracy whether a key was
-		// pressed or released during the frame.
-		uint32 i;
-		for (i = 0; i < 5; i++)
-		{
-			IPPU.JoypadsAtHBlanks [i][CPU.V_Counter] = S9xReadJoypad (i);
-		}
+#ifdef ACCUMULATE_JOYPAD
+/*
+ * This call allows NDSSFC to synchronise the DS controller more often.
+ * If porting a later version of Snes9x into NDSSFC, it is essential to
+ * preserve it.
+ */
+		NDSSFCAccumulateJoypad ();
 #endif
 		if (IPPU.HDMA && CPU.V_Counter <= PPU.ScreenHeight)
 			IPPU.HDMA = S9xDoHDMA (IPPU.HDMA);

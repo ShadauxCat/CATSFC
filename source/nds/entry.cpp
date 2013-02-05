@@ -25,6 +25,7 @@
 
 #ifdef DS2_DMA
 #include "ds2_dma.h"
+#include "dma_adj.h"
 #endif
 
 void S9xProcessSound (unsigned int);
@@ -62,7 +63,11 @@ void S9xExtraUsage ()
 */
 void S9xDeinitDisplay (void)
 {
+#ifdef DS2_DMA
+    if(GFX.Screen) AlignedFree(GFX.Screen, PtrAdj.GFXScreen);
+#else
     if(GFX.Screen) free(GFX.Screen);
+#endif
     if(GFX.SubScreen) free(GFX.SubScreen);
     if(GFX.ZBuffer) free(GFX.ZBuffer);
     if(GFX.SubZBuffer) free(GFX.SubZBuffer);
@@ -73,7 +78,11 @@ void S9xInitDisplay (int, char **)
     int h = IMAGE_HEIGHT;
 
 	GFX.Pitch = IMAGE_WIDTH * 2;
+#ifdef DS2_DMA
+	GFX.Screen =    (unsigned char*) AlignedMalloc (GFX.Pitch * h, 32, &PtrAdj.GFXScreen);
+#else
 	GFX.Screen =	(unsigned char*) malloc (GFX.Pitch * h);
+#endif
 	GFX.SubScreen = (unsigned char*) malloc (GFX.Pitch * h);
 	GFX.ZBuffer = 	(unsigned char*) malloc ((GFX.Pitch >> 1) * h);
 	GFX.SubZBuffer =(unsigned char*) malloc ((GFX.Pitch >> 1) * h);
@@ -135,7 +144,8 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		//Up
 		case 1:
 #ifdef DS2_DMA
-			ds2_DMAcopy_32Byte(1 /* channel */, up_screen_addr, GFX.Screen + 256 * 32 * 2, 256 * 192 * 2);
+			__dcache_writeback_all();
+			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 32 * 2, 256 * 192 * 2);
 			ds2_DMA_wait(1);
 			ds2_DMA_stop(1);
 #else
@@ -146,7 +156,8 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		//Down
 		case 2:
 #ifdef DS2_DMA
-			ds2_DMAcopy_32Byte(1 /* channel */, up_screen_addr, GFX.Screen, 256 * 192 * 2);
+			__dcache_writeback_all();
+			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen, 256 * 192 * 2);
 			ds2_DMA_wait(1);
 			ds2_DMA_stop(1);
 #else
@@ -157,7 +168,8 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		//Both
 		case 3:
 #ifdef DS2_DMA
-			ds2_DMAcopy_32Byte(1 /* channel */, up_screen_addr, GFX.Screen + 256 * 16 * 2, 256 * 192 * 2);
+			__dcache_writeback_all();
+			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 16 * 2, 256 * 192 * 2);
 			ds2_DMA_wait(1);
 			ds2_DMA_stop(1);
 #else
@@ -172,15 +184,18 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 
 		default:
 		{
-			unsigned char *src, *dst;
-			unsigned int m;
+#ifdef DS2_DMA
+			__dcache_writeback_all();
+#endif
+			register unsigned char *src, *dst;
+			register unsigned int m;
 
 			src = GFX.Screen;
 			dst = (unsigned char*)up_screen_addr;
 			for(m = 0; m < 32; m++)
 			{
 #ifdef DS2_DMA
-				ds2_DMAcopy_32Byte(1 /* channel */, dst, src, 256 * 6 * 2);
+				ds2_DMAcopy_32Byte(1 /* channel: graphics */, dst, src, 256 * 6 * 2);
 				ds2_DMA_wait(1);
 				ds2_DMA_stop(1);
 #else
@@ -719,6 +734,14 @@ void S9xSyncSpeed ()
 			{
 				do {
 					S9xProcessSound (0);
+#ifdef ACCUMULATE_JOYPAD
+/*
+ * This call allows NDSSFC to synchronise the DS controller more often.
+ * If porting a later version of Snes9x into NDSSFC, it is essential to
+ * preserve it.
+ */
+					NDSSFCAccumulateJoypad ();
+#endif
 					syncdif = sync_next - getSysTime();
 				} while (syncdif > 0);
 			}
@@ -752,6 +775,14 @@ void S9xSyncSpeed ()
 			{
 				do {
 					S9xProcessSound (0);
+#ifdef ACCUMULATE_JOYPAD
+/*
+ * This call allows NDSSFC to synchronise the DS controller more often.
+ * If porting a later version of Snes9x into NDSSFC, it is essential to
+ * preserve it.
+ */
+					NDSSFCAccumulateJoypad ();
+#endif
 					syncdif = sync_next - getSysTime();
 				} while (syncdif > 0);
 				// After that little delay, what time is it?
@@ -953,41 +984,22 @@ void S9xProcessSound (unsigned int)
 	if (!game_enable_audio)
 		return;
 
-	if(ds2_checkAudiobuff() > AUDIO_BUFFER_COUNT * 3/4)
-	{
-		LastSoundEmissionTime++;
-		return;
-	}
-
-	unsigned short *audiobuff;
-
 	unsigned int Now = getSysTime();
 	if (Now - LastSoundEmissionTime >= SOUND_EMISSION_INTERVAL)
 	{
+		if(ds2_checkAudiobuff() > 4)
+		{
+			LastSoundEmissionTime++;
+			return;
+		}
+
+		unsigned short *audiobuff;
+
 		if (Now - LastSoundEmissionTime >= 11719 /* 500 milliseconds */)
 		{
 			LastSoundEmissionTime = Now;
-			// We were probably paused. Restart sending sound with an
-			// empty buffer.
-			do {
-				audiobuff = (unsigned short*)ds2_getAudiobuff();
-			} while (audiobuff == NULL); //There are audio queue in sending or wait to send
-
-			memset(audiobuff, 0, DS2_BUFFER_SIZE
-#ifndef FOREVER_STEREO
-				<< (so.stereo ? 1 : 0)
-#else
-				<< 1
-#endif
-#ifndef FOREVER_16_BIT_SOUND
-				<< (so.sixteen_bit ? 1 : 0)
-#else
-				<< 1
-#endif
-			);
-
-			ds2_updateAudio();
-			// And then the real audio. (fall through)
+			// We were probably paused. Restart sending sound,
+			// synchronising from now.
 		}
 		else
 		{
@@ -1007,9 +1019,14 @@ void S9xProcessSound (unsigned int)
 		}
 #endif
 
-		do {
+		audiobuff = (unsigned short*)ds2_getAudiobuff();
+		while (audiobuff == NULL) //There are audio queue in sending or wait to send
+		{
+#ifdef ACCUMULATE_JOYPAD
+			NDSSFCAccumulateJoypad ();
+#endif
 			audiobuff = (unsigned short*)ds2_getAudiobuff();
-		} while (audiobuff == NULL); //There are audio queue in sending or wait to send
+		}
 
 		/* If we need more audio samples */
 		if (so.samples_mixed_so_far < sample_count)
@@ -1145,72 +1162,99 @@ const unsigned int keymap[12] = {
 
 static bool8 SoundToggleWasHeld = FALSE;
 
-unsigned int S9xReadJoypad (int which1)
-{
-    struct key_buf inputdata;
+#ifdef ACCUMULATE_JOYPAD
+// These are kept as DS key bitfields until it's time to send them to Snes9x.
+static uint32 PreviousControls = 0x00000000;
+static uint32 ControlsPressed  = 0x00000000;
+static uint32 ControlsReleased = 0x00000000;
 
+void NDSSFCAccumulateJoypad ()
+{
+	struct key_buf inputdata;
 	ds2_getrawInput(&inputdata);
 
-	if (inputdata.key & KEY_LID)
-	{
-		LowFrequencyCPU();
-		ds2_setSupend();
-		do {
-			ds2_getrawInput(&inputdata);
-			ds2_mdelay(1);
-		} while (inputdata.key & KEY_LID);
-		ds2_wakeup();
-		// Before starting to emulate again, turn off the lower
-		// screen's backlight.
-		ds2_mdelay(100); // needed to avoid ds2_setBacklight crashing
-		ds2_setBacklight(2);
-		GameFrequencyCPU();
-	}
+	ControlsPressed |= inputdata.key & ~PreviousControls;
+	ControlsReleased |= PreviousControls & ~inputdata.key;
+}
+#endif // ACCUMULATE_JOYPAD
 
-	u32 HotkeyReturnToMenu = game_config.HotkeyReturnToMenu != 0 ? game_config.HotkeyReturnToMenu : emu_config.HotkeyReturnToMenu;
-	u32 HotkeyTemporaryFastForward = game_config.HotkeyTemporaryFastForward != 0 ? game_config.HotkeyTemporaryFastForward : emu_config.HotkeyTemporaryFastForward;
-	u32 HotkeyToggleSound = game_config.HotkeyToggleSound != 0 ? game_config.HotkeyToggleSound : emu_config.HotkeyToggleSound;
-
-	if(inputdata.key & KEY_TOUCH ||
-		(HotkeyReturnToMenu && ((inputdata.key & HotkeyReturnToMenu) == HotkeyReturnToMenu))
-	)	//Active menu
-		Settings.Paused = 1;
-
-	temporary_fast_forward =
-		(HotkeyTemporaryFastForward && ((inputdata.key & HotkeyTemporaryFastForward) == HotkeyTemporaryFastForward))
-	;
-
-	bool8 SoundToggleIsHeld = 
-		(HotkeyToggleSound && ((inputdata.key & HotkeyToggleSound) == HotkeyToggleSound))
-	;
-
-	if (SoundToggleIsHeld && !SoundToggleWasHeld)
-	{
-		game_enable_audio = !game_enable_audio;
-		game_disableAudio();
-	}
-
-	SoundToggleWasHeld = SoundToggleIsHeld;
-
+uint32 S9xReadJoypad (int which1)
+{
 	if(which1 < 1)
 	{
-		unsigned int key;
+		uint32 Controls;
+#ifdef ACCUMULATE_JOYPAD
+		Controls = (PreviousControls | ControlsPressed) & ~ControlsReleased;
+		PreviousControls = Controls;
+		ControlsPressed = ControlsReleased = 0x00000000;
+#else
+		{
+			struct key_buf inputdata;
+			ds2_getrawInput(&inputdata);
+
+			Controls = inputdata.key;
+		}
+#endif
+
+		if (Controls & KEY_LID)
+		{
+			LowFrequencyCPU();
+			ds2_setSupend();
+			struct key_buf inputdata;
+			do {
+				ds2_getrawInput(&inputdata);
+				mdelay(1);
+			} while (inputdata.key & KEY_LID);
+			ds2_wakeup();
+			// Before starting to emulate again, turn off the lower
+			// screen's backlight.
+			mdelay(100); // needed to avoid ds2_setBacklight crashing
+			ds2_setBacklight(2);
+			GameFrequencyCPU();
+		}
+
+		u32 HotkeyReturnToMenu = game_config.HotkeyReturnToMenu != 0 ? game_config.HotkeyReturnToMenu : emu_config.HotkeyReturnToMenu;
+		u32 HotkeyTemporaryFastForward = game_config.HotkeyTemporaryFastForward != 0 ? game_config.HotkeyTemporaryFastForward : emu_config.HotkeyTemporaryFastForward;
+		u32 HotkeyToggleSound = game_config.HotkeyToggleSound != 0 ? game_config.HotkeyToggleSound : emu_config.HotkeyToggleSound;
+
+		if(Controls & KEY_TOUCH ||
+			(HotkeyReturnToMenu && ((Controls & HotkeyReturnToMenu) == HotkeyReturnToMenu))
+		)	//Active menu
+			Settings.Paused = 1;
+
+		temporary_fast_forward =
+			(HotkeyTemporaryFastForward && ((Controls & HotkeyTemporaryFastForward) == HotkeyTemporaryFastForward))
+		;
+
+		bool8 SoundToggleIsHeld = 
+			(HotkeyToggleSound && ((Controls & HotkeyToggleSound) == HotkeyToggleSound))
+		;
+
+		if (SoundToggleIsHeld && !SoundToggleWasHeld)
+		{
+			game_enable_audio = !game_enable_audio;
+			game_disableAudio();
+		}
+
+		SoundToggleWasHeld = SoundToggleIsHeld;
+
+		uint32 key = 0x80000000;  // Required by Snes9x
 
 		                                           //   DS   ->  SNES
-		key  = (inputdata.key & KEY_A     ) <<  7; // 0x0001 -> 0x0080
-		key |= (inputdata.key & KEY_B     ) << 14; // 0x0002 -> 0x8000
-		key |= (inputdata.key & KEY_SELECT) << 11; // 0x0004 -> 0x2000
-		key |= (inputdata.key & KEY_START ) <<  9; // 0x0008 -> 0x1000
-		key |= (inputdata.key & KEY_UP    ) <<  5; // 0x0040 -> 0x0800
+		key |= (Controls & KEY_A     ) <<  7;      // 0x0001 -> 0x0080
+		key |= (Controls & KEY_B     ) << 14;      // 0x0002 -> 0x8000
+		key |= (Controls & KEY_SELECT) << 11;      // 0x0004 -> 0x2000
+		key |= (Controls & KEY_START ) <<  9;      // 0x0008 -> 0x1000
+		key |= (Controls & KEY_UP    ) <<  5;      // 0x0040 -> 0x0800
 		// 0x0010 -> 0x0100; 0x0020 -> 0x0200
 		// 0x0030 -> 0x0300
-		key |= (inputdata.key & (KEY_RIGHT | KEY_LEFT))  <<  4;
+		key |= (Controls & (KEY_RIGHT | KEY_LEFT))  <<  4;
 		// 0x0100 -> 0x0010; 0x0200 -> 0x0020; 0x0400 -> 0x0040
 		// 0x0700 -> 0x0070
-		key |= (inputdata.key & (KEY_R | KEY_L | KEY_X)) >>  4;
+		key |= (Controls & (KEY_R | KEY_L | KEY_X)) >>  4;
 		// 0x0080 -> 0x0400; 0x0800 -> 0x4000
 		// 0x0880 -> 0x4400
-		key |= (inputdata.key & (KEY_DOWN | KEY_Y))      <<  3;
+		key |= (Controls & (KEY_DOWN | KEY_Y))      <<  3;
 /*
 		for(i= 0; i < 12; i++)	//remap key
 		{
@@ -1218,7 +1262,7 @@ unsigned int S9xReadJoypad (int which1)
 		}
 */
 
-		return (key | 0x80000000);
+		return key;
 	}
 	else
 		return 0;
