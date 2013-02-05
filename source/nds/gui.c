@@ -1756,7 +1756,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	auto void latest_game_menu_end();
 	auto void language_set();
 	auto void game_fastforward();
+#ifdef ENABLE_FREE_SPACE
 	auto void show_card_space();
+#endif
 	auto void savestate_selitem(u32 sel, u32 y_pos);
 	auto void game_state_menu_passive();
 	auto void gamestate_delette_menu_passive();
@@ -2772,6 +2774,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
         }
     }
 
+#ifdef ENABLE_FREE_SPACE
 	unsigned int freespace;
     void show_card_space ()
     {
@@ -2815,6 +2818,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
         PRINT_STRING_BG(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, 147,
             40 + (display_option->line_number)*27);
     }
+#endif
 
     char *screen_ratio_options[] = { (char*)&msg[MSG_VIDEO_ASPECT_RATIO_0],
 									(char*)&msg[MSG_VIDEO_ASPECT_RATIO_1],
@@ -3004,12 +3008,26 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	/* 02 */ STRING_SELECTION_OPTION(language_set, NULL, &msg[FMT_OPTIONS_LANGUAGE], language_options, 
         &emu_config.language, sizeof(language_options) / sizeof(language_options[0]) /* number of possible languages */, NULL, ACTION_TYPE, 2),
 
+#ifdef ENABLE_FREE_SPACE
 	/* 03 */ STRING_SELECTION_OPTION(NULL, show_card_space, &msg[MSG_OPTIONS_CARD_CAPACITY], NULL, 
         &desert, 2, NULL, PASSIVE_TYPE | HIDEN_TYPE, 3),
+#endif
 
-	/* 04 */ ACTION_OPTION(load_default_setting, NULL, &msg[MSG_OPTIONS_RESET], NULL, 4),
+	/* 04 */ ACTION_OPTION(load_default_setting, NULL, &msg[MSG_OPTIONS_RESET], NULL, 
+#ifdef ENABLE_FREE_SPACE
+			4
+#else
+			3
+#endif
+		),
 
-	/* 05 */ ACTION_OPTION(check_gbaemu_version, NULL, &msg[MSG_OPTIONS_VERSION], NULL, 5),
+	/* 05 */ ACTION_OPTION(check_gbaemu_version, NULL, &msg[MSG_OPTIONS_VERSION], NULL, 
+#ifdef ENABLE_FREE_SPACE
+			5
+#else
+			4
+#endif
+		),
 	};
 
 	MAKE_MENU(others, others_menu_init, NULL, NULL, NULL, 1, 1);
@@ -3556,11 +3574,13 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
     void others_menu_init()
     {
+#ifdef ENABLE_FREE_SPACE
 		unsigned int total, used;
 
 		//get card space info
 		freespace = 0;
 		fat_getDiskSpaceInfo("fat:", &total, &used, &freespace);
+#endif
     }
 
 	void choose_menu(MENU_TYPE *new_menu)
