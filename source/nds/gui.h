@@ -24,7 +24,7 @@
 #include "fs_api.h"
 #include "gcheat.h"
 
-#define UP_SCREEN_UPDATE_METHOD   1
+#define UP_SCREEN_UPDATE_METHOD   0
 #define DOWN_SCREEN_UPDATE_METHOD 2
 
 #define MAX_GAMEPAD_MAP 16
