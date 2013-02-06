@@ -3550,7 +3550,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	{
 		first_load = 1;
     //try auto loading games passed through argv first
-		if(LoadGameAndItsData(argv[1]))
+		if(strlen(argv[1]) > 0 && LoadGameAndItsData(argv[1]))
 			repeat = 0;
 		else
 		{
@@ -4683,6 +4683,8 @@ static bool Get_Args(char *file, char **filebuf){
 }
 
 int CheckLoad_Arg(){
+  argv[0][0] = '\0';  // Initialise the first byte to be a NULL in case
+  argv[1][0] = '\0';  // there are no arguments to avoid uninit. memory
   char *argarray[2];
   argarray[0] = argv[0];
   argarray[1] = argv[1];
