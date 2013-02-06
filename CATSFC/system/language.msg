@@ -191,10 +191,6 @@ Saving a screenshot...
 OK!
 #MSG_PROGRESS_SCREENSHOT_CREATION_FAILED
 Failed!
-#MSG_CHANGE_LANGUAGE
-Changing language...
-#MSG_CHANGE_LANGUAGE_WAITING
-Please wait...
 #MSG_NO_SLIDE
 No screenshots found
 #MSG_PLAYING_SLIDE
@@ -403,10 +399,6 @@ Press the buttons you wish to use to perform this action.
 完成!
 #MSG_PROGRESS_SCREENSHOT_CREATION_FAILED
 失败!
-#MSG_CHANGE_LANGUAGE
-正在修改...
-#MSG_CHANGE_LANGUAGE_WAITING
-请稍候!
 #MSG_NO_SLIDE
 此目录没有屏幕快照，取消放映
 #MSG_PLAYING_SLIDE
@@ -615,10 +607,6 @@ Capture de l'écran...
 Terminé!
 #MSG_PROGRESS_SCREENSHOT_CREATION_FAILED
 Échec!
-#MSG_CHANGE_LANGUAGE
-Changement de la langue...
-#MSG_CHANGE_LANGUAGE_WAITING
-Veuillez patienter...
 #MSG_NO_SLIDE
 Aucune capture d'écran trouvée
 #MSG_PLAYING_SLIDE

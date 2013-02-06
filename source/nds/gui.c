@@ -2709,21 +2709,8 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
         if(gui_action == CURSOR_LEFT || gui_action == CURSOR_RIGHT)
         {
             HighFrequencyCPU(); // crank it up
-            if(bg_screenp != NULL)
-            {
-                bg_screenp_color = COLOR16(43, 11, 11);
-                memcpy(bg_screenp, down_screen_addr, 256*192*2);
-            }
-            else
-                bg_screenp_color = COLOR_BG;
-
-            draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
-            draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_CHANGE_LANGUAGE]);
-            draw_string_vcenter(down_screen_addr, 36, 95, 190, COLOR_MSSG, msg[MSG_CHANGE_LANGUAGE_WAITING]);
-            ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
             load_language_msg(LANGUAGE_PACK, emu_config.language);
-            // gui_change_icon(emu_config.language); // uncomment if images change per language [Neb]
 
             if(first_load)
             {
@@ -2733,7 +2720,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
             }
 
             LowFrequencyCPU(); // and back down
-            wait_Allkey_release(0);
         }
     }
 
