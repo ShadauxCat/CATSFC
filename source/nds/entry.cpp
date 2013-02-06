@@ -642,6 +642,18 @@ static unsigned int sync_next = 0;
 
 static unsigned int skip_rate= 0;
 
+/*
+ * Automatic CPU frequency support is here.
+ * Whenever, after one downclock determination interval, each frame rendered
+ * during it has been rendered at least as early as CPU_DOWNCLOCK_EARLY_TIME,
+ * lower the CPU frequency in response.
+ * If at least one frame has been early, but not early enough, the CPU
+ * frequency stays stable.
+ * If at least one frame has been late, the CPU will have be switched back
+ * to 396 MHz.
+ * This improves battery life to a certain extent.
+ */
+
 #define CPU_DOWNCLOCK_EARLY_TIME 293 /* 1 = 42.667 us. 391 = 16.67 ms */
 #define CPU_DOWNCLOCK_DETERMINATION_INTERVAL 46874 /* 23437 = 1 s */
 
