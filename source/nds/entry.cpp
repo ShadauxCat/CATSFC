@@ -390,7 +390,7 @@ void game_set_frameskip()
 	}
 	else
 	{
-		Settings.SkipFrames = game_config.frameskip_value - 1 /* 1 -> 0 and so on */;
+		Settings.SkipFrames = game_config.frameskip_value + 1 /* 1 -> 2 and so on */;
 	}
 }
 
@@ -639,7 +639,6 @@ int sfc_main (int argc, char **argv)
 
 static unsigned int sync_last= 0;
 static unsigned int sync_next = 0;
-static unsigned int auto_equivalent_skip = 0;
 
 static unsigned int skip_rate= 0;
 
@@ -690,7 +689,16 @@ void S9xSyncSpeed ()
 		// If this is negative, we're late by syncdif*42.66
 		// microseconds.
 		syncdif = sync_next - syncnow;
-		if (syncdif < 0 && syncdif >= -(frame_time / 2))
+		if(skip_rate < 2 /* did not skip 2 frames yet */)
+		{
+			// Skip a minimum of 2 frames between rendered frames.
+			// This prevents the DSTwo-DS link from being too busy
+			// to return button statuses.
+			++skip_rate;
+			IPPU.RenderThisFrame = FALSE;
+			sync_next += frame_time;
+		}
+		else if (syncdif < 0 && syncdif >= -(frame_time / 2))
 		{
 			// We're late, but by less than half a frame. Draw it
 			// anyway. If the next frame is too late, it'll be

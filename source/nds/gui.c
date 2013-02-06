@@ -2826,7 +2826,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 									(char*)&msg[MSG_VIDEO_ASPECT_RATIO_3],
 									(char*)&msg[MSG_VIDEO_ASPECT_RATIO_4]};
     
-    char *frameskip_options[] = { (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_0], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_1], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_2], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_3], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_4], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_5], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_6], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_7], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_8], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_9], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_10] };
+    char *frameskip_options[] = { (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_2], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_3], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_4], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_5], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_6], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_7], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_8], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_9], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_10] };
 
     char *fluidity_options[] = { (char*)&msg[MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO], (char*)&msg[MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO] };
 
@@ -2858,7 +2858,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		&game_config.SoundSync, 2, NULL, ACTION_TYPE, 4),
 		
 	/* 05 */	STRING_SELECTION_OPTION(game_set_frameskip, NULL, &msg[FMT_VIDEO_FRAME_SKIPPING], frameskip_options,
-		&game_config.frameskip_value, 12 /* auto (0) and 0..10 (1..11) make 12 option values */, NULL, ACTION_TYPE, 5)
+		&game_config.frameskip_value, 10 /* auto (0) and 2..10 (1..9) make 10 option values */, NULL, ACTION_TYPE, 5)
 	};
 
 	MAKE_MENU(graphics, NULL, NULL, NULL, NULL, 0, 0);
