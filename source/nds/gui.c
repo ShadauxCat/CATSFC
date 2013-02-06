@@ -1853,7 +1853,21 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
       return 0;
     }
 
-    strcpy(gamepak_name, filename);
+    char tempPath[MAX_PATH];
+    strcpy(tempPath, filename);
+
+    //update folders and names for settings/config uses
+    char *dirEnd = strrchr(tempPath, '/');
+    //make sure a valid path was provided
+    if(!dirEnd)
+      return 0;
+
+    //copy file name as gamepak_name
+    strcpy(gamepak_name, dirEnd+1);
+    //then strip filename from directory path and set it
+    *dirEnd = '\0';
+    strcpy(g_default_rom_dir, tempPath);
+
     first_load = 0;
     load_game_config_file();
 

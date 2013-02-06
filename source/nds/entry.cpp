@@ -499,7 +499,7 @@ void game_restart(void)
 	S9xReset ();
 }
 
-int load_gamepak(char* file)
+int load_gamepak(const char* file)
 {
 	CPU.Flags = 0;
 	// mdelay(50); // Delete this delay
