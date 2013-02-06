@@ -10,6 +10,17 @@ STARTVERSION
 # 4. See the comment line ABOVE a message for its context. For example:
 #  > #MSG_MAIN_MENU_SAVED_STATES
 #  > Saved states
+# 5. You may use *<Letter> in your message to insert a pictogram representing
+#    a DS key. These replacements are case-sensitive.
+#    Definitions are as follows:
+#    *A  (A Button)  inserts  a circle containing the letter A
+#    *B  (B Button)           a circle containing the letter B
+#    *X  (X Button)           a circle containing the letter X
+#    *Y  (Y Button)           a circle containing the letter Y
+#    *L  (L shoulder button)  a cut rectangle containing the letter L
+#    *R  (R shoulder button)  a cut rectangle containing the letter R
+#    *S  (START button)       a smaller ST
+#    *s  (SELECT button)      a smaller SEL
 ENDVERSION
 
 ENDCOMMENT
@@ -98,9 +109,9 @@ Toggle sound
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Press the buttons you wish to use to perform this action.
 #MSG_HOTKEY_DELETE_WITH_A
-[A] Clear
+*A Clear
 #MSG_HOTKEY_CANCEL_WITH_B
-[B] Cancel
+*B Cancel
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 Recently played games
 #MSG_LOAD_GAME_FROM_CARD
@@ -146,9 +157,9 @@ Off
 #MSG_GENERAL_ON
 On
 #MSG_GENERAL_CONFIRM_WITH_A
-[A] Confirm
+*A Confirm
 #MSG_GENERAL_CANCEL_WITH_B
-[B] Cancel
+*B Cancel
 #MSG_AUDIO_ENABLED
 On
 #MSG_AUDIO_MUTED
@@ -306,9 +317,9 @@ Toggle sound
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Press the buttons you wish to use to perform this action.
 #MSG_HOTKEY_DELETE_WITH_A
-[A] Clear
+*A Clear
 #MSG_HOTKEY_CANCEL_WITH_B
-[B] Cancel
+*B Cancel
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 最近玩过的游戏
 #MSG_LOAD_GAME_FROM_CARD
@@ -354,9 +365,9 @@ Press the buttons you wish to use to perform this action.
 #MSG_GENERAL_ON
 开
 #MSG_GENERAL_CONFIRM_WITH_A
-[A] 确认
+*A 确认
 #MSG_GENERAL_CANCEL_WITH_B
-[B] 取消
+*B 取消
 #MSG_AUDIO_ENABLED
 开
 #MSG_AUDIO_MUTED
@@ -414,9 +425,9 @@ Press the buttons you wish to use to perform this action.
 #MSG_PLAY_SLIDE4
 按键 右  下一帧
 #MSG_PLAY_SLIDE5
-按键 A   暂停
+按键 *A   暂停
 #MSG_PLAY_SLIDE6
-按键 B   返回菜单
+按键 *B   返回菜单
 #MSG_PROGRESS_LOADING_GAME
 正在装载游戏...
 #MSG_EMULATOR_NAME
@@ -514,9 +525,9 @@ Avance rapide temporaire
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Appuyez sur les boutons que vous voulez utiliser pour effectuer cette action.
 #MSG_HOTKEY_DELETE_WITH_A
-[A] Effacer
+*A Effacer
 #MSG_HOTKEY_CANCEL_WITH_B
-[B] Annuler
+*B Annuler
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 Jeux joués récemment
 #MSG_LOAD_GAME_FROM_CARD
@@ -562,9 +573,9 @@ Hors fonction
 #MSG_GENERAL_ON
 En fonction
 #MSG_GENERAL_CONFIRM_WITH_A
-[A] Confirmer
+*A Confirmer
 #MSG_GENERAL_CANCEL_WITH_B
-[B] Annuler
+*B Annuler
 #MSG_AUDIO_ENABLED
 Activé
 #MSG_AUDIO_MUTED
@@ -622,9 +633,9 @@ GAUCHE  Précédente
 #MSG_PLAY_SLIDE4
 DROITE  Suivante
 #MSG_PLAY_SLIDE5
-A           Pause
+*A           Pause
 #MSG_PLAY_SLIDE6
-B           Retour au menu
+*B           Retour au menu
 #MSG_PROGRESS_LOADING_GAME
 Chargement...
 #MSG_EMULATOR_NAME

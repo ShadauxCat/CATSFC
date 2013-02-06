@@ -4140,7 +4140,61 @@ int load_language_msg(char *filename, u32 language)
 			break;
 
 		len= strlen(pt);
-		memcpy(dst, pt, len);
+		// memcpy(dst, pt, len);
+
+		// Replace key definitions (*letter) with Pictochat icons
+		// while copying.
+		unsigned int curChar;
+		for (curChar = 0; curChar < len; curChar++)
+		{
+			if (pt[curChar] == '*')
+			{
+				switch (pt[curChar + 1])
+				{
+				case 'A':
+					memcpy(&dst[curChar], HOTKEY_A_DISPLAY, 2);
+					curChar++;
+					break;
+				case 'B':
+					memcpy(&dst[curChar], HOTKEY_B_DISPLAY, 2);
+					curChar++;
+					break;
+				case 'X':
+					memcpy(&dst[curChar], HOTKEY_X_DISPLAY, 2);
+					curChar++;
+					break;
+				case 'Y':
+					memcpy(&dst[curChar], HOTKEY_Y_DISPLAY, 2);
+					curChar++;
+					break;
+				case 'L':
+					memcpy(&dst[curChar], HOTKEY_L_DISPLAY, 2);
+					curChar++;
+					break;
+				case 'R':
+					memcpy(&dst[curChar], HOTKEY_R_DISPLAY, 2);
+					curChar++;
+					break;
+				case 'S':
+					memcpy(&dst[curChar], HOTKEY_START_DISPLAY, 2);
+					curChar++;
+					break;
+				case 's':
+					memcpy(&dst[curChar], HOTKEY_SELECT_DISPLAY, 2);
+					curChar++;
+					break;
+				case '\0':
+					dst[curChar] = pt[curChar];
+					break;
+				default:
+					memcpy(&dst[curChar], &pt[curChar], 2);
+					curChar++;
+					break;
+				}
+			}
+			else
+				dst[curChar] = pt[curChar];
+		}
 
 		dst += len;
 		//at a line return, when "\n" paded, this message not end
@@ -4163,7 +4217,7 @@ int load_language_msg(char *filename, u32 language)
 			else//a message end
 			{
 				if(*(dst-2) == 0x0D)
-				dst -= 1;
+					dst -= 1;
 				*(dst-1) = '\0';
 				msg[++loop] = dst;
 			}
