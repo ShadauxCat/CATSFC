@@ -48,44 +48,9 @@ struct _EMU_CONFIG
 
 struct _GAME_CONFIG
 {
-	/*
-	 * PreviouslyUsed_20130205_2 was formerly known as
-	 * 'clock_speed_number'; its values were in [0, 5]. [0, 5] were mapped
-	 * to 240, 300, 336, 360, 384 and 394 MHz respectively.
-	 * Version 1.29 changes the value range for 'clock_speed_number' to
-	 * [0, 6], with 0 as an automatic CPU speed setting.
-	 * Change rationale: The default value becomes 0 instead of 5.
-	 * If this variable were to be used as is, the meaning of the default
-	 * value would change. Games which had a configuration file before
-	 * 1.29 would be using the older default of 5 (394 MHz), the meaning
-	 * of which would become 384 MHz instead of "staying the default".
-	 * Games which did not have a configuration file before 1.29 would be
-	 * using the correct default.
-	 * This would confuse users or cause undue hassle.
-	 * THIS VALUE IS NOT GUARANTEED TO BE RESERVED AND SET TO 0.
-	 * DO NOT USE THIS VALUE FOR ANY PURPOSE OTHER THAN EXACTLY THE ONE
-	 * FOR WHICH IT WAS INTENDED.
-	 */
-	u32 PreviouslyUsed_20130205_2;
+	u32 clock_speed_number;
 	u32  Reserved0;
-	/*
-	 * PreviouslyUsed_20130205_1 was formerly known as 'frameskip_value';
-	 * its values were in [0, 10]. 0 was automatic frameskipping and
-	 * [1, 10] were mapped to skip 0 to 9 frames respectively.
-	 * Version 1.29 changes the value range for 'frameskip_value' to
-	 * [0, 8], with 0 as automatic frameskipping and [1, 10] to skip 2 to
-	 * 9 frames.
-	 * Change rationale: Frame skip values under 2 cause too much
-	 * communication between the DSTwo and the DS, therefore the DS cannot
-	 * timely send controller information.
-	 * If this variable were to be used as is, the meaning of the option
-	 * would be changed for values in [1, 8], and values in [9, 10] would
-	 * cause undefined behavior, including crashes.
-	 * THIS VALUE IS NOT GUARANTEED TO BE RESERVED AND SET TO 0.
-	 * DO NOT USE THIS VALUE FOR ANY PURPOSE OTHER THAN EXACTLY THE ONE
-	 * FOR WHICH IT WAS INTENDED.
-	 */
-	u32 PreviouslyUsed_20130205_1;
+	u32 frameskip_value;
 	u32 graphic;
 	u32 enable_audio;
 	u32 Reserved1;
@@ -95,8 +60,18 @@ struct _GAME_CONFIG
 	u32 HotkeyTemporaryFastForward;
 	u32 HotkeyToggleSound;
 	u32 SoundSync;
-	u32 frameskip_value;
-	u32 clock_speed_number;
+	/*
+	 * PreviouslyUsed_20130206_1 was for a second meaning of
+	 * frameskip_value that is now dropped.
+	 * THIS VALUE IS NOT GUARANTEED TO BE RESERVED AND SET TO 0.
+	 */
+	u32 PreviouslyUsed_20130206_1;
+	/*
+	 * PreviouslyUsed_20130206_2 was for a second meaning of
+	 * clock_speed_number that is now dropped.
+	 * THIS VALUE IS NOT GUARANTEED TO BE RESERVED AND SET TO 0.
+	 */
+	u32 PreviouslyUsed_20130206_2;
 	u32  Reserved2[42];
 };
 

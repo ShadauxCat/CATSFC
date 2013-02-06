@@ -1667,10 +1667,8 @@ void GameFrequencyCPU()
 {
 	u32 clock_speed_table[6] = {6, 9, 10, 11, 12, 13};	//240, 300, 336, 360, 384, 396
 
-	if (game_config.clock_speed_number == 0)
-		ds2_setCPUclocklevel(clock_speed_table[AutoCPUFrequency]);
-	else if(game_config.clock_speed_number <= 6)
-		ds2_setCPUclocklevel(clock_speed_table[game_config.clock_speed_number - 1]);
+	if(game_config.clock_speed_number <= 5)
+		ds2_setCPUclocklevel(clock_speed_table[game_config.clock_speed_number]);
 }
 
 void savefast_int(void)
@@ -2782,9 +2780,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 									(char*)&msg[MSG_VIDEO_ASPECT_RATIO_3],
 									(char*)&msg[MSG_VIDEO_ASPECT_RATIO_4]};
     
-    char *frameskip_options[] = { (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_2], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_3], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_4], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_5], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_6], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_7], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_8], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_9], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_10] };
+    char *frameskip_options[] = { (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_0], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_1], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_2], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_3], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_4], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_5], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_6], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_7], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_8], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_9], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_10] };
 
-    char *cpu_frequency_options[] = { (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_AUTOMATIC], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_0], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_1], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_2], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_3], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_4], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_5] };
+    char *cpu_frequency_options[] = { (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_0], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_1], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_2], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_3], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_4], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_5] };
 
     char *fluidity_options[] = { (char*)&msg[MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO], (char*)&msg[MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO] };
 
@@ -2816,7 +2814,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		&game_config.SoundSync, 2, NULL, ACTION_TYPE, 4),
 
 	/* 05 */	STRING_SELECTION_OPTION(game_set_frameskip, NULL, &msg[FMT_VIDEO_FRAME_SKIPPING], frameskip_options,
-		&game_config.frameskip_value, 10 /* auto (0) and 2..10 (1..9) make 10 option values */, NULL, ACTION_TYPE, 5)
+		&game_config.frameskip_value, 12 /* auto (0) and 0..10 (1..11) make 12 option values */, NULL, ACTION_TYPE, 5)
 	};
 
 	MAKE_MENU(graphics, NULL, NULL, NULL, NULL, 0, 0);
@@ -2962,7 +2960,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 	//CPU speed (string: shows MHz)
 	/* 01 */ STRING_SELECTION_OPTION(NULL, NULL, &msg[FMT_OPTIONS_CPU_FREQUENCY], cpu_frequency_options, 
-        &game_config.clock_speed_number, 7, NULL, PASSIVE_TYPE, 1),
+        &game_config.clock_speed_number, 6, NULL, PASSIVE_TYPE, 1),
 
 	/* 02 */ STRING_SELECTION_OPTION(language_set, NULL, &msg[FMT_OPTIONS_LANGUAGE], language_options, 
         &emu_config.language, sizeof(language_options) / sizeof(language_options[0]) /* number of possible languages */, NULL, ACTION_TYPE, 2),
@@ -4215,7 +4213,7 @@ u32 load_font()
 --------------------------------------------------------*/
 void init_game_config(void)
 {
-	game_config.clock_speed_number = 0;	// "Auto" by default
+	game_config.clock_speed_number = 5;	// 396 MHz by default
 	game_config.graphic = 3; // By default, have a good-looking aspect ratio
 	game_config.frameskip_value = 0; // Automatic frame skipping
 	game_config.SoundSync = 0; // Prefer fluid images by default

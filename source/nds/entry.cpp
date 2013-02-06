@@ -390,7 +390,7 @@ void game_set_frameskip()
 	}
 	else
 	{
-		Settings.SkipFrames = game_config.frameskip_value + 1 /* 1 -> 2 and so on */;
+		Settings.SkipFrames = game_config.frameskip_value - 1 /* 1 -> 0 and so on */;
 	}
 }
 

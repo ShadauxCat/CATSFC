@@ -67,8 +67,6 @@ Game-specific hotkey overrides...
 Language                          %s
 #FMT_OPTIONS_CPU_FREQUENCY
 CPU frequency                 %s
-#MSG_OPTIONS_CPU_FREQUENCY_AUTOMATIC
-[-] Adjust as needed
 #MSG_OPTIONS_CPU_FREQUENCY_0
 [0] 240 MHz
 #MSG_OPTIONS_CPU_FREQUENCY_1
@@ -281,8 +279,6 @@ Game-specific hotkey overrides...
 语言                               %s
 #FMT_OPTIONS_CPU_FREQUENCY
 CPU主频                          %s
-#MSG_OPTIONS_CPU_FREQUENCY_AUTOMATIC
-[-] Adjust as needed
 #MSG_OPTIONS_CPU_FREQUENCY_0
 [0] 240 MHz
 #MSG_OPTIONS_CPU_FREQUENCY_1
@@ -495,8 +491,6 @@ Raccourcis pour le jeu actuel...
 Langue                              %s
 #FMT_OPTIONS_CPU_FREQUENCY
 Fréquence CPU                  %s
-#MSG_OPTIONS_CPU_FREQUENCY_AUTOMATIC
-[-] Selon le besoin
 #MSG_OPTIONS_CPU_FREQUENCY_0
 [0] 240 MHz
 #MSG_OPTIONS_CPU_FREQUENCY_1
