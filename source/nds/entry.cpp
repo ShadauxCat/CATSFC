@@ -1053,7 +1053,7 @@ void S9xProcessSound (unsigned int)
 	unsigned int Now = getSysTime();
 	if (Now - LastSoundEmissionTime >= SOUND_EMISSION_INTERVAL)
 	{
-		if(ds2_checkAudiobuff() > AUDIO_BUFFER_COUNT - 1)
+		if(ds2_checkAudiobuff() > AUDIO_BUFFER_COUNT)
 		{
 			LastSoundEmissionTime++;
 			return;
