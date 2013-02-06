@@ -1718,6 +1718,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     u16 *bg_screenp;
     u32 bg_screenp_color;
 
+    GAME_CONFIG PreviousGameConfig;  // Compared with current settings to
+    EMU_CONFIG  PreviousEmuConfig;   // determine if they need to be saved
+
 	auto void choose_menu();
 	auto void menu_return();
 	auto void menu_exit();
@@ -1776,17 +1779,32 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	void menu_exit()
 	{
 		HighFrequencyCPU(); // Crank it up, leave quickly
-        if(gamepak_name[0] != 0)
-        {
-            reorder_latest_file();
+		if(gamepak_name[0] != 0)
+		{
 			S9xAutoSaveSRAM ();
-			save_game_config_file();
 		}
-		save_emu_config_file();
 		quit();
 	}
 
+	void SaveConfigsIfNeeded()
+	{
+		if (memcmp(&PreviousGameConfig, &game_config, sizeof(GAME_CONFIG)) != 0)
+			save_game_config_file();
+		if (memcmp(&PreviousEmuConfig, &emu_config, sizeof(EMU_CONFIG)) != 0)
+			save_emu_config_file();
+	}
+
+	void PreserveConfigs()
+	{
+		memcpy(&PreviousGameConfig, &game_config, sizeof(GAME_CONFIG));
+		memcpy(&PreviousEmuConfig, &emu_config, sizeof(EMU_CONFIG));
+	}
+
   int LoadGameAndItsData(char *filename){
+    if (gamepak_name[0] != '\0') {
+      S9xAutoSaveSRAM();
+    }
+
     draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
     draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_LOADING_GAME]);
     ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
@@ -1819,6 +1837,8 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
     first_load = 0;
     load_game_config_file();
+    PreserveConfigs(); // Make the emulator not save what we've JUST read
+    // but it will save the emulator configuration below for latest files
 
     return_value = 1;
     repeat = 0;
@@ -1833,12 +1853,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	void menu_load()
 	{
 		char *file_ext[] = { ".smc", ".sfc", ".zip", NULL };
-
-		if(gamepak_name[0] != 0)
-		{
-			S9xAutoSaveSRAM ();
-			save_game_config_file();
-		}
 
 		if(load_file(file_ext, tmp_filename, g_default_rom_dir) != -1)
 		{
@@ -2055,10 +2069,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				}
 
 				ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
-
-				//save game config
-				reorder_latest_file();
-				save_game_config_file();
 
 				SavedStateCacheInvalidate ();
 
@@ -2722,7 +2732,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				ds2_flipScreen(UP_SCREEN, 1);
             }
 
-            save_emu_config_file();
             LowFrequencyCPU(); // and back down
             wait_Allkey_release(0);
         }
@@ -3459,12 +3468,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     {
 		char *ext_pos;
 
-		if(gamepak_name[0] != 0)
-		{
-			S9xAutoSaveSRAM ();
-			save_game_config_file();
-		}
-
 		if(bg_screenp != NULL) {
 			bg_screenp_color = COLOR16(43, 11, 11);
 		}
@@ -3521,11 +3524,13 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		if(NULL != current_menu) {
 			if(current_menu->end_function)
 				current_menu->end_function();
+			SaveConfigsIfNeeded();
 		}
 
 		current_menu = new_menu;
 		current_option_num= current_menu -> focus_option;
 		current_option = new_menu->options + current_option_num;
+		PreserveConfigs();
 		if(current_menu->init_function)
 			current_menu->init_function();
 	}
@@ -4038,17 +4043,10 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 	if (current_menu && current_menu->end_function)
 		current_menu->end_function();
+	SaveConfigsIfNeeded();
 
 	destroy_dynamic_cheats();
 	if(bg_screenp != NULL) free((void*)bg_screenp);
-
-	if(gamepak_name[0] != 0)
-	{
-		reorder_latest_file();
-		S9xAutoSaveSRAM ();
-		save_game_config_file();
-	}
-	save_emu_config_file();
 
 	ds2_clearScreen(DOWN_SCREEN, 0);
 	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
