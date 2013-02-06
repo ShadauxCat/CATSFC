@@ -2852,10 +2852,12 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	{
 	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_SAVED_STATES], NULL, 0),
 
-	/* 01 */ NUMERIC_SELECTION_ACTION_OPTION(menu_save_state, NULL, &msg[FMT_SAVED_STATE_CREATE], &savestate_index, SAVE_STATE_SLOT_NUM, NULL, 1),
+	// savestate_index is still a signed int
+	/* 01 */ NUMERIC_SELECTION_ACTION_OPTION(menu_save_state, NULL, &msg[FMT_SAVED_STATE_CREATE], (u32*) &savestate_index, SAVE_STATE_SLOT_NUM, NULL, 1),
 
+	// savestate_index is still a signed int
 	/* 02 */ NUMERIC_SELECTION_ACTION_OPTION(menu_load_state, NULL,
-        &msg[FMT_SAVED_STATE_LOAD], &savestate_index, SAVE_STATE_SLOT_NUM, NULL, 2),
+        &msg[FMT_SAVED_STATE_LOAD], (u32*) &savestate_index, SAVE_STATE_SLOT_NUM, NULL, 2),
 
 	/* 03 */ SUBMENU_OPTION(&gamestate_delette_menu, &msg[MSG_SAVED_STATE_DELETE_GENERAL], NULL, 5),
 	};
