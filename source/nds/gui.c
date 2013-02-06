@@ -836,6 +836,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 		{
 			case CURSOR_TOUCH:
 				ds2_getrawInput(&inputdata);
+				wait_Allkey_release(0);
 				// ___ 33        This screen has 6 possible rows. Touches
 				// ___ 60        above or below these are ignored.
 				// . . . (+27)
@@ -1001,6 +1002,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 				break;
 
 			case CURSOR_SELECT:
+				wait_Allkey_release(0);
 				//file selected
 				if(selected_item_on_list + 1 <= num_files)
 				{
@@ -1040,6 +1042,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 
 			case CURSOR_BACK:
 			{
+				wait_Allkey_release(0);
 				char *ext_pos;
 
 				strcpy(filelist_info.current_path, default_dir_name);
@@ -1057,6 +1060,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			}
 
 			case CURSOR_EXIT:
+				wait_Allkey_release(0);
 				return_value = -1;
 				repeat = 0;
 				break;
@@ -3672,6 +3676,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		{
 			case CURSOR_TOUCH:
 				ds2_getrawInput(&inputdata);
+				wait_Allkey_release(0);
 				/* Back button at the top of every menu but the main one */
 				if(current_menu != &main_menu && inputdata.x > 231 && inputdata.y <= 25)
 				{
@@ -4006,9 +4011,11 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				break;
 
 			case CURSOR_EXIT:
+				wait_Allkey_release(0);
 				break;
 
 			case CURSOR_SELECT:
+				wait_Allkey_release(0);
 				if(current_option->option_type & ACTION_TYPE)
 					current_option->action_function();
 				else if(current_option->option_type & SUBMENU_TYPE)
@@ -4016,6 +4023,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				break;
 
 			case CURSOR_BACK:
+				wait_Allkey_release(0);
 				if(current_menu != &main_menu)
 					choose_menu(current_menu->options->sub_menu);
 				else
