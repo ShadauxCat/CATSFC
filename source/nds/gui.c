@@ -1788,56 +1788,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		quit();
 	}
 
-	void menu_load()
-	{
-		char *file_ext[] = { ".smc", ".sfc", ".zip", NULL };
-
-		if(gamepak_name[0] != 0)
-		{
-			S9xAutoSaveSRAM ();
-			save_game_config_file();
-		}
-
-		if(load_file(file_ext, tmp_filename, g_default_rom_dir) != -1)
-		{
-			strcpy(line_buffer, g_default_rom_dir);
-			strcat(line_buffer, "/");
-			strcat(line_buffer, tmp_filename);
-
-			draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
-			draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_LOADING_GAME]);
-			ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
-
-			HighFrequencyCPU();
-			int load_result = load_gamepak(line_buffer);
-			LowFrequencyCPU();
-			if(load_result == -1)
-			{
-				first_load = 1;
-				gamepak_name[0] = '\0';
-				return;
-			}
-
-			strcpy(gamepak_name, tmp_filename);
-			first_load = 0;
-			load_game_config_file();
-//			time_period_action();
-
-			return_value = 1;
-			repeat = 0;
-
-			reorder_latest_file();
-			get_savestate_filelist();
-
-			game_fast_forward= 0;
-		}
-		else
-		{
-			choose_menu(current_menu);
-		}
-	}
-
-  int Menu_loadGame(char *filename){
+  int LoadGameAndItsData(char *filename){
     draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
     draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_LOADING_GAME]);
     ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
@@ -1880,6 +1831,30 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     game_fast_forward= 0;
     return 1;
   }
+
+	void menu_load()
+	{
+		char *file_ext[] = { ".smc", ".sfc", ".zip", NULL };
+
+		if(gamepak_name[0] != 0)
+		{
+			S9xAutoSaveSRAM ();
+			save_game_config_file();
+		}
+
+		if(load_file(file_ext, tmp_filename, g_default_rom_dir) != -1)
+		{
+			strcpy(line_buffer, g_default_rom_dir);
+			strcat(line_buffer, "/");
+			strcat(line_buffer, tmp_filename);
+
+			LoadGameAndItsData(line_buffer);
+		}
+		else
+		{
+			choose_menu(current_menu);
+		}
+	}
 
 	void menu_restart()
 	{
@@ -3486,10 +3461,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     {
 		char *ext_pos;
 
-		draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, 0);
-		draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_LOADING_GAME]);
-		ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
-
 		if(gamepak_name[0] != 0)
 		{
 			S9xAutoSaveSRAM ();
@@ -3509,36 +3480,13 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 		ext_pos = emu_config.latest_file[current_option_num -1];
 
-		HighFrequencyCPU();
-		int load_result = load_gamepak(ext_pos);
-		LowFrequencyCPU();
-
-		if(load_result == -1) {
-			first_load = 1;
-			return;
-		}
-
-		strcpy(g_default_rom_dir, ext_pos);
-		ext_pos = strrchr(g_default_rom_dir, '/');
-		*ext_pos= '\0';
-		strcpy(gamepak_name, ext_pos+1);
-
-
-		load_game_config_file();
-//		time_period_action();
-
-		reorder_latest_file();
-		get_savestate_filelist();
-		game_fast_forward= 0;
+		LoadGameAndItsData(ext_pos);
 
 		get_newest_savestate(tmp_filename);
 		if(tmp_filename[0] != '\0')
 		{
 			load_state(tmp_filename);
 		}
-
-		return_value = 1;
-		repeat = 0;
     }
 
     void game_fastforward()
@@ -3602,7 +3550,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	{
 		first_load = 1;
     //try auto loading games passed through argv first
-		if(Menu_loadGame(argv[1]))
+		if(LoadGameAndItsData(argv[1]))
 			repeat = 0;
 		else
 		{
