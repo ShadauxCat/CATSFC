@@ -45,10 +45,13 @@ char	rom_path[MAX_PATH];
 char	gamepak_name[MAX_PATH];
 char	gcheat_filename[MAX_PATH];
 
+//program arguments
+char  argv[2][MAX_PATH];
+
 // If adding a language, make sure you update the size of the array in
 // message.h too.
 char *lang[3] =
-	{ 
+	{
 		"English",					// 0
 		"简体中文",					// 1
 		"Français", 				// 2
@@ -571,7 +574,7 @@ static int manage_filelist_info(struct FILE_LIST_INFO *filelist_infop, int flag)
 	int i;
 	void *pt;
 
-	//Increase all 
+	//Increase all
 	if(flag & 0x1)
 	{
 		i = NAME_MEM_SIZE;
@@ -1095,7 +1098,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			//Path
 			if(-1 == redraw) {
 				draw_hscroll_over(0);
-				draw_hscroll_init(down_screen_addr, 49, 10, 170, COLOR_TRANS, 
+				draw_hscroll_init(down_screen_addr, 49, 10, 170, COLOR_TRANS,
 					COLOR_WHITE, default_dir_name);
 				path_scroll = 0x8000;		//first scroll left
 			}
@@ -1142,7 +1145,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 					pt = file_list[m];
 				}
 
-				draw_hscroll_init(down_screen_addr, 41, 40 + k*27, 185, 
+				draw_hscroll_init(down_screen_addr, 41, 40 + k*27, 185,
 					COLOR_TRANS, color, pt);
 			}
 
@@ -1273,7 +1276,7 @@ u32 play_screen_snapshot(void)
 
         if(draw_yesno_dialog(DOWN_SCREEN, 115, msg[MSG_GENERAL_CONFIRM_WITH_A], msg[MSG_GENERAL_CANCEL_WITH_B]))
             return 1;
-        else 
+        else
             return 0;
     }
 
@@ -1378,7 +1381,7 @@ u32 play_screen_snapshot(void)
                         time1= time0;
                     }
                     break;
-                    
+
                 case CURSOR_DOWN:
                     if(!pause)
                     {
@@ -1386,21 +1389,21 @@ u32 play_screen_snapshot(void)
                         time1= time0;
                     }
                     break;
-                    
+
                 case CURSOR_LEFT:
                     time1 = ticks;
                     if(i > 1) i -= 2;
                     else if(i == 1) i= file_num -1;
                     else i= file_num -2;
                     break;
-                
+
                 case CURSOR_RIGHT:
                     time1 = ticks;
                     break;
-                
+
                 case CURSOR_SELECT:
                     if(!pause)
-                    { 
+                    {
                         time1 = -1;
                         pause= 1;
                     }
@@ -1408,15 +1411,15 @@ u32 play_screen_snapshot(void)
                     {
                         time1 = ticks;
                         pause= 0;
-                    } 
+                    }
                     break;
-                    
-                case CURSOR_BACK: 
+
+                case CURSOR_BACK:
                     if(screenp) free((void*)screenp);
                     //deconstruct filelist_info struct
 					manage_filelist_info(&filelist_info, -1);
 					repeat = 0;
-					break;                    
+					break;
 
                 default: gui_action= CURSOR_NONE;
                     break;
@@ -1456,7 +1459,7 @@ int search_dir(char *directory, char* directory_path)
 	//while((current_file = readdir(current_dir)) != NULL)
 	while((current_file = readdir_ex(current_dir, &st)) != NULL)
 	{
-		//Is directory 
+		//Is directory
 		if(S_ISDIR(st.st_mode))
 		{
 			if(strcmp(".", current_file->d_name) || strcmp("..", current_file->d_name))
@@ -1635,7 +1638,7 @@ int save_state(char* file, void* screen)
 	n = ftell(fp);
 
 	ds2_getTime(&time);
-    sprintf(str, "%02d-%02d %02d:%02d:%02d", 
+    sprintf(str, "%02d-%02d %02d:%02d:%02d",
 		time.month, time.day, time.hours, time.minutes, time.seconds);
 
 	PRINT_STRING_BG(screen, str, COLOR_WHITE, COLOR_BLACK, 0, 0);
@@ -1709,7 +1712,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     MENU_TYPE *current_menu = NULL;
     MENU_OPTION_TYPE *current_option = NULL;
     MENU_OPTION_TYPE *display_option = NULL;
-    
+
     u32 current_option_num;
 //    u32 parent_option_num;
     u32 string_select;
@@ -1801,7 +1804,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			strcat(line_buffer, "/");
 			strcat(line_buffer, tmp_filename);
 
-			draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
+			draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
 			draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_LOADING_GAME]);
 			ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
@@ -1833,71 +1836,36 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			choose_menu(current_menu);
 		}
 	}
-	
-	bool Get_Args(char *file, char **filebuf)
-	{
-		FILE* dat = fat_fopen(file, "rb");
-		if(dat)
-		{
-			int i = 0;
-			while(!fat_feof (dat))
-			{
-				fat_fgets(filebuf[i], 512, dat);
-				int len = strlen(filebuf[i]);
-				if(filebuf[i][len - 1] == '\n')
-					filebuf[i][len - 1] = '\0';
-				i++;
-			}
-				
-			fat_fclose(dat);
-			fat_remove(file);
-			return i;
-		}
-		return 0;
-	}
 
-	int CheckLoad_Arg()
-	{
-		char args[2][512];
-		char *argarray[2];
-		
-		argarray[0] = args[0];
-		argarray[1] = args[1];
-		
-		if(!Get_Args("/plgargs.dat", argarray))
-			return 0;
-	
-		fat_remove("plgargs.dat");
-	
-		draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
-		draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_LOADING_GAME]);
-		ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
+  int Menu_loadGame(char *filename){
+    draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
+    draw_string_vcenter(down_screen_addr, 36, 100, 190, COLOR_MSSG, msg[MSG_PROGRESS_LOADING_GAME]);
+    ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
-		HighFrequencyCPU();
-		int load_result = load_gamepak(args[1]);
-		LowFrequencyCPU();
+    HighFrequencyCPU();
+    int load_result = load_gamepak(filename);
+    LowFrequencyCPU();
 
-		if(load_result == -1)
-		{
-			first_load = 1;
-			gamepak_name[0] = '\0';
-			return 0;
-		}	
+    if(load_result == -1)
+    {
+      first_load = 1;
+      gamepak_name[0] = '\0';
+      return 0;
+    }
 
-		strcpy(gamepak_name, args[1]);
-		first_load = 0;
-		load_game_config_file();
+    strcpy(gamepak_name, filename);
+    first_load = 0;
+    load_game_config_file();
 
-		return_value = 1;
-		repeat = 0;
+    return_value = 1;
+    repeat = 0;
 
-		reorder_latest_file();
-		get_savestate_filelist();
+    reorder_latest_file();
+    get_savestate_filelist();
 
-		game_fast_forward= 0;
-		return 1;		
-	
-	}
+    game_fast_forward= 0;
+    return 1;
+  }
 
 	void menu_restart()
 	{
@@ -2111,7 +2079,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			}
 		}
 	}
-   
+
 	void menu_load_state()
 	{
 		if(!first_load)
@@ -2151,7 +2119,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				//right
 				if(gui_action == CURSOR_SELECT)
 				{
-					draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
+					draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
 					draw_string_vcenter(up_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_LOADING]);
 
 					HighFrequencyCPU();
@@ -2235,7 +2203,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			}
 			else if(current_option_num == 2)    //delette single
 			{
-				draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color); 
+				draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
 
 				if(SavedStateFileExists(delette_savestate_num))
 				{
@@ -2303,7 +2271,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					{
 						m= current_menu->screen_focus -1;
 						draw_hscroll_over(m+1);
-						draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200, 
+						draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200,
 							COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
 					}
 					else
@@ -2313,7 +2281,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 						m= current_menu->focus_option - current_menu->screen_focus+2;
 						for(n= 0; n < SUBMENU_ROW_NUM-1; n++)
-							draw_hscroll_init(down_screen_addr, 23, 40 + n*27, 200, 
+							draw_hscroll_init(down_screen_addr, 23, 40 + n*27, 200,
 								COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[m+n].display_string);
 					}
 				}
@@ -2321,7 +2289,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				if(current_option_num == 0)
 				{
 					draw_hscroll_over(0);
-					draw_hscroll_init(down_screen_addr, 50, 9, 180, 
+					draw_hscroll_init(down_screen_addr, 50, 9, 180,
 						COLOR_TRANS, COLOR_ACTIVE_ITEM, *dynamic_cheat_options[0].display_string);
 				}
 
@@ -2334,7 +2302,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					if(m >= SUBMENU_ROW_NUM) m -= 1;
 
 					draw_hscroll_over(m+1);
-					draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200, 
+					draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200,
 						COLOR_TRANS, COLOR_ACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
 				}
 
@@ -2348,7 +2316,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					{
 						m = current_menu->screen_focus -1;
 						draw_hscroll_over(m+1);
-						draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200, 
+						draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200,
 							COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
 					}
 					else
@@ -2363,7 +2331,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 						if(k > SUBMENU_ROW_NUM) k = SUBMENU_ROW_NUM;
 
 						for(n= 1; n < k; n++)
-							draw_hscroll_init(down_screen_addr, 23, 40 + n*27, 200, 
+							draw_hscroll_init(down_screen_addr, 23, 40 + n*27, 200,
 								COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[m+n].display_string);
 					}
 				}
@@ -2375,7 +2343,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					if(current_option_num == 0)
 					{
 						draw_hscroll_over(0);
-						draw_hscroll_init(down_screen_addr, 50, 9, 180, 
+						draw_hscroll_init(down_screen_addr, 50, 9, 180,
 							COLOR_TRANS, COLOR_ACTIVE_ITEM, *dynamic_cheat_options[0].display_string);
 					}
 				}
@@ -2390,7 +2358,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 						m = current_menu->screen_focus -1;
 
 					draw_hscroll_over(m+1);
-					draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200, 
+					draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200,
 						COLOR_TRANS, COLOR_ACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
 				}
 		        	break;
@@ -2666,7 +2634,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 		mm = *(display_option->current_option);
 		sprintf(line_buffer, *(display_option->display_string), str[mm]);
-		
+
         PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 27,
             38 + (display_option-> line_number)*32);
 	}
@@ -2757,7 +2725,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
             draw_string_vcenter(down_screen_addr, 36, 95, 190, COLOR_MSSG, msg[MSG_CHANGE_LANGUAGE_WAITING]);
             ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
-            load_language_msg(LANGUAGE_PACK, emu_config.language);    
+            load_language_msg(LANGUAGE_PACK, emu_config.language);
             // gui_change_icon(emu_config.language); // uncomment if images change per language [Neb]
 
             if(first_load)
@@ -2846,18 +2814,18 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	{
 	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_VIDEO_AUDIO], NULL, 0),
 
-    /* 01 */ STRING_SELECTION_OPTION(NULL, NULL, &msg[FMT_VIDEO_ASPECT_RATIO], screen_ratio_options, 
+    /* 01 */ STRING_SELECTION_OPTION(NULL, NULL, &msg[FMT_VIDEO_ASPECT_RATIO], screen_ratio_options,
         &game_config.graphic, 5, NULL, PASSIVE_TYPE, 1),
 
-	/* 02 */ STRING_SELECTION_OPTION(game_fastforward, NULL, &msg[FMT_VIDEO_FAST_FORWARD], on_off_options, 
+	/* 02 */ STRING_SELECTION_OPTION(game_fastforward, NULL, &msg[FMT_VIDEO_FAST_FORWARD], on_off_options,
 		&game_fast_forward, 2, NULL, ACTION_TYPE, 2),
-		
+
 	/* 03 */	STRING_SELECTION_OPTION(game_disableAudio, NULL, &msg[FMT_AUDIO_SOUND], sound_seletion,
 		&game_enable_audio, 2, NULL, ACTION_TYPE, 3),
-		
+
 	/* 04 */	STRING_SELECTION_OPTION(game_set_fluidity, NULL, &msg[FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE], fluidity_options,
 		&game_config.SoundSync, 2, NULL, ACTION_TYPE, 4),
-		
+
 	/* 05 */	STRING_SELECTION_OPTION(game_set_frameskip, NULL, &msg[FMT_VIDEO_FRAME_SKIPPING], frameskip_options,
 		&game_config.frameskip_value, 10 /* auto (0) and 2..10 (1..9) make 10 option values */, NULL, ACTION_TYPE, 5)
 	};
@@ -2905,9 +2873,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	{
 	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_CHEATS], NULL,0),
 
-	/* 01 */ CHEAT_OPTION(cheat_option_action, cheat_option_passive, 
+	/* 01 */ CHEAT_OPTION(cheat_option_action, cheat_option_passive,
 		((CHEATS_PER_PAGE * menu_cheat_page) + 0), 1),
-	/* 02 */ CHEAT_OPTION(cheat_option_action, cheat_option_passive, 
+	/* 02 */ CHEAT_OPTION(cheat_option_action, cheat_option_passive,
 		((CHEATS_PER_PAGE * menu_cheat_page) + 1), 2),
 	/* 03 */ CHEAT_OPTION(cheat_option_action, cheat_option_passive,
 		((CHEATS_PER_PAGE * menu_cheat_page) + 2), 3),
@@ -2974,7 +2942,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
   /*--------------------------------------------------------
      Tools
   --------------------------------------------------------*/
-    MENU_OPTION_TYPE tools_options[] = 
+    MENU_OPTION_TYPE tools_options[] =
     {
 	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_TOOLS], NULL, 0),
 
@@ -2986,10 +2954,10 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 //	/* 02 */ SUBMENU_OPTION(&tools_keyremap_menu, &msg[MSG_SUB_MENU_31], NULL, 2),
 
-//	/* 03 */ STRING_SELECTION_OPTION(time_backward_action, NULL, &msg[MSG_SUB_MENU_302], on_off_options, 
+//	/* 03 */ STRING_SELECTION_OPTION(time_backward_action, NULL, &msg[MSG_SUB_MENU_302], on_off_options,
 //			&game_config.backward, 2, NULL, ACTION_TYPE, 3),
 
-//	/* 04 */ NUMERIC_SELECTION_ACTION_OPTION(time_period_action, time_period_passive, &msg[MSG_SUB_MENU_32], 
+//	/* 04 */ NUMERIC_SELECTION_ACTION_OPTION(time_period_action, time_period_passive, &msg[MSG_SUB_MENU_32],
 //		&game_config.backward_time, 6, NULL, 4)
     };
 
@@ -3038,7 +3006,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
      Load_game
   --------------------------------------------------------*/
     MENU_TYPE latest_game_menu;
-  
+
     MENU_OPTION_TYPE load_game_options[] =
     {
 	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_LOAD_GAME_MENU_TITLE], NULL, 0),
@@ -3169,7 +3137,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			show_icon(down_screen_addr, &ICON_MSEL, 173, 131);
 		}
 		else {
-			show_icon(down_screen_addr, &ICON_NEXIT, 187, 75);	
+			show_icon(down_screen_addr, &ICON_NEXIT, 187, 75);
 			show_icon(down_screen_addr, &ICON_MNSEL, 173, 131);
 		}
 		draw_string_vcenter(down_screen_addr, 175, 131, 75, COLOR_WHITE, line_buffer);
@@ -3364,7 +3332,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
         {
             ext_pos= strrchr(emu_config.latest_file[k], '/');
             if(ext_pos != NULL)
-                draw_hscroll_init(down_screen_addr, 26, 40 + k*27, 200, 
+                draw_hscroll_init(down_screen_addr, 26, 40 + k*27, 200,
                     COLOR_TRANS, COLOR_INACTIVE_ITEM, ext_pos+1);
 			else
 				break;
@@ -3422,7 +3390,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     void latest_game_menu_end()
     {
         u32 k;
-        
+
         for(k= 0; k < 5; k++)
         {
             if(emu_config.latest_file[k][0] != '\0')
@@ -3442,12 +3410,12 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200, 
+                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200,
                 	    COLOR_TRANS, COLOR_INACTIVE_ITEM, ext_pos+1);
 				}
 
 				current_option_num += 1;
-				if(current_option_num >= latest_game_menu.num_options)	
+				if(current_option_num >= latest_game_menu.num_options)
 					current_option_num = 0;
                 current_option = current_menu->options + current_option_num;
 
@@ -3456,7 +3424,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200, 
+                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200,
                 	    COLOR_TRANS, COLOR_ACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3468,7 +3436,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200, 
+                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200,
                 	    COLOR_TRANS, COLOR_INACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3481,7 +3449,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200, 
+                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200,
                 	    COLOR_TRANS, COLOR_ACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3562,7 +3530,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     void game_fastforward()
     {
     }
-	
+
 
 
 	void reload_cheats_page()
@@ -3610,7 +3578,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		mdelay(100); // to prevent ds2_setBacklight() from crashing
 		ds2_setBacklight(3);
 	}
-	
+
 	wait_Allkey_release(0);
     bg_screenp= (u16*)malloc(256*192*2);
 
@@ -3619,7 +3587,8 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	if(gamepak_name[0] == 0)
 	{
 		first_load = 1;
-		if(CheckLoad_Arg())
+    //try auto loading games passed through argv first
+		if(Menu_loadGame(argv[1]))
 			repeat = 0;
 		else
 		{
@@ -3642,7 +3611,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	choose_menu(&main_menu);
 
 //	Menu loop
-	
+
 	while(repeat)
 	{
 		display_option = current_menu->options;
@@ -3691,7 +3660,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				focus_option = line_num;
 			}
 			current_menu -> focus_option = focus_option;
-		
+
 			i = focus_option - screen_focus;
 			display_option += i +1;
 
@@ -3737,7 +3706,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 						color= COLOR_ACTIVE_ITEM;
 					else
 						color= COLOR_INACTIVE_ITEM;
-	
+
 					PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 23, 40 + i*27);
 				}
     	    }
@@ -3767,7 +3736,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 					current_option_num = (inputdata.y / 80) * 3 + (inputdata.x / 86);
 					current_option = current_menu->options + current_option_num;
-					
+
 					if(current_option -> option_type & HIDEN_TYPE)
 						break;
 					else if(current_option->option_type & ACTION_TYPE)
@@ -3776,9 +3745,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 						choose_menu(current_option->sub_menu);
 				}
 				/* This is the majority case, covering all menus except save states, screen shots, and game loading */
-				else if(current_menu != (main_menu.options + 1)->sub_menu 
+				else if(current_menu != (main_menu.options + 1)->sub_menu
 				&& current_menu != ((main_menu.options +1)->sub_menu->options + 3)->sub_menu
-				&& current_menu != (main_menu.options +3)->sub_menu 
+				&& current_menu != (main_menu.options +3)->sub_menu
 				&& current_menu != ((main_menu.options +3)->sub_menu->options + 1)->sub_menu
 				&& current_menu != (main_menu.options +6)->sub_menu
 				&& current_menu != ((main_menu.options +6)->sub_menu->options + 2)->sub_menu)
@@ -3846,9 +3815,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 						next_option_num = 3;
 					else
 						break;
-					
+
 					struct _MENU_OPTION_TYPE *next_option = current_menu->options + next_option_num;
-					
+
 					if(next_option_num == 1 /* write */ || next_option_num == 2 /* read */)
 					{
 						u32 current_option_val = *(next_option->current_option);
@@ -3893,7 +3862,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 						}
 						break;
 					}
-					
+
 					gui_action = CURSOR_SELECT;
 					if(next_option -> option_type & HIDEN_TYPE)
 						break;
@@ -3920,9 +3889,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 						next_option_num = 2;
 					else
 						break;
-					
+
 					struct _MENU_OPTION_TYPE *next_option = current_menu->options + next_option_num;
-					
+
 					if(next_option_num == 2)
 					{
 						u32 current_option_val = *(next_option->current_option);
@@ -3960,7 +3929,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 						}
 						break;
 					}
-					
+
 					gui_action = CURSOR_SELECT;
 					if(next_option -> option_type & HIDEN_TYPE)
 						break;
@@ -4093,7 +4062,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					choose_menu(current_option->sub_menu);
 				break;
 
-			case CURSOR_BACK: 
+			case CURSOR_BACK:
 				if(current_menu != &main_menu)
 					choose_menu(current_menu->options->sub_menu);
 				else
@@ -4112,7 +4081,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 	destroy_dynamic_cheats();
 	if(bg_screenp != NULL) free((void*)bg_screenp);
-	
+
 	if(gamepak_name[0] != 0)
 	{
 		reorder_latest_file();
@@ -4120,7 +4089,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		save_game_config_file();
 	}
 	save_emu_config_file();
-	
+
 	ds2_clearScreen(DOWN_SCREEN, 0);
 	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 	copy_screen(up_screen_addr, (void*) screen, 0, 0, 256, 192);
@@ -4396,7 +4365,7 @@ int save_game_config_file(void)
 
     sprintf(game_config_filename, "%s/%s", DEFAULT_CFG_DIR, gamepak_name);
     pt = strrchr(game_config_filename, '.');
-	if(NULL == pt) 
+	if(NULL == pt)
 		return -1;
 
     *pt = '\0';
@@ -4472,7 +4441,7 @@ void reorder_latest_file(void)
                 else
                     break;
             }
-            
+
             strcpy(emu_config.latest_file[i-1], full_file);
         }
         return ;
@@ -4638,7 +4607,7 @@ void get_newest_savestate(char *name_buffer)
     get_savestate_filename(latest_save, name_buffer);
 }
 
-static void get_timestamp_string(char *buffer, u16 msg_id, u16 year, u16 mon, 
+static void get_timestamp_string(char *buffer, u16 msg_id, u16 year, u16 mon,
     u16 day, u16 wday, u16 hour, u16 min, u16 sec, u32 msec)
 {
     char *weekday_strings[] =
@@ -4646,7 +4615,7 @@ static void get_timestamp_string(char *buffer, u16 msg_id, u16 year, u16 mon,
         "SUN", "MON", "TUE", "WED", "TUR", "FRI", "SAT"
     };
 
-    sprintf(buffer, "%s %02d/%02d/%04d %02d:%02d:%02d", weekday_strings[wday], 
+    sprintf(buffer, "%s %02d/%02d/%04d %02d:%02d:%02d", weekday_strings[wday],
         day, mon, year, hour, min, sec);
 }
 
@@ -4671,7 +4640,7 @@ static u32 save_ss_bmp(u16 *image)
 
     change_ext(gamepak_name, ss_filename, "_");
 	ds2_getTime(&current_time);
-    sprintf(save_ss_path, "%s/%s%02d%02d%02d%02d%02d.bmp", DEFAULT_SS_DIR, ss_filename, 
+    sprintf(save_ss_path, "%s/%s%02d%02d%02d%02d%02d.bmp", DEFAULT_SS_DIR, ss_filename,
     current_time.month, current_time.day, current_time.hours, current_time.minutes, current_time.seconds);
 
     for(y = 0; y < 192; y++)
@@ -4706,7 +4675,7 @@ void quit(void)
   __asm__ __volatile__("or %0, $0, $ra"
                         : "=r" (reg_ra)
                         :);
-  
+
   dbg_printf("return address= %08x\n", reg_ra);
 */
 
@@ -4732,6 +4701,37 @@ u32 file_length(FILE* file)
 /*
 *	GUI Initialize
 */
+static bool Get_Args(char *file, char **filebuf){
+  FILE* dat = fat_fopen(file, "rb");
+  if(dat){
+    int i = 0;
+    while(!fat_feof (dat)){
+      fat_fgets(filebuf[i], 512, dat);
+      int len = strlen(filebuf[i]);
+      if(filebuf[i][len - 1] == '\n')
+        filebuf[i][len - 1] = '\0';
+      i++;
+    }
+
+    fat_fclose(dat);
+    fat_remove(file);
+    return i;
+  }
+  return 0;
+}
+
+int CheckLoad_Arg(){
+  char *argarray[2];
+  argarray[0] = argv[0];
+  argarray[1] = argv[1];
+
+  if(!Get_Args("/plgargs.dat", argarray))
+    return 0;
+
+  fat_remove("plgargs.dat");
+  return 1;
+}
+
 void gui_init(u32 lang_id)
 {
 	int flag;
@@ -4749,7 +4749,17 @@ void gui_init(u32 lang_id)
     //Find the "CATSFC" system directory
     DIR *current_dir;
 
-    strcpy(main_path, "fat:/CATSFC");
+    if(CheckLoad_Arg()){
+      //copy new folder location
+      strcpy(main_path, "fat:");
+      strcat(main_path, argv[0]);
+      //strip off the binary name
+      char *endStr = strrchr(main_path, '/');
+      *endStr = '\0';
+    }
+    else
+      strcpy(main_path, "fat:/CATSFC");
+
     current_dir = opendir(main_path);
     if(current_dir)
         closedir(current_dir);
