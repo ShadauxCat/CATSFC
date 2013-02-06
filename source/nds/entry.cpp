@@ -425,7 +425,7 @@ void init_sfc_setting(void)
 	//sound settings
     Settings.APUEnabled = Settings.NextAPUEnabled = TRUE;
 	Settings.FixFrequency = 1;
-
+	Settings.InterpolatedSound = TRUE;
 
     Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
     Settings.SkipFrames = AUTO_FRAMERATE;
@@ -1042,7 +1042,7 @@ void S9xGenerateSound ()
 	}
 }
 
-#define SOUND_EMISSION_INTERVAL ((unsigned int) ((((unsigned long long) DS2_BUFFER_SIZE * 1000000) / SND_SAMPLE_RATE) * 3 / 128))
+#define SOUND_EMISSION_INTERVAL ((unsigned int) ((((unsigned long long) DS2_BUFFER_SIZE * 1000000) / SND_SAMPLE_RATE) * 3 / 128) - 1) /* -1 is for roundoff errors */
 unsigned int LastSoundEmissionTime = 0;
 
 void S9xProcessSound (unsigned int)
