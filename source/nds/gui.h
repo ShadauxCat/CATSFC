@@ -48,7 +48,25 @@ struct _EMU_CONFIG
 
 struct _GAME_CONFIG
 {
-	u32 clock_speed_number;
+	/*
+	 * PreviouslyUsed_20130205_2 was formerly known as
+	 * 'clock_speed_number'; its values were in [0, 5]. [0, 5] were mapped
+	 * to 240, 300, 336, 360, 384 and 394 MHz respectively.
+	 * Version 1.29 changes the value range for 'clock_speed_number' to
+	 * [0, 6], with 0 as an automatic CPU speed setting.
+	 * Change rationale: The default value becomes 0 instead of 5.
+	 * If this variable were to be used as is, the meaning of the default
+	 * value would change. Games which had a configuration file before
+	 * 1.29 would be using the older default of 5 (394 MHz), the meaning
+	 * of which would become 384 MHz instead of "staying the default".
+	 * Games which did not have a configuration file before 1.29 would be
+	 * using the correct default.
+	 * This would confuse users or cause undue hassle.
+	 * THIS VALUE IS NOT GUARANTEED TO BE RESERVED AND SET TO 0.
+	 * DO NOT USE THIS VALUE FOR ANY PURPOSE OTHER THAN EXACTLY THE ONE
+	 * FOR WHICH IT WAS INTENDED.
+	 */
+	u32 PreviouslyUsed_20130205_2;
 	u32  Reserved0;
 	/*
 	 * PreviouslyUsed_20130205_1 was formerly known as 'frameskip_value';
@@ -78,7 +96,8 @@ struct _GAME_CONFIG
 	u32 HotkeyToggleSound;
 	u32 SoundSync;
 	u32 frameskip_value;
-	u32  Reserved2[43];
+	u32 clock_speed_number;
+	u32  Reserved2[42];
 };
 
 typedef enum

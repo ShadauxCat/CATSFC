@@ -289,7 +289,6 @@ u32 game_enable_audio = 1;
 /******************************************************************************
  ******************************************************************************/
 static u32 menu_cheat_page = 0;
-u32 clock_speed_number = 5;
 u32 gamepad_config_menu;
 
 /******************************************************************************
@@ -1665,8 +1664,10 @@ void GameFrequencyCPU()
 {
 	u32 clock_speed_table[6] = {6, 9, 10, 11, 12, 13};	//240, 300, 336, 360, 384, 396
 
-	if(clock_speed_number <= 5)
-		ds2_setCPUclocklevel(clock_speed_table[clock_speed_number]);
+	if (game_config.clock_speed_number == 0)
+		ds2_setCPUclocklevel(clock_speed_table[AutoCPUFrequency]);
+	else if(game_config.clock_speed_number <= 6)
+		ds2_setCPUclocklevel(clock_speed_table[game_config.clock_speed_number - 1]);
 }
 
 void savefast_int(void)
@@ -1776,8 +1777,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		HighFrequencyCPU(); // Crank it up, leave quickly
         if(gamepak_name[0] != 0)
         {
-			game_config.clock_speed_number = clock_speed_number;
-
             reorder_latest_file();
 			S9xAutoSaveSRAM ();
 			save_game_config_file();
@@ -2828,6 +2827,8 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     
     char *frameskip_options[] = { (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_2], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_3], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_4], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_5], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_6], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_7], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_8], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_9], (char*)&msg[MSG_VIDEO_FRAME_SKIPPING_10] };
 
+    char *cpu_frequency_options[] = { (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_AUTOMATIC], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_0], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_1], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_2], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_3], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_4], (char*)&msg[MSG_OPTIONS_CPU_FREQUENCY_5] };
+
     char *fluidity_options[] = { (char*)&msg[MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO], (char*)&msg[MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO] };
 
     char *on_off_options[] = { (char*)&msg[MSG_GENERAL_OFF], (char*)&msg[MSG_GENERAL_ON] };
@@ -3002,8 +3003,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	{
 	/* 00 */ SUBMENU_OPTION(NULL, &msg[MSG_MAIN_MENU_OPTIONS], NULL, 0),
 
-	//CPU speed
-	/* 01 */ NUMERIC_SELECTION_OPTION(NULL, &msg[FMT_OPTIONS_CPU_FREQUENCY], &clock_speed_number, 6, NULL, 1),
+	//CPU speed (string: shows MHz)
+	/* 01 */ STRING_SELECTION_OPTION(NULL, NULL, &msg[FMT_OPTIONS_CPU_FREQUENCY], cpu_frequency_options, 
+        &game_config.clock_speed_number, 7, NULL, PASSIVE_TYPE, 1),
 
 	/* 02 */ STRING_SELECTION_OPTION(language_set, NULL, &msg[FMT_OPTIONS_LANGUAGE], language_options, 
         &emu_config.language, sizeof(language_options) / sizeof(language_options[0]) /* number of possible languages */, NULL, ACTION_TYPE, 2),
@@ -4113,8 +4115,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	
 	if(gamepak_name[0] != 0)
 	{
-		game_config.clock_speed_number = clock_speed_number;
-
 		reorder_latest_file();
 		S9xAutoSaveSRAM ();
 		save_game_config_file();
@@ -4284,8 +4284,7 @@ u32 load_font()
 --------------------------------------------------------*/
 void init_game_config(void)
 {
-	game_config.clock_speed_number = 5;	// 396 MHz by default
-	clock_speed_number = 5;
+	game_config.clock_speed_number = 0;	// "Auto" by default
 	game_config.graphic = 3; // By default, have a good-looking aspect ratio
 	game_config.frameskip_value = 0; // Automatic frame skipping
 	game_config.SoundSync = 0; // Prefer fluid images by default
@@ -4341,7 +4340,6 @@ void load_game_config_file(void)
 	{
 		fread(&game_config, 1, sizeof(GAME_CONFIG), fp);
 
-		clock_speed_number = game_config.clock_speed_number;
 		game_set_frameskip();
 		game_set_fluidity();
 	}

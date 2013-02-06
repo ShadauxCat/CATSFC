@@ -8,6 +8,8 @@ extern "C" {
 	void game_restart(void);
 
 	int load_gamepak(char* file);
+
+	extern unsigned int AutoCPUFrequency;
 #ifdef __cplusplus
 }
 #endif
