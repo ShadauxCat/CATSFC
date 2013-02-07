@@ -84,19 +84,24 @@ menu's "Load a cheat file" option.
 
 In the Video & audio menu, the **Frame skipping** option allows you to select
 a number of frames to skip between rendered frames.
-* Setting this to 0 will show every single frame, but this will slow down the
-  game considerably, as the DSTWO would only have enough processing power to
-  emulate **and** render a few frames per second. It has enough power to
-  emulate all frames and render **some**, though.
+
+As of version 1.29, the default is - (Keep up with the game). For most games,
+this setting keeps video and audio fluid, without the sudden slowdowns of
+previous versions when many sprites fill the screen. The DS controller buttons
+are also responsive at this setting.
+
+For some games, you may need to adjust frame skipping.
+* If a game runs at 5 frames per second, like *Yoshi's Island*,
+  *Kirby Super Star*, *Star Fox* or *Super Mario RPG*, setting frame skipping
+  to 1 will allow you to jump, move or shoot at the right times.
+* If you want to show more frames per second in a game that already shows 20,
+  setting frame skipping to 1 or 0 will cause more frames to appear,
+  but your DS button input may stop responding for 2 entire seconds every so
+  often. The audio will also be stretched. (This is similar to NDSGBA.)
 * Setting this to 10 will skip 10 frames and render one, but this will
   severely desynchronise the audio. You will also find yourself unable to
-  perform actions during the correct frame with the controller.
-* Setting this to - (Keep up with the game) will make the emulator try to
-  render the game at its correct speed, dropping frames as needed (up to 8).
-
-It is recommended to start with frame skipping 4 (Show 1 frame every 5) and
-go to 3 or 2 if the game doesn't run with major slowdowns with them. If you
-don't like the slowdowns, return to frame skipping 4 or -.
+  perform actions during the correct frame with the DS buttons. It is advised
+  to set frame skipping to the lowest value with which you can play a game.
 
 # Fluidity
 
@@ -105,12 +110,13 @@ By default, video fluidity is preferred over audio fluidity in games.
 
 * Preferring video fluidity makes audio skip certain notes, up to
   23 milliseconds, in order to render more video. In many games, this
-  difference is not audible.
-  Use this option if you want to play games that require precise controls or
-  fluid imagery more than precise audio emulation. You can also use this option
-  when watching game introductions, endings and cutscenes.
+  difference is not audible, but you may hear certain audio glitches if a game
+  depends highly on timing for its audio.
+  Use this option if you want to play games that require fluid imagery more
+  than precise audio emulation. You can also use this option when watching game
+  introductions, endings and cutscenes.
 * Preferring audio fluidity makes video skip certain images, up to
-  166 milliseconds, in order to render audio closer to 32,000 times per second.
+  46 milliseconds, in order to render audio closer to 32,000 times per second.
   Use this option if you want to play games mainly for their soundtracks, or in
   a game's sound test mode. You can also use this option to experiment with the
   green berry glitch in Super Mario World that makes TIME go over and under 100
