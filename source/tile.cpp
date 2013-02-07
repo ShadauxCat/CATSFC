@@ -589,71 +589,8 @@ void DrawTile16 (uint32 Tile, uint32 Offset, uint32 StartLine,
 {
 	TILE_PREAMBLE
 	register uint8 *bp;
-	uint8  Pixel;
-	uint16 *Screen = (uint16 *) GFX.S + Offset;
-	uint8  *Depth = GFX.DB + Offset;
 
-	switch (Tile & (H_FLIP | V_FLIP))
-	{
-	case 0:
-		bp = pCache + StartLine;
-		for (l = LineCount; l != 0; l--, bp += 8, Screen += GFX.PPL, Depth += GFX.PPL)
-		{
-			for (uint8 N = 0; N < 8; N++)
-			{
-				if (GFX.Z1 > Depth [N] && (Pixel = bp[N]))
-				{
-					Screen [N] = ScreenColors [Pixel];
-					Depth [N] = GFX.Z2;
-				}
-			}
-		}
-		break;
-	case H_FLIP:
-		bp = pCache + StartLine;
-		for (l = LineCount; l != 0; l--, bp += 8, Screen += GFX.PPL, Depth += GFX.PPL)
-		{
-			for (uint8 N = 0; N < 8; N++)
-			{
-				if (GFX.Z1 > Depth [N] && (Pixel = bp[7 - N]))
-				{
-					Screen [N] = ScreenColors [Pixel];
-					Depth [N] = GFX.Z2;
-				}
-			}
-		}
-		break;
-	case H_FLIP | V_FLIP:
-		bp = pCache + 56 - StartLine;
-		for (l = LineCount; l != 0; l--, bp -= 8, Screen += GFX.PPL, Depth += GFX.PPL)
-		{
-			for (uint8 N = 0; N < 8; N++)
-			{
-				if (GFX.Z1 > Depth [N] && (Pixel = bp[7 - N]))
-				{
-					Screen [N] = ScreenColors [Pixel];
-					Depth [N] = GFX.Z2;
-				}
-			}
-		}
-		break;
-	case V_FLIP:
-		bp = pCache + 56 - StartLine;
-		for (l = LineCount; l != 0; l--, bp -= 8, Screen += GFX.PPL, Depth += GFX.PPL)
-		{
-			for (uint8 N = 0; N < 8; N++)
-			{
-				if (GFX.Z1 > Depth [N] && (Pixel = bp[N]))
-				{
-					Screen [N] = ScreenColors [Pixel];
-					Depth [N] = GFX.Z2;
-				}
-			}
-		}
-		break;
-	default:
-        	break;
-    }
+	RENDER_TILE(WRITE_4PIXELS16, WRITE_4PIXELS16_FLIPPED, 4)
 }
 
 void DrawClippedTile16 (uint32 Tile, uint32 Offset,
