@@ -3535,9 +3535,10 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	{ // assume that the backlight is already at 3 when the emulator starts
 		mdelay(100); // to prevent ds2_setBacklight() from crashing
 		ds2_setBacklight(3);
+		// also allow the user to press A for New Game right away
+		wait_Allkey_release(0);
 	}
 
-	wait_Allkey_release(0);
     bg_screenp= (u16*)malloc(256*192*2);
 
 	repeat = 1;
