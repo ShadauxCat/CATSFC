@@ -432,7 +432,6 @@ void init_sfc_setting(void)
     Settings.ShutdownMaster = TRUE;
     Settings.FrameTimePAL = 20000;
     Settings.FrameTimeNTSC = 16667;
-    Settings.DisableSampleCaching = FALSE;
     Settings.DisableMasterVolume = FALSE;
     Settings.Mouse = TRUE;
     Settings.SuperScope = TRUE;

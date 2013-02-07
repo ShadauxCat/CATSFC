@@ -104,8 +104,6 @@ struct SIAPU
     uint8  *WaitAddress1;
     uint8  *WaitAddress2;
     uint32 WaitCounter;
-    uint8  *ShadowRAM;
-    uint8  *CachedSamples;
     uint8  _Carry;
     uint8  _Zero;
     uint8  _Overflow;
