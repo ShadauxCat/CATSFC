@@ -12,6 +12,7 @@ struct SPointerAdjustments {
 	unsigned int  GFXScreen;
 
 	/* These are used by Snes9x. */
+	unsigned int  ROM;
 };
 
 extern struct SPointerAdjustments PtrAdj;

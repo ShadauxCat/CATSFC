@@ -113,6 +113,12 @@
 
 #include "unzip/unzip.h"
 
+#ifdef DS2_DMA
+#include "ds2_cpu.h"
+#include "ds2_dma.h"
+#include "dma_adj.h"
+#endif
+
 #ifdef __W32_HEAP
 #include <malloc.h>
 #endif
@@ -414,7 +420,11 @@ bool8 CMemory::Init ()
     RAM	    = (uint8 *) malloc (0x20000);
     SRAM    = (uint8 *) malloc (0x20000);
     VRAM    = (uint8 *) malloc (0x10000);
+#ifdef DS2_DMA
+    ROM     = (uint8 *) AlignedMalloc (MAX_ROM_SIZE + 0x200 + 0x8000, 32, &PtrAdj.ROM);
+#else
     ROM     = (uint8 *) malloc (MAX_ROM_SIZE + 0x200 + 0x8000);
+#endif
 	memset (RAM, 0, 0x20000);
 	memset (SRAM, 0, 0x20000);
 	memset (VRAM, 0, 0x10000);
@@ -451,9 +461,9 @@ bool8 CMemory::Init ()
 	
     // Add 0x8000 to ROM image pointer to stop SuperFX code accessing
     // unallocated memory (can cause crash on some ports).
-    ROM += 0x8000;
+    ROM += 0x8000;  // still 32-byte aligned
 	
-    C4RAM    = ROM + 0x400000 + 8192 * 8;
+    C4RAM    = ROM + 0x400000 + 8192 * 8;  // still 32-byte aligned
     ::ROM    = ROM;
     ::SRAM   = SRAM;
     ::RegRAM = FillRAM;
@@ -468,7 +478,6 @@ bool8 CMemory::Init ()
     SuperFX.pvRom = (uint8 *) ROM;
 #endif
 
-    // DS2 DMA notes: Can this be sped up with DMA from a block of zeroes? [Neb]
     ZeroMemory (IPPU.TileCache [TILE_2BIT], MAX_2BIT_TILES * 128);
     ZeroMemory (IPPU.TileCache [TILE_4BIT], MAX_4BIT_TILES * 128);
     ZeroMemory (IPPU.TileCache [TILE_8BIT], MAX_8BIT_TILES * 128);
@@ -508,7 +517,11 @@ void CMemory::Deinit ()
     if (ROM)
     {
 		ROM -= 0x8000;
+#ifdef DS2_RAM
+		AlignedFree ((char *) ROM, PtrAdj.ROM);
+#else
 		free ((char *) ROM);
+#endif
 		ROM = NULL;
     }
 	
@@ -642,9 +655,21 @@ again:
 		((hi_score > lo_score && ScoreHiROM (TRUE) > hi_score) ||
 		(hi_score <= lo_score && ScoreLoROM (TRUE) > lo_score)))
     {
+#ifdef DS2_DMA
+		__dcache_writeback_all();
+		{
+			unsigned int i;
+			for (i = 0; i < TotalFileSize; i += 512)
+			{
+				ds2_DMAcopy_32Byte (2 /* channel: emu internal */, Memory.ROM + i, Memory.ROM + i + 512, 512);
+				ds2_DMA_wait(2);
+				ds2_DMA_stop(2);
+			}
+		}
+#else
 		// memmove required: Overlapping addresses [Neb]
-		// DS2 DMA notes: Can be split into 512-byte DMA blocks [Neb]
 		memmove (Memory.ROM, Memory.ROM + 512, TotalFileSize - 512);
+#endif
 		TotalFileSize -= 512;
 		S9xMessage (S9X_INFO, S9X_HEADER_WARNING, 
 			"Try specifying the -nhd command line option if the game doesn't work\n");
@@ -653,7 +678,7 @@ again:
 		orig_lo_score = lo_score = ScoreLoROM (FALSE);
     }
 	
-    CalculatedSize = (TotalFileSize / 0x2000) * 0x2000;
+    CalculatedSize = TotalFileSize & ~0x1FFF; // round down to lower 0x2000
     ZeroMemory (ROM + CalculatedSize, MAX_ROM_SIZE - CalculatedSize);
 	
 	if(CalculatedSize >0x400000&&
@@ -961,7 +986,20 @@ uint32 CMemory::FileLoader (uint8* buffer, const char* filename, int32 maxsize)
 			{
 				// memmove required: Overlapping addresses [Neb]
 				// DS2 DMA notes: Can be split into 512-byte DMA blocks [Neb]
+#ifdef DS2_DMA
+				__dcache_writeback_all();
+				{
+					unsigned int i;
+					for (i = 0; i < calc_size; i += 512)
+					{
+						ds2_DMAcopy_32Byte (2 /* channel: emu internal */, ptr + i, ptr + i + 512, 512);
+						ds2_DMA_wait(2);
+						ds2_DMA_stop(2);
+					}
+				}
+#else
 				memmove (ptr, ptr + 512, calc_size);
+#endif
 				HeaderCount++;
 				FileSize -= 512;
 			}
@@ -1203,25 +1241,47 @@ void S9xDeinterleaveType2 (bool8 reset)
 			((i & 12) >> 2);
     }
 
-	// DS2 DMA notes: ROM needs to be 32-byte aligned [Neb]
+#ifdef DS2_DMA
+    unsigned int TmpAdj;
+    uint8 *tmp = (uint8 *) AlignedMalloc (0x10000, 32, &TmpAdj);
+#else
     uint8 *tmp = (uint8 *) malloc (0x10000);
+#endif
 	
     if (tmp)
     {
+#ifdef DS2_DMA
+		__dcache_writeback_all();
+#endif
 		for (i = 0; i < nblocks * 2; i++)
 		{
 			for (int j = i; j < nblocks * 2; j++)
 			{
 				if (blocks [j] == i)
 				{
+#ifdef DS2_DMA
+					ds2_DMAcopy_32Byte (2 /* channel: emu internal */, tmp, &Memory.ROM [blocks [j] * 0x10000], 0x10000);
+					ds2_DMA_wait(2);
+					ds2_DMA_stop(2);
+
+					ds2_DMAcopy_32Byte (2 /* channel: emu internal */, &Memory.ROM [blocks [j] * 0x10000],
+						&Memory.ROM [blocks [i] * 0x10000], 0x10000);
+					ds2_DMA_wait(2);
+					ds2_DMA_stop(2);
+
+					ds2_DMAcopy_32Byte (2 /* channel: emu internal */, &Memory.ROM [blocks [i] * 0x10000], tmp, 0x10000);
+					ds2_DMA_wait(2);
+					ds2_DMA_stop(2);
+#else
 					// memmove converted: Different mallocs [Neb]
 					memcpy (tmp, &Memory.ROM [blocks [j] * 0x10000], 0x10000);
+
 					// memmove converted: Different addresses, or identical if blocks[i] == blocks[j] [Neb]
-					// DS2 DMA notes: Don't do DMA at all if blocks[i] == blocks[j] [Neb]
 					memcpy (&Memory.ROM [blocks [j] * 0x10000],
 						&Memory.ROM [blocks [i] * 0x10000], 0x10000);
 					// memmove converted: Different mallocs [Neb]
 					memcpy (&Memory.ROM [blocks [i] * 0x10000], tmp, 0x10000);
+#endif
 					uint8 b = blocks [j];
 					blocks [j] = blocks [i];
 					blocks [i] = b;
@@ -1633,7 +1693,6 @@ bool8 CMemory::LoadSRAM (const char *filename)
 			{
 				// S-RAM file has a header - remove it
 				// memmove required: Overlapping addresses [Neb]
-				// DS2 DMA notes: Can be split into 512-byte DMA blocks [Neb]
 				memmove (::SRAM, ::SRAM + 512, size);
 			}
 			if (len == size + SRTC_SRAM_PAD)
@@ -2573,12 +2632,24 @@ void CMemory::SuperFXROMMap ()
 	
     // Replicate the first 2Mb of the ROM at ROM + 2MB such that each 32K
     // block is repeated twice in each 64K block.
+#ifdef DS2_DMA
+    __dcache_writeback_all();
+#endif
     for (c = 0; c < 64; c++)
     {
+#ifdef DS2_DMA
+		ds2_DMAcopy_32Byte(2 /* channel: emu internal */, &ROM [0x200000 + c * 0x10000], &ROM [c * 0x8000], 0x8000);
+		ds2_DMAcopy_32Byte(3 /* channel: emu internal 2 */, &ROM [0x208000 + c * 0x10000], &ROM [c * 0x8000], 0x8000);
+		ds2_DMA_wait(2);
+		ds2_DMA_wait(3);
+		ds2_DMA_stop(2);
+		ds2_DMA_stop(3);
+#else
 		// memmove converted: Different addresses [Neb]
 		memcpy (&ROM [0x200000 + c * 0x10000], &ROM [c * 0x8000], 0x8000);
 		// memmove converted: Different addresses [Neb]
 		memcpy (&ROM [0x208000 + c * 0x10000], &ROM [c * 0x8000], 0x8000);
+#endif
     }
 	
     WriteProtectROM ();
