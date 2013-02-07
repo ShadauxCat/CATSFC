@@ -50,14 +50,15 @@ char  argv[2][MAX_PATH];
 
 // If adding a language, make sure you update the size of the array in
 // message.h too.
-char *lang[3] =
+char *lang[4] =
 	{
 		"English",					// 0
 		"简体中文",					// 1
-		"Français", 				// 2
+		"Français", 					// 2
+		"Deutsch",					// 3
 	};
 
-char *language_options[] = { (char *) &lang[0], (char *) &lang[1], (char *) &lang[2] };
+char *language_options[] = { (char *) &lang[0], (char *) &lang[1], (char *) &lang[2], (char *) &lang[3] };
 
 /******************************************************************************
 *	Macro definition
@@ -4104,6 +4105,10 @@ int load_language_msg(char *filename, u32 language)
 	case FRENCH:
 		strcpy(start, "STARTFRENCH");
 		strcpy(end, "ENDFRENCH");
+		break;
+	case GERMAN:
+		strcpy(start, "STARTGERMAN");
+		strcpy(end, "ENDGERMAN");
 		break;
 	}
 	u32 cmplen = strlen(start);

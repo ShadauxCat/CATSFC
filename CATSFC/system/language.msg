@@ -648,3 +648,212 @@ Remettre tous les paramètres à zéro?
 Veuillez patienter...
 
 ENDFRENCH
+ 
+STARTGERMAN
+
+#MSG_MAIN_MENU_NEW_GAME
+Neues Spiel
+#MSG_MAIN_MENU_RETURN_TO_GAME
+Zurück zum Spiel
+#MSG_MAIN_MENU_RESET_GAME
+Reset
+#MSG_MAIN_MENU_VIDEO_AUDIO
+Video & Audio
+#MSG_MAIN_MENU_SAVED_STATES
+Speicherstände
+#MSG_MAIN_MENU_CHEATS
+Cheats
+#MSG_MAIN_MENU_TOOLS
+Tools
+#MSG_MAIN_MENU_OPTIONS
+Optionen
+#MSG_MAIN_MENU_EXIT
+Beenden
+#FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
+Flüssigkeit          %s
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
+Bevorzuge flüssiges Video
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
+Bevorzuge flüssiges Audio
+#FMT_VIDEO_ASPECT_RATIO
+Bildformat          %s
+#FMT_VIDEO_FAST_FORWARD
+Schnellvorlauf   %s
+#FMT_VIDEO_FRAME_SKIPPING
+Frames übersp.  %s
+#FMT_AUDIO_SOUND
+Musik                   %s
+#FMT_SAVED_STATE_CREATE
+Speicherstand erstellen      %d
+#FMT_SAVED_STATE_LOAD
+Speicherstand laden            %d
+#MSG_SAVED_STATE_DELETE_GENERAL
+Speicherstände löschen...
+#FMT_CHEAT_PAGE
+Cheatseite %d
+#MSG_CHEAT_LOAD_FROM_FILE
+Cheatdatei laden
+#MSG_TOOLS_SCREENSHOT_GENERAL
+Screenshots...
+#MSG_TOOLS_GLOBAL_HOTKEY_GENERAL
+Globale Hotkeys...
+#MSG_TOOLS_GAME_HOTKEY_GENERAL
+Spielspezifische Hotkeys...
+#FMT_OPTIONS_LANGUAGE
+Sprache                          %s
+#FMT_OPTIONS_CPU_FREQUENCY
+CPU Frequenz                 %s
+#MSG_OPTIONS_CPU_FREQUENCY_0
+[0] 240 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_1
+[1] 300 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_2
+[2] 336 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_3
+[3] 360 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_4
+[4] 384 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_5
+[5] 396 MHz
+#MSG_OPTIONS_CARD_CAPACITY
+Kartengröße
+#MSG_OPTIONS_RESET
+Werkseinstellungen
+#MSG_OPTIONS_VERSION
+Versionsinformation
+#MSG_SCREENSHOT_CREATE
+Screenshot speichern
+#MSG_SCREENSHOT_BROWSE
+Screenshots durchsuchen
+#MSG_HOTKEY_MAIN_MENU
+Hauptmenü
+#MSG_HOTKEY_TEMPORARY_FAST_FORWARD
+Temp. Schnellvorlauf
+#MSG_HOTKEY_SOUND_TOGGLE
+Audio umschalten
+#MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
+Knöpfe für dieses Ereignis drücken.
+#MSG_HOTKEY_DELETE_WITH_A
+*A Löschen
+#MSG_HOTKEY_CANCEL_WITH_B
+*B Abbrechen
+#MSG_LOAD_GAME_RECENTLY_PLAYED
+Zuletzt gespielt
+#MSG_LOAD_GAME_FROM_CARD
+Wähle ein Spiel von der Karte aus
+#MSG_LOAD_GAME_MENU_TITLE
+Wähle ein Spiel
+#MSG_VIDEO_ASPECT_RATIO_0
+[0] Vollbild
+#MSG_VIDEO_ASPECT_RATIO_1
+[1] Unten, quadratische Pixel
+#MSG_VIDEO_ASPECT_RATIO_2
+[2] Oben, quadratische Pixel
+#MSG_VIDEO_ASPECT_RATIO_3
+[3] Mitte, quadratische Pixel
+#MSG_VIDEO_ASPECT_RATIO_4
+[4] Vollbild, geglättet
+#MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC
+[-] Automatisch
+#MSG_VIDEO_FRAME_SKIPPING_0
+[0] Alle Frames anzeigen
+#MSG_VIDEO_FRAME_SKIPPING_1
+[1] Zeige 1 von 2 Frames
+#MSG_VIDEO_FRAME_SKIPPING_2
+[2] Zeige 1 von 3 Frames
+#MSG_VIDEO_FRAME_SKIPPING_3
+[3] Zeige 1 von 4 Frames
+#MSG_VIDEO_FRAME_SKIPPING_4
+[4] Zeige 1 von 5 Frames
+#MSG_VIDEO_FRAME_SKIPPING_5
+[5] Zeige 1 von 6 Frames
+#MSG_VIDEO_FRAME_SKIPPING_6
+[6] Zeige 1 von 7 Frames
+#MSG_VIDEO_FRAME_SKIPPING_7
+[7] Zeige 1 von 8 Frames
+#MSG_VIDEO_FRAME_SKIPPING_8
+[8] Zeige 1 von 9 Frames
+#MSG_VIDEO_FRAME_SKIPPING_9
+[9] Zeige 1 von 10 Frames
+#MSG_VIDEO_FRAME_SKIPPING_10
+[10] Zeige 1 von 11 Frames
+#MSG_GENERAL_OFF
+Aus
+#MSG_GENERAL_ON
+An
+#MSG_GENERAL_CONFIRM_WITH_A
+*A Bestätigen
+#MSG_GENERAL_CANCEL_WITH_B
+*B Abbrechen
+#MSG_AUDIO_ENABLED
+An
+#MSG_AUDIO_MUTED
+Stumm
+#MSG_TOP_SCREEN_NO_GAME_LOADED
+Kein Spiel geladen
+#MSG_CHEAT_ELEMENT_NOT_LOADED
+<Nichts geladen>
+#MSG_SAVESTATE_FULL
+An dieser Stelle existiert bereits ein Speicherstand. Überschreiben?
+#MSG_PROGRESS_SAVED_STATE_CREATING
+Speichern...
+#MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
+Fehlgeschlagen!
+#MSG_PROGRESS_SAVED_STATE_CREATION_SUCCEEDED
+OK!
+#MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT
+Kein Speicherstand
+#MSG_PROGRESS_SAVED_STATE_CORRUPTED
+Der Speicherstand ist nicht vorhanden oder kaputt.
+#MSG_PROGRESS_SAVED_STATE_LOADING
+Laden...
+#MSG_PROGRESS_SAVED_STATE_LOAD_FAILED
+Fehlgeschlagen!
+#MSG_PROGRESS_SAVED_STATE_LOAD_SUCCEEDED
+OK!
+#MSG_SAVED_STATE_DELETE_ALL
+Alle Speicherstände löschen
+#FMT_SAVED_STATE_DELETE_ONE
+Lösche Speicherstand %d
+#MSG_DELETE_ALL_SAVESTATE_WARING
+Wirklich alle Speicherstände löschen?
+#FMT_DIALOG_SAVED_STATE_DELETE_ONE
+Wirklich Speicherstand %d löschen?
+#MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY
+Hier ist bereits nichts.
+#MSG_PROGRESS_SCREENSHOT_CREATING
+Speichere Screenshot...
+#MSG_PROGRESS_SCREENSHOT_CREATION_SUCCEEDED
+OK!
+#MSG_PROGRESS_SCREENSHOT_CREATION_FAILED
+Fehlgeschlagen!
+#MSG_NO_SLIDE
+Keine Screenshots gefunden
+#MSG_PLAYING_SLIDE
+Zeigen...
+#MSG_PAUSE_SLIDE
+Pause...
+#MSG_PLAY_SLIDE1
+Key UP    Geschw. hoch
+#MSG_PLAY_SLIDE2
+Key DOWN  Geschw. runter
+#MSG_PLAY_SLIDE3
+Key LEFT  Voriges Bild
+#MSG_PLAY_SLIDE4
+Key RIGHT Nächstes Bild
+#MSG_PLAY_SLIDE5
+Key A     Pause
+#MSG_PLAY_SLIDE6
+Key B     Zurück zum Menü
+#MSG_PROGRESS_LOADING_GAME
+Laden...
+#MSG_EMULATOR_NAME
+CATSFC SNES emulator
+#MSG_WORD_EMULATOR_VERSION
+Version
+#MSG_DIALOG_RESET
+Alle Einstellungen zurücksetzen?
+#MSG_PROGRESS_RESETTING
+Bitte warten...
+ 
+ENDGERMAN
