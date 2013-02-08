@@ -131,18 +131,20 @@
 #include "memmap.h"
 #include "cpuexec.h"
 
-extern int Echo [24000];
-extern int DummyEchoBuffer [SOUND_BUFFER_SIZE];
-extern int MixBuffer [SOUND_BUFFER_SIZE];
-extern int EchoBuffer [SOUND_BUFFER_SIZE];
-extern int FilterTaps [8];
+extern int32 Echo [24000];
+extern int32 DummyEchoBuffer [SOUND_BUFFER_SIZE];
+extern int32 MixBuffer [SOUND_BUFFER_SIZE];
+extern int32 EchoBuffer [SOUND_BUFFER_SIZE];
+extern int32 FilterTaps [8];
+static uint8 FilterTapDefinitionBitfield;
+// In the above, bit I is set if FilterTaps[I] is non-zero.
 extern unsigned long Z;
-extern int Loop [16];
+extern int32 Loop [16];
 
 extern long FilterValues[4][2];
-extern int NoiseFreq [32];
+extern int32 NoiseFreq [32];
 
-static int noise_gen;
+static int32 noise_gen;
 
 #undef ABS
 #define ABS(a) ((a) < 0 ? -(a) : (a))
@@ -415,15 +417,11 @@ void S9xFixSoundAfterSnapshotLoad ()
 
 void S9xSetFilterCoefficient (int tap, int value)
 {
-    FilterTaps [tap & 7] = value;
-    SoundData.no_filter = (FilterTaps [0] == 127 || FilterTaps [0] == 0) && 
-		FilterTaps [1] == 0   &&
-		FilterTaps [2] == 0   &&
-		FilterTaps [3] == 0   &&
-		FilterTaps [4] == 0   &&
-		FilterTaps [5] == 0   &&
-		FilterTaps [6] == 0   &&
-		FilterTaps [7] == 0;
+	FilterTaps [tap & 7] = value;
+	if (value == 0 || (tap == 0 && value == 127))
+		FilterTapDefinitionBitfield &= ~(1 << (tap & 7));
+	else
+		FilterTapDefinitionBitfield |= 1 << (tap & 7);
 }
 
 void S9xSetSoundADSR (int channel, int attack_rate, int decay_rate,
@@ -997,10 +995,9 @@ void DecodeBlock (Channel *ch)
 	ch->block_pointer += 9;
 }
 
-
 static inline void MixStereo (int sample_count)
 {
-	static int wave[SOUND_BUFFER_SIZE];
+	static int32 wave[SOUND_BUFFER_SIZE];
 
 	int pitch_mod = SoundData.pitch_mod & ~APU.DSP[APU_NON];
 
@@ -1342,6 +1339,15 @@ static inline void MixMono (int sample_count)
 		
 		for (uint32 I = 0; I < (uint32) sample_count; I++)
 		{
+#ifdef ACCUMULATE_JOYPAD
+/*
+ * This call allows NDSSFC to synchronise the DS controller more often.
+ * If porting a later version of Snes9x into NDSSFC, it is essential to
+ * preserve it.
+ */
+			if ((I & 0x7F) == 0x7F)
+				NDSSFCAccumulateJoypad ();
+#endif
 			unsigned long freq = freq0;
 			
 			if (mod)
@@ -1608,9 +1614,9 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 	
     if (!so.mute_sound)
     {
-		memset (MixBuffer, 0, sample_count * sizeof (MixBuffer [0]));
 		if (SoundData.echo_enable)
 			memset (EchoBuffer, 0, sample_count * sizeof (EchoBuffer [0]));
+		memset (MixBuffer, 0, sample_count * sizeof (MixBuffer [0]));
 
 #ifndef FOREVER_STEREO
 		if (so.stereo)
@@ -1643,7 +1649,7 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 				{
 #endif
 					// 16-bit stereo sound with echo enabled ...
-					if (SoundData.no_filter)
+					if (FilterTapDefinitionBitfield == 0)
 					{
 						// ... but no filter defined.
 						for (J = 0; J < sample_count; J++)
@@ -1673,13 +1679,13 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 							
 							Loop [(Z - 0) & 15] = E;
 							E =  E                    * FilterTaps [0];
-							E += Loop [(Z -  2) & 15] * FilterTaps [1];
-							E += Loop [(Z -  4) & 15] * FilterTaps [2];
-							E += Loop [(Z -  6) & 15] * FilterTaps [3];
-							E += Loop [(Z -  8) & 15] * FilterTaps [4];
-							E += Loop [(Z - 10) & 15] * FilterTaps [5];
-							E += Loop [(Z - 12) & 15] * FilterTaps [6];
-							E += Loop [(Z - 14) & 15] * FilterTaps [7];
+							if (FilterTapDefinitionBitfield & 0x02) E += Loop [(Z -  2) & 15] * FilterTaps [1];
+							if (FilterTapDefinitionBitfield & 0x04) E += Loop [(Z -  4) & 15] * FilterTaps [2];
+							if (FilterTapDefinitionBitfield & 0x08) E += Loop [(Z -  6) & 15] * FilterTaps [3];
+							if (FilterTapDefinitionBitfield & 0x10) E += Loop [(Z -  8) & 15] * FilterTaps [4];
+							if (FilterTapDefinitionBitfield & 0x20) E += Loop [(Z - 10) & 15] * FilterTaps [5];
+							if (FilterTapDefinitionBitfield & 0x40) E += Loop [(Z - 12) & 15] * FilterTaps [6];
+							if (FilterTapDefinitionBitfield & 0x80) E += Loop [(Z - 14) & 15] * FilterTaps [7];
 							E /= 128;
 							Z++;
 							
@@ -1702,7 +1708,7 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 				else
 				{
 					// 16-bit mono sound with echo enabled...
-					if (SoundData.no_filter)
+					if (FilterTapDefinitionBitfield == 0)
 					{
 						// ... no filter defined
 						for (J = 0; J < sample_count; J++)
@@ -1731,13 +1737,13 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 							
 							Loop [(Z - 0) & 7] = E;
 							E =  E                  * FilterTaps [0];
-							E += Loop [(Z - 1) & 7] * FilterTaps [1];
-							E += Loop [(Z - 2) & 7] * FilterTaps [2];
-							E += Loop [(Z - 3) & 7] * FilterTaps [3];
-							E += Loop [(Z - 4) & 7] * FilterTaps [4];
-							E += Loop [(Z - 5) & 7] * FilterTaps [5];
-							E += Loop [(Z - 6) & 7] * FilterTaps [6];
-							E += Loop [(Z - 7) & 7] * FilterTaps [7];
+							if (FilterTapDefinitionBitfield & 0x02) E += Loop [(Z - 1) & 7] * FilterTaps [1];
+							if (FilterTapDefinitionBitfield & 0x04) E += Loop [(Z - 2) & 7] * FilterTaps [2];
+							if (FilterTapDefinitionBitfield & 0x08) E += Loop [(Z - 3) & 7] * FilterTaps [3];
+							if (FilterTapDefinitionBitfield & 0x10) E += Loop [(Z - 4) & 7] * FilterTaps [4];
+							if (FilterTapDefinitionBitfield & 0x20) E += Loop [(Z - 5) & 7] * FilterTaps [5];
+							if (FilterTapDefinitionBitfield & 0x40) E += Loop [(Z - 6) & 7] * FilterTaps [6];
+							if (FilterTapDefinitionBitfield & 0x80) E += Loop [(Z - 7) & 7] * FilterTaps [7];
 							E /= 128;
 							Z++;
 							
@@ -1797,7 +1803,7 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 					if (so.stereo)
 					{
 						// 8-bit stereo sound with echo enabled...
-						if (SoundData.no_filter)
+						if (FilterTapDefinitionBitfield == 0)
 						{
 							// ... but no filter
 							for (J = 0; J < sample_count; J++)
@@ -1826,13 +1832,13 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 								
 								Loop [(Z - 0) & 15] = E;
 								E =  E                    * FilterTaps [0];
-								E += Loop [(Z -  2) & 15] * FilterTaps [1];
-								E += Loop [(Z -  4) & 15] * FilterTaps [2];
-								E += Loop [(Z -  6) & 15] * FilterTaps [3];
-								E += Loop [(Z -  8) & 15] * FilterTaps [4];
-								E += Loop [(Z - 10) & 15] * FilterTaps [5];
-								E += Loop [(Z - 12) & 15] * FilterTaps [6];
-								E += Loop [(Z - 14) & 15] * FilterTaps [7];
+								if (FilterTapDefinitionBitfield & 0x02) E += Loop [(Z -  2) & 15] * FilterTaps [1];
+								if (FilterTapDefinitionBitfield & 0x04) E += Loop [(Z -  4) & 15] * FilterTaps [2];
+								if (FilterTapDefinitionBitfield & 0x08) E += Loop [(Z -  6) & 15] * FilterTaps [3];
+								if (FilterTapDefinitionBitfield & 0x10) E += Loop [(Z -  8) & 15] * FilterTaps [4];
+								if (FilterTapDefinitionBitfield & 0x20) E += Loop [(Z - 10) & 15] * FilterTaps [5];
+								if (FilterTapDefinitionBitfield & 0x40) E += Loop [(Z - 12) & 15] * FilterTaps [6];
+								if (FilterTapDefinitionBitfield & 0x80) E += Loop [(Z - 14) & 15] * FilterTaps [7];
 								E /= 128;
 								Z++;
 								
@@ -1853,7 +1859,7 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 					else
 					{
 						// 8-bit mono sound with echo enabled...
-						if (SoundData.no_filter)
+						if (FilterTapDefinitionBitfield == 0)
 						{
 							// ... but no filter.
 							for (J = 0; J < sample_count; J++)
@@ -1881,13 +1887,13 @@ void S9xMixSamples (uint8 *buffer, int sample_count)
 								
 								Loop [(Z - 0) & 7] = E;
 								E =  E                  * FilterTaps [0];
-								E += Loop [(Z - 1) & 7] * FilterTaps [1];
-								E += Loop [(Z - 2) & 7] * FilterTaps [2];
-								E += Loop [(Z - 3) & 7] * FilterTaps [3];
-								E += Loop [(Z - 4) & 7] * FilterTaps [4];
-								E += Loop [(Z - 5) & 7] * FilterTaps [5];
-								E += Loop [(Z - 6) & 7] * FilterTaps [6];
-								E += Loop [(Z - 7) & 7] * FilterTaps [7];
+								if (FilterTapDefinitionBitfield & 0x02) E += Loop [(Z - 1) & 7] * FilterTaps [1];
+								if (FilterTapDefinitionBitfield & 0x04) E += Loop [(Z - 2) & 7] * FilterTaps [2];
+								if (FilterTapDefinitionBitfield & 0x08) E += Loop [(Z - 3) & 7] * FilterTaps [3];
+								if (FilterTapDefinitionBitfield & 0x10) E += Loop [(Z - 4) & 7] * FilterTaps [4];
+								if (FilterTapDefinitionBitfield & 0x20) E += Loop [(Z - 5) & 7] * FilterTaps [5];
+								if (FilterTapDefinitionBitfield & 0x40) E += Loop [(Z - 6) & 7] * FilterTaps [6];
+								if (FilterTapDefinitionBitfield & 0x80) E += Loop [(Z - 7) & 7] * FilterTaps [7];
 								E /= 128;
 								Z++;
 								
@@ -1962,6 +1968,7 @@ void S9xResetSound (bool8 full)
     FilterTaps [5] = 0;
     FilterTaps [6] = 0;
     FilterTaps [7] = 0;
+    FilterTapDefinitionBitfield = 0;
     so.mute_sound = TRUE;
     noise_gen = 1;
     so.sound_switch = 255;
@@ -2000,7 +2007,6 @@ void S9xResetSound (bool8 full)
 		so.err_rate = (uint32) (FIXED_POINT * SNES_SCANLINE_TIME / (1.0 / so.playback_rate));
     else
 		so.err_rate = 0;
-    SoundData.no_filter = TRUE;
 }
 
 void S9xSetPlaybackRate (uint32 playback_rate)

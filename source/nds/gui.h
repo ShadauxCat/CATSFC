@@ -59,7 +59,20 @@ struct _GAME_CONFIG
 	u32 HotkeyReturnToMenu;
 	u32 HotkeyTemporaryFastForward;
 	u32 HotkeyToggleSound;
-	u32  Reserved2[45];
+	u32 SoundSync;
+	/*
+	 * PreviouslyUsed_20130206_1 was for a second meaning of
+	 * frameskip_value that is now dropped.
+	 * THIS VALUE IS NOT GUARANTEED TO BE RESERVED AND SET TO 0.
+	 */
+	u32 PreviouslyUsed_20130206_1;
+	/*
+	 * PreviouslyUsed_20130206_2 was for a second meaning of
+	 * clock_speed_number that is now dropped.
+	 * THIS VALUE IS NOT GUARANTEED TO BE RESERVED AND SET TO 0.
+	 */
+	u32 PreviouslyUsed_20130206_2;
+	u32  Reserved2[42];
 };
 
 typedef enum
@@ -124,10 +137,13 @@ extern GAME_CONFIG	game_config;
 /******************************************************************************
  ******************************************************************************/
 extern void gui_init(u32 lang_id);
-extern u32 menu(u16 *original_screen);
+extern u32 menu(u16 *original_screen, bool8 FirstInvocation);
 extern void game_disableAudio();
 extern void game_set_frameskip();
-extern void set_cpu_clock(u32 num);
+extern void game_set_fluidity();
+extern void LowFrequencyCPU();
+extern void HighFrequencyCPU();
+extern void GameFrequencyCPU();
 extern int load_language_msg(char *filename, u32 language);
 
 #ifdef __cplusplus

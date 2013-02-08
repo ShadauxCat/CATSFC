@@ -132,8 +132,7 @@ bool8 LoadZip(const char* zipname,
 	char name[132];
 	unzGetCurrentFileInfo(file, &info, name,128, NULL,0, NULL,0);
 
-	int calc_size = info.uncompressed_size / 0x2000;
-	calc_size *= 0x2000;
+	int calc_size = info.uncompressed_size & ~0x1FFF; // round to lower 0x2000
 	if(!(info.uncompressed_size - calc_size == 512 || info.uncompressed_size == calc_size))
 	{
 	    port = unzGoToNextFile(file);
@@ -190,8 +189,7 @@ bool8 LoadZip(const char* zipname,
 //	assert(info.uncompressed_size <= CMemory::MAX_ROM_SIZE + 512);
 	int FileSize = info.uncompressed_size;
 	
-	int calc_size = FileSize / 0x2000;
-	calc_size *= 0x2000;
+	int calc_size = FileSize & ~0x1FFF; // round to lower 0x2000
 	
 	int l = unzReadCurrentFile(file,ptr,FileSize);
 	if(unzCloseCurrentFile(file) == UNZ_CRCERROR)
@@ -224,6 +222,8 @@ bool8 LoadZip(const char* zipname,
 	if ((FileSize - calc_size == 512 && !Settings.ForceNoHeader) ||
 	    Settings.ForceHeader)
 	{
+	    // memmove required: Overlapping addresses [Neb]
+	    // DS2 DMA notes: Can be split into 512-byte DMA blocks [Neb]
 	    memmove (ptr, ptr + 512, calc_size);
 	    (*headers)++;
 	    FileSize -= 512;

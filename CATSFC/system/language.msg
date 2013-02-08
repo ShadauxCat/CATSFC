@@ -10,6 +10,17 @@ STARTVERSION
 # 4. See the comment line ABOVE a message for its context. For example:
 #  > #MSG_MAIN_MENU_SAVED_STATES
 #  > Saved states
+# 5. You may use *<Letter> in your message to insert a pictogram representing
+#    a DS key. These replacements are case-sensitive.
+#    Definitions are as follows:
+#    *A  (A Button)  inserts  a circle containing the letter A
+#    *B  (B Button)           a circle containing the letter B
+#    *X  (X Button)           a circle containing the letter X
+#    *Y  (Y Button)           a circle containing the letter Y
+#    *L  (L shoulder button)  a cut rectangle containing the letter L
+#    *R  (R shoulder button)  a cut rectangle containing the letter R
+#    *S  (START button)       a smaller ST
+#    *s  (SELECT button)      a smaller SEL
 ENDVERSION
 
 ENDCOMMENT
@@ -33,6 +44,12 @@ Tools
 Options
 #MSG_MAIN_MENU_EXIT
 Exit
+#FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
+Fluidity                %s
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
+Prefer fluid video
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
+Prefer fluid audio
 #FMT_VIDEO_ASPECT_RATIO
 Aspect ratio       %s
 #FMT_VIDEO_FAST_FORWARD
@@ -40,7 +57,7 @@ Fast-forward     %s
 #FMT_VIDEO_FRAME_SKIPPING
 Frame skipping    %s
 #FMT_AUDIO_SOUND
-Sound                 %s
+Sound                  %s
 #FMT_SAVED_STATE_CREATE
 Create saved state      %d
 #FMT_SAVED_STATE_LOAD
@@ -60,7 +77,19 @@ Game-specific hotkey overrides...
 #FMT_OPTIONS_LANGUAGE
 Language                          %s
 #FMT_OPTIONS_CPU_FREQUENCY
-CPU frequency                 %d
+CPU frequency                 %s
+#MSG_OPTIONS_CPU_FREQUENCY_0
+[0] 240 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_1
+[1] 300 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_2
+[2] 336 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_3
+[3] 360 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_4
+[4] 384 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_5
+[5] 396 MHz
 #MSG_OPTIONS_CARD_CAPACITY
 Card capacity
 #MSG_OPTIONS_RESET
@@ -80,9 +109,9 @@ Toggle sound
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Press the buttons you wish to use to perform this action.
 #MSG_HOTKEY_DELETE_WITH_A
-[A] Clear
+*A Clear
 #MSG_HOTKEY_CANCEL_WITH_B
-[B] Cancel
+*B Cancel
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 Recently played games
 #MSG_LOAD_GAME_FROM_CARD
@@ -128,9 +157,9 @@ Off
 #MSG_GENERAL_ON
 On
 #MSG_GENERAL_CONFIRM_WITH_A
-[A] Confirm
+*A Confirm
 #MSG_GENERAL_CANCEL_WITH_B
-[B] Cancel
+*B Cancel
 #MSG_AUDIO_ENABLED
 On
 #MSG_AUDIO_MUTED
@@ -173,10 +202,6 @@ Saving a screenshot...
 OK!
 #MSG_PROGRESS_SCREENSHOT_CREATION_FAILED
 Failed!
-#MSG_CHANGE_LANGUAGE
-Changing language...
-#MSG_CHANGE_LANGUAGE_WAITING
-Please wait...
 #MSG_NO_SLIDE
 No screenshots found
 #MSG_PLAYING_SLIDE
@@ -227,6 +252,12 @@ STARTCHINESESIM
 综合设置
 #MSG_MAIN_MENU_EXIT
 退出模拟器
+#FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
+Fluidity                     %s
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
+Prefer fluid video
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
+Prefer fluid audio
 #FMT_VIDEO_ASPECT_RATIO
 画面                         %s
 #FMT_VIDEO_FAST_FORWARD
@@ -254,7 +285,19 @@ Game-specific hotkey overrides...
 #FMT_OPTIONS_LANGUAGE
 语言                               %s
 #FMT_OPTIONS_CPU_FREQUENCY
-CPU主频                          %d
+CPU主频                          %s
+#MSG_OPTIONS_CPU_FREQUENCY_0
+[0] 240 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_1
+[1] 300 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_2
+[2] 336 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_3
+[3] 360 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_4
+[4] 384 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_5
+[5] 396 MHz
 #MSG_OPTIONS_CARD_CAPACITY
 卡容量
 #MSG_OPTIONS_RESET
@@ -274,9 +317,9 @@ Toggle sound
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Press the buttons you wish to use to perform this action.
 #MSG_HOTKEY_DELETE_WITH_A
-[A] Clear
+*A Clear
 #MSG_HOTKEY_CANCEL_WITH_B
-[B] Cancel
+*B Cancel
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 最近玩过的游戏
 #MSG_LOAD_GAME_FROM_CARD
@@ -322,9 +365,9 @@ Press the buttons you wish to use to perform this action.
 #MSG_GENERAL_ON
 开
 #MSG_GENERAL_CONFIRM_WITH_A
-[A] 确认
+*A 确认
 #MSG_GENERAL_CANCEL_WITH_B
-[B] 取消
+*B 取消
 #MSG_AUDIO_ENABLED
 开
 #MSG_AUDIO_MUTED
@@ -367,10 +410,6 @@ Press the buttons you wish to use to perform this action.
 完成!
 #MSG_PROGRESS_SCREENSHOT_CREATION_FAILED
 失败!
-#MSG_CHANGE_LANGUAGE
-正在修改...
-#MSG_CHANGE_LANGUAGE_WAITING
-请稍候!
 #MSG_NO_SLIDE
 此目录没有屏幕快照，取消放映
 #MSG_PLAYING_SLIDE
@@ -386,9 +425,9 @@ Press the buttons you wish to use to perform this action.
 #MSG_PLAY_SLIDE4
 按键 右  下一帧
 #MSG_PLAY_SLIDE5
-按键 A   暂停
+按键 *A   暂停
 #MSG_PLAY_SLIDE6
-按键 B   返回菜单
+按键 *B   返回菜单
 #MSG_PROGRESS_LOADING_GAME
 正在装载游戏...
 #MSG_EMULATOR_NAME
@@ -421,8 +460,14 @@ Outils
 Options
 #MSG_MAIN_MENU_EXIT
 Quitter
+#FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
+Fluidité                   %s
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
+Préférer la vidéo fluide
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
+Préférer l'audio fluide
 #FMT_VIDEO_ASPECT_RATIO
-Format d'image      %s
+Format d'image     %s
 #FMT_VIDEO_FAST_FORWARD
 Avance rapide       %s
 #FMT_VIDEO_FRAME_SKIPPING
@@ -448,7 +493,19 @@ Raccourcis pour le jeu actuel...
 #FMT_OPTIONS_LANGUAGE
 Langue                              %s
 #FMT_OPTIONS_CPU_FREQUENCY
-Fréquence CPU                  %d
+Fréquence CPU                  %s
+#MSG_OPTIONS_CPU_FREQUENCY_0
+[0] 240 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_1
+[1] 300 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_2
+[2] 336 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_3
+[3] 360 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_4
+[4] 384 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_5
+[5] 396 MHz
 #MSG_OPTIONS_CARD_CAPACITY
 Capacité de la carte
 #MSG_OPTIONS_RESET
@@ -468,9 +525,9 @@ Avance rapide temporaire
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Appuyez sur les boutons que vous voulez utiliser pour effectuer cette action.
 #MSG_HOTKEY_DELETE_WITH_A
-[A] Effacer
+*A Effacer
 #MSG_HOTKEY_CANCEL_WITH_B
-[B] Annuler
+*B Annuler
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 Jeux joués récemment
 #MSG_LOAD_GAME_FROM_CARD
@@ -516,9 +573,9 @@ Hors fonction
 #MSG_GENERAL_ON
 En fonction
 #MSG_GENERAL_CONFIRM_WITH_A
-[A] Confirmer
+*A Confirmer
 #MSG_GENERAL_CANCEL_WITH_B
-[B] Annuler
+*B Annuler
 #MSG_AUDIO_ENABLED
 Activé
 #MSG_AUDIO_MUTED
@@ -561,10 +618,6 @@ Capture de l'écran...
 Terminé!
 #MSG_PROGRESS_SCREENSHOT_CREATION_FAILED
 Échec!
-#MSG_CHANGE_LANGUAGE
-Changement de la langue...
-#MSG_CHANGE_LANGUAGE_WAITING
-Veuillez patienter...
 #MSG_NO_SLIDE
 Aucune capture d'écran trouvée
 #MSG_PLAYING_SLIDE
@@ -580,9 +633,9 @@ GAUCHE  Précédente
 #MSG_PLAY_SLIDE4
 DROITE  Suivante
 #MSG_PLAY_SLIDE5
-A           Pause
+*A           Pause
 #MSG_PLAY_SLIDE6
-B           Retour au menu
+*B           Retour au menu
 #MSG_PROGRESS_LOADING_GAME
 Chargement...
 #MSG_EMULATOR_NAME
@@ -595,3 +648,212 @@ Remettre tous les paramètres à zéro?
 Veuillez patienter...
 
 ENDFRENCH
+ 
+STARTGERMAN
+
+#MSG_MAIN_MENU_NEW_GAME
+Neues Spiel
+#MSG_MAIN_MENU_RETURN_TO_GAME
+Zurück zum Spiel
+#MSG_MAIN_MENU_RESET_GAME
+Reset
+#MSG_MAIN_MENU_VIDEO_AUDIO
+Video & Audio
+#MSG_MAIN_MENU_SAVED_STATES
+Speicherstände
+#MSG_MAIN_MENU_CHEATS
+Cheats
+#MSG_MAIN_MENU_TOOLS
+Tools
+#MSG_MAIN_MENU_OPTIONS
+Optionen
+#MSG_MAIN_MENU_EXIT
+Beenden
+#FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
+Flüssigkeit          %s
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
+Bevorzuge flüssiges Video
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
+Bevorzuge flüssiges Audio
+#FMT_VIDEO_ASPECT_RATIO
+Bildformat          %s
+#FMT_VIDEO_FAST_FORWARD
+Schnellvorlauf   %s
+#FMT_VIDEO_FRAME_SKIPPING
+Frames übersp.  %s
+#FMT_AUDIO_SOUND
+Musik                   %s
+#FMT_SAVED_STATE_CREATE
+Speicherstand erstellen      %d
+#FMT_SAVED_STATE_LOAD
+Speicherstand laden            %d
+#MSG_SAVED_STATE_DELETE_GENERAL
+Speicherstände löschen...
+#FMT_CHEAT_PAGE
+Cheatseite %d
+#MSG_CHEAT_LOAD_FROM_FILE
+Cheatdatei laden
+#MSG_TOOLS_SCREENSHOT_GENERAL
+Screenshots...
+#MSG_TOOLS_GLOBAL_HOTKEY_GENERAL
+Globale Hotkeys...
+#MSG_TOOLS_GAME_HOTKEY_GENERAL
+Spielspezifische Hotkeys...
+#FMT_OPTIONS_LANGUAGE
+Sprache                          %s
+#FMT_OPTIONS_CPU_FREQUENCY
+CPU Frequenz                 %s
+#MSG_OPTIONS_CPU_FREQUENCY_0
+[0] 240 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_1
+[1] 300 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_2
+[2] 336 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_3
+[3] 360 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_4
+[4] 384 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_5
+[5] 396 MHz
+#MSG_OPTIONS_CARD_CAPACITY
+Kartengröße
+#MSG_OPTIONS_RESET
+Werkseinstellungen
+#MSG_OPTIONS_VERSION
+Versionsinformation
+#MSG_SCREENSHOT_CREATE
+Screenshot speichern
+#MSG_SCREENSHOT_BROWSE
+Screenshots durchsuchen
+#MSG_HOTKEY_MAIN_MENU
+Hauptmenü
+#MSG_HOTKEY_TEMPORARY_FAST_FORWARD
+Temp. Schnellvorlauf
+#MSG_HOTKEY_SOUND_TOGGLE
+Audio umschalten
+#MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
+Knöpfe für dieses Ereignis drücken.
+#MSG_HOTKEY_DELETE_WITH_A
+*A Löschen
+#MSG_HOTKEY_CANCEL_WITH_B
+*B Abbrechen
+#MSG_LOAD_GAME_RECENTLY_PLAYED
+Zuletzt gespielt
+#MSG_LOAD_GAME_FROM_CARD
+Wähle ein Spiel von der Karte aus
+#MSG_LOAD_GAME_MENU_TITLE
+Wähle ein Spiel
+#MSG_VIDEO_ASPECT_RATIO_0
+[0] Vollbild
+#MSG_VIDEO_ASPECT_RATIO_1
+[1] Unten, quadratische Pixel
+#MSG_VIDEO_ASPECT_RATIO_2
+[2] Oben, quadratische Pixel
+#MSG_VIDEO_ASPECT_RATIO_3
+[3] Mitte, quadratische Pixel
+#MSG_VIDEO_ASPECT_RATIO_4
+[4] Vollbild, geglättet
+#MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC
+[-] Automatisch
+#MSG_VIDEO_FRAME_SKIPPING_0
+[0] Alle Frames anzeigen
+#MSG_VIDEO_FRAME_SKIPPING_1
+[1] Zeige 1 von 2 Frames
+#MSG_VIDEO_FRAME_SKIPPING_2
+[2] Zeige 1 von 3 Frames
+#MSG_VIDEO_FRAME_SKIPPING_3
+[3] Zeige 1 von 4 Frames
+#MSG_VIDEO_FRAME_SKIPPING_4
+[4] Zeige 1 von 5 Frames
+#MSG_VIDEO_FRAME_SKIPPING_5
+[5] Zeige 1 von 6 Frames
+#MSG_VIDEO_FRAME_SKIPPING_6
+[6] Zeige 1 von 7 Frames
+#MSG_VIDEO_FRAME_SKIPPING_7
+[7] Zeige 1 von 8 Frames
+#MSG_VIDEO_FRAME_SKIPPING_8
+[8] Zeige 1 von 9 Frames
+#MSG_VIDEO_FRAME_SKIPPING_9
+[9] Zeige 1 von 10 Frames
+#MSG_VIDEO_FRAME_SKIPPING_10
+[10] Zeige 1 von 11 Frames
+#MSG_GENERAL_OFF
+Aus
+#MSG_GENERAL_ON
+An
+#MSG_GENERAL_CONFIRM_WITH_A
+*A Bestätigen
+#MSG_GENERAL_CANCEL_WITH_B
+*B Abbrechen
+#MSG_AUDIO_ENABLED
+An
+#MSG_AUDIO_MUTED
+Stumm
+#MSG_TOP_SCREEN_NO_GAME_LOADED
+Kein Spiel geladen
+#MSG_CHEAT_ELEMENT_NOT_LOADED
+<Nichts geladen>
+#MSG_SAVESTATE_FULL
+An dieser Stelle existiert bereits ein Speicherstand. Überschreiben?
+#MSG_PROGRESS_SAVED_STATE_CREATING
+Speichern...
+#MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
+Fehlgeschlagen!
+#MSG_PROGRESS_SAVED_STATE_CREATION_SUCCEEDED
+OK!
+#MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT
+Kein Speicherstand
+#MSG_PROGRESS_SAVED_STATE_CORRUPTED
+Der Speicherstand ist nicht vorhanden oder kaputt.
+#MSG_PROGRESS_SAVED_STATE_LOADING
+Laden...
+#MSG_PROGRESS_SAVED_STATE_LOAD_FAILED
+Fehlgeschlagen!
+#MSG_PROGRESS_SAVED_STATE_LOAD_SUCCEEDED
+OK!
+#MSG_SAVED_STATE_DELETE_ALL
+Alle Speicherstände löschen
+#FMT_SAVED_STATE_DELETE_ONE
+Lösche Speicherstand %d
+#MSG_DELETE_ALL_SAVESTATE_WARING
+Wirklich alle Speicherstände löschen?
+#FMT_DIALOG_SAVED_STATE_DELETE_ONE
+Wirklich Speicherstand %d löschen?
+#MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY
+Hier ist bereits nichts.
+#MSG_PROGRESS_SCREENSHOT_CREATING
+Speichere Screenshot...
+#MSG_PROGRESS_SCREENSHOT_CREATION_SUCCEEDED
+OK!
+#MSG_PROGRESS_SCREENSHOT_CREATION_FAILED
+Fehlgeschlagen!
+#MSG_NO_SLIDE
+Keine Screenshots gefunden
+#MSG_PLAYING_SLIDE
+Zeigen...
+#MSG_PAUSE_SLIDE
+Pause...
+#MSG_PLAY_SLIDE1
+Key UP    Geschw. hoch
+#MSG_PLAY_SLIDE2
+Key DOWN  Geschw. runter
+#MSG_PLAY_SLIDE3
+Key LEFT  Voriges Bild
+#MSG_PLAY_SLIDE4
+Key RIGHT Nächstes Bild
+#MSG_PLAY_SLIDE5
+Key A     Pause
+#MSG_PLAY_SLIDE6
+Key B     Zurück zum Menü
+#MSG_PROGRESS_LOADING_GAME
+Laden...
+#MSG_EMULATOR_NAME
+CATSFC SNES emulator
+#MSG_WORD_EMULATOR_VERSION
+Version
+#MSG_DIALOG_RESET
+Alle Einstellungen zurücksetzen?
+#MSG_PROGRESS_RESETTING
+Bitte warten...
+ 
+ENDGERMAN

@@ -291,7 +291,8 @@ void ComputeClipWindows ()
 								if (BAND_EMPTY(Win1[0]))
 								{
 									B = Window2Enabled;
-									memmove (Bands, Win2,
+									// memmove converted: Different stack allocations [Neb]
+									memcpy (Bands, Win2,
 											 sizeof(Win2[0]) * Window2Enabled);
 								}
 								else
@@ -355,7 +356,8 @@ void ComputeClipWindows ()
 										// use window 1 as the clipping (which
 										// could also be empty).
 										B = Window1Enabled;
-										memmove (Bands, Win1,
+										// memmove converted: Different stack allocations [Neb]
+										memcpy (Bands, Win1,
 												 sizeof(Win1[0]) * Window1Enabled);
 									}
 									else
@@ -468,14 +470,16 @@ void ComputeClipWindows ()
 							if (Window1Enabled == 1 && BAND_EMPTY(Win1[0]))
 							{
 								B = Window2Enabled;
-								memmove (Bands, Win2,
+								// memmove converted: Different stack allocations [Neb]
+								memcpy (Bands, Win2,
 										 sizeof(Win2[0]) * Window2Enabled);
 							}
 							else
 								if (Window2Enabled == 1 && BAND_EMPTY(Win2[0]))
 								{
 									B = Window1Enabled;
-									memmove (Bands, Win1,
+									// memmove converted: Different stack allocations [Neb]
+									memcpy (Bands, Win1,
 											 sizeof(Win1[0]) * Window1Enabled);
 								}
 								else

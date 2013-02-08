@@ -23,6 +23,11 @@
 #include "entry.h"
 #include "ds2sound.h"
 
+#ifdef DS2_DMA
+#include "ds2_dma.h"
+#include "dma_adj.h"
+#endif
+
 void S9xProcessSound (unsigned int);
 
 char *rom_filename = NULL;
@@ -58,7 +63,11 @@ void S9xExtraUsage ()
 */
 void S9xDeinitDisplay (void)
 {
+#ifdef DS2_DMA
+    if(GFX.Screen) AlignedFree(GFX.Screen, PtrAdj.GFXScreen);
+#else
     if(GFX.Screen) free(GFX.Screen);
+#endif
     if(GFX.SubScreen) free(GFX.SubScreen);
     if(GFX.ZBuffer) free(GFX.ZBuffer);
     if(GFX.SubZBuffer) free(GFX.SubZBuffer);
@@ -69,7 +78,11 @@ void S9xInitDisplay (int, char **)
     int h = IMAGE_HEIGHT;
 
 	GFX.Pitch = IMAGE_WIDTH * 2;
+#ifdef DS2_DMA
+	GFX.Screen =    (unsigned char*) AlignedMalloc (GFX.Pitch * h, 32, &PtrAdj.GFXScreen);
+#else
 	GFX.Screen =	(unsigned char*) malloc (GFX.Pitch * h);
+#endif
 	GFX.SubScreen = (unsigned char*) malloc (GFX.Pitch * h);
 	GFX.ZBuffer = 	(unsigned char*) malloc ((GFX.Pitch >> 1) * h);
 	GFX.SubZBuffer =(unsigned char*) malloc ((GFX.Pitch >> 1) * h);
@@ -86,7 +99,7 @@ void S9xParseDisplayArg (char **argv, int &ind, int)
 
 void S9xExit ()
 {
-  ds2_setCPUclocklevel(13); // Crank it up to exit quickly
+  HighFrequencyCPU(); // Crank it up to exit quickly
   if(Settings.SPC7110)
     (*CleanUp7110)();
 
@@ -130,17 +143,38 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 	{
 		//Up
 		case 1:
+#ifdef DS2_DMA
+			__dcache_writeback_all();
+			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 32 * 2, 256 * 192 * 2);
+			ds2_DMA_wait(1);
+			ds2_DMA_stop(1);
+#else
 		    memcpy(up_screen_addr, GFX.Screen+256*32*2, 256*192*2);
+#endif
 			break;
 
 		//Down
 		case 2:
+#ifdef DS2_DMA
+			__dcache_writeback_all();
+			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen, 256 * 192 * 2);
+			ds2_DMA_wait(1);
+			ds2_DMA_stop(1);
+#else
 		    memcpy(up_screen_addr, GFX.Screen, 256*192*2);
+#endif
 			break;
 
 		//Both
 		case 3:
+#ifdef DS2_DMA
+			__dcache_writeback_all();
+			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 16 * 2, 256 * 192 * 2);
+			ds2_DMA_wait(1);
+			ds2_DMA_stop(1);
+#else
 		    memcpy(up_screen_addr, GFX.Screen+256*16*2, 256*192*2);
+#endif
 			break;
 			
 		case 4:
@@ -150,14 +184,23 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 
 		default:
 		{
-			unsigned char *src, *dst;
-			unsigned int m;
+#ifdef DS2_DMA
+			__dcache_writeback_all();
+#endif
+			register unsigned char *src, *dst;
+			register unsigned int m;
 
 			src = GFX.Screen;
 			dst = (unsigned char*)up_screen_addr;
 			for(m = 0; m < 32; m++)
 			{
+#ifdef DS2_DMA
+				ds2_DMAcopy_32Byte(1 /* channel: graphics */, dst, src, 256 * 6 * 2);
+				ds2_DMA_wait(1);
+				ds2_DMA_stop(1);
+#else
 				memcpy(dst, src, 256*6*2);
+#endif
 				dst += 256*6*2;
 				src += 256*7*2;
 			}
@@ -350,6 +393,18 @@ void game_set_frameskip()
 		Settings.SkipFrames = game_config.frameskip_value - 1 /* 1 -> 0 and so on */;
 	}
 }
+
+void game_set_fluidity()
+{
+	if( game_config.SoundSync == 1)
+	{
+		Settings.SoundSync = TRUE;
+	}
+	else
+	{
+		Settings.SoundSync = FALSE;
+	}
+}
 	
 void init_sfc_setting(void)
 {
@@ -370,6 +425,7 @@ void init_sfc_setting(void)
 	//sound settings
     Settings.APUEnabled = Settings.NextAPUEnabled = TRUE;
 	Settings.FixFrequency = 1;
+
 	S9xSetEightBitConsoleSound (TRUE);
 
 
@@ -403,7 +459,7 @@ void init_sfc_setting(void)
 #endif
     Settings.ApplyCheats = TRUE;
     Settings.TurboMode = FALSE;
-    Settings.TurboSkipFrames = 40;
+    Settings.TurboSkipFrames = 10;
     Settings.StretchScreenshots = 1;
 
 	Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
@@ -444,7 +500,7 @@ void game_restart(void)
 	S9xReset ();
 }
 
-int load_gamepak(char* file)
+int load_gamepak(const char* file)
 {
 	CPU.Flags = 0;
 	// mdelay(50); // Delete this delay
@@ -540,6 +596,7 @@ int sfc_main (int argc, char **argv)
 #endif
 
 	Settings.Paused = 1;
+	bool8 FirstInvocation = TRUE;
 
     while (1)
     {
@@ -564,7 +621,8 @@ int sfc_main (int argc, char **argv)
 			unsigned short screen[256*192];
 
 			copy_screen((void*)screen, up_screen_addr, 0, 0, 256, 192);
-			menu(screen);
+			menu(screen, FirstInvocation);
+			FirstInvocation = FALSE;
 			game_disableAudio();
 			Settings.Paused = 0;
 		}
@@ -582,7 +640,6 @@ int sfc_main (int argc, char **argv)
 
 static unsigned int sync_last= 0;
 static unsigned int sync_next = 0;
-static unsigned int auto_equivalent_skip = 0;
 
 static unsigned int skip_rate= 0;
 
@@ -590,6 +647,7 @@ void S9xSyncSpeed ()
 {
 	uint32 syncnow;
 	int32 syncdif;
+	unsigned int LastAutoCPUFrequency = AutoCPUFrequency;
 
 #if 0
     if (Settings.SoundSync == 2)
@@ -601,12 +659,14 @@ void S9xSyncSpeed ()
 #endif
 	syncnow = getSysTime();
 
-	if (game_fast_forward || temporary_fast_forward /* hotkey is held */)
+	bool8 FastForward = game_fast_forward || temporary_fast_forward /* hotkey is held */;
+
+	if (FastForward)
 	{
 		sync_last = syncnow;
 		sync_next = syncnow;
 
-		if(++skip_rate < 10)
+		if(++skip_rate < Settings.TurboSkipFrames)
 			IPPU.RenderThisFrame = false;
 		else
 		{
@@ -614,110 +674,132 @@ void S9xSyncSpeed ()
 			IPPU.RenderThisFrame = true;
 		}
 	}
-	else if (Settings.SkipFrames == AUTO_FRAMERATE /* && !game_fast_forward && !temporary_fast_forward */)
+	else
 	{
-		// frame_time is in getSysTime units: 42.667 microseconds.
-		int32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
-		if (sync_last > syncnow) // Overflow occurred! (every 50 hrs)
+		// Manual or automatic frame skipping, no fast-forward.
+		if (Settings.SkipFrames == AUTO_FRAMERATE)
 		{
-			// Render this frame regardless, set the
-			// sync_next, and get the hell out.
-			IPPU.RenderThisFrame = TRUE;
-			sync_last = syncnow;
-			sync_next = syncnow + frame_time;
-			return;
-		}
-		sync_last = syncnow;
-		// If this is positive, we have syncdif*42.66 microseconds to
-		// spare.
-		// If this is negative, we're late by syncdif*42.66
-		// microseconds.
-		syncdif = sync_next - syncnow;
-		if (syncdif < 0 && syncdif >= -(frame_time / 2))
-		{
-			// We're late, but by less than half a frame. Draw it
-			// anyway. If the next frame is too late, it'll be
-			// skipped.
-			skip_rate = 0;
-			IPPU.RenderThisFrame = true;
-			sync_next += frame_time;
-		}
-		else if(syncdif < 0)
-		{
-			/*
-			 * If we're consistently late, delay up to 8 frames.
-			 * 
-			 * That really helps with certain games, such as
-			 * Super Mario RPG and Yoshi's Island.
-			 */
-			if(++skip_rate < 10)
+			// frame_time is in getSysTime units: 42.667 microseconds.
+			int32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
+			if (sync_last > syncnow) // Overflow occurred! (every 50 hrs)
 			{
-				if(syncdif >= -11719 /* not more than 500.0 ms late */)
+				// Render this frame regardless, set the
+				// sync_next, and get the hell out.
+				IPPU.RenderThisFrame = TRUE;
+				sync_last = syncnow;
+				sync_next = syncnow + frame_time;
+				return;
+			}
+			sync_last = syncnow;
+			// If this is positive, we have syncdif*42.66 microseconds to
+			// spare.
+			// If this is negative, we're late by syncdif*42.66
+			// microseconds.
+			syncdif = sync_next - syncnow;
+			if(skip_rate < 2 /* did not skip 2 frames yet */)
+			{
+				// Skip a minimum of 2 frames between rendered frames.
+				// This prevents the DSTwo-DS link from being too busy
+				// to return button statuses.
+				++skip_rate;
+				IPPU.RenderThisFrame = FALSE;
+				sync_next += frame_time;
+			}
+			else if(syncdif < 0)
+			{
+				/*
+				 * If we're consistently late, delay up to 8 frames.
+				 * 
+				 * That really helps with certain games, such as
+				 * Super Mario RPG and Yoshi's Island.
+				 */
+				if(++skip_rate < 10)
 				{
-					IPPU.RenderThisFrame = FALSE;
-					sync_next += frame_time;
+					if(syncdif >= -11719 /* not more than 500.0 ms late */)
+					{
+						IPPU.RenderThisFrame = FALSE;
+						sync_next += frame_time;
+					}
+					else
+					{	//lag more than 0.5s, maybe paused
+						IPPU.RenderThisFrame = TRUE;
+						sync_next = syncnow + frame_time;
+					}
 				}
 				else
-				{	//lag more than 0.5s, maybe paused
+				{
+					skip_rate = 0;
 					IPPU.RenderThisFrame = TRUE;
 					sync_next = syncnow + frame_time;
 				}
 			}
-			else
+			else // Early
+			{
+				skip_rate = 0;
+				if (syncdif > 0)
+				{
+					do {
+						S9xProcessSound (0);
+#ifdef ACCUMULATE_JOYPAD
+/*
+ * This call allows NDSSFC to synchronise the DS controller more often.
+ * If porting a later version of Snes9x into NDSSFC, it is essential to
+ * preserve it.
+ */
+						NDSSFCAccumulateJoypad ();
+#endif
+						syncdif = sync_next - getSysTime();
+					} while (syncdif > 0);
+				}
+
+				IPPU.RenderThisFrame = TRUE;
+				sync_next += frame_time;
+			}
+#if 0
+			if(++framenum >= 60)
+			{
+				syncdif = syncnow - sync_last;
+				sync_last = syncnow;
+				framenum = 0;
+				//printf("T %d %d\n", syncdif*42667/1000, realframe);
+				realframe = 0;
+			}
+#endif
+		}
+		else /* if (Settings.SkipFrames != AUTO_FRAMERATE) */
+		{
+			// frame_time is in getSysTime units: 42.667 microseconds.
+			uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
+			sync_last = syncnow;
+			if (++skip_rate > Settings.SkipFrames)
 			{
 				skip_rate = 0;
 				IPPU.RenderThisFrame = TRUE;
-				sync_next = syncnow + frame_time;
-			}
-		}
-		else // Early
-		{
-			skip_rate = 0;
-			ds2_setCPUclocklevel(0);
-			if (syncdif > 0)
-				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
-			set_cpu_clock(clock_speed_number);
-			S9xProcessSound (0);
-
-			IPPU.RenderThisFrame = TRUE;
-			sync_next += frame_time;
-		}
-#if 0
-		if(++framenum >= 60)
-		{
-			syncdif = syncnow - sync_last;
-			sync_last = syncnow;
-			framenum = 0;
-			//printf("T %d %d\n", syncdif*42667/1000, realframe);
-			realframe = 0;
-		}
+				// Are we early?
+				syncdif = sync_next - syncnow;
+				if (syncdif > 0)
+				{
+					do {
+						S9xProcessSound (0);
+#ifdef ACCUMULATE_JOYPAD
+/*
+ * This call allows NDSSFC to synchronise the DS controller more often.
+ * If porting a later version of Snes9x into NDSSFC, it is essential to
+ * preserve it.
+ */
+						NDSSFCAccumulateJoypad ();
 #endif
-	}
-	else /* if (Settings.SkipFrames != AUTO_FRAMERATE && !game_fast_forward && !temporary_fast_forward) */
-	{
-		// frame_time is in getSysTime units: 42.667 microseconds.
-		uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
-		sync_last = syncnow;
-		if (++skip_rate > Settings.SkipFrames)
-		{
-			skip_rate = 0;
-			IPPU.RenderThisFrame = TRUE;
-			// Are we early?
-			syncdif = sync_next - syncnow;
-			if (syncdif > 0)
-			{
-				ds2_setCPUclocklevel(0);
-				udelay(syncdif * 128 / 3 /* times 42 + 2/3 microseconds */);
-				set_cpu_clock(clock_speed_number);
-				S9xProcessSound (0);
-				// After that little delay, what time is it?
-				syncnow = getSysTime();
+						syncdif = sync_next - getSysTime();
+					} while (syncdif > 0);
+					// After that little delay, what time is it?
+					syncnow = getSysTime();
+				}
+				sync_next = syncnow + frame_time * (Settings.SkipFrames + 1);
 			}
-			sync_next = syncnow + frame_time * (Settings.SkipFrames + 1);
-		}
-		else
-		{
-			IPPU.RenderThisFrame = FALSE;
+			else
+			{
+				IPPU.RenderThisFrame = FALSE;
+			}
 		}
 	}
 
@@ -901,150 +983,189 @@ void S9xGenerateSound ()
 	}
 }
 
+#define SOUND_EMISSION_INTERVAL ((unsigned int) ((((unsigned long long) DS2_BUFFER_SIZE * 1000000) / SND_SAMPLE_RATE) * 3 / 128))
+#define TRUE_SOUND_EMISSION_INTERVAL ((((double) DS2_BUFFER_SIZE * 1000000) / SND_SAMPLE_RATE) * 3 / 128)
+#define SOUND_EMISSION_INTERVAL_ERROR ((int) ((TRUE_SOUND_EMISSION_INTERVAL - SOUND_EMISSION_INTERVAL) * FIXED_POINT))
+static unsigned int LastSoundEmissionTime = 0;
+
+/*
+ * Accumulated error in the sound emission time. The unit is as follows:
+ * FIXED_POINT = 42.667 microseconds.
+ * As the error goes past FIXED_POINT, the new target for sound emission
+ * becomes 42.667 microseconds LATER. This helps with sound buffer overruns,
+ * correctly dealing with the fact that 42.667 microseconds does not fit
+ * an integer number of times in 1/32000 second (or whatever sampling rate).
+ */
+static unsigned int SoundEmissionTimeError = 0;
+
 void S9xProcessSound (unsigned int)
 {
-	unsigned short *audiobuff;
-
-	if (so.mute_sound || !game_enable_audio)
+	if (!game_enable_audio)
 		return;
 
-	if(ds2_checkAudiobuff() > 4)
-		return;
-
-	/* Number of samples to generate now */
-	int sample_count;
-	sample_count = so.buffer_size;
-#ifndef FOREVER_16_BIT_SOUND
-	if (so.sixteen_bit)
+	unsigned int Now = getSysTime();
+	if (Now - LastSoundEmissionTime >= SOUND_EMISSION_INTERVAL)
 	{
-#endif
-		/* to prevent running out of buffer space,
-		* create less samples
-		*/
-		sample_count >>= 1;
-#ifndef FOREVER_16_BIT_SOUND
-	}
-#endif
-
-	audiobuff = (unsigned short*)ds2_getAudiobuff();
-	if(NULL == audiobuff)	//There are audio queue in sending or wait to send
-	{
-		return;
-	}
-
-	/* If we need more audio samples */
-	if (so.samples_mixed_so_far < sample_count)
-	{
-		/* Where to put the samples to */
-#ifndef FOREVER_16_BIT_SOUND
-		unsigned byte_offset = (so.play_position + 
-		(so.sixteen_bit ? (so.samples_mixed_so_far << 1) : so.samples_mixed_so_far)) & SOUND_BUFFER_SIZE_MASK;
-#else
-		unsigned byte_offset = (so.play_position + 
-		(so.samples_mixed_so_far << 1)) & SOUND_BUFFER_SIZE_MASK;
-#endif
-
-		//printf ("%d:", sample_count - so.samples_mixed_so_far); fflush (stdout);
-		if (Settings.SoundSync == 2)
+		if(ds2_checkAudiobuff() > AUDIO_BUFFER_COUNT - 1)
 		{
-			/*memset (Buf + (byte_offset & SOUND_BUFFER_SIZE_MASK), 0,
-			sample_count - so.samples_mixed_so_far);*/
+			LastSoundEmissionTime++;
+			return;
+		}
+
+		unsigned short *audiobuff;
+
+		if (Now - LastSoundEmissionTime >= 11719 /* 500 milliseconds */)
+		{
+			LastSoundEmissionTime = Now;
+			// We were probably paused. Restart sending sound,
+			// synchronising from now.
 		}
 		else
 		{
-			/* Mix the missing samples */
-#ifndef FOREVER_16_BIT_SOUND
-			int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
-				so.samples_mixed_so_far;
-#else
-			int bytes_so_far = so.samples_mixed_so_far << 1;
-#endif
-
-			uint32 samples_to_write = sample_count - so.samples_mixed_so_far;
-			do
+			LastSoundEmissionTime += SOUND_EMISSION_INTERVAL;
+			SoundEmissionTimeError += SOUND_EMISSION_INTERVAL_ERROR;
+			if (SoundEmissionTimeError >= FIXED_POINT)
 			{
-				int bytes_this_run = samples_to_write;
-#ifndef FOREVER_16_BIT_SOUND
-				if (so.sixteen_bit)
-#endif
-					bytes_this_run <<= 1;
-
-				if (byte_offset + bytes_this_run > SOUND_BUFFER_SIZE)
-				{
-					bytes_this_run = SOUND_BUFFER_SIZE - byte_offset;
-				}
-
-				if (bytes_so_far + bytes_this_run > so.buffer_size)
-				{
-					bytes_this_run = so.buffer_size - bytes_so_far;
-					if (bytes_this_run == 0)
-						break;
-				}
-
-				int samples_this_run = bytes_this_run;
-#ifndef FOREVER_16_BIT_SOUND
-				if (so.sixteen_bit)
-#endif
-					samples_this_run >>= 1;
-
-				S9xMixSamples (Buf + byte_offset, samples_this_run);
-				so.samples_mixed_so_far += samples_this_run;
-				samples_to_write -= samples_this_run;
-#ifndef FOREVER_16_BIT_SOUND
-				bytes_so_far += so.sixteen_bit ? (samples_this_run << 1) :
-					samples_this_run;
-#else
-				bytes_so_far += samples_this_run << 1;
-#endif
-				byte_offset = (byte_offset + bytes_this_run) & SOUND_BUFFER_SIZE_MASK;
-			} while (samples_to_write > 0);
+				LastSoundEmissionTime += SoundEmissionTimeError >> FIXED_POINT_SHIFT;
+				SoundEmissionTimeError &= FIXED_POINT_REMAINDER;
+			}
 		}
-	}
-
-//    if (!so.mute_sound)
-	{
-		unsigned bytes_to_write = sample_count;
+		/* Number of samples to generate now */
+		int sample_count = so.buffer_size;
 #ifndef FOREVER_16_BIT_SOUND
-		if(so.sixteen_bit)
-#endif
-			bytes_to_write <<= 1;
-
-		unsigned byte_offset = so.play_position;
-		so.play_position = (so.play_position + bytes_to_write) & SOUND_BUFFER_SIZE_MASK; /* wrap to beginning */
-
-		unsigned short *dst_pt = audiobuff;
-		unsigned short *dst_pt1 = dst_pt + DS2_BUFFER_SIZE;
-
-		/* Feed the samples to the soundcard until nothing is left */
-		for(;;)
+		if (so.sixteen_bit)
 		{
-			int I = bytes_to_write;
-			if (byte_offset + I > SOUND_BUFFER_SIZE)
-			{
-				I = SOUND_BUFFER_SIZE - byte_offset;
-			}
-			if(I == 0) break;
+#endif
+			/* to prevent running out of buffer space,
+			* create less samples
+			*/
+			sample_count >>= 1;
+#ifndef FOREVER_16_BIT_SOUND
+		}
+#endif
 
-//			memcpy(dst_pt, (char *) Buf + byte_offset, I);
-//			dst_pt += I;
-
-			unsigned short *src_pt= (unsigned short*)(Buf + byte_offset);
-			for(int m= 0; m < I/4; m++)
-			{
-				*dst_pt++= *src_pt++;//(*src_pt++) <<1;
-				*dst_pt1++= *src_pt++;//(*src_pt++) <<1;
-			}
-
-			bytes_to_write -= I;
-			byte_offset = (byte_offset + I) & SOUND_BUFFER_SIZE_MASK; /* wrap */
+		audiobuff = (unsigned short*)ds2_getAudiobuff();
+		while (audiobuff == NULL) //There are audio queue in sending or wait to send
+		{
+#ifdef ACCUMULATE_JOYPAD
+			NDSSFCAccumulateJoypad ();
+#endif
+			audiobuff = (unsigned short*)ds2_getAudiobuff();
 		}
 
-		ds2_updateAudio();
+		/* If we need more audio samples */
+		if (so.samples_mixed_so_far < sample_count)
+		{
+			/* Where to put the samples to */
+#ifndef FOREVER_16_BIT_SOUND
+			unsigned byte_offset = (so.play_position + 
+			(so.sixteen_bit ? (so.samples_mixed_so_far << 1) : so.samples_mixed_so_far)) & SOUND_BUFFER_SIZE_MASK;
+#else
+			unsigned byte_offset = (so.play_position + 
+			(so.samples_mixed_so_far << 1)) & SOUND_BUFFER_SIZE_MASK;
+#endif
 
-		/* All data sent. */
+			if (Settings.SoundSync == 2)
+			{
+				/*memset (Buf + (byte_offset & SOUND_BUFFER_SIZE_MASK), 0,
+				sample_count - so.samples_mixed_so_far);*/
+			}
+			else
+			{
+				/* Mix the missing samples */
+#ifndef FOREVER_16_BIT_SOUND
+				int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
+					so.samples_mixed_so_far;
+#else
+				int bytes_so_far = so.samples_mixed_so_far << 1;
+#endif
+
+				uint32 samples_to_write = sample_count - so.samples_mixed_so_far;
+				do
+				{
+					int bytes_this_run = samples_to_write;
+#ifndef FOREVER_16_BIT_SOUND
+					if (so.sixteen_bit)
+#endif
+						bytes_this_run <<= 1;
+
+					if (byte_offset + bytes_this_run > SOUND_BUFFER_SIZE)
+					{
+						bytes_this_run = SOUND_BUFFER_SIZE - byte_offset;
+					}
+
+					if (bytes_so_far + bytes_this_run > so.buffer_size)
+					{
+						bytes_this_run = so.buffer_size - bytes_so_far;
+						if (bytes_this_run == 0)
+							break;
+					}
+
+					int samples_this_run = bytes_this_run;
+#ifndef FOREVER_16_BIT_SOUND
+					if (so.sixteen_bit)
+#endif
+						samples_this_run >>= 1;
+
+					S9xMixSamples (Buf + byte_offset, samples_this_run);
+					so.samples_mixed_so_far += samples_this_run;
+					samples_to_write -= samples_this_run;
+#ifndef FOREVER_16_BIT_SOUND
+					bytes_so_far += so.sixteen_bit ? (samples_this_run << 1) :
+						samples_this_run;
+#else
+					bytes_so_far += samples_this_run << 1;
+#endif
+					byte_offset = (byte_offset + bytes_this_run) & SOUND_BUFFER_SIZE_MASK;
+				} while (samples_to_write > 0);
+			}
+		}
+
+	//    if (!so.mute_sound)
+		{
+			unsigned bytes_to_write = sample_count;
+#ifndef FOREVER_16_BIT_SOUND
+			if(so.sixteen_bit)
+#endif
+				bytes_to_write <<= 1;
+
+			unsigned byte_offset = so.play_position;
+			so.play_position = (so.play_position + bytes_to_write) & SOUND_BUFFER_SIZE_MASK; /* wrap to beginning */
+
+			unsigned short *dst_pt = audiobuff;
+			unsigned short *dst_pt1 = dst_pt + DS2_BUFFER_SIZE;
+
+			/* Feed the samples to the soundcard until nothing is left */
+			for(;;)
+			{
+				int I = bytes_to_write;
+				if (byte_offset + I > SOUND_BUFFER_SIZE)
+				{
+					I = SOUND_BUFFER_SIZE - byte_offset;
+				}
+				if(I == 0) break;
+
+	//			memcpy(dst_pt, (char *) Buf + byte_offset, I);
+	//			dst_pt += I;
+
+				unsigned short *src_pt= (unsigned short*)(Buf + byte_offset);
+				for(int m= 0; m < I/4; m++)
+				{
+					*dst_pt++= *src_pt++;//(*src_pt++) <<1;
+					*dst_pt1++= *src_pt++;//(*src_pt++) <<1;
+				}
+
+				bytes_to_write -= I;
+				byte_offset = (byte_offset + I) & SOUND_BUFFER_SIZE_MASK; /* wrap */
+			}
+
+			ds2_updateAudio();
+
+			/* All data sent. */
+		}
+
+		so.samples_mixed_so_far -= sample_count;
 	}
-
-	so.samples_mixed_so_far -= sample_count;
 }
 
 /*
@@ -1066,68 +1187,99 @@ const unsigned int keymap[12] = {
 
 static bool8 SoundToggleWasHeld = FALSE;
 
-unsigned int S9xReadJoypad (int which1)
-{
-    struct key_buf inputdata;
+#ifdef ACCUMULATE_JOYPAD
+// These are kept as DS key bitfields until it's time to send them to Snes9x.
+static uint32 PreviousControls = 0x00000000;
+static uint32 ControlsPressed  = 0x00000000;
+static uint32 ControlsReleased = 0x00000000;
 
+void NDSSFCAccumulateJoypad ()
+{
+	struct key_buf inputdata;
 	ds2_getrawInput(&inputdata);
 
-	if (inputdata.key & KEY_LID)
-	{
-		ds2_setCPUclocklevel(0);
-		ds2_setSupend();
-		do {
-			ds2_getrawInput(&inputdata);
-			mdelay(1);
-		} while (inputdata.key & KEY_LID);
-		ds2_wakeup();
-		set_cpu_clock(clock_speed_number);
-	}
+	ControlsPressed |= inputdata.key & ~PreviousControls;
+	ControlsReleased |= PreviousControls & ~inputdata.key;
+}
+#endif // ACCUMULATE_JOYPAD
 
-	u32 HotkeyReturnToMenu = game_config.HotkeyReturnToMenu != 0 ? game_config.HotkeyReturnToMenu : emu_config.HotkeyReturnToMenu;
-	u32 HotkeyTemporaryFastForward = game_config.HotkeyTemporaryFastForward != 0 ? game_config.HotkeyTemporaryFastForward : emu_config.HotkeyTemporaryFastForward;
-	u32 HotkeyToggleSound = game_config.HotkeyToggleSound != 0 ? game_config.HotkeyToggleSound : emu_config.HotkeyToggleSound;
-
-	if(inputdata.key & KEY_TOUCH ||
-		(HotkeyReturnToMenu && ((inputdata.key & HotkeyReturnToMenu) == HotkeyReturnToMenu))
-	)	//Active menu
-		Settings.Paused = 1;
-
-	temporary_fast_forward =
-		(HotkeyTemporaryFastForward && ((inputdata.key & HotkeyTemporaryFastForward) == HotkeyTemporaryFastForward))
-	;
-
-	bool8 SoundToggleIsHeld = 
-		(HotkeyToggleSound && ((inputdata.key & HotkeyToggleSound) == HotkeyToggleSound))
-	;
-
-	if (SoundToggleIsHeld && !SoundToggleWasHeld)
-	{
-		game_enable_audio = !game_enable_audio;
-		game_disableAudio();
-	}
-
-	SoundToggleWasHeld = SoundToggleIsHeld;
-
+uint32 S9xReadJoypad (int which1)
+{
 	if(which1 < 1)
 	{
-		unsigned int key;
+		uint32 Controls;
+#ifdef ACCUMULATE_JOYPAD
+		Controls = (PreviousControls | ControlsPressed) & ~ControlsReleased;
+		PreviousControls = Controls;
+		ControlsPressed = ControlsReleased = 0x00000000;
+#else
+		{
+			struct key_buf inputdata;
+			ds2_getrawInput(&inputdata);
+
+			Controls = inputdata.key;
+		}
+#endif
+
+		if (Controls & KEY_LID)
+		{
+			LowFrequencyCPU();
+			ds2_setSupend();
+			struct key_buf inputdata;
+			do {
+				ds2_getrawInput(&inputdata);
+				mdelay(1);
+			} while (inputdata.key & KEY_LID);
+			ds2_wakeup();
+			// Before starting to emulate again, turn off the lower
+			// screen's backlight.
+			mdelay(100); // needed to avoid ds2_setBacklight crashing
+			ds2_setBacklight(2);
+			GameFrequencyCPU();
+		}
+
+		u32 HotkeyReturnToMenu = game_config.HotkeyReturnToMenu != 0 ? game_config.HotkeyReturnToMenu : emu_config.HotkeyReturnToMenu;
+		u32 HotkeyTemporaryFastForward = game_config.HotkeyTemporaryFastForward != 0 ? game_config.HotkeyTemporaryFastForward : emu_config.HotkeyTemporaryFastForward;
+		u32 HotkeyToggleSound = game_config.HotkeyToggleSound != 0 ? game_config.HotkeyToggleSound : emu_config.HotkeyToggleSound;
+
+		if(Controls & KEY_TOUCH ||
+			(HotkeyReturnToMenu && ((Controls & HotkeyReturnToMenu) == HotkeyReturnToMenu))
+		)	//Active menu
+			Settings.Paused = 1;
+
+		temporary_fast_forward =
+			(HotkeyTemporaryFastForward && ((Controls & HotkeyTemporaryFastForward) == HotkeyTemporaryFastForward))
+		;
+
+		bool8 SoundToggleIsHeld = 
+			(HotkeyToggleSound && ((Controls & HotkeyToggleSound) == HotkeyToggleSound))
+		;
+
+		if (SoundToggleIsHeld && !SoundToggleWasHeld)
+		{
+			game_enable_audio = !game_enable_audio;
+			game_disableAudio();
+		}
+
+		SoundToggleWasHeld = SoundToggleIsHeld;
+
+		uint32 key = 0x80000000;  // Required by Snes9x
 
 		                                           //   DS   ->  SNES
-		key  = (inputdata.key & KEY_A     ) <<  7; // 0x0001 -> 0x0080
-		key |= (inputdata.key & KEY_B     ) << 14; // 0x0002 -> 0x8000
-		key |= (inputdata.key & KEY_SELECT) << 11; // 0x0004 -> 0x2000
-		key |= (inputdata.key & KEY_START ) <<  9; // 0x0008 -> 0x1000
-		key |= (inputdata.key & KEY_UP    ) <<  5; // 0x0040 -> 0x0800
+		key |= (Controls & KEY_A     ) <<  7;      // 0x0001 -> 0x0080
+		key |= (Controls & KEY_B     ) << 14;      // 0x0002 -> 0x8000
+		key |= (Controls & KEY_SELECT) << 11;      // 0x0004 -> 0x2000
+		key |= (Controls & KEY_START ) <<  9;      // 0x0008 -> 0x1000
+		key |= (Controls & KEY_UP    ) <<  5;      // 0x0040 -> 0x0800
 		// 0x0010 -> 0x0100; 0x0020 -> 0x0200
 		// 0x0030 -> 0x0300
-		key |= (inputdata.key & (KEY_RIGHT | KEY_LEFT))  <<  4;
+		key |= (Controls & (KEY_RIGHT | KEY_LEFT))  <<  4;
 		// 0x0100 -> 0x0010; 0x0200 -> 0x0020; 0x0400 -> 0x0040
 		// 0x0700 -> 0x0070
-		key |= (inputdata.key & (KEY_R | KEY_L | KEY_X)) >>  4;
+		key |= (Controls & (KEY_R | KEY_L | KEY_X)) >>  4;
 		// 0x0080 -> 0x0400; 0x0800 -> 0x4000
 		// 0x0880 -> 0x4400
-		key |= (inputdata.key & (KEY_DOWN | KEY_Y))      <<  3;
+		key |= (Controls & (KEY_DOWN | KEY_Y))      <<  3;
 /*
 		for(i= 0; i < 12; i++)	//remap key
 		{
@@ -1135,7 +1287,7 @@ unsigned int S9xReadJoypad (int which1)
 		}
 */
 
-		return (key | 0x80000000);
+		return key;
 	}
 	else
 		return 0;
