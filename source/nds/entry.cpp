@@ -981,8 +981,20 @@ void S9xGenerateSound ()
 	}
 }
 
-#define SOUND_EMISSION_INTERVAL ((unsigned int) ((((unsigned long long) DS2_BUFFER_SIZE * 1000000) / SND_SAMPLE_RATE) * 3 / 128) - 1) /* -1 is for roundoff errors */
-unsigned int LastSoundEmissionTime = 0;
+#define SOUND_EMISSION_INTERVAL ((unsigned int) ((((unsigned long long) DS2_BUFFER_SIZE * 1000000) / SND_SAMPLE_RATE) * 3 / 128))
+#define TRUE_SOUND_EMISSION_INTERVAL ((((double) DS2_BUFFER_SIZE * 1000000) / SND_SAMPLE_RATE) * 3 / 128)
+#define SOUND_EMISSION_INTERVAL_ERROR ((int) ((TRUE_SOUND_EMISSION_INTERVAL - SOUND_EMISSION_INTERVAL) * FIXED_POINT))
+static unsigned int LastSoundEmissionTime = 0;
+
+/*
+ * Accumulated error in the sound emission time. The unit is as follows:
+ * FIXED_POINT = 42.667 microseconds.
+ * As the error goes past FIXED_POINT, the new target for sound emission
+ * becomes 42.667 microseconds LATER. This helps with sound buffer overruns,
+ * correctly dealing with the fact that 42.667 microseconds does not fit
+ * an integer number of times in 1/32000 second (or whatever sampling rate).
+ */
+static unsigned int SoundEmissionTimeError = 0;
 
 void S9xProcessSound (unsigned int)
 {
@@ -1009,6 +1021,12 @@ void S9xProcessSound (unsigned int)
 		else
 		{
 			LastSoundEmissionTime += SOUND_EMISSION_INTERVAL;
+			SoundEmissionTimeError += SOUND_EMISSION_INTERVAL_ERROR;
+			if (SoundEmissionTimeError > FIXED_POINT)
+			{
+				LastSoundEmissionTime += SoundEmissionTimeError >> FIXED_POINT_SHIFT;
+				SoundEmissionTimeError &= FIXED_POINT_REMAINDER;
+			}
 		}
 		/* Number of samples to generate now */
 		int sample_count = so.buffer_size;
