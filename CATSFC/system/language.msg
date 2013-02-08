@@ -190,7 +190,7 @@ OK!
 Delete all saved states
 #FMT_SAVED_STATE_DELETE_ONE
 Delete saved state %d
-#MSG_DELETE_ALL_SAVESTATE_WARING
+#MSG_DIALOG_SAVE_STATE_DELETE_ALL
 Really delete all saved states?
 #FMT_DIALOG_SAVED_STATE_DELETE_ONE
 Really delete saved state %d?
@@ -606,7 +606,7 @@ Terminé!
 Supprimer toutes les sauvegardes
 #FMT_SAVED_STATE_DELETE_ONE
 Supprimer l'emplacement %d
-#MSG_DELETE_ALL_SAVESTATE_WARING
+#MSG_DIALOG_SAVE_STATE_DELETE_ALL
 Supprimer toutes les sauvegardes?
 #FMT_DIALOG_SAVED_STATE_DELETE_ONE
 Supprimer l'emplacement %d?
@@ -815,7 +815,7 @@ OK!
 Alle Speicherstände löschen
 #FMT_SAVED_STATE_DELETE_ONE
 Lösche Speicherstand %d
-#MSG_DELETE_ALL_SAVESTATE_WARING
+#MSG_DIALOG_SAVE_STATE_DELETE_ALL
 Wirklich alle Speicherstände löschen?
 #FMT_DIALOG_SAVED_STATE_DELETE_ONE
 Wirklich Speicherstand %d löschen?
@@ -857,3 +857,212 @@ Alle Einstellungen zurücksetzen?
 Bitte warten...
  
 ENDGERMAN
+
+STARTDUTCH
+
+#MSG_MAIN_MENU_NEW_GAME
+Nieuw spel
+#MSG_MAIN_MENU_RETURN_TO_GAME
+Ga terug naar het spel
+#MSG_MAIN_MENU_RESET_GAME
+Herstart spel
+#MSG_MAIN_MENU_VIDEO_AUDIO
+Video & audio
+#MSG_MAIN_MENU_SAVED_STATES
+Opgeslagen staten
+#MSG_MAIN_MENU_CHEATS
+Bedrogcodes
+#MSG_MAIN_MENU_TOOLS
+Hulpmiddelen
+#MSG_MAIN_MENU_OPTIONS
+Instellingen
+#MSG_MAIN_MENU_EXIT
+Afsluiten
+#FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
+Fluïditeit                %s
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
+Fluïde video voorkeur
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
+Fluïde audio voorkeur
+#FMT_VIDEO_ASPECT_RATIO
+Beeldverhouding      %s
+#FMT_VIDEO_FAST_FORWARD
+Vooruitspoelen     %s
+#FMT_VIDEO_FRAME_SKIPPING
+Beelden overslaan    %s
+#FMT_AUDIO_SOUND
+Geluid                  %s
+#FMT_SAVED_STATE_CREATE
+Creëer opgeslagen staat      %d
+#FMT_SAVED_STATE_LOAD
+Laad opgeslagen staat          %d
+#MSG_SAVED_STATE_DELETE_GENERAL
+Verwijder opgeslagen staten...
+#FMT_CHEAT_PAGE
+Bedrogcode pagina %d
+#MSG_CHEAT_LOAD_FROM_FILE
+Laad bedrogcode bestand
+#MSG_TOOLS_SCREENSHOT_GENERAL
+Beeldschermafdrukken...
+#MSG_TOOLS_GLOBAL_HOTKEY_GENERAL
+Globale sneltoetsen...
+#MSG_TOOLS_GAME_HOTKEY_GENERAL
+Spel-specifieke sneltoets overnames...
+#FMT_OPTIONS_LANGUAGE
+Taal                                  %s
+#FMT_OPTIONS_CPU_FREQUENCY
+CPU frequentie                 %s
+#MSG_OPTIONS_CPU_FREQUENCY_0
+[0] 240 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_1
+[1] 300 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_2
+[2] 336 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_3
+[3] 360 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_4
+[4] 384 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_5
+[5] 396 MHz
+#MSG_OPTIONS_CARD_CAPACITY
+Kaart capaciteit
+#MSG_OPTIONS_RESET
+Herstel standaard instellingen
+#MSG_OPTIONS_VERSION
+Versie-informatie
+#MSG_SCREENSHOT_CREATE
+Creëer beeldschermafdruk
+#MSG_SCREENSHOT_BROWSE
+Blader door beeldschermafdrukken
+#MSG_HOTKEY_MAIN_MENU
+Ga naar het hoofdmenu
+#MSG_HOTKEY_TEMPORARY_FAST_FORWARD
+Tijdelijk vooruitspoelen
+#MSG_HOTKEY_SOUND_TOGGLE
+Schakel geluid
+#MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
+Druk op de gewenste knoppencombinatie.
+#MSG_HOTKEY_DELETE_WITH_A
+*A Wissen
+#MSG_HOTKEY_CANCEL_WITH_B
+*B Annuleren
+#MSG_LOAD_GAME_RECENTLY_PLAYED
+Recent gespeelde spellen
+#MSG_LOAD_GAME_FROM_CARD
+Selecteer een spel van de kaart
+#MSG_LOAD_GAME_MENU_TITLE
+Selecteer een spel
+#MSG_VIDEO_ASPECT_RATIO_0
+[0] Volledig scherm
+#MSG_VIDEO_ASPECT_RATIO_1
+[1] Onder, vierkante pixels
+#MSG_VIDEO_ASPECT_RATIO_2
+[2] Boven, vierkante pixels
+#MSG_VIDEO_ASPECT_RATIO_3
+[3] Midden, vierkante pixels
+#MSG_VIDEO_ASPECT_RATIO_4
+[4] Volledig scherm, gladgestreken
+#MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC
+[-] Het speltempo bijhouden
+#MSG_VIDEO_FRAME_SKIPPING_0
+[0] Laat alle beelden zien
+#MSG_VIDEO_FRAME_SKIPPING_1
+[1] Laat 1 uit 2 beelden zien
+#MSG_VIDEO_FRAME_SKIPPING_2
+[2] Laat 1 uit 3 beelden zien
+#MSG_VIDEO_FRAME_SKIPPING_3
+[3] Laat 1 uit 4 beelden zien
+#MSG_VIDEO_FRAME_SKIPPING_4
+[4] Laat 1 uit 5 beelden zien
+#MSG_VIDEO_FRAME_SKIPPING_5
+[5] Laat 1 uit 6 beelden zien
+#MSG_VIDEO_FRAME_SKIPPING_6
+[6] Laat 1 uit 7 beelden zien
+#MSG_VIDEO_FRAME_SKIPPING_7
+[7] Laat 1 uit 8 beelden zien
+#MSG_VIDEO_FRAME_SKIPPING_8
+[8] Laat 1 uit 9 beelden zien
+#MSG_VIDEO_FRAME_SKIPPING_9
+[9] Laat 1 uit 10 beelden zien
+#MSG_VIDEO_FRAME_SKIPPING_10
+[10] Laat 1 uit 11 beelden zien
+#MSG_GENERAL_OFF
+Uit
+#MSG_GENERAL_ON
+Aan
+#MSG_GENERAL_CONFIRM_WITH_A
+*A Bevestig
+#MSG_GENERAL_CANCEL_WITH_B
+*B Annuleer
+#MSG_AUDIO_ENABLED
+Aan
+#MSG_AUDIO_MUTED
+Gedempt
+#MSG_TOP_SCREEN_NO_GAME_LOADED
+Er is geen spel geladen
+#MSG_CHEAT_ELEMENT_NOT_LOADED
+<Geen element geladen>
+#MSG_SAVESTATE_FULL
+Het huidige slot bevat al een staat. Deze staat overschrijven?
+#MSG_PROGRESS_SAVED_STATE_CREATING
+Opslaan...
+#MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
+Opslaan mislukt!
+#MSG_PROGRESS_SAVED_STATE_CREATION_SUCCEEDED
+Opslaan geslaagd!
+#MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT
+Geen opgeslagen staat in slot
+#MSG_PROGRESS_SAVED_STATE_CORRUPTED
+Geen staat in slot gevonden of staat is corrupt.
+#MSG_PROGRESS_SAVED_STATE_LOADING
+Laden...
+#MSG_PROGRESS_SAVED_STATE_LOAD_FAILED
+Laden mislukt!
+#MSG_PROGRESS_SAVED_STATE_LOAD_SUCCEEDED
+Laden geslaagd!
+#MSG_SAVED_STATE_DELETE_ALL
+Verwijder alle opgeslagen staten
+#FMT_SAVED_STATE_DELETE_ONE
+Verwijder opgeslagen staat %d
+#MSG_DIALOG_SAVE_STATE_DELETE_ALL
+Werkelijk alle opgeslagen staten verwijderen?
+#FMT_DIALOG_SAVED_STATE_DELETE_ONE
+Werkelijk opgeslagen staat %d verwijderen?
+#MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY
+De opgeslagen staat is al leeg.
+#MSG_PROGRESS_SCREENSHOT_CREATING
+Beeldschermafdruk opslaan...
+#MSG_PROGRESS_SCREENSHOT_CREATION_SUCCEEDED
+Opslaan geslaagd!
+#MSG_PROGRESS_SCREENSHOT_CREATION_FAILED
+Opslaan mislukt!
+#MSG_NO_SLIDE
+Geen beeldschermafdrukken gevonden
+#MSG_PLAYING_SLIDE
+Aan het afspelen...
+#MSG_PAUSE_SLIDE
+Onderbreken...
+#MSG_PLAY_SLIDE1
+OMHOOG-toets Sneller
+#MSG_PLAY_SLIDE2
+OMLAAG-toets Langzamer
+#MSG_PLAY_SLIDE3
+LINKS-toets  Laatste afbeelding
+#MSG_PLAY_SLIDE4
+RECHTS-toets Volgende afbeelding
+#MSG_PLAY_SLIDE5
+A-toets      Onderbreken
+#MSG_PLAY_SLIDE6
+B-toets      Terug naar het menu
+#MSG_PROGRESS_LOADING_GAME
+Laden...
+#MSG_EMULATOR_NAME
+CATSFC SNES emulator
+#MSG_WORD_EMULATOR_VERSION
+Versie
+#MSG_DIALOG_RESET
+Herstel alle standaard instellingen?
+#MSG_PROGRESS_RESETTING
+Even geduld A.U.B.
+
+ENDDUTCH
