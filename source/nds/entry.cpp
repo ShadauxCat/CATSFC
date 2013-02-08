@@ -1004,7 +1004,7 @@ void S9xProcessSound (unsigned int)
 	unsigned int Now = getSysTime();
 	if (Now - LastSoundEmissionTime >= SOUND_EMISSION_INTERVAL)
 	{
-		if(ds2_checkAudiobuff() > AUDIO_BUFFER_COUNT)
+		if(ds2_checkAudiobuff() > AUDIO_BUFFER_COUNT - 1)
 		{
 			LastSoundEmissionTime++;
 			return;
@@ -1022,7 +1022,7 @@ void S9xProcessSound (unsigned int)
 		{
 			LastSoundEmissionTime += SOUND_EMISSION_INTERVAL;
 			SoundEmissionTimeError += SOUND_EMISSION_INTERVAL_ERROR;
-			if (SoundEmissionTimeError > FIXED_POINT)
+			if (SoundEmissionTimeError >= FIXED_POINT)
 			{
 				LastSoundEmissionTime += SoundEmissionTimeError >> FIXED_POINT_SHIFT;
 				SoundEmissionTimeError &= FIXED_POINT_REMAINDER;
