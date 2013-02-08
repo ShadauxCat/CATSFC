@@ -965,6 +965,48 @@ void DecodeBlock (Channel *ch)
 			ch->decoded[11] = ch->decoded[13] = amplitude * 3 / 4;
 			ch->decoded[12] = amplitude;
 		}
+		else if (interim[0] < interim[1] && interim[1] < interim[2]
+		 && interim[2] < interim[3] && interim[3] < interim[4]
+		 && interim[4] < interim[5] && interim[5] < interim[6]
+		 && interim[6] < interim[7]
+		 && interim[8] > interim[9] && interim[9] > interim[10]
+		 && interim[10] > interim[11] && interim[11] > interim[12]
+		 && interim[12] > interim[13] && interim[13] > interim[14]
+		 && interim[14] > interim[15])
+		{
+			/* Looks like a V wave. Make it a half-triangle wave
+			 * with an amplitude equivalent to that
+			 * of the highest amplitude sample of the block. */
+			ch->decoded[0] =  0;
+			ch->decoded[1] =  ch->decoded[15] = amplitude / 8;
+			ch->decoded[2] =  ch->decoded[14] = amplitude / 4;
+			ch->decoded[3] =  ch->decoded[13] = amplitude * 3 / 8;
+			ch->decoded[4] =  ch->decoded[12] = amplitude / 2;
+			ch->decoded[5] =  ch->decoded[11] = amplitude * 5 / 8;
+			ch->decoded[6] =  ch->decoded[10] = amplitude * 3 / 4;
+			ch->decoded[7] =  ch->decoded[9]  = amplitude * 7 / 8;
+			ch->decoded[8] =  amplitude;
+		}
+		else if (interim[0] > interim[1] && interim[1] > interim[2]
+		 && interim[2] > interim[3] && interim[3] > interim[4]
+		 && interim[4] > interim[5] && interim[5] > interim[6]
+		 && interim[6] > interim[7]
+		 && interim[8] < interim[9] && interim[9] < interim[10]
+		 && interim[10] < interim[11] && interim[11] < interim[12]
+		 && interim[12] < interim[13] && interim[13] < interim[14]
+		 && interim[14] < interim[15])
+		{
+			/* Inverted V wave. */
+			ch->decoded[0] =  0;
+			ch->decoded[1] =  ch->decoded[15] = -(amplitude / 8);
+			ch->decoded[2] =  ch->decoded[14] = -(amplitude / 4);
+			ch->decoded[3] =  ch->decoded[13] = -(amplitude * 3 / 8);
+			ch->decoded[4] =  ch->decoded[12] = -(amplitude / 2);
+			ch->decoded[5] =  ch->decoded[11] = -(amplitude * 5 / 8);
+			ch->decoded[6] =  ch->decoded[10] = -(amplitude * 3 / 4);
+			ch->decoded[7] =  ch->decoded[9]  = -(amplitude * 7 / 8);
+			ch->decoded[8] =  -amplitude;
+		}
 		else
 		{
 			// Make it a square wave with an amplitude equivalent to that
