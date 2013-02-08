@@ -641,26 +641,6 @@ static unsigned int sync_next = 0;
 
 static unsigned int skip_rate= 0;
 
-/*
- * Automatic CPU frequency support is here.
- * Whenever, after one downclock determination interval, each frame rendered
- * during it has been rendered at least as early as CPU_DOWNCLOCK_EARLY_TIME,
- * lower the CPU frequency in response.
- * If at least one frame has been early, but not early enough, the CPU
- * frequency stays stable.
- * If at least one frame has been late, the CPU will have be switched back
- * to 396 MHz.
- * This improves battery life to a certain extent.
- */
-
-#define CPU_DOWNCLOCK_EARLY_TIME 293 /* 1 = 42.667 us. 391 = 16.67 ms */
-#define CPU_DOWNCLOCK_DETERMINATION_INTERVAL 46874 /* 23437 = 1 s */
-
-static unsigned int LastAutoCPUTime = 0;
-unsigned int AutoCPUFrequency = 5;
-static bool8 ConsistentlyEarly = FALSE;
-static bool8 FastForwardLastFrame = FALSE;
-
 void S9xSyncSpeed ()
 {
 	uint32 syncnow;
@@ -679,17 +659,8 @@ void S9xSyncSpeed ()
 
 	bool8 FastForward = game_fast_forward || temporary_fast_forward /* hotkey is held */;
 
-	if (game_config.clock_speed_number == 0)
-		if (FastForward && !FastForwardLastFrame)
-			HighFrequencyCPU ();
-		else if (!FastForward && FastForwardLastFrame)
-			GameFrequencyCPU ();
-
-	FastForwardLastFrame = FastForward;
-
 	if (FastForward)
 	{
-		ConsistentlyEarly = FALSE; // don't use fast-forward to lower CPU
 		sync_last = syncnow;
 		sync_next = syncnow;
 
@@ -712,14 +683,10 @@ void S9xSyncSpeed ()
 			{
 				// Render this frame regardless, set the
 				// sync_next, and get the hell out.
-				ConsistentlyEarly = FALSE;
-				AutoCPUFrequency = 5;
-				LastAutoCPUTime = syncnow;
-
 				IPPU.RenderThisFrame = TRUE;
 				sync_last = syncnow;
 				sync_next = syncnow + frame_time;
-				goto finalise;
+				return;
 			}
 			sync_last = syncnow;
 			// If this is positive, we have syncdif*42.66 microseconds to
@@ -738,10 +705,6 @@ void S9xSyncSpeed ()
 			}
 			else if(syncdif < 0)
 			{
-				ConsistentlyEarly = FALSE;
-				AutoCPUFrequency = 5;
-				LastAutoCPUTime = syncnow;
-
 				/*
 				 * If we're consistently late, delay up to 8 frames.
 				 * 
@@ -770,7 +733,6 @@ void S9xSyncSpeed ()
 			}
 			else // Early
 			{
-				ConsistentlyEarly = ConsistentlyEarly && syncdif >= CPU_DOWNCLOCK_EARLY_TIME;
 				skip_rate = 0;
 				if (syncdif > 0)
 				{
@@ -815,7 +777,6 @@ void S9xSyncSpeed ()
 				syncdif = sync_next - syncnow;
 				if (syncdif > 0)
 				{
-					ConsistentlyEarly = ConsistentlyEarly && syncdif >= CPU_DOWNCLOCK_EARLY_TIME;
 					do {
 						S9xProcessSound (0);
 #ifdef ACCUMULATE_JOYPAD
@@ -830,13 +791,6 @@ void S9xSyncSpeed ()
 					} while (syncdif > 0);
 					// After that little delay, what time is it?
 					syncnow = getSysTime();
-				}
-				else
-				{
-					// Nope, we're late.
-					ConsistentlyEarly = FALSE;
-					AutoCPUFrequency = 5;
-					LastAutoCPUTime = syncnow;
 				}
 				sync_next = syncnow + frame_time * (Settings.SkipFrames + 1);
 			}
@@ -930,20 +884,6 @@ void S9xSyncSpeed ()
         next1.tv_usec %= 1000000;
     }
 #endif
-
-finalise: ;
-
-	if (syncnow - LastAutoCPUTime >= CPU_DOWNCLOCK_DETERMINATION_INTERVAL) {
-		if (ConsistentlyEarly && AutoCPUFrequency > 0)
-			AutoCPUFrequency--;
-		
-		LastAutoCPUTime = syncnow;
-		ConsistentlyEarly = TRUE;
-		// will get unset if the CPU should stay the same at next check
-	}
-
-	if (game_config.clock_speed_number == 0 && LastAutoCPUFrequency != AutoCPUFrequency)
-		GameFrequencyCPU ();
 }
 
 bool8 S9xOpenSoundDevice (int mode, bool8 stereo, int buffer_size)
