@@ -842,7 +842,7 @@ void DecodeBlock (Channel *ch)
 			ch->loop = (filter & 2) != 0;
 
 		int16 interim[16];
-		uint8 interim_byte;
+		uint8 interim_byte = 0;
 	
 		compressed++;
 		signed short *raw = ch->block = ch->decoded;
@@ -974,7 +974,7 @@ void DecodeBlock (Channel *ch)
 			for (i = 0; i < 8; i++)
 				ch->decoded[i] = amplitude / 2;
 			for (i = 8; i < 16; i++)
-				ch->decoded[i] = -amplitude / 2;
+				ch->decoded[i] = -(amplitude / 2);
 		}
 	}
 	else
