@@ -1066,3 +1066,212 @@ Herstel alle standaard instellingen?
 Even geduld A.U.B.
 
 ENDDUTCH
+
+STARTSPANISH
+
+#MSG_MAIN_MENU_NEW_GAME
+Nuevo
+#MSG_MAIN_MENU_RETURN_TO_GAME
+Volver
+#MSG_MAIN_MENU_RESET_GAME
+Reiniciar
+#MSG_MAIN_MENU_VIDEO_AUDIO
+Video y audio
+#MSG_MAIN_MENU_SAVED_STATES
+Partidas
+#MSG_MAIN_MENU_CHEATS
+Trucos
+#MSG_MAIN_MENU_TOOLS
+Herramientas
+#MSG_MAIN_MENU_OPTIONS
+Opciones
+#MSG_MAIN_MENU_EXIT
+Salir
+#FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
+Fluidez                        %s
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
+Video fluido
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
+Audio fluido
+#FMT_VIDEO_ASPECT_RATIO
+Modo de pantalla        %s
+#FMT_VIDEO_FAST_FORWARD
+Modo avance rápido   %s
+#FMT_VIDEO_FRAME_SKIPPING
+Salto de fotogramas  %s
+#FMT_AUDIO_SOUND
+Activar sonido            %s
+#FMT_SAVED_STATE_CREATE
+Grabar partida  %d
+#FMT_SAVED_STATE_LOAD
+Cargar partida  %d
+#MSG_SAVED_STATE_DELETE_GENERAL
+Borrar partidas...
+#FMT_CHEAT_PAGE
+Página de trucos: %d
+#MSG_CHEAT_LOAD_FROM_FILE
+Cargar archivo de trucos
+#MSG_TOOLS_SCREENSHOT_GENERAL
+Capturas de pantalla...
+#MSG_TOOLS_GLOBAL_HOTKEY_GENERAL
+Teclas globales...
+#MSG_TOOLS_GAME_HOTKEY_GENERAL
+Teclas en juego...
+#FMT_OPTIONS_LANGUAGE
+Idioma                                %s
+#FMT_OPTIONS_CPU_FREQUENCY
+Frecuencia CPU                 %s
+#MSG_OPTIONS_CPU_FREQUENCY_0
+[0] 240 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_1
+[1] 300 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_2
+[2] 336 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_3
+[3] 360 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_4
+[4] 384 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_5
+[5] 396 MHz
+#MSG_OPTIONS_CARD_CAPACITY
+Capacidad uSD
+#MSG_OPTIONS_RESET
+Restaurar valores iniciales
+#MSG_OPTIONS_VERSION
+Información de versión
+#MSG_SCREENSHOT_CREATE
+Salvar captura
+#MSG_SCREENSHOT_BROWSE
+Mostrar capturas
+#MSG_HOTKEY_MAIN_MENU
+Ir al menu principal
+#MSG_HOTKEY_TEMPORARY_FAST_FORWARD
+Avance rápido temp.
+#MSG_HOTKEY_SOUND_TOGGLE
+Sonido On/Off
+#MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
+  Presione la tecla para esta acción.
+#MSG_HOTKEY_DELETE_WITH_A
+*A Borrar
+#MSG_HOTKEY_CANCEL_WITH_B
+*B Cancelar
+#MSG_LOAD_GAME_RECENTLY_PLAYED
+Juegos recientes
+#MSG_LOAD_GAME_FROM_CARD
+Cargar un juego
+#MSG_LOAD_GAME_MENU_TITLE
+Seleccionar el juego
+#MSG_VIDEO_ASPECT_RATIO_0
+[0] Completa
+#MSG_VIDEO_ASPECT_RATIO_1
+[1] Alinear abajo
+#MSG_VIDEO_ASPECT_RATIO_2
+[2] Alinear arriba
+#MSG_VIDEO_ASPECT_RATIO_3
+[3] Centrar
+#MSG_VIDEO_ASPECT_RATIO_4
+[4] Completa+Suavizado
+#MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC
+[-] Automático
+#MSG_VIDEO_FRAME_SKIPPING_0
+[0] Mostrar todos
+#MSG_VIDEO_FRAME_SKIPPING_1
+[1] Mostrar 1/2
+#MSG_VIDEO_FRAME_SKIPPING_2
+[2] Mostrar 1/3
+#MSG_VIDEO_FRAME_SKIPPING_3
+[3] Mostrar 1/4
+#MSG_VIDEO_FRAME_SKIPPING_4
+[4] Mostrar 1/5
+#MSG_VIDEO_FRAME_SKIPPING_5
+[5] Mostrar 1/6
+#MSG_VIDEO_FRAME_SKIPPING_6
+[6] Mostrar 1/7
+#MSG_VIDEO_FRAME_SKIPPING_7
+[7] Mostrar 1/8
+#MSG_VIDEO_FRAME_SKIPPING_8
+[8] Mostrar 1/9
+#MSG_VIDEO_FRAME_SKIPPING_9
+[9] Mostrar 1/10
+#MSG_VIDEO_FRAME_SKIPPING_10
+[10] Mostrar 1/11
+#MSG_GENERAL_OFF
+Off
+#MSG_GENERAL_ON
+On
+#MSG_GENERAL_CONFIRM_WITH_A
+*A Aceptar
+#MSG_GENERAL_CANCEL_WITH_B
+*B Cancelar
+#MSG_AUDIO_ENABLED
+On
+#MSG_AUDIO_MUTED
+Off
+#MSG_TOP_SCREEN_NO_GAME_LOADED
+No hay juego cargado
+#MSG_CHEAT_ELEMENT_NOT_LOADED
+<Vacio>
+#MSG_SAVESTATE_FULL
+    Posición actual en uso.                          Sobreescribirla?
+#MSG_PROGRESS_SAVED_STATE_CREATING
+Salvando la partida...
+#MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
+Error al salvar!
+#MSG_PROGRESS_SAVED_STATE_CREATION_SUCCEEDED
+Salvado correcto!
+#MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT
+No hay partida aquí
+#MSG_PROGRESS_SAVED_STATE_CORRUPTED
+Partida no encontrada/corrupta!
+#MSG_PROGRESS_SAVED_STATE_LOADING
+Cargando...
+#MSG_PROGRESS_SAVED_STATE_LOAD_FAILED
+Error al cargar!
+#MSG_PROGRESS_SAVED_STATE_LOAD_SUCCEEDED
+Carga correcta!
+#MSG_SAVED_STATE_DELETE_ALL
+Borrar todas las partidas
+#FMT_SAVED_STATE_DELETE_ONE
+Borrar partida  %d
+#MSG_DELETE_ALL_SAVESTATE_WARING
+Borrar todas las partidas?
+#FMT_DIALOG_SAVED_STATE_DELETE_ONE
+Borrar la partida %d?
+#MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY
+No hay partida!
+#MSG_PROGRESS_SCREENSHOT_CREATING
+Salvando la captura...
+#MSG_PROGRESS_SCREENSHOT_CREATION_SUCCEEDED
+Completado!
+#MSG_PROGRESS_SCREENSHOT_CREATION_FAILED
+Error al salvar!
+#MSG_NO_SLIDE
+Captura no encontrada!
+#MSG_PLAYING_SLIDE
+Ejecutando...
+#MSG_PAUSE_SLIDE
+Pausa...
+#MSG_PLAY_SLIDE1
+Tecla ^              Velocidad +
+#MSG_PLAY_SLIDE2
+Tecla v             Velocidad -
+#MSG_PLAY_SLIDE3
+Tecla <                   Anterior
+#MSG_PLAY_SLIDE4
+Tecla >                  Siguiente
+#MSG_PLAY_SLIDE5
+Tecla A                      Pausa
+#MSG_PLAY_SLIDE6
+Tecla B        Volver al menu
+#MSG_PROGRESS_LOADING_GAME
+Cargando el juego...
+#MSG_EMULATOR_NAME
+CATSFC Emulador SNES
+#MSG_WORD_EMULATOR_VERSION
+Versión
+#MSG_DIALOG_RESET
+Cargar valores iniciales?
+#MSG_PROGRESS_RESETTING
+Espere un momento...
+
+ENDSPANISH
