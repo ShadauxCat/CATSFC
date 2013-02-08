@@ -840,6 +840,9 @@ void DecodeBlock (Channel *ch)
 	    filter = *compressed;
 	    if ((ch->last_block = filter & 1))
 			ch->loop = (filter & 2) != 0;
+
+		int16 interim[16];
+		uint8 interim_byte;
 	
 		compressed++;
 		signed short *raw = ch->block = ch->decoded;
@@ -899,29 +902,80 @@ void DecodeBlock (Channel *ch)
 				int16 result = (signed short)(out<<1);
 				if (abs(result) > amplitude)
 					amplitude = abs(result);
+				interim[interim_byte++] = out;
 				prev1=(signed short)prev0;
 				prev0=(signed short)(out<<1);
 			}
 		}
 		ch->previous [0] = prev0;
 		ch->previous [1] = prev1;
-		// Make it a square wave with an amplitude equivalent to that
-		// of the highest amplitude sample of the block.
-		/* for (i = 0; i < 8; i++)
-			ch->decoded[i] = amplitude;
-		for (i = 8; i < 16; i++)
-			ch->decoded[i] = -amplitude; */
-		// Make it a triangle wave with an amplitude equivalent to that
-		// of the highest amplitude sample of the block.
-		ch->decoded[0] =  ch->decoded[8]  = 0;
-		ch->decoded[1] =  ch->decoded[7]  = amplitude / 4;
-		ch->decoded[2] =  ch->decoded[6]  = amplitude / 2;
-		ch->decoded[3] =  ch->decoded[5]  = amplitude * 3 / 4;
-		ch->decoded[4] =  amplitude;
-		ch->decoded[9] =  ch->decoded[15] = -(amplitude / 4);
-		ch->decoded[10] = ch->decoded[14] = -(amplitude / 2);
-		ch->decoded[11] = ch->decoded[13] = -(amplitude * 3 / 4);
-		ch->decoded[12] = -amplitude;
+
+		int32 total_deviation_from_previous = 0;
+		for (i = 1; i < 16; i++)
+			total_deviation_from_previous += abs(interim[i] - interim[i - 1]);
+		if (total_deviation_from_previous >= (int32) amplitude * 4)
+		{
+			/* Looks like noise. Generate noise. */
+			for (i = 0; i < 16; i++)
+			{
+				int feedback = (noise_gen << 13) ^ (noise_gen << 14);
+				noise_gen = (feedback & 0x4000) ^ (noise_gen >> 1);
+				ch->decoded[i] = (noise_gen << 17) >> 17;
+			}
+		}
+		else if (interim[0] < interim[1] && interim[1] < interim[2]
+		 && interim[2] < interim[3]
+		 && interim[4] > interim[5] && interim[5] > interim[6]
+		 && interim[6] > interim[7] && interim[7] > interim[8]
+		 && interim[8] > interim[9] && interim[9] > interim[10]
+		 && interim[10] > interim[11]
+		 && interim[12] < interim[13] && interim[13] < interim[14]
+		 && interim[14] < interim[15])
+		{
+			/* Looks like a sine or triangle wave. Make it a
+			 * triangle wave with an amplitude equivalent to that
+			 * of the highest amplitude sample of the block. */
+			ch->decoded[0] =  ch->decoded[8]  = 0;
+			ch->decoded[1] =  ch->decoded[7]  = amplitude / 4;
+			ch->decoded[2] =  ch->decoded[6]  = amplitude / 2;
+			ch->decoded[3] =  ch->decoded[5]  = amplitude * 3 / 4;
+			ch->decoded[4] =  amplitude;
+			ch->decoded[9] =  ch->decoded[15] = -(amplitude / 4);
+			ch->decoded[10] = ch->decoded[14] = -(amplitude / 2);
+			ch->decoded[11] = ch->decoded[13] = -(amplitude * 3 / 4);
+			ch->decoded[12] = -amplitude;
+		}
+		else if (interim[0] > interim[1] && interim[1] > interim[2]
+		 && interim[2] > interim[3]
+		 && interim[4] < interim[5] && interim[5] < interim[6]
+		 && interim[6] < interim[7] && interim[7] < interim[8]
+		 && interim[8] < interim[9] && interim[9] < interim[10]
+		 && interim[10] < interim[11]
+		 && interim[12] > interim[13] && interim[13] > interim[14]
+		 && interim[14] > interim[15])
+		{
+			/* Inverted triangle wave. */
+			ch->decoded[0] =  ch->decoded[8]  = 0;
+			ch->decoded[1] =  ch->decoded[7]  = -(amplitude / 4);
+			ch->decoded[2] =  ch->decoded[6]  = -(amplitude / 2);
+			ch->decoded[3] =  ch->decoded[5]  = -(amplitude * 3 / 4);
+			ch->decoded[4] = -amplitude;
+			ch->decoded[9] =  ch->decoded[15] = amplitude / 4;
+			ch->decoded[10] = ch->decoded[14] = amplitude / 2;
+			ch->decoded[11] = ch->decoded[13] = amplitude * 3 / 4;
+			ch->decoded[12] = amplitude;
+		}
+		else
+		{
+			// Make it a square wave with an amplitude equivalent to that
+			// of the highest amplitude sample of the block.
+			// But actually put half of the amplitude, because
+			// square waves are just loud.
+			for (i = 0; i < 8; i++)
+				ch->decoded[i] = amplitude / 2;
+			for (i = 8; i < 16; i++)
+				ch->decoded[i] = -amplitude / 2;
+		}
 	}
 	else
 	{
