@@ -1076,7 +1076,7 @@ Volver
 #MSG_MAIN_MENU_RESET_GAME
 Reiniciar
 #MSG_MAIN_MENU_VIDEO_AUDIO
-Video y audio
+Vídeo y audio
 #MSG_MAIN_MENU_SAVED_STATES
 Partidas
 #MSG_MAIN_MENU_CHEATS
@@ -1090,7 +1090,7 @@ Salir
 #FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
 Fluidez                        %s
 #MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
-Video fluido
+Vídeo fluido
 #MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
 Audio fluido
 #FMT_VIDEO_ASPECT_RATIO
@@ -1144,9 +1144,9 @@ Salvar captura
 #MSG_SCREENSHOT_BROWSE
 Mostrar capturas
 #MSG_HOTKEY_MAIN_MENU
-Ir al menu principal
+Ir al menú principal
 #MSG_HOTKEY_TEMPORARY_FAST_FORWARD
-Avance rápido temp.
+Avance rápido
 #MSG_HOTKEY_SOUND_TOGGLE
 Sonido On/Off
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
@@ -1210,43 +1210,43 @@ Off
 #MSG_TOP_SCREEN_NO_GAME_LOADED
 No hay juego cargado
 #MSG_CHEAT_ELEMENT_NOT_LOADED
-<Vacio>
+<Vacío>
 #MSG_SAVESTATE_FULL
-    Posición actual en uso.                          Sobreescribirla?
+    Posición actual en uso.                          ¿Sobreescribirla?
 #MSG_PROGRESS_SAVED_STATE_CREATING
 Salvando la partida...
 #MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
-Error al salvar!
+¡Error al salvar!
 #MSG_PROGRESS_SAVED_STATE_CREATION_SUCCEEDED
-Salvado correcto!
+¡Salvado correcto!
 #MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT
 No hay partida aquí
 #MSG_PROGRESS_SAVED_STATE_CORRUPTED
-Partida no encontrada/corrupta!
+¡Partida no encontrada/corrupta!
 #MSG_PROGRESS_SAVED_STATE_LOADING
 Cargando...
 #MSG_PROGRESS_SAVED_STATE_LOAD_FAILED
-Error al cargar!
+¡Error al cargar!
 #MSG_PROGRESS_SAVED_STATE_LOAD_SUCCEEDED
-Carga correcta!
+¡Carga correcta!
 #MSG_SAVED_STATE_DELETE_ALL
 Borrar todas las partidas
 #FMT_SAVED_STATE_DELETE_ONE
 Borrar partida  %d
 #MSG_DELETE_ALL_SAVESTATE_WARING
-Borrar todas las partidas?
+¿Borrar todas las partidas?
 #FMT_DIALOG_SAVED_STATE_DELETE_ONE
-Borrar la partida %d?
+¿Borrar la partida %d?
 #MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY
-No hay partida!
+¡No hay partida!
 #MSG_PROGRESS_SCREENSHOT_CREATING
 Salvando la captura...
 #MSG_PROGRESS_SCREENSHOT_CREATION_SUCCEEDED
-Completado!
+¡Completado!
 #MSG_PROGRESS_SCREENSHOT_CREATION_FAILED
-Error al salvar!
+¡Error al salvar!
 #MSG_NO_SLIDE
-Captura no encontrada!
+¡Captura no encontrada!
 #MSG_PLAYING_SLIDE
 Ejecutando...
 #MSG_PAUSE_SLIDE
@@ -1270,7 +1270,7 @@ CATSFC Emulador SNES
 #MSG_WORD_EMULATOR_VERSION
 Versión
 #MSG_DIALOG_RESET
-Cargar valores iniciales?
+¿Cargar valores iniciales?
 #MSG_PROGRESS_RESETTING
 Espere un momento...
 
