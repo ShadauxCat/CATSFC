@@ -93,6 +93,31 @@
 #include "port.h"
 #include "snes9x.h"
 
+START_EXTERN_C
+void S9xStartScreenRefresh ();
+void S9xDrawScanLine (uint8 Line);
+void S9xEndScreenRefresh ();
+void S9xSetupOBJ ();
+void S9xUpdateScreen ();
+void RenderLine (uint8 line);
+void S9xBuildDirectColourMaps ();
+
+// External port interface which must be implemented or initialised for each
+// port.
+extern struct SGFX GFX;
+
+bool8 S9xGraphicsInit ();
+void S9xGraphicsDeinit();
+bool8 S9xInitUpdate (void);
+bool8 S9xDeinitUpdate (int Width, int Height, bool8 sixteen_bit);
+void S9xSyncSpeed ();
+
+#ifdef GFX_MULTI_FORMAT
+bool8 S9xSetRenderPixelFormat (int format);
+#endif
+
+END_EXTERN_C
+
 struct SGFX{
     // Initialize these variables
     uint8  *Screen;
@@ -231,11 +256,17 @@ GFX.X2 [((((C1) & RGB_REMOVE_LOW_BITS_MASK) + \
 	  ((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1) + \
 	((C1) & (C2) & RGB_LOW_BITS_MASK)]
 #else
-#define COLOR_ADD(C1, C2) \
-(GFX.X2 [((((C1) & RGB_REMOVE_LOW_BITS_MASK) + \
-	  ((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1) + \
-	 ((C1) & (C2) & RGB_LOW_BITS_MASK)] | \
- (((C1) ^ (C2)) & RGB_LOW_BITS_MASK))	   
+inline uint16 COLOR_ADD (uint16, uint16);
+
+inline uint16 COLOR_ADD (uint16 C1, uint16 C2)
+{
+	if (C1 == 0)
+		return C2;
+	else if (C2 == 0)
+		return C1;
+	else
+		return GFX.X2 [(((C1 & RGB_REMOVE_LOW_BITS_MASK) + (C2 & RGB_REMOVE_LOW_BITS_MASK)) >> 1) + (C1 & C2 & RGB_LOW_BITS_MASK)] | ((C1 ^ C2) & RGB_LOW_BITS_MASK);
+}
 #endif
 
 #define COLOR_ADD1_2(C1, C2) \
@@ -287,31 +318,6 @@ typedef void (*ClippedTileRenderer) (uint32 Tile, uint32 Offset,
 typedef void (*LargePixelRenderer) (uint32 Tile, uint32 Offset,
 				    uint32 StartPixel, uint32 Pixels,
 				    uint32 StartLine, uint32 LineCount);
-
-START_EXTERN_C
-void S9xStartScreenRefresh ();
-void S9xDrawScanLine (uint8 Line);
-void S9xEndScreenRefresh ();
-void S9xSetupOBJ ();
-void S9xUpdateScreen ();
-void RenderLine (uint8 line);
-void S9xBuildDirectColourMaps ();
-
-// External port interface which must be implemented or initialised for each
-// port.
-extern struct SGFX GFX;
-
-bool8 S9xGraphicsInit ();
-void S9xGraphicsDeinit();
-bool8 S9xInitUpdate (void);
-bool8 S9xDeinitUpdate (int Width, int Height, bool8 sixteen_bit);
-void S9xSyncSpeed ();
-
-#ifdef GFX_MULTI_FORMAT
-bool8 S9xSetRenderPixelFormat (int format);
-#endif
-
-END_EXTERN_C
 
 #endif
 

@@ -377,10 +377,17 @@ static FreezeData SnapAPURegisters [] = {
 #define OFFSET(f) Offset(f,SSoundData *)
 
 static FreezeData SnapSoundData [] = {
+#ifndef FOREVER_FORWARD_STEREO
     {OFFSET (master_volume_left), 2, INT_V},
     {OFFSET (master_volume_right), 2, INT_V},
     {OFFSET (echo_volume_left), 2, INT_V},
     {OFFSET (echo_volume_right), 2, INT_V},
+#else
+    {OFFSET (master_volume [0]), 2, INT_V},
+    {OFFSET (master_volume [1]), 2, INT_V},
+    {OFFSET (echo_volume [0]), 2, INT_V},
+    {OFFSET (echo_volume [1]), 2, INT_V},
+#endif
     {OFFSET (echo_enable), 4, INT_V},
     {OFFSET (echo_feedback), 4, INT_V},
     {OFFSET (echo_ptr), 4, INT_V},
@@ -522,7 +529,7 @@ static FreezeData SnapS7RTC [] = {
 	{OFFSET (last_used),4,INT_V}
 };
 
-static char ROMFilename [_MAX_PATH];
+//static char ROMFilename [_MAX_PATH];
 //static char SnapshotFilename [_MAX_PATH];
 
 void FreezeStruct (STREAM stream, char *name, void *base, FreezeData *fields,
@@ -546,8 +553,6 @@ bool8 Snapshot (const char *filename)
 
 bool8 S9xFreezeGame (const char *filename)
 {
-    STREAM stream = NULL;
-
 	FILE* fp;
 	fp = fopen(filename, "w");
 	if(NULL == fp)
@@ -725,7 +730,7 @@ int S9xUnfreezeFromStream (STREAM stream)
     int result;
 	
     int version;
-    int len = strlen (SNAPSHOT_MAGIC) + 1 + 4 + 1;
+    unsigned int len = strlen (SNAPSHOT_MAGIC) + 1 + 4 + 1;
     if (READ_STREAM (buffer, len, stream) != len)
 		return (WRONG_FORMAT);
     if (strncmp (buffer, SNAPSHOT_MAGIC, strlen (SNAPSHOT_MAGIC)) != 0)
@@ -1031,7 +1036,8 @@ void FreezeStruct (STREAM stream, char *name, void *base, FreezeData *fields,
 			}
 			break;
 			case uint8_ARRAY_V:
-				memmove (ptr, (uint8 *) base + fields [i].offset, fields [i].size);
+				// memmove converted: Different mallocs [Neb]
+				memcpy (ptr, (uint8 *) base + fields [i].offset, fields [i].size);
 				ptr += fields [i].size;
 				break;
 			case uint16_ARRAY_V:
@@ -1134,7 +1140,8 @@ int UnfreezeStruct (STREAM stream, char *name, void *base, FreezeData *fields,
 			}
 			break;
 			case uint8_ARRAY_V:
-				memmove ((uint8 *) base + fields [i].offset, ptr, fields [i].size);
+				// memmove converted: Different mallocs [Neb]
+				memcpy ((uint8 *) base + fields [i].offset, ptr, fields [i].size);
 				ptr += fields [i].size;
 				break;
 			case uint16_ARRAY_V:
@@ -1259,6 +1266,7 @@ void UnfreezeStructFromCopy (void *base, FreezeData *fields, int num_fields, uin
 			}
 			break;
 			case uint8_ARRAY_V:
+				// memmove required: Source could point within dest [Neb]
 				memmove ((uint8 *) base + fields [i].offset, ptr, fields [i].size);
 				ptr += fields [i].size;
 				break;
@@ -1576,7 +1584,8 @@ bool8 S9xUnfreezeZSNES (const char *filename)
 			APU.Timer [1] = t [45];
 			APU.Timer [2] = t [46];
 			
-			memmove (APU.ExtraRAM, &t [48], 64);
+			// memmove converted: Different mallocs [Neb]
+			memcpy (APU.ExtraRAM, &t [48], 64);
 			
 			// Internal ZSNES sound DSP state
 			fread (t, 1, 1068, fs);
@@ -1652,7 +1661,9 @@ bool8 S9xUnfreezeZSNES (const char *filename)
 			SA1.Registers.PC  = READ_DWORD (&t [636]);
 			SA1.Registers.P.W = t [620] | (t [624] << 8);
 			
-			memmove (&Memory.FillRAM [0x3000], t + 692, 2 * 1024);
+			// memmove converted: Different mallocs [Neb]
+			// DS2 DMA notes: This code path is not used [Neb]
+			memcpy (&Memory.FillRAM [0x3000], t + 692, 2 * 1024);
 			
 			fread (::SRAM, 1, 64 * 1024, fs);
 			fseek (fs, 64 * 1024, SEEK_CUR);

@@ -190,8 +190,11 @@ const char *S9xGameGenieToRaw (const char *code, uint32 *address, uint8 *byte)
 
 void S9xStartCheatSearch (SCheatData *d)
 {
+    // memmove may be required: Source is usually a different malloc, but could be pointed to d->CWRAM [Neb]
     memmove (d->CWRAM, d->RAM, 0x20000);
+    // memmove may be required: Source is usually a different malloc, but could be pointed to d->CSRAM [Neb]
     memmove (d->CSRAM, d->SRAM, 0x10000);
+    // memmove may be required: Source is usually a different malloc, but could be pointed to d->CIRAM [Neb]
     memmove (d->CIRAM, &d->FillRAM [0x3000], 0x2000);
     memset ((char *) d->WRAM_BITS, 0xff, 0x20000 >> 3);
     memset ((char *) d->SRAM_BITS, 0xff, 0x10000 >> 3);

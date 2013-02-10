@@ -69,7 +69,7 @@
 #define COLOR_BG32          COLOR32(2*8,  4*8,  10*8)
 #define COLOR_ROM_INFO      COLOR16(22, 18, 26)
 #define COLOR_ACTIVE_ITEM   COLOR16(31, 31, 31)
-#define COLOR_INACTIVE_ITEM COLOR16(13, 20, 18)
+#define COLOR_INACTIVE_ITEM COLOR16(11,  7, 19)
 #define COLOR_HELP_TEXT     COLOR16(16, 20, 24)
 #define COLOR_DIALOG        COLOR16(31, 31, 31)
 #define COLOR_DIALOG_SHADOW COLOR16( 0,  2,  8)
@@ -104,53 +104,45 @@ struct gui_iconlist{
 //extern struct background back_ground;
 extern struct gui_iconlist gui_icon_list[];
 
-#define ICON_GBAFILE        gui_icon_list[0]
-#define ICON_ZIPFILE        gui_icon_list[1]
-#define ICON_DIRECTORY      gui_icon_list[2]
-#define ICON_SFCFILE		gui_icon_list[3]
-//not use
-#define ICON_TITLE			gui_icon_list[4]
+#define ICON_ZIPFILE        gui_icon_list[0]
+#define ICON_DIRECTORY      gui_icon_list[1]
+#define ICON_SFCFILE		gui_icon_list[2]
+#define ICON_TITLE			gui_icon_list[3]
 
-#define ICON_AVO			gui_icon_list[5]
-#define ICON_SAVO			gui_icon_list[6]
-#define ICON_TOOL			gui_icon_list[7]
-#define ICON_CHEAT			gui_icon_list[8]
-#define ICON_OTHER			gui_icon_list[9]
-#define ICON_EXIT			gui_icon_list[10]
-#define ICON_MSEL			gui_icon_list[11]
-#define ICON_MNSEL			gui_icon_list[12]
-//not use
-#define ICON_NAVO			gui_icon_list[13]
-#define ICON_NSAVO			gui_icon_list[14]
-#define ICON_NTOOL			gui_icon_list[15]
-#define ICON_NCHEAT			gui_icon_list[16]
-#define ICON_NOTHER			gui_icon_list[17]
-#define ICON_NEXIT			gui_icon_list[18]
+#define ICON_AVO			gui_icon_list[4]
+#define ICON_SAVO			gui_icon_list[5]
+#define ICON_TOOL			gui_icon_list[6]
+#define ICON_CHEAT			gui_icon_list[7]
+#define ICON_OTHER			gui_icon_list[8]
+#define ICON_EXIT			gui_icon_list[9]
+#define ICON_MSEL			gui_icon_list[10]
+#define ICON_MNSEL			gui_icon_list[11]
+#define ICON_NAVO			gui_icon_list[12]
+#define ICON_NSAVO			gui_icon_list[13]
+#define ICON_NTOOL			gui_icon_list[14]
+#define ICON_NCHEAT			gui_icon_list[15]
+#define ICON_NOTHER			gui_icon_list[16]
+#define ICON_NEXIT			gui_icon_list[17]
 
-#define ICON_UNKNOW			gui_icon_list[19]
-#define ICON_NEW			gui_icon_list[20]
-#define ICON_NNEW			gui_icon_list[21]
-#define ICON_RESET			gui_icon_list[22]
-#define ICON_NRESET			gui_icon_list[23]
-#define ICON_RETURN			gui_icon_list[24]
-#define ICON_NRETURN		gui_icon_list[25]
-#define ICON_MAINBG			gui_icon_list[26]
+#define ICON_UNKNOW			gui_icon_list[18]
+#define ICON_MAINITEM			gui_icon_list[19]
+#define ICON_NMAINITEM			gui_icon_list[20]
+#define ICON_MAINBG			gui_icon_list[21]
 
-#define ICON_TITLEICON		gui_icon_list[27]
-#define ICON_SUBBG			gui_icon_list[28]
+#define ICON_TITLEICON		gui_icon_list[22]
+#define ICON_SUBBG			gui_icon_list[23]
 
-#define ICON_SUBSELA		gui_icon_list[29]
-#define ICON_SUBSELB		gui_icon_list[30]
-#define ICON_STATEFULL		gui_icon_list[31]
-#define ICON_NSTATEFULL		gui_icon_list[32]
-#define ICON_STATEEMPTY		gui_icon_list[33]
-#define ICON_NSTATEEMPTY	gui_icon_list[34]
-#define ICON_DOTDIR			gui_icon_list[35]
-#define ICON_BACK			gui_icon_list[36]
-#define ICON_NBACK			gui_icon_list[37]
-#define ICON_CHTFILE		gui_icon_list[38]
-#define ICON_MSG			gui_icon_list[39]
-#define ICON_BUTTON			gui_icon_list[40]
+#define ICON_SUBSELA		gui_icon_list[24]
+#define ICON_STATEFULL		gui_icon_list[25]
+#define ICON_NSTATEFULL		gui_icon_list[26]
+#define ICON_STATEEMPTY		gui_icon_list[27]
+#define ICON_NSTATEEMPTY	gui_icon_list[28]
+#define ICON_DOTDIR			gui_icon_list[29]
+#define ICON_BACK			gui_icon_list[30]
+#define ICON_NBACK			gui_icon_list[31]
+#define ICON_CHTFILE		gui_icon_list[32]
+#define ICON_MSG			gui_icon_list[33]
+#define ICON_BUTTON			gui_icon_list[34]
 
 /******************************************************************************
  *
@@ -181,6 +173,7 @@ extern void show_progress(char *text);
 extern void scrollbar(void* screen_addr, u32 sx, u32 sy, u32 ex, u32 ey, u32 all, u32 view, u32 now);
 extern u32 yesno_dialog(char *text);
 extern u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no);
+extern u32 draw_hotkey_dialog(enum SCREEN_ID screen, u32 sy, char *clear, char *cancel);
 extern void msg_screen_init(const char *title);
 extern void msg_screen_draw();
 extern void msg_printf(const char *text, ...);

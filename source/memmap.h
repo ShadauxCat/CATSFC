@@ -288,11 +288,9 @@ void S9xSetPCBase (uint32 Address);
 uint8 *S9xGetMemPointer (uint32 Address);
 uint8 *GetBasePointer (uint32 Address);
 
-#ifndef NO_OPEN_BUS
 extern "C" {
 	extern uint8 OpenBus;
 }
-#endif
 
 #else
 #define INLINE inline

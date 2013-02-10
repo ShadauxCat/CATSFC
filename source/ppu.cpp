@@ -1030,17 +1030,9 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 /******************************************************************************/
 uint8 S9xGetPPU (uint16 Address)
 {
-#ifndef NO_OPEN_BUS
  	uint8 byte = OpenBus;
-#else
-	uint8 byte = 0; // Arbitrarily chosen value [Neb]
-#endif
 	if(Address<0x2100)//not a real PPU reg
-#ifndef NO_OPEN_BUS
 		return OpenBus; //treat as unmapped memory returning last byte on the bus
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
     if (Address <= 0x2190)
     {
  	switch (Address)
@@ -1052,11 +1044,7 @@ uint8 S9xGetPPU (uint16 Address)
   #ifdef DEBUGGER
   	    missing.oam_address_read = 1;
   #endif
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 
 	case 0x2104:
 	case 0x2105:
@@ -1075,11 +1063,7 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2128:
 	case 0x2129:
 	case 0x212a:
-#ifndef NO_OPEN_BUS
 		return PPU.OpenBus1;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 
 	case 0x2107:
 	case 0x2117:
@@ -1096,11 +1080,7 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2131:
 	case 0x2132:
 	case 0x2133:
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 
 	case 0x210b:
 	case 0x210c:
@@ -1114,11 +1094,7 @@ uint8 S9xGetPPU (uint16 Address)
 #ifdef DEBUGGER
 		missing.bg_offset_read = 1;
 #endif
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 
 	case 0x2114:
 #ifdef DEBUGGER
@@ -1134,11 +1110,7 @@ uint8 S9xGetPPU (uint16 Address)
 #ifdef DEBUGGER
 	    missing.matrix_read = 1;
 #endif
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 
 
 	case 0x2134:
@@ -1157,18 +1129,10 @@ uint8 S9xGetPPU (uint16 Address)
 #ifdef DEBUGGER
 	    missing.matrix_multiply = 1;
 #endif
-		return (
-#ifndef NO_OPEN_BUS
-			PPU.OpenBus1 =
-#endif
-			Memory.FillRAM[Address]);
+		return (PPU.OpenBus1 = Memory.FillRAM[Address]);
 	case 0x2137:
 		S9xLatchCounters(0);
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 
 	case 0x2138:
 		// Read OAM (sprite) control data
@@ -1213,11 +1177,7 @@ uint8 S9xGetPPU (uint16 Address)
 #ifdef DEBUGGER
 	    missing.oam_read = 1;
 #endif
-		return (
-#ifndef NO_OPEN_BUS
-			PPU.OpenBus1 =
-#endif
-			byte);
+		return (PPU.OpenBus1 = byte);
 
 	case 0x2139:
 		// Read vram low byte
@@ -1262,9 +1222,7 @@ uint8 S9xGetPPU (uint16 Address)
 				IPPU.FirstVRAMRead = FALSE;
 			}
 #endif
-#ifndef NO_OPEN_BUS
 			PPU.OpenBus1 = byte;
-#endif
 			break;
 	case 0x213A:
 		// Read vram high byte
@@ -1308,9 +1266,7 @@ uint8 S9xGetPPU (uint16 Address)
 				IPPU.FirstVRAMRead = FALSE;
 			}
 #endif
-#ifndef NO_OPEN_BUS
 			PPU.OpenBus1 = byte;
-#endif
 			break;
 
 	case 0x213B:
@@ -1324,11 +1280,7 @@ uint8 S9xGetPPU (uint16 Address)
 		byte = PPU.CGDATA [PPU.CGADD] & 0xff;
 
 	    PPU.CGFLIPRead ^= 1;
-	    return (
-#ifndef NO_OPEN_BUS
-		PPU.OpenBus2 =
-#endif
-		byte);
+	    return (PPU.OpenBus2 = byte);
 	    
 	case 0x213C:
 	    // Horizontal counter value 0-339
@@ -1336,19 +1288,12 @@ uint8 S9xGetPPU (uint16 Address)
 	    missing.h_counter_read = 1;
 #endif
 	    if (PPU.HBeamFlip)
-		byte =
-#ifndef NO_OPEN_BUS
-			(PPU.OpenBus2 & 0xfe)
-#else
-			0 // Arbitrarily chosen value [Neb]
-#endif
+		byte = (PPU.OpenBus2 & 0xfe)
 			| ((PPU.HBeamPosLatched >> 8) & 0x01);
 
 	    else
 		byte = (uint8)PPU.HBeamPosLatched;
-#ifndef NO_OPEN_BUS
             PPU.OpenBus2 = byte;
-#endif
 	    PPU.HBeamFlip ^= 1;
 	    break;
 
@@ -1358,18 +1303,11 @@ uint8 S9xGetPPU (uint16 Address)
 	    missing.v_counter_read = 1;
 #endif
 	    if (PPU.VBeamFlip)
-                byte =
-#ifndef NO_OPEN_BUS
-			(PPU.OpenBus2 & 0xfe)
-#else
-			0 // Arbitrarily chosen value [Neb]
-#endif
+                byte = (PPU.OpenBus2 & 0xfe)
 			| ((PPU.VBeamPosLatched >> 8) & 0x01);
 	    else
                 byte = (uint8)PPU.VBeamPosLatched;
-#ifndef NO_OPEN_BUS
             PPU.OpenBus2 = byte;
-#endif
 	    PPU.VBeamFlip ^= 1;
 	    break;
 
@@ -1378,22 +1316,14 @@ uint8 S9xGetPPU (uint16 Address)
 	    FLUSH_REDRAW ();
 
 	    //so far, 5c77 version is always 1.
-		return (
-#ifndef NO_OPEN_BUS
-			PPU.OpenBus1 =
-#endif
-			(Model->_5C77 | PPU.RangeTimeOver));
+		return (PPU.OpenBus1 = (Model->_5C77 | PPU.RangeTimeOver));
 
 	case 0x213F:
 	    // NTSC/PAL and which field flags
 	    PPU.VBeamFlip = PPU.HBeamFlip = 0;
             //neviksti found a 2 and a 3 here. SNEeSe uses a 3.
             //XXX: field flags not emulated
-	    return ((Settings.PAL ? 0x10 : 0) | (Memory.FillRAM[0x213f] & 0xc0)| Model->_5C78)
-#ifndef NO_OPEN_BUS
-			| (~PPU.OpenBus2 & 0x20)
-#endif
-			;
+	    return ((Settings.PAL ? 0x10 : 0) | (Memory.FillRAM[0x213f] & 0xc0)| Model->_5C78) | (~PPU.OpenBus2 & 0x20);
 
 	case 0x2140: case 0x2141: case 0x2142: case 0x2143:
 	case 0x2144: case 0x2145: case 0x2146: case 0x2147:
@@ -1476,11 +1406,7 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2182:
 	case 0x2183:
 	default:
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 	}
     }
     else
@@ -1497,20 +1423,12 @@ uint8 S9xGetPPU (uint16 Address)
 		        	return (0x20);
 
 			//	fprintf(stderr, "Read from $21c2!\n");
-#ifndef NO_OPEN_BUS
 			return OpenBus;
-#else
-			return 0; // Arbitrarily chosen value [Neb]
-#endif
 	    case 0x21c3:
 			if(Model->_5C77 ==2)
 			        return (0);
 			//	fprintf(stderr, "Read from $21c3!\n");
-#ifndef NO_OPEN_BUS
 			return OpenBus;
-#else
-			return 0; // Arbitrarily chosen value [Neb]
-#endif
 	    case 0x2800:
 		// For Dai Kaijyu Monogatari II
 		if (Settings.SRTC)
@@ -1526,20 +1444,12 @@ uint8 S9xGetPPU (uint16 Address)
 		    S9xMessage (S9X_TRACE, S9X_PPU_TRACE, String);
 		}
 #endif
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 	    }
 	}
 	
 	if (!Settings.SuperFX)
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 #ifdef ZSNES_FX
 	if (Address < 0x3040)
 	    byte = S9xSuperFXReadReg (Address);
@@ -2221,12 +2131,7 @@ uint8 S9xGetCPU (uint16 Address)
 				S9xMessage (S9X_TRACE, S9X_PPU_TRACE, String);
 			}
 #endif
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
-
 		}
 //		return (Memory.FillRAM [Address]);
 	}
@@ -2249,11 +2154,7 @@ uint8 S9xGetCPU (uint16 Address)
 	  case 0x420d:
 	  case 0x420e:
 	  case 0x420f:
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
 
 	  case 0x4210:
 #ifdef CPU_SHUTDOWN
@@ -2263,9 +2164,7 @@ uint8 S9xGetCPU (uint16 Address)
 		Memory.FillRAM[0x4210] = Model->_5A22;
 		//SNEeSe returns 2 for 5A22 version.
 		return ((byte&0x80)
-#ifndef NO_OPEN_BUS
 			|(OpenBus&0x70)
-#endif
 			|Model->_5A22);
 
 	  case 0x4211:
@@ -2275,9 +2174,7 @@ uint8 S9xGetCPU (uint16 Address)
 		CLEAR_IRQ_SOURCE (PPU_V_BEAM_IRQ_SOURCE | PPU_H_BEAM_IRQ_SOURCE);
 
 		// Maybe? Register Scan indicated open bus...
-#ifndef NO_OPEN_BUS
 		byte |= OpenBus&0x3f;
-#endif
 
 		return (byte);
 
@@ -2287,9 +2184,7 @@ uint8 S9xGetCPU (uint16 Address)
 		CPU.WaitAddress = CPU.PCAtOpcodeStart;
 #endif
 		return (REGISTER_4212()
-#ifndef NO_OPEN_BUS
 			|(OpenBus&0x3E)
-#endif
 			);
 
 	  case 0x4213:
@@ -2465,11 +2360,7 @@ uint8 S9xGetCPU (uint16 Address)
 			return Memory.FillRAM[Address];
 		}
 
-#ifndef NO_OPEN_BUS
 		return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
     }
 //    return (Memory.FillRAM[Address]);
 }
@@ -2537,10 +2428,8 @@ static void CommonPPUReset ()
 	PPU.OAMPriorityRotation = 0;
 	PPU.OAMWriteRegister = 0;
 	PPU.RangeTimeOver = 0;
-#ifndef NO_OPEN_BUS
 	PPU.OpenBus1 = 0;
 	PPU.OpenBus2 = 0;
-#endif
 
 	PPU.OAMFlip = 0;
 	PPU.OAMTileAddress = 0;
@@ -2964,43 +2853,10 @@ void S9xUpdateJoypads ()
 {
     uint32 i;
 
-#ifdef SYNC_JOYPAD_AT_HBLANK
-	uint32 j, k, KeyValue;
-	bool8 StartedPressed;
-
-	// For each joypad
-	for (i = 0; i < 5; i++)
-	{
-		IPPU.Joypads [i] = 0;
-		// Sync each key
-		for (k = 1; k != 0; k <<= 1)
-		{
-			KeyValue = IPPU.JoypadsAtHBlanks[i][0] & k;
-			StartedPressed = KeyValue != 0;
-			// from each line.
-			// If, initially, the key is NOT pressed, one line of it being
-			// pressed means that the key MUST be pressed.
-			// Otherwise, the key MUST be depressed if it starts pressed.
-			for (j = 1; j < (Settings.PAL ? SNES_MAX_PAL_VCOUNTER : SNES_MAX_NTSC_VCOUNTER); j++)
-			{
-				if ((StartedPressed) && ((IPPU.JoypadsAtHBlanks[i][j] & k) == 0)) {
-					KeyValue = 0;
-					break;
-				}
-				else if ((!StartedPressed) && ((IPPU.JoypadsAtHBlanks[i][j] & k) != 0)) {
-					KeyValue = k;
-					break;
-				}
-			}
-			IPPU.Joypads [i] |= KeyValue;
-		}
-	}
-#else
 	for (i = 0; i < 5; i++)
 	{
 		IPPU.Joypads [i] = S9xReadJoypad (i);
 	}
-#endif
 
 //	S9xMovieUpdate();
 

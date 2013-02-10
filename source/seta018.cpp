@@ -96,7 +96,7 @@ static int line;	// line counter
 extern "C"{
 uint8 S9xGetST018(uint32 Address)
 {
-	uint8 t;
+	uint8 t = 0; // Initialise to some value for the compiler
 	uint16 address = (uint16) Address & 0xFFFF;
 
 	line++;
@@ -234,8 +234,6 @@ void S9xSetST018(uint8 Byte, uint32 Address)
 			}
 			else
 			{
-				static int a=0;
-
 				//ST018.in_count = 1;
 				ST018.out_count = 3;
 

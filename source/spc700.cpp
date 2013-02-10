@@ -143,6 +143,8 @@ void STOP (char *s)
 
 #ifdef DEBUGGER
     S9xAPUOPrint (buffer, IAPU.PC - IAPU.RAM);
+#else
+    buffer[0] = '\0';
 #endif
 
     sprintf (String, "Sound CPU in unknown state executing %s at %04X\n%s\n", s, IAPU.PC - IAPU.RAM, buffer);

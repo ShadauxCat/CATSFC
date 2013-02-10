@@ -145,14 +145,10 @@ static void AbsoluteIndexedIndirect (AccessMode a, InternalOp op)
 #else
     Addr = (ICPU.Registers.X.W + *CPU.PC + (*(CPU.PC + 1) << 8)) & 0xffff;
 #endif
-#ifndef NO_OPEN_BUS
     OpenBus = *(CPU.PC + 1);
-#endif
     CPU.PC += 2;
     Addr = S9xGetWord (ICPU.ShiftedPB + Addr);
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = (uint8)(Addr>>8);
-#endif
     (*op)(Addr);
 }
 
@@ -165,19 +161,13 @@ static void AbsoluteIndirectLong (AccessMode a, InternalOp op)
     Addr = *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
 
-#ifndef NO_OPEN_BUS
     OpenBus = *(CPU.PC + 1);
-#endif
     CPU.PC += 2;
-#ifndef NO_OPEN_BUS
     if(a&READ) {
 	Addr = S9xGetWord (Addr) | ((OpenBus=S9xGetByte (Addr + 2)) << 16);
     } else {
-#endif
-    Addr = S9xGetWord (Addr) | (S9xGetByte (Addr + 2) << 16);
-#ifndef NO_OPEN_BUS
+	Addr = S9xGetWord (Addr) | (S9xGetByte (Addr + 2) << 16);
     }
-#endif
     (*op)(Addr);
 }
 
@@ -190,14 +180,10 @@ static void AbsoluteIndirect (AccessMode a, InternalOp op)
     Addr = *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
 
-#ifndef NO_OPEN_BUS
     OpenBus = *(CPU.PC + 1);
-#endif
     CPU.PC += 2;
     Addr = S9xGetWord (Addr);
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = (uint8)(Addr>>8);
-#endif
     Addr += ICPU.ShiftedPB;
     (*op)(Addr);
 }
@@ -210,9 +196,7 @@ static void Absolute (AccessMode a, InternalOp op)
 #else
     Addr = *CPU.PC + (*(CPU.PC + 1) << 8) + ICPU.ShiftedDB;
 #endif
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = *(CPU.PC+1);
-#endif
     CPU.PC += 2;
     (*op)(Addr);
 }
@@ -230,18 +214,14 @@ static void AbsoluteLong (AccessMode a, InternalOp op)
 #else
     Addr = *CPU.PC + (*(CPU.PC + 1) << 8) + (*(CPU.PC + 2) << 16);
 #endif
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = *(CPU.PC+2);
-#endif
     CPU.PC += 3;
     (*op)(Addr);
 }
 
 static void Direct(AccessMode a, InternalOp op)
 {
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = *CPU.PC;
-#endif
     long Addr = (*CPU.PC++ + ICPU.Registers.D.W) & 0xffff;
 //    if (ICPU.Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
     (*op)(Addr);
@@ -249,15 +229,11 @@ static void Direct(AccessMode a, InternalOp op)
 
 static void DirectIndirectIndexed (AccessMode a, InternalOp op)
 {
-#ifndef NO_OPEN_BUS
     OpenBus = *CPU.PC;
-#endif
     long Addr = (*CPU.PC++ + ICPU.Registers.D.W) & 0xffff;
 
     Addr = S9xGetWord (Addr);
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = (uint8)(Addr>>8);
-#endif
     Addr += ICPU.ShiftedDB + ICPU.Registers.Y.W;
 
 //    if (ICPU.Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
@@ -268,44 +244,32 @@ static void DirectIndirectIndexed (AccessMode a, InternalOp op)
 
 static void DirectIndirectIndexedLong (AccessMode a, InternalOp op)
 {
-#ifndef NO_OPEN_BUS
     OpenBus = *CPU.PC;
-#endif
     long Addr = (*CPU.PC++ + ICPU.Registers.D.W) & 0xffff;
 
-#ifndef NO_OPEN_BUS
     if(a&READ){
 	Addr = S9xGetWord (Addr) + ((OpenBus = S9xGetByte (Addr + 2)) << 16) + ICPU.Registers.Y.W;
     } else {
-#endif
 	Addr = S9xGetWord (Addr) + (S9xGetByte (Addr + 2) << 16) + ICPU.Registers.Y.W;
-#ifndef NO_OPEN_BUS
     }
-#endif
 //    if (ICPU.Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
     (*op)(Addr);
 }
 
 static void DirectIndexedIndirect(AccessMode a, InternalOp op)
 {
-#ifndef NO_OPEN_BUS
     OpenBus = *CPU.PC;
-#endif
     long Addr = (*CPU.PC++ + ICPU.Registers.D.W + ICPU.Registers.X.W) & 0xffff;
 
     Addr = S9xGetWord (Addr);
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = (uint8)(Addr>>8);
-#endif
     Addr += ICPU.ShiftedDB;
     (*op)(Addr);
 }
 
 static void DirectIndexedX (AccessMode a, InternalOp op)
 {
-#ifndef NO_OPEN_BUS
 	if(a&READ) OpenBus = *CPU.PC;
-#endif
     long Addr = (*CPU.PC++ + ICPU.Registers.D.W + ICPU.Registers.X.W);
     Addr &= CheckEmulation() ? 0xff : 0xffff;
 
@@ -314,9 +278,7 @@ static void DirectIndexedX (AccessMode a, InternalOp op)
 
 static void DirectIndexedY (AccessMode a, InternalOp op)
 {
-#ifndef NO_OPEN_BUS
 	if(a&READ) OpenBus = *CPU.PC;
-#endif
     long Addr = (*CPU.PC++ + ICPU.Registers.D.W + ICPU.Registers.Y.W);
     Addr &= CheckEmulation() ? 0xff : 0xffff;
     (*op)(Addr);
@@ -331,9 +293,7 @@ static void AbsoluteIndexedX (AccessMode a, InternalOp op)
     Addr = ICPU.ShiftedDB + *CPU.PC + (*(CPU.PC + 1) << 8) +
 		ICPU.Registers.X.W;
 #endif
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = *(CPU.PC+1);
-#endif
     CPU.PC += 2;
     // XXX: always add one cycle for ROL, LSR, etc
     // XXX: else is cross page boundary add one cycle
@@ -349,9 +309,7 @@ static void AbsoluteIndexedY (AccessMode a, InternalOp op)
     Addr = ICPU.ShiftedDB + *CPU.PC + (*(CPU.PC + 1) << 8) +
 		ICPU.Registers.Y.W;
 #endif    
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = *(CPU.PC+1);
-#endif
     CPU.PC += 2;
     // XXX: always add cycle for STA
     // XXX: else is cross page boundary add one cycle
@@ -371,23 +329,17 @@ static void AbsoluteLongIndexedX (AccessMode a, InternalOp op)
 #else
     Addr = (*CPU.PC + (*(CPU.PC + 1) << 8) + (*(CPU.PC + 2) << 16) + ICPU.Registers.X.W) & 0xffffff;
 #endif
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = *(CPU.PC+2);
-#endif
     CPU.PC += 3;
     (*op)(Addr);
 }
 
 static void DirectIndirect (AccessMode a, InternalOp op)
 {
-#ifndef NO_OPEN_BUS
     OpenBus = *CPU.PC;
-#endif
     long Addr = (*CPU.PC++ + ICPU.Registers.D.W) & 0xffff;
     Addr = S9xGetWord (Addr);
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = (uint8)(Addr>>8);
-#endif
     Addr += ICPU.ShiftedDB;
 
 //    if (ICPU.Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
@@ -396,42 +348,30 @@ static void DirectIndirect (AccessMode a, InternalOp op)
 
 static void DirectIndirectLong (AccessMode a, InternalOp op)
 {
-#ifndef NO_OPEN_BUS
     OpenBus = *CPU.PC;
-#endif
     long Addr = (*CPU.PC++ + ICPU.Registers.D.W) & 0xffff;
-#ifndef NO_OPEN_BUS
     if(a&READ){
 	Addr = S9xGetWord (Addr) + ((OpenBus=S9xGetByte (Addr + 2)) << 16);
     } else {
-#endif
 	Addr = S9xGetWord (Addr) + (S9xGetByte (Addr + 2) << 16);
-#ifndef NO_OPEN_BUS
     }
-#endif
 //    if (ICPU.Registers.DL != 0) CPU.Cycles += ONE_CYCLE;
     (*op)(Addr);
 }
 
 static void StackRelative (AccessMode a, InternalOp op)
 {
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = *CPU.PC;
-#endif
     long Addr = (*CPU.PC++ + ICPU.Registers.S.W) & 0xffff;
     (*op)(Addr);
 }
 
 static void StackRelativeIndirectIndexed (AccessMode a, InternalOp op)
 {
-#ifndef NO_OPEN_BUS
     OpenBus = *CPU.PC;
-#endif
     long Addr = (*CPU.PC++ + ICPU.Registers.S.W) & 0xffff;
     Addr = S9xGetWord (Addr);
-#ifndef NO_OPEN_BUS
     if(a&READ) OpenBus = (uint8)(Addr>>8);
-#endif
     Addr = (Addr + ICPU.ShiftedDB +
 		 ICPU.Registers.Y.W) & 0xffffff;
     (*op)(Addr);

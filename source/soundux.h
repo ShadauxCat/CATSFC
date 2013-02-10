@@ -122,10 +122,15 @@ typedef struct {
     int sound_switch;
     int playback_rate;
     int buffer_size;
-    int noise_gen;
+    // int noise_gen;
+    // Moved to soundux.cpp's noise_gen; this doesn't need volatility! [Neb]
     bool8 mute_sound;
+#ifndef FOREVER_STEREO
     int stereo;
+#endif
+#ifndef FOREVER_16_BIT_SOUND
     bool8 sixteen_bit;
+#endif
     bool8 encoded;
 #ifdef __sun
     int last_eof;
@@ -139,7 +144,14 @@ typedef struct {
     uint32 err_rate;
 } SoundStatus;
 
+// Define NO_VOLATILE_SOUND if you're always reading or writing sound from one
+// thread or one co-routine. If you're using interrupts or a thread, sound must
+// be volatile.
+#ifndef NO_VOLATILE_SOUND
 EXTERN_C volatile SoundStatus so;
+#else
+EXTERN_C SoundStatus so;
+#endif
 
 typedef struct {
     int state;
@@ -184,12 +196,14 @@ typedef struct {
 
 typedef struct
 {
-    short master_volume_left;
-    short master_volume_right;
-    short echo_volume_left;
-    short echo_volume_right;
+#ifndef FOREVER_FORWARD_STEREO
+    short master_volume_left; /* range is -128 .. 127 */
+    short master_volume_right; /* range is -128 .. 127 */
+    short echo_volume_left; /* range is -128 .. 127 */
+    short echo_volume_right; /* range is -128 .. 127 */
+#endif
     int echo_enable;
-    int echo_feedback;
+    int echo_feedback; /* range is -128 .. 127 */
     int echo_ptr;
     int echo_buffer_size;
     int echo_write_enabled;
@@ -198,13 +212,15 @@ typedef struct
     // Just incase they are needed in the future, for snapshot compatibility.
     uint32 dummy [3];
     Channel channels [NUM_CHANNELS];
-    bool8 no_filter;
-    int master_volume [2];
-    int echo_volume [2];
+    // bool8 no_filter;
+    short master_volume [2]; /* range is -128 .. 127 */
+    short echo_volume [2]; /* range is -128 .. 127 */
     int noise_hertz;
 } SSoundData;
 
 EXTERN_C SSoundData SoundData;
+
+void S9xSetEightBitConsoleSound (bool8 Enabled);
 
 void S9xSetSoundVolume (int channel, short volume_left, short volume_right);
 void S9xSetSoundFrequency (int channel, int hertz);

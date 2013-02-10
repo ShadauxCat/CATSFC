@@ -228,23 +228,14 @@ uint8 S9xSA1GetByte (uint32 address)
 #ifdef DEBUGGER
 //	printf ("R(B) %06x\n", address);
 #endif
-#ifndef NO_OPEN_BUS
         return OpenBus;
-#else
-		return 0; // Arbitrarily chosen value [Neb]
-#endif
     }
 }
 
 uint16 S9xSA1GetWord (uint32 address)
 {
-#ifndef NO_OPEN_BUS
     OpenBus = S9xSA1GetByte (address);
     return (OpenBus | (S9xSA1GetByte (address + 1) << 8));
-#else
-	uint8 Split = S9xSA1GetByte (address);
-	return (Split | (S9xSA1GetByte (address + 1) << 8));
-#endif
 }
 
 void S9xSA1SetByte (uint8 byte, uint32 address)
@@ -751,7 +742,8 @@ void S9xSetSA1 (uint8 byte, uint32 address)
 	if ((Memory.FillRAM [0x2230] & 0xb0) == 0xa0)
 	{
 	    // Char conversion 2 DMA enabled
-	    memmove (&Memory.ROM [CMemory::MAX_ROM_SIZE - 0x10000] + SA1.in_char_dma * 16,
+	    // memmove converted: Same malloc but constant non-overlapping addresses [Neb]
+	    memcpy (&Memory.ROM [CMemory::MAX_ROM_SIZE - 0x10000] + SA1.in_char_dma * 16,
 		     &Memory.FillRAM [0x2240], 16);
 	    SA1.in_char_dma = (SA1.in_char_dma + 1) & 7;
 	    if ((SA1.in_char_dma & 3) == 0)
@@ -904,6 +896,7 @@ static void S9xSA1DMA ()
 	len &= 0x3ff;
 	d = &Memory.FillRAM [0x3000] + dst;
     }
+    // memmove required: Can overlap arbitrarily [Neb]
     memmove (d, s, len);
     Memory.FillRAM [0x2301] |= 0x20;
     

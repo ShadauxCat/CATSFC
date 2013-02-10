@@ -66,54 +66,48 @@ char gui_picture[GUI_PIC_BUFSIZE];
 
 struct gui_iconlist gui_icon_list[]= {
     //file system
-    /* 00 */ {"gbafile", 16, 15, NULL},
-    /* 01 */ {"zipfile", 16, 16, NULL},
-    /* 02 */ {"directory", 16, 16, NULL},
-    /* 03 */ {"sfcfile", 16, 16, NULL},
+    /* 00 */ {"zipfile", 16, 16, NULL},
+    /* 01 */ {"directory", 16, 16, NULL},
+    /* 02 */ {"sfcfile", 16, 16, NULL},
 
 	//title
-	/* 04 */ {"stitle", 256, 33, NULL},
+	/* 03 */ {"stitle", 256, 33, NULL},
 	//main menu
-	/* 05 */ {"savo", 52, 52, NULL},
-	/* 06 */ {"ssaveo", 52, 52, NULL},
-	/* 07 */ {"stoolo", 52, 52, NULL},
-	/* 08 */ {"scheato", 52, 52, NULL},
-	/* 09 */ {"sother", 52, 52, NULL},
-	/* 10 */ {"sexito", 52, 52, NULL},
-	/* 11 */ {"smsel", 79, 15, NULL},
-	/* 12 */ {"smnsel", 79, 15, NULL},
+	/* 04 */ {"savo", 52, 52, NULL},
+	/* 05 */ {"ssaveo", 52, 52, NULL},
+	/* 06 */ {"stoolo", 52, 52, NULL},
+	/* 07 */ {"scheato", 52, 52, NULL},
+	/* 08 */ {"sother", 52, 52, NULL},
+	/* 09 */ {"sexito", 52, 52, NULL},
+	/* 10 */ {"smsel", 79, 15, NULL},
+	/* 11 */ {"smnsel", 79, 15, NULL},
 
-	/* 13 */ {"snavo", 52, 52, NULL},
-	/* 14 */ {"snsaveo", 52, 52, NULL},
-	/* 15 */ {"sntoolo", 52, 52, NULL},
-	/* 16 */ {"sncheato", 52, 52, NULL},
-	/* 17 */ {"snother", 52, 52, NULL},
-	/* 18 */ {"snexito", 52, 52, NULL},
+	/* 12 */ {"snavo", 52, 52, NULL},
+	/* 13 */ {"snsaveo", 52, 52, NULL},
+	/* 14 */ {"sntoolo", 52, 52, NULL},
+	/* 15 */ {"sncheato", 52, 52, NULL},
+	/* 16 */ {"snother", 52, 52, NULL},
+	/* 17 */ {"snexito", 52, 52, NULL},
 
-	/* 19 */ {"sunnof", 16, 16, NULL},
-	/* 20 */ {"snewo", 89, 38, NULL},
-	/* 21 */ {"snnewo", 89, 38, NULL},
-	/* 22 */ {"sreseto", 86, 38, NULL},
-	/* 23 */ {"snreseto", 86, 38, NULL},
-	/* 24 */ {"sreteno", 81, 38, NULL},
-	/* 25 */ {"snreteno", 81, 38, NULL},
-	/* 26 */ {"smaybgo", 256, 192, NULL},
+	/* 18 */ {"sunnof", 16, 16, NULL},
+	/* 19 */ {"smaini", 85, 38, NULL},
+	/* 20 */ {"snmaini", 85, 38, NULL},
+	/* 21 */ {"smaybgo", 256, 192, NULL},
 
-	/* 27 */ {"sticon", 29, 13, NULL},
-	/* 28 */ {"ssubbg", 256, 192, NULL},
+	/* 22 */ {"sticon", 29, 13, NULL},
+	/* 23 */ {"ssubbg", 256, 192, NULL},
 
-	/* 29 */ {"subsela", 245, 22, NULL},
-	/* 30 */ {"subselb", 245, 22, NULL},
-	/* 31 */ {"sfullo", 12, 12, NULL},
-	/* 32 */ {"snfullo", 12, 12, NULL},
-	/* 33 */ {"semptyo", 12, 12, NULL},
-	/* 34 */ {"snemptyo", 12, 12, NULL},
-	/* 35 */ {"fdoto", 16, 16, NULL},
-	/* 36 */ {"backo", 19, 13, NULL},
-	/* 37 */ {"nbacko", 19, 13, NULL},
-	/* 38 */ {"chtfile", 16, 15, NULL},
-	/* 39 */ {"smsgfr", 193, 111, NULL},
-	/* 40 */ {"sbutto", 61, 16, NULL}
+	/* 24 */ {"subsela", 245, 22, NULL},
+	/* 25 */ {"sfullo", 12, 12, NULL},
+	/* 26 */ {"snfullo", 12, 12, NULL},
+	/* 27 */ {"semptyo", 12, 12, NULL},
+	/* 28 */ {"snemptyo", 12, 12, NULL},
+	/* 29 */ {"fdoto", 16, 16, NULL},
+	/* 30 */ {"backo", 19, 13, NULL},
+	/* 31 */ {"nbacko", 19, 13, NULL},
+	/* 32 */ {"chtfile", 16, 15, NULL},
+	/* 33 */ {"smsgfr", 193, 111, NULL},
+	/* 34 */ {"sbutto", 76, 16, NULL}
                         };
 
 
@@ -146,7 +140,7 @@ void drawhline(void* screen_addr, u32 sx, u32 ex, u32 y, u32 color)
 {
 	u32 x;
 	u32 width  = (ex - sx) + 1;
-	volatile u16 *dst = VRAM_POS(screen_addr, sx, y);
+	u16 *dst = VRAM_POS(screen_addr, sx, y);
 
 	for (x = 0; x < width; x++)
 		*dst++ = (u16)color;
@@ -159,7 +153,7 @@ void drawvline(void* screen_addr, u32 x, u32 sy, u32 ey, u32 color)
 {
 	int y;
 	int height = (ey - sy) + 1;
-	volatile u16 *dst = VRAM_POS(screen_addr, x, sy);
+	u16 *dst = VRAM_POS(screen_addr, x, sy);
 
 	for (y = 0; y < height; y++)
 	{
@@ -187,7 +181,7 @@ void drawboxfill(void* screen_addr, u32 sx, u32 sy, u32 ex, u32 ey, u32 color)
 	u32 x, y;
 	u32 width  = (ex - sx) + 1;
 	u32 height = (ey - sy) + 1;
-	volatile u16 *dst = VRAM_POS(screen_addr, sx, sy);
+	u16 *dst = VRAM_POS(screen_addr, sx, sy);
 
 	for (y = 0; y < height; y++)
 	{
@@ -753,7 +747,7 @@ void draw_dialog(void* screen_addr, u32 sx, u32 sy, u32 ex, u32 ey)
 }
 
 /*
-*	Draw yer or no dialog
+*	Draw yes or no dialog
 */
 u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
 {
@@ -798,18 +792,12 @@ u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
 		screen_addr = down_screen_addr;
 
     i= SCREEN_WIDTH/2 - box_width - 2;
-//    drawbox(screen_address, i, sy-1, i+box_width-1, sy+FONTS_HEIGHT, COLOR16(8, 8, 8));
-//    drawboxfill(screen_address, i+1, sy, i+box_width-2, sy+FONTS_HEIGHT-1, COLOR16(15, 15, 15));
-	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 64, 128);
-//    draw_string_vcenter(screen_address, i+1, sy+1, box_width, COLOR_WHITE, yes);
-    draw_string_vcenter((unsigned short*)screen_addr, 66, 130, 58, COLOR_WHITE, yes);
+	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 49, 128);
+    draw_string_vcenter((unsigned short*)screen_addr, 51, 130, 73, COLOR_WHITE, yes);
 
     i= SCREEN_WIDTH/2 + 3;
-//    drawbox(screen_address, i, sy-1, i+box_width-1, sy+FONTS_HEIGHT, COLOR16(8, 8, 8));
-//    drawboxfill(screen_address, i+1, sy, i+box_width-2, sy+FONTS_HEIGHT-1, COLOR16(15, 15, 15));
 	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 136, 128);
-//    draw_string_vcenter(screen_address, i+1, sy+1, box_width, COLOR_WHITE, no);
-    draw_string_vcenter((unsigned short*)screen_addr, 138, 130, 58, COLOR_WHITE, no);
+    draw_string_vcenter((unsigned short*)screen_addr, 138, 130, 73, COLOR_WHITE, no);
 
 	ds2_flipScreen(screen, 2);
 
@@ -817,14 +805,122 @@ u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
     while((gui_action != CURSOR_SELECT)  && (gui_action != CURSOR_BACK))
     {
         gui_action = get_gui_input();
-//        OSTimeDly(OS_TICKS_PER_SEC/10);
-		mdelay(100);
+	if (gui_action == CURSOR_TOUCH)
+	{
+		struct key_buf inputdata;
+		ds2_getrawInput(&inputdata);
+		// Turn it into a SELECT (A) or BACK (B) if the button is touched.
+		if (inputdata.y >= 128 && inputdata.y < 128 + ICON_BUTTON.y)
+		{
+			if (inputdata.x >= 49 && inputdata.x < 49 + ICON_BUTTON.x)
+				gui_action = CURSOR_SELECT;
+			else if (inputdata.x >= 136 && inputdata.x < 136 + ICON_BUTTON.x)
+				gui_action = CURSOR_BACK;
+		}
+	}
+	mdelay(16);
     }
 
     if (gui_action == CURSOR_SELECT)
         return 1;
     else
         return 0;
+}
+
+/*
+*	Draw hotkey dialog
+*	Returns DS keys pressed, as in ds2io.h.
+*/
+u32 draw_hotkey_dialog(enum SCREEN_ID screen, u32 sy, char *clear, char *cancel)
+{
+    u16 unicode[8];
+    u32 len, width, box_width, i;
+    char *string;
+	void* screen_addr;
+
+    len= 0;
+    string= clear;
+    while(*string)
+    {
+        string= utf8decode(string, &unicode[len]);
+        if(unicode[len] != 0x0D && unicode[len] != 0x0A)
+        {
+            if(len < 8) len++;
+            else break;
+        }
+    }
+    width= BDF_cut_unicode(unicode, len, 0, 3);
+    
+    len= 0;
+    string= cancel;
+    while(*string)
+    {
+        string= utf8decode(string, &unicode[len]);
+        if(unicode[len] != 0x0D && unicode[len] != 0x0A)
+        {
+            if(len < 8) len++;
+            else    break;
+        }
+    }
+    i= BDF_cut_unicode(unicode, len, 0, 3);
+
+    if(width < i)   width= i;
+    box_width= 64;
+    if(box_width < (width +6)) box_width = width +6;
+
+	if(screen & UP_MASK)
+		screen_addr = up_screen_addr;
+	else
+		screen_addr = down_screen_addr;
+
+    i= SCREEN_WIDTH/2 - box_width - 2;
+	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 49, 128);
+    draw_string_vcenter((unsigned short*)screen_addr, 51, 130, 73, COLOR_WHITE, clear);
+
+    i= SCREEN_WIDTH/2 + 3;
+	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 136, 128);
+    draw_string_vcenter((unsigned short*)screen_addr, 138, 130, 73, COLOR_WHITE, cancel);
+
+	ds2_flipScreen(screen, 2);
+
+	// This function has been started by a key press. Wait for it to end.
+	struct key_buf inputdata;
+	do {
+		mdelay(1);
+		ds2_getrawInput(&inputdata);
+	} while (inputdata.key != 0);
+
+	// While there are no keys pressed, wait for keys.
+	do {
+		mdelay(1);
+		ds2_getrawInput(&inputdata);
+	} while (inputdata.key == 0);
+
+	// Now, while there are keys pressed, keep a tally of keys that have
+	// been pressed. (IGNORE TOUCH AND LID! Otherwise, closing the lid or
+	// touching to get to the menu will do stuff the user doesn't expect.
+	// Also ignore the direction pad because every game uses it.)
+	u32 TotalKeys = 0;
+
+	do {
+		TotalKeys |= inputdata.key & ~(KEY_TOUCH | KEY_LID | KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT);
+		// If there's a touch on either button, turn it into a
+		// clear (A) or cancel (B) request.
+		if (inputdata.key & KEY_TOUCH)
+		{
+			if (inputdata.y >= 128 && inputdata.y < 128 + ICON_BUTTON.y)
+			{
+				if (inputdata.x >= 49 && inputdata.x < 49 + ICON_BUTTON.x)
+					return KEY_A;
+				else if (inputdata.x >= 136 && inputdata.x < 136 + ICON_BUTTON.x)
+					return KEY_B;
+			}
+		}
+		mdelay(1);
+		ds2_getrawInput(&inputdata);
+	} while (inputdata.key != 0 || TotalKeys == 0);
+
+	return TotalKeys;
 }
 
 /*

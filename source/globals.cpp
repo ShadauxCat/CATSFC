@@ -141,21 +141,7 @@ CMemory Memory;
 
 struct SSNESGameFixes SNESGameFixes;
 
-#if 0
-uint8 A1 = 0, A2 = 0, A3 = 0, A4 = 0, W1 = 0, W2 = 0, W3 = 0, W4 = 0;
-uint8 Ans8 = 0;
-uint16 Ans16 = 0;
-uint32 Ans32 = 0;
-uint8 Work8 = 0;
-uint16 Work16 = 0;
-uint32 Work32 = 0;
-signed char Int8 = 0;
-short Int16 = 0;
-long Int32 = 0;
-#endif
-#ifndef NO_OPEN_BUS
 uint8 OpenBus = 0;
-#endif
 
 
 END_EXTERN_C
@@ -230,7 +216,14 @@ uint32 current_graphic_format = RGB565;
 
 struct SCheatData Cheat;
 
+// Define NO_VOLATILE_SOUND if you're always reading or writing sound from one
+// thread or one co-routine. If you're using interrupts or a thread, sound must
+// be volatile.
+#ifndef NO_VOLATILE_SOUND
 volatile SoundStatus so;
+#else
+SoundStatus so;
+#endif
 
 int Echo [24000];
 int DummyEchoBuffer [SOUND_BUFFER_SIZE];

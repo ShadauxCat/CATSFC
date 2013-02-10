@@ -878,6 +878,7 @@ void S9xSetC4 (uint8 byte, uint16 Address)
         if(byte != 0) printf("C4 load: non-0 written to $7f47! Wrote %02x\n", byte);
         if(READ_WORD(Memory.C4RAM+0x1f45) < 0x6000 || (READ_WORD(Memory.C4RAM+0x1f45) + READ_WORD(Memory.C4RAM+0x1f43)) > 0x6c00) printf("C4 load: Dest unusual! It's %04x\n", READ_WORD(Memory.C4RAM+0x1f45));
 #endif
+	// memmove required: Can overlap arbitrarily [Neb]
         memmove(Memory.C4RAM+(READ_WORD(Memory.C4RAM+0x1f45)&0x1fff), 
                 S9xGetMemPointer(READ_3WORD(Memory.C4RAM+0x1f40)),
                 READ_WORD(Memory.C4RAM+0x1f43));

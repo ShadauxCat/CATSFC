@@ -313,12 +313,14 @@ static int ReadOrigSnapshot (STREAM snap)
     PPU.OBJSizeSelect = OrigPPU.OBJSizeSelect;
     PPU.OBJNameBase = OrigPPU.OBJNameBase;
     PPU.OAMReadFlip = OrigPPU.OAMReadFlip;
-    memmove (PPU.OAMData, OrigPPU.OAMData, sizeof (PPU.OAMData));
+    // memmove converted: Different data segments [Neb]
+    memcpy (PPU.OAMData, OrigPPU.OAMData, sizeof (PPU.OAMData));
     PPU.VTimerEnabled = OrigPPU.VTimerEnabled;
     PPU.HTimerEnabled = OrigPPU.HTimerEnabled;
     PPU.HTimerPosition = OrigPPU.HTimerPosition;
     PPU.Mosaic = OrigPPU.Mosaic;
-    memmove (PPU.BGMosaic, OrigPPU.BGMosaic, sizeof (PPU.BGMosaic));
+    // memmove converted: Different data segments [Neb]
+    memcpy (PPU.BGMosaic, OrigPPU.BGMosaic, sizeof (PPU.BGMosaic));
     PPU.Mode7HFlip = OrigPPU.Mode7HFlip;
     PPU.Mode7VFlip = OrigPPU.Mode7VFlip;
     PPU.Mode7Repeat = OrigPPU.Mode7Repeat;
@@ -386,10 +388,17 @@ static int ReadOrigSnapshot (STREAM snap)
 				 sizeof (SOrigSoundData), snap)) != SUCCESS)
 	    return (result);
 
+#ifndef FOREVER_FORWARD_STEREO
 	SoundData.master_volume_left = OrigSoundData.master_volume_left;
 	SoundData.master_volume_right = OrigSoundData.master_volume_right;
 	SoundData.echo_volume_left = OrigSoundData.echo_volume_left;
 	SoundData.echo_volume_right = OrigSoundData.echo_volume_right; 
+#else
+	SoundData.master_volume [0] = OrigSoundData.master_volume_left;
+	SoundData.master_volume [1] = OrigSoundData.master_volume_right;
+	SoundData.echo_volume [0] = OrigSoundData.echo_volume_left;
+	SoundData.echo_volume [1] = OrigSoundData.echo_volume_right; 
+#endif
 	SoundData.echo_enable = OrigSoundData.echo_enable;
 	SoundData.echo_feedback = OrigSoundData.echo_feedback;
 	SoundData.echo_ptr = OrigSoundData.echo_ptr;

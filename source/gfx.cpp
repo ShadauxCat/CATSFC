@@ -154,10 +154,12 @@ extern uint8  Mode7Depths [2];
     if (IPPU.DoubleHeightPixels && ((PPU.BGMode != 5 && PPU.BGMode != 6) || !IPPU.Interlace)) \
         for (uint32 y = GFX.StartY; y <= GFX.EndY; y++) \
         { \
-            memmove (SCREEN + (y * 2 + 1) * GFX.Pitch2, \
-                     SCREEN + y * 2 * GFX.Pitch2, \
-                     GFX.Pitch2); \
+            /* memmove converted: Same malloc, non-overlapping addresses [Neb] */ \
+            memcpy (SCREEN + (y * 2 + 1) * GFX.Pitch2, \
+                    SCREEN + y * 2 * GFX.Pitch2, \
+                    GFX.Pitch2); \
             if(DO_DEPTH){ \
+                /* memmove required: Same malloc, potentially overlapping addresses [Neb] */ \
                 memmove (DEPTH + (y * 2 + 1) * (GFX.PPLx2>>1), \
                          DEPTH + y * GFX.PPL, \
                          GFX.PPLx2>>1); \
@@ -663,18 +665,9 @@ void S9xStartScreenRefresh ()
 			IPPU.Interlace = (Memory.FillRAM[0x2133] & 1);
 		if (Settings.SupportHiRes && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.Interlace))
 		{
-			if (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.Interlace)
-			{
-				IPPU.RenderedScreenWidth = 512;
-				IPPU.DoubleWidthPixels = TRUE;
-				IPPU.HalfWidthPixels = FALSE;
-			}
-			else
-			{
-				IPPU.RenderedScreenWidth = 256;
-				IPPU.DoubleWidthPixels = FALSE;
-				IPPU.HalfWidthPixels = FALSE;
-			}
+			IPPU.RenderedScreenWidth = 512;
+			IPPU.DoubleWidthPixels = TRUE;
+			IPPU.HalfWidthPixels = FALSE;
 
 			if (IPPU.Interlace)
 			{
@@ -707,13 +700,13 @@ void S9xStartScreenRefresh ()
 				GFX.PPLx2 = GFX.PPL << 1;
 			}
 		}
-		else if (!Settings.SupportHiRes && (PPU.BGMode == 5))
+		else if (!Settings.SupportHiRes && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.Interlace))
 		{
+			IPPU.RenderedScreenWidth = 256;
+			IPPU.DoubleWidthPixels = FALSE;
 			// Secret of Mana displays menus with mode 5.
 			// Make them readable.
-			IPPU.DoubleWidthPixels = FALSE;
 			IPPU.HalfWidthPixels = TRUE;
-			IPPU.DoubleHeightPixels = FALSE;
 		}
 		else
 		{
@@ -892,8 +885,8 @@ void S9xSetInfoString (const char *string)
 
 inline void SelectTileRenderer (bool8 normal)
 {
-    if (normal)
-    {
+	if (normal)
+	{
 		if (IPPU.HalfWidthPixels)
 		{
 			DrawTilePtr = DrawTile16HalfWidth;
@@ -906,58 +899,51 @@ inline void SelectTileRenderer (bool8 normal)
 			DrawClippedTilePtr = DrawClippedTile16;
 			DrawLargePixelPtr = DrawLargePixel16;
 		}
-    }
-    else
-    {
-		if (GFX.r2131 & 0x80)
+	}
+	else
+	{
+		switch (GFX.r2131 & 0xC0)
 		{
-		    if (GFX.r2131 & 0x40)
-		    {
-				if (GFX.r2130 & 2)
-				{
-				    DrawTilePtr = DrawTile16Sub1_2;
-				    DrawClippedTilePtr = DrawClippedTile16Sub1_2;
-				}
-				else
-				{
-				    // Fixed colour substraction
-				    DrawTilePtr = DrawTile16FixedSub1_2;
-				    DrawClippedTilePtr = DrawClippedTile16FixedSub1_2;
-				}
-				DrawLargePixelPtr = DrawLargePixel16Sub1_2;
-		    }
-		    else
-		    {
-				DrawTilePtr = DrawTile16Sub;
-				DrawClippedTilePtr = DrawClippedTile16Sub;
-				DrawLargePixelPtr = DrawLargePixel16Sub;
-		    }
+		case 0x00:
+			DrawTilePtr = DrawTile16Add;
+			DrawClippedTilePtr = DrawClippedTile16Add;
+			DrawLargePixelPtr = DrawLargePixel16Add;
+			break;
+		case 0x40:
+			if (GFX.r2130 & 2)
+			{
+				DrawTilePtr = DrawTile16Add1_2;
+				DrawClippedTilePtr = DrawClippedTile16Add1_2;
+			}
+			else
+			{
+				// Fixed colour addition
+				DrawTilePtr = DrawTile16FixedAdd1_2;
+				DrawClippedTilePtr = DrawClippedTile16FixedAdd1_2;
+			}
+			DrawLargePixelPtr = DrawLargePixel16Add1_2;
+			break;
+		case 0x80:
+			DrawTilePtr = DrawTile16Sub;
+			DrawClippedTilePtr = DrawClippedTile16Sub;
+			DrawLargePixelPtr = DrawLargePixel16Sub;
+			break;
+		case 0xC0:
+			if (GFX.r2130 & 2)
+			{
+				DrawTilePtr = DrawTile16Sub1_2;
+				DrawClippedTilePtr = DrawClippedTile16Sub1_2;
+			}
+			else
+			{
+				// Fixed colour substraction
+				DrawTilePtr = DrawTile16FixedSub1_2;
+				DrawClippedTilePtr = DrawClippedTile16FixedSub1_2;
+			}
+			DrawLargePixelPtr = DrawLargePixel16Sub1_2;
+			break;
 		}
-		else
-		{
-		    if (GFX.r2131 & 0x40)
-		    {
-				if (GFX.r2130 & 2)
-				{
-				    DrawTilePtr = DrawTile16Add1_2;
-				    DrawClippedTilePtr = DrawClippedTile16Add1_2;
-				}
-				else
-				{
-				    // Fixed colour addition
-				    DrawTilePtr = DrawTile16FixedAdd1_2;
-				    DrawClippedTilePtr = DrawClippedTile16FixedAdd1_2;
-				}
-				DrawLargePixelPtr = DrawLargePixel16Add1_2;
-		    }
-		    else
-		    {
-				DrawTilePtr = DrawTile16Add;
-				DrawClippedTilePtr = DrawClippedTile16Add;
-				DrawLargePixelPtr = DrawLargePixel16Add;
-		    }
-		}
-    }
+	}
 }
 
 void S9xSetupOBJ ()
@@ -1183,6 +1169,14 @@ void S9xSetupOBJ ()
 
 static void DrawOBJS (bool8 OnMain = FALSE, uint8 D = 0)
 {
+#ifdef ACCUMULATE_JOYPAD
+/*
+ * This call allows NDSSFC to synchronise the DS controller more often.
+ * If porting a later version of Snes9x into NDSSFC, it is essential to
+ * preserve it.
+ */
+	NDSSFCAccumulateJoypad ();
+#endif
 #ifdef MK_DEBUG_RTO
 	if(Settings.BGLayering) fprintf(stderr, "Entering DrawOBJS() for %d-%d\n", GFX.StartY, GFX.EndY);
 #endif
@@ -1223,6 +1217,7 @@ static void DrawOBJS (bool8 OnMain = FALSE, uint8 D = 0)
 			if(j<i && Windows[j].Pos==GFX.pCurrentClip->Left[clip][4]){
 				Windows[j].Value = TRUE;
 			} else {
+				// memmove required: Overlapping addresses [Neb]
 				if(j<i) memmove(&Windows[j+1], &Windows[j], sizeof(Windows[0])*(i-j));
 				Windows[j].Pos = GFX.pCurrentClip->Left[clip][4];
 				Windows[j].Value = TRUE;
@@ -1230,6 +1225,7 @@ static void DrawOBJS (bool8 OnMain = FALSE, uint8 D = 0)
 			}
 			for(j=0; j<i && Windows[j].Pos<GFX.pCurrentClip->Right[clip][4]; j++);
 			if(j>=i || Windows[j].Pos!=GFX.pCurrentClip->Right[clip][4]){
+				// memmove required: Overlapping addresses [Neb]
 				if(j<i) memmove(&Windows[j+1], &Windows[j], sizeof(Windows[0])*(i-j));
 				Windows[j].Pos = GFX.pCurrentClip->Right[clip][4];
 				Windows[j].Value = FALSE;
@@ -2326,6 +2322,14 @@ static void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8
 
 static void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 {
+#ifdef ACCUMULATE_JOYPAD
+/*
+ * This call allows NDSSFC to synchronise the DS controller more often.
+ * If porting a later version of Snes9x into NDSSFC, it is essential to
+ * preserve it.
+ */
+	NDSSFCAccumulateJoypad ();
+#endif
     GFX.PixSize = 1;
 	
     BG.TileSize = BGSizes [PPU.BG[bg].BGSize];
@@ -3739,14 +3743,38 @@ void S9xUpdateScreen ()
             // part way down the screen. Scale everything.
             for (register int32 y = (int32) GFX.StartY - 1; y >= 0; y--)
 			{
-				memmove (GFX.Screen + y * 2 * GFX.Pitch2,
+				// memmove converted: Same malloc, different addresses, and identical addresses at line 0 [Neb]
+				// DS2 DMA notes: This code path is unused [Neb]
+				memcpy (GFX.Screen + y * 2 * GFX.Pitch2,
 					GFX.Screen + y * GFX.Pitch2,
 					GFX.Pitch2);
-				memmove (GFX.Screen + (y * 2 + 1) * GFX.Pitch2,
+				// memmove converted: Same malloc, different addresses [Neb]
+				memcpy (GFX.Screen + (y * 2 + 1) * GFX.Pitch2,
 					GFX.Screen + y * GFX.Pitch2,
 					GFX.Pitch2);
 			}
 		}
+    }
+    else if (!Settings.SupportHiRes)
+    {
+	if (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.Interlace)
+	{
+		if (!IPPU.HalfWidthPixels)
+		{
+			// The game has switched from lo-res to hi-res mode part way down
+			// the screen. Hi-res pixels must now be drawn at half width.
+			IPPU.HalfWidthPixels = TRUE;
+		}
+	}
+	else
+	{
+		if (IPPU.HalfWidthPixels)
+		{
+			// The game has switched from hi-res to lo-res mode part way down
+			// the screen. Lo-res pixels must now be drawn at FULL width.
+			IPPU.HalfWidthPixels = FALSE;
+		}
+	}
     }
 	
     uint32 black = BLACK | (BLACK << 16);

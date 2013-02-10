@@ -7,12 +7,14 @@ FS_DIR       = $(DS2SDKPATH)/libsrc/fs
 CONSOLE_DIR  = $(DS2SDKPATH)/libsrc/console
 KEY_DIR      = $(DS2SDKPATH)/libsrc/key
 ZLIB_DIR     = $(DS2SDKPATH)/libsrc/zlib
+CORE_DIR     = $(DS2SDKPATH)/libsrc/core
 
 LIBS        := $(DS2SDKPATH)/lib/libds2b.a -lc -lm -lgcc
 EXTLIBS     := $(DS2SDKPATH)/lib/libds2a.a
 
 INCLUDE     := -Isource -Isource/unzip -Isource/nds -I$(DS2SDKPATH)/include \
-               -I$(FS_DIR) -I$(CONSOLE_DIR) -I$(KEY_DIR) -I$(ZLIB_DIR)
+               -I$(FS_DIR) -I$(CONSOLE_DIR) -I$(KEY_DIR) -I$(ZLIB_DIR) \
+               -I$(CORE_DIR)
 
 LINK_SPEC   := $(DS2SDKPATH)/specs/link.xn
 START_ASM   := $(DS2SDKPATH)/specs/start.S
@@ -35,7 +37,7 @@ C_SOURCES   = source/unzip/explode.c source/unzip/unreduce.c \
               source/unzip/unshrink.c source/unzip/unzip.c \
               source/nds/bdf_font.c source/nds/bitmap.c \
               source/nds/draw.c source/nds/ds2_main.c source/nds/gcheat.c \
-              source/nds/gui.c
+              source/nds/gui.c source/nds/dma_adj.c
 CPP_SOURCES = source/apu.cpp source/apudebug.cpp source/c4.cpp \
               source/c4emu.cpp source/cheats2.cpp source/cheats.cpp \
               source/clip.cpp source/cpu.cpp source/cpuexec.cpp \
@@ -43,10 +45,10 @@ CPP_SOURCES = source/apu.cpp source/apudebug.cpp source/c4.cpp \
               source/dma.cpp source/dsp1.cpp \
               source/fxdbg.cpp source/fxemu.cpp source/fxinst.cpp \
               source/gfx.cpp source/globals.cpp source/loadzip.cpp \
-              source/memmap.cpp source/movie.cpp source/netplay.cpp \
+              source/memmap.cpp source/movie.cpp \
               source/obc1.cpp source/ppu.cpp \
               source/sa1.cpp source/sa1cpu.cpp source/screenshot.cpp \
-              source/sdd1.cpp source/sdd1emu.cpp source/server.cpp \
+              source/sdd1.cpp source/sdd1emu.cpp \
               source/seta010.cpp source/seta011.cpp source/seta018.cpp \
               source/seta.cpp source/snaporig.cpp source/snapshot.cpp \
               source/soundux.cpp \
@@ -64,12 +66,14 @@ CFLAGS := -mips32 -mno-abicalls -fno-pic -fno-builtin \
 	      -fno-exceptions -ffunction-sections -mno-long-calls \
 	      -msoft-float -G 4 \
           -O3 -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
-          -fweb -funroll-loops
+          -fweb -fpeel-loops
 
 DEFS   := -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
           -DVAR_CYCLES -DCPU_SHUTDOWN -DSPC700_SHUTDOWN \
           -DNO_INLINE_SET_GET -DNOASM -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t' \
-          -DUNZIP_SUPPORT -DSYNC_JOYPAD_AT_HBLANK -DSNESADVANCE_SPEEDHACKS
+          -DUNZIP_SUPPORT -DFOREVER_16_BIT_SOUND -DFOREVER_STEREO \
+          -DFOREVER_FORWARD_STEREO -DNO_VOLATILE_SOUND \
+          -DDS2_DMA -DSNESADVANCE_SPEEDHACKS
 
 .PHONY: clean makedirs
 .SUFFIXES: .elf .dat .plg
