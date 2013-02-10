@@ -8,7 +8,11 @@ extern "C" {
 #endif
 
 struct SPointerAdjustments {
+	/* These are used by the DSTWO-NDS side code. */
 	unsigned int  GFXScreen;
+
+	/* These are used by Snes9x. */
+	unsigned int  ROM;
 };
 
 extern struct SPointerAdjustments PtrAdj;

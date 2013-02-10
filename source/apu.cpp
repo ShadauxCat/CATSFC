@@ -116,18 +116,14 @@ void S9xTraceSoundDSP (const char *s, int i1 = 0, int i2 = 0, int i3 = 0,
 bool8 S9xInitAPU ()
 {
     IAPU.RAM = (uint8 *) malloc (0x10000);
-    IAPU.ShadowRAM = (uint8 *) malloc (0x10000);
-    IAPU.CachedSamples = (uint8 *) malloc (0x40000);
     
-    if (!IAPU.RAM || !IAPU.ShadowRAM || !IAPU.CachedSamples)
+    if (!IAPU.RAM)
     {
 		S9xDeinitAPU ();
 		return (FALSE);
     }
 
 	memset(IAPU.RAM, 0, 0x10000);
-	memset(IAPU.ShadowRAM, 0, 0x10000);
-	memset(IAPU.CachedSamples, 0, 0x40000);
 	
     return (TRUE);
 }
@@ -138,16 +134,6 @@ void S9xDeinitAPU ()
     {
 		free ((char *) IAPU.RAM);
 		IAPU.RAM = NULL;
-    }
-    if (IAPU.ShadowRAM)
-    {
-		free ((char *) IAPU.ShadowRAM);
-		IAPU.ShadowRAM = NULL;
-    }
-    if (IAPU.CachedSamples)
-    {
-		free ((char *) IAPU.CachedSamples);
-		IAPU.CachedSamples = NULL;
     }
 }
 
@@ -171,10 +157,7 @@ void S9xResetAPU ()
 	{
 		memcpy(IAPU.RAM+(i<<8), IAPU.RAM, 0x100);
 	}
-
-    memcpy (IAPU.ShadowRAM, IAPU.RAM, 0x10000);
 	
-    ZeroMemory (IAPU.CachedSamples, 0x40000);
     ZeroMemory (APU.OutPorts, 4);
     IAPU.DirectPage = IAPU.RAM;
     // memmove converted: Different mallocs [Neb]

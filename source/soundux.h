@@ -213,12 +213,14 @@ typedef struct
     uint32 dummy [3];
     Channel channels [NUM_CHANNELS];
     // bool8 no_filter;
-    int master_volume [2]; /* range is -128 .. 127 */
-    int echo_volume [2]; /* range is -128 .. 127 */
+    short master_volume [2]; /* range is -128 .. 127 */
+    short echo_volume [2]; /* range is -128 .. 127 */
     int noise_hertz;
 } SSoundData;
 
 EXTERN_C SSoundData SoundData;
+
+void S9xSetEightBitConsoleSound (bool8 Enabled);
 
 void S9xSetSoundVolume (int channel, short volume_left, short volume_right);
 void S9xSetSoundFrequency (int channel, int hertz);

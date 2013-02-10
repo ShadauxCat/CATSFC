@@ -406,6 +406,20 @@ void game_set_fluidity()
 		Settings.SoundSync = FALSE;
 	}
 }
+
+void game_set_retro(void)
+{
+	if (game_config.RetroSound == 1)
+	{
+		Settings.InterpolatedSound = FALSE;
+		S9xSetEightBitConsoleSound (TRUE);
+	}
+	else
+	{
+		Settings.InterpolatedSound = TRUE;
+		S9xSetEightBitConsoleSound (FALSE);
+	}
+}
 	
 void init_sfc_setting(void)
 {
@@ -427,13 +441,11 @@ void init_sfc_setting(void)
     Settings.APUEnabled = Settings.NextAPUEnabled = TRUE;
 	Settings.FixFrequency = 1;
 
-
     Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
     Settings.SkipFrames = AUTO_FRAMERATE;
     Settings.ShutdownMaster = TRUE;
     Settings.FrameTimePAL = 20000;
     Settings.FrameTimeNTSC = 16667;
-    Settings.DisableSampleCaching = FALSE;
     Settings.DisableMasterVolume = FALSE;
     Settings.Mouse = TRUE;
     Settings.SuperScope = TRUE;
@@ -500,7 +512,7 @@ void game_restart(void)
 	S9xReset ();
 }
 
-int load_gamepak(char* file)
+int load_gamepak(const char* file)
 {
 	CPU.Flags = 0;
 	// ds2_mdelay(50); // Delete this delay
@@ -640,7 +652,6 @@ int sfc_main (int argc, char **argv)
 
 static unsigned int sync_last= 0;
 static unsigned int sync_next = 0;
-static unsigned int auto_equivalent_skip = 0;
 
 static unsigned int skip_rate= 0;
 
@@ -648,6 +659,7 @@ void S9xSyncSpeed ()
 {
 	uint32 syncnow;
 	int32 syncdif;
+	unsigned int LastAutoCPUFrequency = AutoCPUFrequency;
 
 #if 0
     if (Settings.SoundSync == 2)
@@ -659,7 +671,9 @@ void S9xSyncSpeed ()
 #endif
 	syncnow = getSysTime();
 
-	if (game_fast_forward || temporary_fast_forward /* hotkey is held */)
+	bool8 FastForward = game_fast_forward || temporary_fast_forward /* hotkey is held */;
+
+	if (FastForward)
 	{
 		sync_last = syncnow;
 		sync_next = syncnow;
@@ -672,128 +686,132 @@ void S9xSyncSpeed ()
 			IPPU.RenderThisFrame = true;
 		}
 	}
-	else if (Settings.SkipFrames == AUTO_FRAMERATE /* && !game_fast_forward && !temporary_fast_forward */)
+	else
 	{
-		// frame_time is in getSysTime units: 42.667 microseconds.
-		int32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
-		if (sync_last > syncnow) // Overflow occurred! (every 50 hrs)
+		// Manual or automatic frame skipping, no fast-forward.
+		if (Settings.SkipFrames == AUTO_FRAMERATE)
 		{
-			// Render this frame regardless, set the
-			// sync_next, and get the hell out.
-			IPPU.RenderThisFrame = TRUE;
-			sync_last = syncnow;
-			sync_next = syncnow + frame_time;
-			return;
-		}
-		sync_last = syncnow;
-		// If this is positive, we have syncdif*42.66 microseconds to
-		// spare.
-		// If this is negative, we're late by syncdif*42.66
-		// microseconds.
-		syncdif = sync_next - syncnow;
-		if (syncdif < 0 && syncdif >= -(frame_time / 2))
-		{
-			// We're late, but by less than half a frame. Draw it
-			// anyway. If the next frame is too late, it'll be
-			// skipped.
-			skip_rate = 0;
-			IPPU.RenderThisFrame = true;
-			sync_next += frame_time;
-		}
-		else if(syncdif < 0)
-		{
-			/*
-			 * If we're consistently late, delay up to 8 frames.
-			 * 
-			 * That really helps with certain games, such as
-			 * Super Mario RPG and Yoshi's Island.
-			 */
-			if(++skip_rate < 10)
+			// frame_time is in getSysTime units: 42.667 microseconds.
+			int32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
+			if (sync_last > syncnow) // Overflow occurred! (every 50 hrs)
 			{
-				if(syncdif >= -11719 /* not more than 500.0 ms late */)
+				// Render this frame regardless, set the
+				// sync_next, and get the hell out.
+				IPPU.RenderThisFrame = TRUE;
+				sync_last = syncnow;
+				sync_next = syncnow + frame_time;
+				return;
+			}
+			sync_last = syncnow;
+			// If this is positive, we have syncdif*42.66 microseconds to
+			// spare.
+			// If this is negative, we're late by syncdif*42.66
+			// microseconds.
+			syncdif = sync_next - syncnow;
+			if(skip_rate < 2 /* did not skip 2 frames yet */)
+			{
+				// Skip a minimum of 2 frames between rendered frames.
+				// This prevents the DSTwo-DS link from being too busy
+				// to return button statuses.
+				++skip_rate;
+				IPPU.RenderThisFrame = FALSE;
+				sync_next += frame_time;
+			}
+			else if(syncdif < 0)
+			{
+				/*
+				 * If we're consistently late, delay up to 8 frames.
+				 * 
+				 * That really helps with certain games, such as
+				 * Super Mario RPG and Yoshi's Island.
+				 */
+				if(++skip_rate < 10)
 				{
-					IPPU.RenderThisFrame = FALSE;
-					sync_next += frame_time;
+					if(syncdif >= -11719 /* not more than 500.0 ms late */)
+					{
+						IPPU.RenderThisFrame = FALSE;
+						sync_next += frame_time;
+					}
+					else
+					{	//lag more than 0.5s, maybe paused
+						IPPU.RenderThisFrame = TRUE;
+						sync_next = syncnow + frame_time;
+					}
 				}
 				else
-				{	//lag more than 0.5s, maybe paused
+				{
+					skip_rate = 0;
 					IPPU.RenderThisFrame = TRUE;
 					sync_next = syncnow + frame_time;
 				}
 			}
-			else
+			else // Early
+			{
+				skip_rate = 0;
+				if (syncdif > 0)
+				{
+					do {
+						S9xProcessSound (0);
+#ifdef ACCUMULATE_JOYPAD
+/*
+ * This call allows NDSSFC to synchronise the DS controller more often.
+ * If porting a later version of Snes9x into NDSSFC, it is essential to
+ * preserve it.
+ */
+						NDSSFCAccumulateJoypad ();
+#endif
+						syncdif = sync_next - getSysTime();
+					} while (syncdif > 0);
+				}
+
+				IPPU.RenderThisFrame = TRUE;
+				sync_next += frame_time;
+			}
+#if 0
+			if(++framenum >= 60)
+			{
+				syncdif = syncnow - sync_last;
+				sync_last = syncnow;
+				framenum = 0;
+				//printf("T %d %d\n", syncdif*42667/1000, realframe);
+				realframe = 0;
+			}
+#endif
+		}
+		else /* if (Settings.SkipFrames != AUTO_FRAMERATE) */
+		{
+			// frame_time is in getSysTime units: 42.667 microseconds.
+			uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
+			sync_last = syncnow;
+			if (++skip_rate > Settings.SkipFrames)
 			{
 				skip_rate = 0;
 				IPPU.RenderThisFrame = TRUE;
-				sync_next = syncnow + frame_time;
-			}
-		}
-		else // Early
-		{
-			skip_rate = 0;
-			if (syncdif > 0)
-			{
-				do {
-					S9xProcessSound (0);
+				// Are we early?
+				syncdif = sync_next - syncnow;
+				if (syncdif > 0)
+				{
+					do {
+						S9xProcessSound (0);
 #ifdef ACCUMULATE_JOYPAD
 /*
  * This call allows NDSSFC to synchronise the DS controller more often.
  * If porting a later version of Snes9x into NDSSFC, it is essential to
  * preserve it.
  */
-					NDSSFCAccumulateJoypad ();
+						NDSSFCAccumulateJoypad ();
 #endif
-					syncdif = sync_next - getSysTime();
-				} while (syncdif > 0);
+						syncdif = sync_next - getSysTime();
+					} while (syncdif > 0);
+					// After that little delay, what time is it?
+					syncnow = getSysTime();
+				}
+				sync_next = syncnow + frame_time * (Settings.SkipFrames + 1);
 			}
-
-			IPPU.RenderThisFrame = TRUE;
-			sync_next += frame_time;
-		}
-#if 0
-		if(++framenum >= 60)
-		{
-			syncdif = syncnow - sync_last;
-			sync_last = syncnow;
-			framenum = 0;
-			//printf("T %d %d\n", syncdif*42667/1000, realframe);
-			realframe = 0;
-		}
-#endif
-	}
-	else /* if (Settings.SkipFrames != AUTO_FRAMERATE && !game_fast_forward && !temporary_fast_forward) */
-	{
-		// frame_time is in getSysTime units: 42.667 microseconds.
-		uint32 frame_time = Settings.PAL ? 468 /* = 20.0 ms */ : 391 /* = 16.67 ms */;
-		sync_last = syncnow;
-		if (++skip_rate > Settings.SkipFrames)
-		{
-			skip_rate = 0;
-			IPPU.RenderThisFrame = TRUE;
-			// Are we early?
-			syncdif = sync_next - syncnow;
-			if (syncdif > 0)
+			else
 			{
-				do {
-					S9xProcessSound (0);
-#ifdef ACCUMULATE_JOYPAD
-/*
- * This call allows NDSSFC to synchronise the DS controller more often.
- * If porting a later version of Snes9x into NDSSFC, it is essential to
- * preserve it.
- */
-					NDSSFCAccumulateJoypad ();
-#endif
-					syncdif = sync_next - getSysTime();
-				} while (syncdif > 0);
-				// After that little delay, what time is it?
-				syncnow = getSysTime();
+				IPPU.RenderThisFrame = FALSE;
 			}
-			sync_next = syncnow + frame_time * (Settings.SkipFrames + 1);
-		}
-		else
-		{
-			IPPU.RenderThisFrame = FALSE;
 		}
 	}
 
@@ -978,7 +996,19 @@ void S9xGenerateSound ()
 }
 
 #define SOUND_EMISSION_INTERVAL ((unsigned int) ((((unsigned long long) DS2_BUFFER_SIZE * 1000000) / SND_SAMPLE_RATE) * 3 / 128))
-unsigned int LastSoundEmissionTime = 0;
+#define TRUE_SOUND_EMISSION_INTERVAL ((((double) DS2_BUFFER_SIZE * 1000000) / SND_SAMPLE_RATE) * 3 / 128)
+#define SOUND_EMISSION_INTERVAL_ERROR ((int) ((TRUE_SOUND_EMISSION_INTERVAL - SOUND_EMISSION_INTERVAL) * FIXED_POINT))
+static unsigned int LastSoundEmissionTime = 0;
+
+/*
+ * Accumulated error in the sound emission time. The unit is as follows:
+ * FIXED_POINT = 42.667 microseconds.
+ * As the error goes past FIXED_POINT, the new target for sound emission
+ * becomes 42.667 microseconds LATER. This helps with sound buffer overruns,
+ * correctly dealing with the fact that 42.667 microseconds does not fit
+ * an integer number of times in 1/32000 second (or whatever sampling rate).
+ */
+static unsigned int SoundEmissionTimeError = 0;
 
 void S9xProcessSound (unsigned int)
 {
@@ -988,7 +1018,7 @@ void S9xProcessSound (unsigned int)
 	unsigned int Now = getSysTime();
 	if (Now - LastSoundEmissionTime >= SOUND_EMISSION_INTERVAL)
 	{
-		if(ds2_checkAudiobuff() > 4)
+		if(ds2_checkAudiobuff() > AUDIO_BUFFER_COUNT - 1)
 		{
 			LastSoundEmissionTime++;
 			return;
@@ -1005,6 +1035,12 @@ void S9xProcessSound (unsigned int)
 		else
 		{
 			LastSoundEmissionTime += SOUND_EMISSION_INTERVAL;
+			SoundEmissionTimeError += SOUND_EMISSION_INTERVAL_ERROR;
+			if (SoundEmissionTimeError >= FIXED_POINT)
+			{
+				LastSoundEmissionTime += SoundEmissionTimeError >> FIXED_POINT_SHIFT;
+				SoundEmissionTimeError &= FIXED_POINT_REMAINDER;
+			}
 		}
 		/* Number of samples to generate now */
 		int sample_count = so.buffer_size;

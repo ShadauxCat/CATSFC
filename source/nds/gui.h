@@ -65,7 +65,20 @@ struct _GAME_CONFIG
 	u32 HotkeyTemporaryFastForward;
 	u32 HotkeyToggleSound;
 	u32 SoundSync;
-	u32  Reserved2[44];
+	/*
+	 * PreviouslyUsed_20130206_1 was for a second meaning of
+	 * frameskip_value that is now dropped.
+	 * THIS VALUE IS NOT GUARANTEED TO BE RESERVED AND SET TO 0.
+	 */
+	u32 PreviouslyUsed_20130206_1;
+	/*
+	 * PreviouslyUsed_20130206_2 was for a second meaning of
+	 * clock_speed_number that is now dropped.
+	 * THIS VALUE IS NOT GUARANTEED TO BE RESERVED AND SET TO 0.
+	 */
+	u32 PreviouslyUsed_20130206_2;
+	u32 RetroSound;
+	u32  Reserved2[41];
 };
 
 typedef enum
@@ -134,6 +147,7 @@ extern u32 menu(u16 *original_screen, bool8 FirstInvocation);
 extern void game_disableAudio();
 extern void game_set_frameskip();
 extern void game_set_fluidity();
+extern void game_set_retro();
 extern void LowFrequencyCPU();
 extern void HighFrequencyCPU();
 extern void GameFrequencyCPU();

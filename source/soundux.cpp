@@ -168,6 +168,19 @@ extern "C" void DecodeBlockAsm2 (int8 *, int16 *, int32 *, int32 *);
 #define LAST_SAMPLE 0xffffff
 #define JUST_PLAYED_LAST_SAMPLE(c) ((c)->sample_pointer >= LAST_SAMPLE)
 
+void S9xSetEightBitConsoleSound (bool8 Enabled)
+{
+	if (Settings.EightBitConsoleSound != Enabled)
+	{
+		Settings.EightBitConsoleSound = Enabled;
+		int i;
+		for (i = 0; i < 8; i++)
+		{
+			SoundData.channels[i].needs_decode = TRUE;
+		}
+	}
+}
+
 STATIC inline uint8 *S9xGetSampleAddress (int sample_number)
 {
     uint32 addr = (((APU.DSP[APU_DIR] << 8) + (sample_number << 2)) & 0xffff);
@@ -803,7 +816,7 @@ void DecodeBlock (Channel *ch)
     signed char sample1, sample2;
     unsigned char i;
     bool invalid_header;
-	
+
     if (Settings.AltSampleDecode)
     {
 		if (Settings.AltSampleDecode < 3)
@@ -819,74 +832,263 @@ void DecodeBlock (Channel *ch)
 		ch->block = ch->decoded;
 		return;
     }
-    signed char *compressed = (signed char *) &IAPU.RAM [ch->block_pointer];
-	
-    filter = *compressed;
-    if ((ch->last_block = filter & 1))
-		ch->loop = (filter & 2) != 0;
-	
-	compressed++;
-	signed short *raw = ch->block = ch->decoded;
-	
-	// Seperate out the header parts used for decoding
 
-	shift = filter >> 4;
-	
-	// Header validity check: if range(shift) is over 12, ignore
-	// all bits of the data for that block except for the sign bit of each
-	invalid_header = (shift >= 0xD);
-
-	filter = filter&0x0c;
-
-	int32 prev0 = ch->previous [0];
-	int32 prev1 = ch->previous [1];
-	
-	for (i = 8; i != 0; i--)
+	if (Settings.EightBitConsoleSound)
 	{
-		sample1 = *compressed++;
-		sample2 = sample1 << 4;
-		//Sample 2 = Bottom Nibble, Sign Extended.
-		sample2 >>= 4;
-		//Sample 1 = Top Nibble, shifted down and Sign Extended.
-		sample1 >>= 4;
-			if (invalid_header) { sample1>>=3; sample2>>=3; }
+	    signed char *compressed = (signed char *) &IAPU.RAM [ch->block_pointer];
+	
+	    filter = *compressed;
+	    if ((ch->last_block = filter & 1))
+			ch->loop = (filter & 2) != 0;
+
+		int16 interim[16];
+		uint8 interim_byte = 0;
+	
+		compressed++;
+		signed short *raw = ch->block = ch->decoded;
+	
+		// Seperate out the header parts used for decoding
+
+		shift = filter >> 4;
+	
+		// Header validity check: if range(shift) is over 12, ignore
+		// all bits of the data for that block except for the sign bit of each
+		invalid_header = (shift >= 0xD);
+
+		filter = filter&0x0c;
+
+		int32 prev0 = ch->previous [0];
+		int32 prev1 = ch->previous [1];
+
+		int16 amplitude = 0;
+	
+		for (i = 8; i != 0; i--)
+		{
+			sample1 = *compressed++;
+			sample2 = sample1 << 4;
+			//Sample 2 = Bottom Nibble, Sign Extended.
+			sample2 >>= 4;
+			//Sample 1 = Top Nibble, shifted down and Sign Extended.
+			sample1 >>= 4;
+				if (invalid_header) { sample1>>=3; sample2>>=3; }
 		
-		for (int nybblesmp = 0; nybblesmp<2; nybblesmp++){
-			out=(((nybblesmp) ? sample2 : sample1) << shift);
-			out >>= 1;
+			for (int nybblesmp = 0; nybblesmp<2; nybblesmp++){
+				out=(((nybblesmp) ? sample2 : sample1) << shift);
+				out >>= 1;
 			
-			switch(filter)
-			{
-				case 0x00:
-					// Method0 - [Smp]
-					break;
+				switch(filter)
+				{
+					case 0x00:
+						// Method0 - [Smp]
+						break;
 				
-				case 0x04:
-					// Method1 - [Delta]+[Smp-1](15/16)
-					out+=(prev0>>1)+((-prev0)>>5);
-					break;
+					case 0x04:
+						// Method1 - [Delta]+[Smp-1](15/16)
+						out+=(prev0>>1)+((-prev0)>>5);
+						break;
 				
-				case 0x08:
-					// Method2 - [Delta]+[Smp-1](61/32)-[Smp-2](15/16)
-					out+=(prev0)+((-(prev0 +(prev0>>1)))>>5)-(prev1>>1)+(prev1>>5);
-					break;
+					case 0x08:
+						// Method2 - [Delta]+[Smp-1](61/32)-[Smp-2](15/16)
+						out+=(prev0)+((-(prev0 +(prev0>>1)))>>5)-(prev1>>1)+(prev1>>5);
+						break;
 				
-				default:
-					// Method3 - [Delta]+[Smp-1](115/64)-[Smp-2](13/16)
-					out+=(prev0)+((-(prev0 + (prev0<<2) + (prev0<<3)))>>7)-(prev1>>1)+((prev1+(prev1>>1))>>4);
-					break;
+					default:
+						// Method3 - [Delta]+[Smp-1](115/64)-[Smp-2](13/16)
+						out+=(prev0)+((-(prev0 + (prev0<<2) + (prev0<<3)))>>7)-(prev1>>1)+((prev1+(prev1>>1))>>4);
+						break;
 				
+				}
+				CLIP16(out);
+				int16 result = (signed short)(out<<1);
+				if (abs(result) > amplitude)
+					amplitude = abs(result);
+				interim[interim_byte++] = out;
+				prev1=(signed short)prev0;
+				prev0=(signed short)(out<<1);
 			}
-			CLIP16(out);
-				*raw++ = (signed short)(out<<1);
-			prev1=(signed short)prev0;
-			prev0=(signed short)(out<<1);
+		}
+		ch->previous [0] = prev0;
+		ch->previous [1] = prev1;
+
+		int32 total_deviation_from_previous = 0;
+		for (i = 1; i < 16; i++)
+			total_deviation_from_previous += abs(interim[i] - interim[i - 1]);
+		if (total_deviation_from_previous >= (int32) amplitude * 4)
+		{
+			/* Looks like noise. Generate noise. */
+			for (i = 0; i < 16; i++)
+			{
+				int feedback = (noise_gen << 13) ^ (noise_gen << 14);
+				noise_gen = (feedback & 0x4000) ^ (noise_gen >> 1);
+				ch->decoded[i] = (noise_gen << 17) >> 17;
+			}
+		}
+		else if (interim[0] < interim[1] && interim[1] < interim[2]
+		 && interim[2] < interim[3]
+		 && interim[4] > interim[5] && interim[5] > interim[6]
+		 && interim[6] > interim[7] && interim[7] > interim[8]
+		 && interim[8] > interim[9] && interim[9] > interim[10]
+		 && interim[10] > interim[11]
+		 && interim[12] < interim[13] && interim[13] < interim[14]
+		 && interim[14] < interim[15])
+		{
+			/* Looks like a sine or triangle wave. Make it a
+			 * triangle wave with an amplitude equivalent to that
+			 * of the highest amplitude sample of the block. */
+			ch->decoded[0] =  ch->decoded[8]  = 0;
+			ch->decoded[1] =  ch->decoded[7]  = amplitude / 4;
+			ch->decoded[2] =  ch->decoded[6]  = amplitude / 2;
+			ch->decoded[3] =  ch->decoded[5]  = amplitude * 3 / 4;
+			ch->decoded[4] =  amplitude;
+			ch->decoded[9] =  ch->decoded[15] = -(amplitude / 4);
+			ch->decoded[10] = ch->decoded[14] = -(amplitude / 2);
+			ch->decoded[11] = ch->decoded[13] = -(amplitude * 3 / 4);
+			ch->decoded[12] = -amplitude;
+		}
+		else if (interim[0] > interim[1] && interim[1] > interim[2]
+		 && interim[2] > interim[3]
+		 && interim[4] < interim[5] && interim[5] < interim[6]
+		 && interim[6] < interim[7] && interim[7] < interim[8]
+		 && interim[8] < interim[9] && interim[9] < interim[10]
+		 && interim[10] < interim[11]
+		 && interim[12] > interim[13] && interim[13] > interim[14]
+		 && interim[14] > interim[15])
+		{
+			/* Inverted triangle wave. */
+			ch->decoded[0] =  ch->decoded[8]  = 0;
+			ch->decoded[1] =  ch->decoded[7]  = -(amplitude / 4);
+			ch->decoded[2] =  ch->decoded[6]  = -(amplitude / 2);
+			ch->decoded[3] =  ch->decoded[5]  = -(amplitude * 3 / 4);
+			ch->decoded[4] = -amplitude;
+			ch->decoded[9] =  ch->decoded[15] = amplitude / 4;
+			ch->decoded[10] = ch->decoded[14] = amplitude / 2;
+			ch->decoded[11] = ch->decoded[13] = amplitude * 3 / 4;
+			ch->decoded[12] = amplitude;
+		}
+		else if (interim[0] < interim[1] && interim[1] < interim[2]
+		 && interim[2] < interim[3] && interim[3] < interim[4]
+		 && interim[4] < interim[5] && interim[5] < interim[6]
+		 && interim[6] < interim[7]
+		 && interim[8] > interim[9] && interim[9] > interim[10]
+		 && interim[10] > interim[11] && interim[11] > interim[12]
+		 && interim[12] > interim[13] && interim[13] > interim[14]
+		 && interim[14] > interim[15])
+		{
+			/* Looks like a V wave. Make it a half-triangle wave
+			 * with an amplitude equivalent to that
+			 * of the highest amplitude sample of the block. */
+			ch->decoded[0] =  0;
+			ch->decoded[1] =  ch->decoded[15] = amplitude / 8;
+			ch->decoded[2] =  ch->decoded[14] = amplitude / 4;
+			ch->decoded[3] =  ch->decoded[13] = amplitude * 3 / 8;
+			ch->decoded[4] =  ch->decoded[12] = amplitude / 2;
+			ch->decoded[5] =  ch->decoded[11] = amplitude * 5 / 8;
+			ch->decoded[6] =  ch->decoded[10] = amplitude * 3 / 4;
+			ch->decoded[7] =  ch->decoded[9]  = amplitude * 7 / 8;
+			ch->decoded[8] =  amplitude;
+		}
+		else if (interim[0] > interim[1] && interim[1] > interim[2]
+		 && interim[2] > interim[3] && interim[3] > interim[4]
+		 && interim[4] > interim[5] && interim[5] > interim[6]
+		 && interim[6] > interim[7]
+		 && interim[8] < interim[9] && interim[9] < interim[10]
+		 && interim[10] < interim[11] && interim[11] < interim[12]
+		 && interim[12] < interim[13] && interim[13] < interim[14]
+		 && interim[14] < interim[15])
+		{
+			/* Inverted V wave. */
+			ch->decoded[0] =  0;
+			ch->decoded[1] =  ch->decoded[15] = -(amplitude / 8);
+			ch->decoded[2] =  ch->decoded[14] = -(amplitude / 4);
+			ch->decoded[3] =  ch->decoded[13] = -(amplitude * 3 / 8);
+			ch->decoded[4] =  ch->decoded[12] = -(amplitude / 2);
+			ch->decoded[5] =  ch->decoded[11] = -(amplitude * 5 / 8);
+			ch->decoded[6] =  ch->decoded[10] = -(amplitude * 3 / 4);
+			ch->decoded[7] =  ch->decoded[9]  = -(amplitude * 7 / 8);
+			ch->decoded[8] =  -amplitude;
+		}
+		else
+		{
+			// Make it a square wave with an amplitude equivalent to that
+			// of the highest amplitude sample of the block.
+			// But actually put half of the amplitude, because
+			// square waves are just loud.
+			for (i = 0; i < 8; i++)
+				ch->decoded[i] = amplitude / 2;
+			for (i = 8; i < 16; i++)
+				ch->decoded[i] = -(amplitude / 2);
 		}
 	}
-	ch->previous [0] = prev0;
-	ch->previous [1] = prev1;
+	else
+	{
+	    signed char *compressed = (signed char *) &IAPU.RAM [ch->block_pointer];
 	
-    ch->block_pointer += 9;
+	    filter = *compressed;
+	    if ((ch->last_block = filter & 1))
+			ch->loop = (filter & 2) != 0;
+	
+		compressed++;
+		signed short *raw = ch->block = ch->decoded;
+	
+		// Seperate out the header parts used for decoding
+
+		shift = filter >> 4;
+	
+		// Header validity check: if range(shift) is over 12, ignore
+		// all bits of the data for that block except for the sign bit of each
+		invalid_header = (shift >= 0xD);
+
+		filter = filter&0x0c;
+
+		int32 prev0 = ch->previous [0];
+		int32 prev1 = ch->previous [1];
+	
+		for (i = 8; i != 0; i--)
+		{
+			sample1 = *compressed++;
+			sample2 = sample1 << 4;
+			//Sample 2 = Bottom Nibble, Sign Extended.
+			sample2 >>= 4;
+			//Sample 1 = Top Nibble, shifted down and Sign Extended.
+			sample1 >>= 4;
+				if (invalid_header) { sample1>>=3; sample2>>=3; }
+		
+			for (int nybblesmp = 0; nybblesmp<2; nybblesmp++){
+				out=(((nybblesmp) ? sample2 : sample1) << shift);
+				out >>= 1;
+			
+				switch(filter)
+				{
+					case 0x00:
+						// Method0 - [Smp]
+						break;
+				
+					case 0x04:
+						// Method1 - [Delta]+[Smp-1](15/16)
+						out+=(prev0>>1)+((-prev0)>>5);
+						break;
+				
+					case 0x08:
+						// Method2 - [Delta]+[Smp-1](61/32)-[Smp-2](15/16)
+						out+=(prev0)+((-(prev0 +(prev0>>1)))>>5)-(prev1>>1)+(prev1>>5);
+						break;
+				
+					default:
+						// Method3 - [Delta]+[Smp-1](115/64)-[Smp-2](13/16)
+						out+=(prev0)+((-(prev0 + (prev0<<2) + (prev0<<3)))>>7)-(prev1>>1)+((prev1+(prev1>>1))>>4);
+						break;
+				
+				}
+				CLIP16(out);
+					*raw++ = (signed short)(out<<1);
+				prev1=(signed short)prev0;
+				prev0=(signed short)(out<<1);
+			}
+		}
+		ch->previous [0] = prev0;
+		ch->previous [1] = prev1;
+	}
+	ch->block_pointer += 9;
 }
 
 static inline void MixStereo (int sample_count)
