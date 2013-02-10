@@ -425,7 +425,9 @@ void init_sfc_setting(void)
 	//sound settings
     Settings.APUEnabled = Settings.NextAPUEnabled = TRUE;
 	Settings.FixFrequency = 1;
-	Settings.InterpolatedSound = TRUE;
+
+	S9xSetEightBitConsoleSound (TRUE);
+
 
     Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
     Settings.SkipFrames = AUTO_FRAMERATE;
