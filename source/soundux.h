@@ -213,8 +213,8 @@ typedef struct
     uint32 dummy [3];
     Channel channels [NUM_CHANNELS];
     // bool8 no_filter;
-    int master_volume [2]; /* range is -128 .. 127 */
-    int echo_volume [2]; /* range is -128 .. 127 */
+    short master_volume [2]; /* range is -128 .. 127 */
+    short echo_volume [2]; /* range is -128 .. 127 */
     int noise_hertz;
 } SSoundData;
 
