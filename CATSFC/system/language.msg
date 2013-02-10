@@ -1070,11 +1070,11 @@ ENDDUTCH
 STARTSPANISH
 
 #MSG_MAIN_MENU_NEW_GAME
-Nuevo
+Nuevo juego
 #MSG_MAIN_MENU_RETURN_TO_GAME
-Volver
+Volver al juego
 #MSG_MAIN_MENU_RESET_GAME
-Reiniciar
+Reiniciar juego
 #MSG_MAIN_MENU_VIDEO_AUDIO
 Vídeo y audio
 #MSG_MAIN_MENU_SAVED_STATES
@@ -1100,7 +1100,7 @@ Modo avance rápido   %s
 #FMT_VIDEO_FRAME_SKIPPING
 Salto de fotogramas  %s
 #FMT_AUDIO_SOUND
-Activar sonido            %s
+Sonido                         %s
 #FMT_SAVED_STATE_CREATE
 Grabar partida  %d
 #FMT_SAVED_STATE_LOAD
@@ -1108,15 +1108,15 @@ Cargar partida  %d
 #MSG_SAVED_STATE_DELETE_GENERAL
 Borrar partidas...
 #FMT_CHEAT_PAGE
-Página de trucos: %d
+Página de trucos %d
 #MSG_CHEAT_LOAD_FROM_FILE
 Cargar archivo de trucos
 #MSG_TOOLS_SCREENSHOT_GENERAL
 Capturas de pantalla...
 #MSG_TOOLS_GLOBAL_HOTKEY_GENERAL
-Teclas globales...
+Teclas de atajo globales...
 #MSG_TOOLS_GAME_HOTKEY_GENERAL
-Teclas en juego...
+Teclas de atajo en juego...
 #FMT_OPTIONS_LANGUAGE
 Idioma                                %s
 #FMT_OPTIONS_CPU_FREQUENCY
@@ -1134,7 +1134,7 @@ Frecuencia CPU                 %s
 #MSG_OPTIONS_CPU_FREQUENCY_5
 [5] 396 MHz
 #MSG_OPTIONS_CARD_CAPACITY
-Capacidad uSD
+Capacidad de la tarjeta
 #MSG_OPTIONS_RESET
 Restaurar valores iniciales
 #MSG_OPTIONS_VERSION
@@ -1142,15 +1142,15 @@ Información de versión
 #MSG_SCREENSHOT_CREATE
 Salvar captura
 #MSG_SCREENSHOT_BROWSE
-Mostrar capturas
+Explorar capturas
 #MSG_HOTKEY_MAIN_MENU
 Ir al menú principal
 #MSG_HOTKEY_TEMPORARY_FAST_FORWARD
-Avance rápido
+Avance rápido temporal
 #MSG_HOTKEY_SOUND_TOGGLE
-Sonido On/Off
+Encender/apagar sonido
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
-  Presione la tecla para esta acción.
+Presione la tecla para esta acción.
 #MSG_HOTKEY_DELETE_WITH_A
 *A Borrar
 #MSG_HOTKEY_CANCEL_WITH_B
@@ -1158,11 +1158,11 @@ Sonido On/Off
 #MSG_LOAD_GAME_RECENTLY_PLAYED
 Juegos recientes
 #MSG_LOAD_GAME_FROM_CARD
-Cargar un juego
+Seleccionar un juego desde la tarjeta
 #MSG_LOAD_GAME_MENU_TITLE
 Seleccionar el juego
 #MSG_VIDEO_ASPECT_RATIO_0
-[0] Completa
+[0] Pantalla completa
 #MSG_VIDEO_ASPECT_RATIO_1
 [1] Alinear abajo
 #MSG_VIDEO_ASPECT_RATIO_2
@@ -1196,23 +1196,23 @@ Seleccionar el juego
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] Mostrar 1/11
 #MSG_GENERAL_OFF
-Off
+Apagado
 #MSG_GENERAL_ON
-On
+Encendido
 #MSG_GENERAL_CONFIRM_WITH_A
 *A Aceptar
 #MSG_GENERAL_CANCEL_WITH_B
 *B Cancelar
 #MSG_AUDIO_ENABLED
-On
+Encendido
 #MSG_AUDIO_MUTED
-Off
+Apagado
 #MSG_TOP_SCREEN_NO_GAME_LOADED
 No hay juego cargado
 #MSG_CHEAT_ELEMENT_NOT_LOADED
 <Vacío>
 #MSG_SAVESTATE_FULL
-    Posición actual en uso.                          ¿Sobreescribirla?
+Posición actual en uso. ¿Sobreescribirla?
 #MSG_PROGRESS_SAVED_STATE_CREATING
 Salvando la partida...
 #MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
