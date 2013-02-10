@@ -72,7 +72,8 @@ struct _GAME_CONFIG
 	 * THIS VALUE IS NOT GUARANTEED TO BE RESERVED AND SET TO 0.
 	 */
 	u32 PreviouslyUsed_20130206_2;
-	u32  Reserved2[42];
+	u32 RetroSound;
+	u32  Reserved2[41];
 };
 
 typedef enum
@@ -141,6 +142,7 @@ extern u32 menu(u16 *original_screen, bool8 FirstInvocation);
 extern void game_disableAudio();
 extern void game_set_frameskip();
 extern void game_set_fluidity();
+extern void game_set_retro();
 extern void LowFrequencyCPU();
 extern void HighFrequencyCPU();
 extern void GameFrequencyCPU();

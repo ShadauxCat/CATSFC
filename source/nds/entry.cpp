@@ -405,6 +405,20 @@ void game_set_fluidity()
 		Settings.SoundSync = FALSE;
 	}
 }
+
+void game_set_retro(void)
+{
+	if (game_config.RetroSound == 1)
+	{
+		Settings.InterpolatedSound = FALSE;
+		S9xSetEightBitConsoleSound (TRUE);
+	}
+	else
+	{
+		Settings.InterpolatedSound = TRUE;
+		S9xSetEightBitConsoleSound (FALSE);
+	}
+}
 	
 void init_sfc_setting(void)
 {
@@ -425,9 +439,6 @@ void init_sfc_setting(void)
 	//sound settings
     Settings.APUEnabled = Settings.NextAPUEnabled = TRUE;
 	Settings.FixFrequency = 1;
-
-	S9xSetEightBitConsoleSound (TRUE);
-
 
     Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
     Settings.SkipFrames = AUTO_FRAMERATE;

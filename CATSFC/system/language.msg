@@ -58,6 +58,8 @@ Fast-forward     %s
 Frame skipping    %s
 #FMT_AUDIO_SOUND
 Sound                  %s
+#FMT_AUDIO_RETRO_SOUND
+Retro sound       %s
 #FMT_SAVED_STATE_CREATE
 Create saved state      %d
 #FMT_SAVED_STATE_LOAD
@@ -266,6 +268,8 @@ Prefer fluid audio
 跳帧方式                 %s
 #FMT_AUDIO_SOUND
 声音开关                 %s
+#FMT_AUDIO_RETRO_SOUND
+Retro sound             %s
 #FMT_SAVED_STATE_CREATE
 写入存档                 %d
 #FMT_SAVED_STATE_LOAD
@@ -474,6 +478,8 @@ Avance rapide       %s
 Omission d'images  %s
 #FMT_AUDIO_SOUND
 Son                         %s
+#FMT_AUDIO_RETRO_SOUND
+Son rétro               %s
 #FMT_SAVED_STATE_CREATE
 Créer la sauvegarde       %d
 #FMT_SAVED_STATE_LOAD
@@ -683,6 +689,8 @@ Schnellvorlauf   %s
 Frames übersp.  %s
 #FMT_AUDIO_SOUND
 Musik                   %s
+#FMT_AUDIO_RETRO_SOUND
+Retro-Musik        %s
 #FMT_SAVED_STATE_CREATE
 Speicherstand erstellen      %d
 #FMT_SAVED_STATE_LOAD
@@ -892,6 +900,8 @@ Vooruitspoelen     %s
 Beelden overslaan    %s
 #FMT_AUDIO_SOUND
 Geluid                  %s
+#FMT_AUDIO_RETRO_SOUND
+Retro geluid        %s
 #FMT_SAVED_STATE_CREATE
 Creëer opgeslagen staat      %d
 #FMT_SAVED_STATE_LOAD
@@ -1101,6 +1111,8 @@ Modo avance rápido   %s
 Salto de fotogramas  %s
 #FMT_AUDIO_SOUND
 Sonido                         %s
+#FMT_AUDIO_RETRO_SOUND
+Sonido retro               %s
 #FMT_SAVED_STATE_CREATE
 Grabar partida  %d
 #FMT_SAVED_STATE_LOAD

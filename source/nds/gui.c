@@ -2816,7 +2816,10 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		&game_config.SoundSync, 2, NULL, ACTION_TYPE, 4),
 
 	/* 05 */	STRING_SELECTION_OPTION(game_set_frameskip, NULL, &msg[FMT_VIDEO_FRAME_SKIPPING], frameskip_options,
-		&game_config.frameskip_value, 12 /* auto (0) and 0..10 (1..11) make 12 option values */, NULL, ACTION_TYPE, 5)
+		&game_config.frameskip_value, 12 /* auto (0) and 0..10 (1..11) make 12 option values */, NULL, ACTION_TYPE, 5),
+
+	/* 06 */	STRING_SELECTION_OPTION(game_set_retro, NULL, &msg[FMT_AUDIO_RETRO_SOUND], on_off_options,
+		&game_config.RetroSound, 2, NULL, ACTION_TYPE, 6)
 	};
 
 	MAKE_MENU(graphics, NULL, NULL, NULL, NULL, 0, 0);
@@ -4281,6 +4284,7 @@ void init_game_config(void)
 	game_config.graphic = 3; // By default, have a good-looking aspect ratio
 	game_config.frameskip_value = 0; // Automatic frame skipping
 	game_config.SoundSync = 0; // Prefer fluid images by default
+	game_config.RetroSound = 0; // Correct sound by default (else 8-bit)
 
 	game_config.backward = 0;	//time backward disable
 	game_config.backward_time = 2;	//time backward granularity 1s
@@ -4312,18 +4316,18 @@ void load_game_config_file(void)
 	char *pt;
 
 	//Set default
-    init_game_config();
+	init_game_config();
 
 	sprintf(game_config_filename, "%s/%s", DEFAULT_CFG_DIR, gamepak_name);
 	pt= strrchr(game_config_filename, '.');
 	if(NULL == pt)
-		return;
+		goto finalise;
 	*pt= 0;
 	strcat(game_config_filename, "_0.rts");
 
 	fp = fopen(game_config_filename, "r");
-    if(NULL == fp)
-		return;
+	if(NULL == fp)
+		goto finalise;
 
 	//Check file header
 	pt= game_config_filename;
@@ -4332,12 +4336,14 @@ void load_game_config_file(void)
 	if (!strncmp(pt, GAME_CONFIG_HEADER, GAME_CONFIG_HEADER_SIZE))
 	{
 		fread(&game_config, 1, sizeof(GAME_CONFIG), fp);
-
-		game_set_frameskip();
-		game_set_fluidity();
 	}
 
 	fclose(fp);
+
+finalise: ;
+	game_set_frameskip();
+	game_set_fluidity();
+	game_set_retro();
 }
 
 /*--------------------------------------------------------
