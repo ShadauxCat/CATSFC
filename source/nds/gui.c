@@ -38,10 +38,6 @@
 #include "bitmap.h"
 #include "gcheat.h"
 
-#ifdef DS2_DMA
-#include "ds2_dma.h"
-#endif
-
 extern struct SCheatData Cheat;
 
 char	main_path[MAX_PATH];
@@ -3543,15 +3539,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 //----------------------------------------------------------------------------//
 //	Menu Start
-#ifdef DS2_DMA
-	if (!FirstInvocation)
-	{
-		// wait for graphics DMA transfer to be finished before
-		// lowering the CPU frequency for timing purposes
-		ds2_DMA_wait(1 /* channel: graphics */);
-	}
-#endif
-
 	LowFrequencyCPU();
 	if (!FirstInvocation)
 	{ // assume that the backlight is already at 3 when the emulator starts
