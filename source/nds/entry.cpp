@@ -146,8 +146,9 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		case 1:
 #ifdef DS2_DMA
 			__dcache_writeback_all();
-			ds2_DMA_stop(1);
 			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 32 * 2, 256 * 192 * 2);
+			ds2_DMA_wait(1);
+			ds2_DMA_stop(1);
 #else
 		    memcpy(up_screen_addr, GFX.Screen+256*32*2, 256*192*2);
 #endif
@@ -157,8 +158,9 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		case 2:
 #ifdef DS2_DMA
 			__dcache_writeback_all();
-			ds2_DMA_stop(1);
 			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen, 256 * 192 * 2);
+			ds2_DMA_wait(1);
+			ds2_DMA_stop(1);
 #else
 		    memcpy(up_screen_addr, GFX.Screen, 256*192*2);
 #endif
@@ -168,8 +170,9 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		case 3:
 #ifdef DS2_DMA
 			__dcache_writeback_all();
-			ds2_DMA_stop(1);
 			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 16 * 2, 256 * 192 * 2);
+			ds2_DMA_wait(1);
+			ds2_DMA_stop(1);
 #else
 		    memcpy(up_screen_addr, GFX.Screen+256*16*2, 256*192*2);
 #endif
