@@ -99,6 +99,11 @@ const uint8 HOTKEY_L_DISPLAY[] = {0xD7, 0x8C, 0x00};
 const uint8 HOTKEY_R_DISPLAY[] = {0xD7, 0x8D, 0x00};
 const uint8 HOTKEY_START_DISPLAY[] = {0xD7, 0x8E, 0x00};
 const uint8 HOTKEY_SELECT_DISPLAY[] = {0xD7, 0x8F, 0x00};
+// These are U+2190 and subsequent codepoints encoded in UTF-8.
+const uint8 DIRECTION_LEFT_DISPLAY[] = {0xE2, 0x86, 0x90, 0x00};
+const uint8 DIRECTION_UP_DISPLAY[] = {0xE2, 0x86, 0x91, 0x00};
+const uint8 DIRECTION_RIGHT_DISPLAY[] = {0xE2, 0x86, 0x92, 0x00};
+const uint8 DIRECTION_DOWN_DISPLAY[] = {0xE2, 0x86, 0x93, 0x00};
 
 #define MAKE_MENU(name, init_function, passive_function, key_function, end_function, \
 	focus_option, screen_focus)												  \
@@ -4171,59 +4176,92 @@ int load_language_msg(char *filename, u32 language)
 
 		// Replace key definitions (*letter) with Pictochat icons
 		// while copying.
-		unsigned int curChar;
-		for (curChar = 0; curChar < len; curChar++)
+		unsigned int srcChar, dstLen = 0;
+		for (srcChar = 0; srcChar < len; srcChar++)
 		{
-			if (pt[curChar] == '*')
+			if (pt[srcChar] == '*')
 			{
-				switch (pt[curChar + 1])
+				switch (pt[srcChar + 1])
 				{
 				case 'A':
-					memcpy(&dst[curChar], HOTKEY_A_DISPLAY, 2);
-					curChar++;
+					memcpy(&dst[dstLen], HOTKEY_A_DISPLAY, sizeof (HOTKEY_A_DISPLAY) - 1);
+					srcChar++;
+					dstLen += sizeof (HOTKEY_A_DISPLAY) - 1;
 					break;
 				case 'B':
-					memcpy(&dst[curChar], HOTKEY_B_DISPLAY, 2);
-					curChar++;
+					memcpy(&dst[dstLen], HOTKEY_B_DISPLAY, sizeof (HOTKEY_B_DISPLAY) - 1);
+					srcChar++;
+					dstLen += sizeof (HOTKEY_B_DISPLAY) - 1;
 					break;
 				case 'X':
-					memcpy(&dst[curChar], HOTKEY_X_DISPLAY, 2);
-					curChar++;
+					memcpy(&dst[dstLen], HOTKEY_X_DISPLAY, sizeof (HOTKEY_X_DISPLAY) - 1);
+					srcChar++;
+					dstLen += sizeof (HOTKEY_X_DISPLAY) - 1;
 					break;
 				case 'Y':
-					memcpy(&dst[curChar], HOTKEY_Y_DISPLAY, 2);
-					curChar++;
+					memcpy(&dst[dstLen], HOTKEY_Y_DISPLAY, sizeof (HOTKEY_Y_DISPLAY) - 1);
+					srcChar++;
+					dstLen += sizeof (HOTKEY_Y_DISPLAY) - 1;
 					break;
 				case 'L':
-					memcpy(&dst[curChar], HOTKEY_L_DISPLAY, 2);
-					curChar++;
+					memcpy(&dst[dstLen], HOTKEY_L_DISPLAY, sizeof (HOTKEY_L_DISPLAY) - 1);
+					srcChar++;
+					dstLen += sizeof (HOTKEY_L_DISPLAY) - 1;
 					break;
 				case 'R':
-					memcpy(&dst[curChar], HOTKEY_R_DISPLAY, 2);
-					curChar++;
+					memcpy(&dst[dstLen], HOTKEY_R_DISPLAY, sizeof (HOTKEY_R_DISPLAY) - 1);
+					srcChar++;
+					dstLen += sizeof (HOTKEY_R_DISPLAY) - 1;
 					break;
 				case 'S':
-					memcpy(&dst[curChar], HOTKEY_START_DISPLAY, 2);
-					curChar++;
+					memcpy(&dst[dstLen], HOTKEY_START_DISPLAY, sizeof (HOTKEY_START_DISPLAY) - 1);
+					srcChar++;
+					dstLen += sizeof (HOTKEY_START_DISPLAY) - 1;
 					break;
 				case 's':
-					memcpy(&dst[curChar], HOTKEY_SELECT_DISPLAY, 2);
-					curChar++;
+					memcpy(&dst[dstLen], HOTKEY_SELECT_DISPLAY, sizeof (HOTKEY_SELECT_DISPLAY) - 1);
+					srcChar++;
+					dstLen += sizeof (HOTKEY_SELECT_DISPLAY) - 1;
+					break;
+				case 'u':
+					memcpy(&dst[dstLen], DIRECTION_UP_DISPLAY, sizeof (DIRECTION_UP_DISPLAY) - 1);
+					srcChar++;
+					dstLen += sizeof (DIRECTION_UP_DISPLAY) - 1;
+					break;
+				case 'd':
+					memcpy(&dst[dstLen], DIRECTION_DOWN_DISPLAY, sizeof (DIRECTION_DOWN_DISPLAY) - 1);
+					srcChar++;
+					dstLen += sizeof (DIRECTION_DOWN_DISPLAY) - 1;
+					break;
+				case 'l':
+					memcpy(&dst[dstLen], DIRECTION_LEFT_DISPLAY, sizeof (DIRECTION_LEFT_DISPLAY) - 1);
+					srcChar++;
+					dstLen += sizeof (DIRECTION_LEFT_DISPLAY) - 1;
+					break;
+				case 'r':
+					memcpy(&dst[dstLen], DIRECTION_RIGHT_DISPLAY, sizeof (DIRECTION_RIGHT_DISPLAY) - 1);
+					srcChar++;
+					dstLen += sizeof (DIRECTION_RIGHT_DISPLAY) - 1;
 					break;
 				case '\0':
-					dst[curChar] = pt[curChar];
+					dst[dstLen] = pt[srcChar];
+					dstLen++;
 					break;
 				default:
-					memcpy(&dst[curChar], &pt[curChar], 2);
-					curChar++;
+					memcpy(&dst[dstLen], &pt[srcChar], 2);
+					srcChar++;
+					dstLen += 2;
 					break;
 				}
 			}
 			else
-				dst[curChar] = pt[curChar];
+			{
+				dst[dstLen] = pt[srcChar];
+				dstLen++;
+			}
 		}
 
-		dst += len;
+		dst += dstLen;
 		//at a line return, when "\n" paded, this message not end
 		if(*(dst-1) == 0x0A)
 		{

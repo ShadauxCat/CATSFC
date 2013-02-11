@@ -21,6 +21,10 @@ STARTVERSION
 #    *R  (R shoulder button)  a cut rectangle containing the letter R
 #    *S  (START button)       a smaller ST
 #    *s  (SELECT button)      a smaller SEL
+#    *u  (Up direction)       an arrow pointing upwards
+#    *d  (Down direction)     an arrow pointing downwards
+#    *l  (Left direction)     an arrow pointing to the left
+#    *r  (Right direction)    an arrow pointing to the right
 ENDVERSION
 
 ENDCOMMENT
@@ -101,7 +105,7 @@ Version information
 #MSG_SCREENSHOT_CREATE
 Save a screenshot
 #MSG_SCREENSHOT_BROWSE
-Browse screenshots
+Screenshot slideshow
 #MSG_HOTKEY_MAIN_MENU
 Go to main menu
 #MSG_HOTKEY_TEMPORARY_FAST_FORWARD
@@ -115,11 +119,11 @@ Press the buttons you wish to use to perform this action.
 #MSG_HOTKEY_CANCEL_WITH_B
 *B Cancel
 #MSG_LOAD_GAME_RECENTLY_PLAYED
-Recently played games
+Recently played...
 #MSG_LOAD_GAME_FROM_CARD
-Select a game from the card
+Select a game...
 #MSG_LOAD_GAME_MENU_TITLE
-Select a game
+New game
 #MSG_VIDEO_ASPECT_RATIO_0
 [0] Entire screen
 #MSG_VIDEO_ASPECT_RATIO_1
@@ -211,17 +215,17 @@ Playing...
 #MSG_PAUSE_SLIDE
 Pause...
 #MSG_PLAY_SLIDE1
-Key UP    Speed up
+*u  Speed up
 #MSG_PLAY_SLIDE2
-Key DOWN  Slow down
+*d  Slow down
 #MSG_PLAY_SLIDE3
-Key LEFT  Last image
+*l  Previous image
 #MSG_PLAY_SLIDE4
-Key RIGHT Next image
+*r  Next image
 #MSG_PLAY_SLIDE5
-Key A     Pause
+*A  Pause
 #MSG_PLAY_SLIDE6
-Key B     Return to the menu
+*B  Return to the menu
 #MSG_PROGRESS_LOADING_GAME
 Loading...
 #MSG_EMULATOR_NAME
@@ -421,17 +425,17 @@ Press the buttons you wish to use to perform this action.
 #MSG_PAUSE_SLIDE
 已暂停
 #MSG_PLAY_SLIDE1
-按键 上  加快播放
+*u  加快播放
 #MSG_PLAY_SLIDE2
-按键 下  减慢播放
+*d  减慢播放
 #MSG_PLAY_SLIDE3
-按键 左  上一帧
+*l  上一帧
 #MSG_PLAY_SLIDE4
-按键 右  下一帧
+*r  下一帧
 #MSG_PLAY_SLIDE5
-按键 *A   暂停
+*A   暂停
 #MSG_PLAY_SLIDE6
-按键 *B   返回菜单
+*B   返回菜单
 #MSG_PROGRESS_LOADING_GAME
 正在装载游戏...
 #MSG_EMULATOR_NAME
@@ -521,7 +525,7 @@ Version
 #MSG_SCREENSHOT_CREATE
 Créer une capture d'écran
 #MSG_SCREENSHOT_BROWSE
-Parcourir les captures d'écran
+Diaporama de captures d'écran
 #MSG_HOTKEY_MAIN_MENU
 Menu principal
 #MSG_HOTKEY_TEMPORARY_FAST_FORWARD
@@ -535,11 +539,11 @@ Appuyez sur les boutons que vous voulez utiliser pour effectuer cette action.
 #MSG_HOTKEY_CANCEL_WITH_B
 *B Annuler
 #MSG_LOAD_GAME_RECENTLY_PLAYED
-Jeux joués récemment
+Récemment joués...
 #MSG_LOAD_GAME_FROM_CARD
-Sélectionner un jeu de la carte
+Sélectionner un jeu...
 #MSG_LOAD_GAME_MENU_TITLE
-Sélectionner un jeu
+Nouveau jeu
 #MSG_VIDEO_ASPECT_RATIO_0
 [0] Écran entier
 #MSG_VIDEO_ASPECT_RATIO_1
@@ -631,17 +635,17 @@ En cours...
 #MSG_PAUSE_SLIDE
 Pause...
 #MSG_PLAY_SLIDE1
-HAUT     Accélérer
+*u  Accélérer
 #MSG_PLAY_SLIDE2
-BAS       Ralentir
+*d  Ralentir
 #MSG_PLAY_SLIDE3
-GAUCHE  Précédente
+*l  Précédente
 #MSG_PLAY_SLIDE4
-DROITE  Suivante
+*r  Suivante
 #MSG_PLAY_SLIDE5
-*A           Pause
+*A  Pause
 #MSG_PLAY_SLIDE6
-*B           Retour au menu
+*B  Retour au menu
 #MSG_PROGRESS_LOADING_GAME
 Chargement...
 #MSG_EMULATOR_NAME
@@ -746,11 +750,11 @@ Knöpfe für dieses Ereignis drücken.
 #MSG_HOTKEY_CANCEL_WITH_B
 *B Abbrechen
 #MSG_LOAD_GAME_RECENTLY_PLAYED
-Zuletzt gespielt
+Zuletzt gespielt...
 #MSG_LOAD_GAME_FROM_CARD
-Wähle ein Spiel von der Karte aus
-#MSG_LOAD_GAME_MENU_TITLE
 Wähle ein Spiel
+#MSG_LOAD_GAME_MENU_TITLE
+Neues Spiel
 #MSG_VIDEO_ASPECT_RATIO_0
 [0] Vollbild
 #MSG_VIDEO_ASPECT_RATIO_1
@@ -842,17 +846,17 @@ Zeigen...
 #MSG_PAUSE_SLIDE
 Pause...
 #MSG_PLAY_SLIDE1
-Key UP    Geschw. hoch
+*u  Geschw. hoch
 #MSG_PLAY_SLIDE2
-Key DOWN  Geschw. runter
+*d  Geschw. runter
 #MSG_PLAY_SLIDE3
-Key LEFT  Voriges Bild
+*l  Voriges Bild
 #MSG_PLAY_SLIDE4
-Key RIGHT Nächstes Bild
+*r  Nächstes Bild
 #MSG_PLAY_SLIDE5
-Key A     Pause
+*A  Pause
 #MSG_PLAY_SLIDE6
-Key B     Zurück zum Menü
+*B  Zurück zum Menü
 #MSG_PROGRESS_LOADING_GAME
 Laden...
 #MSG_EMULATOR_NAME
@@ -871,7 +875,7 @@ STARTDUTCH
 #MSG_MAIN_MENU_NEW_GAME
 Nieuw spel
 #MSG_MAIN_MENU_RETURN_TO_GAME
-Ga terug naar het spel
+Terug naar het spel
 #MSG_MAIN_MENU_RESET_GAME
 Herstart spel
 #MSG_MAIN_MENU_VIDEO_AUDIO
@@ -957,11 +961,11 @@ Druk op de gewenste knoppencombinatie.
 #MSG_HOTKEY_CANCEL_WITH_B
 *B Annuleren
 #MSG_LOAD_GAME_RECENTLY_PLAYED
-Recent gespeelde spellen
+Recent gespeelde...
 #MSG_LOAD_GAME_FROM_CARD
-Selecteer een spel van de kaart
+Selecteer een spel...
 #MSG_LOAD_GAME_MENU_TITLE
-Selecteer een spel
+Nieuw spel
 #MSG_VIDEO_ASPECT_RATIO_0
 [0] Volledig scherm
 #MSG_VIDEO_ASPECT_RATIO_1
@@ -1053,17 +1057,17 @@ Aan het afspelen...
 #MSG_PAUSE_SLIDE
 Onderbreken...
 #MSG_PLAY_SLIDE1
-OMHOOG-toets Sneller
+*u  Sneller
 #MSG_PLAY_SLIDE2
-OMLAAG-toets Langzamer
+*d  Langzamer
 #MSG_PLAY_SLIDE3
-LINKS-toets  Laatste afbeelding
+*l  Laatste afbeelding
 #MSG_PLAY_SLIDE4
-RECHTS-toets Volgende afbeelding
+*r  Volgende afbeelding
 #MSG_PLAY_SLIDE5
-A-toets      Onderbreken
+*A  Onderbreken
 #MSG_PLAY_SLIDE6
-B-toets      Terug naar het menu
+*B  Terug naar het menu
 #MSG_PROGRESS_LOADING_GAME
 Laden...
 #MSG_EMULATOR_NAME
@@ -1154,7 +1158,7 @@ Información de versión
 #MSG_SCREENSHOT_CREATE
 Salvar captura
 #MSG_SCREENSHOT_BROWSE
-Explorar capturas
+Mostrar capturas
 #MSG_HOTKEY_MAIN_MENU
 Ir al menú principal
 #MSG_HOTKEY_TEMPORARY_FAST_FORWARD
@@ -1168,11 +1172,11 @@ Presione la tecla para esta acción.
 #MSG_HOTKEY_CANCEL_WITH_B
 *B Cancelar
 #MSG_LOAD_GAME_RECENTLY_PLAYED
-Juegos recientes
+Recientemente jugados...
 #MSG_LOAD_GAME_FROM_CARD
-Seleccionar un juego desde la tarjeta
+Seleccionar un juego...
 #MSG_LOAD_GAME_MENU_TITLE
-Seleccionar el juego
+Nuevo juego
 #MSG_VIDEO_ASPECT_RATIO_0
 [0] Pantalla completa
 #MSG_VIDEO_ASPECT_RATIO_1
@@ -1224,7 +1228,7 @@ No hay juego cargado
 #MSG_CHEAT_ELEMENT_NOT_LOADED
 <Vacío>
 #MSG_SAVESTATE_FULL
-Posición actual en uso. ¿Sobreescribirla?
+    Posición actual en uso.                          ¿Sobreescribirla?
 #MSG_PROGRESS_SAVED_STATE_CREATING
 Salvando la partida...
 #MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
@@ -1264,17 +1268,17 @@ Ejecutando...
 #MSG_PAUSE_SLIDE
 Pausa...
 #MSG_PLAY_SLIDE1
-Tecla ^              Velocidad +
+*u  Velocidad +
 #MSG_PLAY_SLIDE2
-Tecla v             Velocidad -
+*d  Velocidad -
 #MSG_PLAY_SLIDE3
-Tecla <                   Anterior
+*l  Anterior
 #MSG_PLAY_SLIDE4
-Tecla >                  Siguiente
+*r  Siguiente
 #MSG_PLAY_SLIDE5
-Tecla A                      Pausa
+*A  Pausa
 #MSG_PLAY_SLIDE6
-Tecla B        Volver al menu
+*B  Volver al menú
 #MSG_PROGRESS_LOADING_GAME
 Cargando el juego...
 #MSG_EMULATOR_NAME
