@@ -37,7 +37,7 @@ C_SOURCES   = source/unzip/explode.c source/unzip/unreduce.c \
               source/unzip/unshrink.c source/unzip/unzip.c \
               source/nds/bdf_font.c source/nds/bitmap.c \
               source/nds/draw.c source/nds/ds2_main.c source/nds/gcheat.c \
-              source/nds/gui.c source/nds/dma_adj.c
+              source/nds/gui.c source/nds/dma_adj.c source/nds/cheatgrp.c
 CPP_SOURCES = source/apu.cpp source/apudebug.cpp source/c4.cpp \
               source/c4emu.cpp source/cheats2.cpp source/cheats.cpp \
               source/clip.cpp source/cpu.cpp source/cpuexec.cpp \

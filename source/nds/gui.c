@@ -37,6 +37,7 @@
 #include "message.h"
 #include "bitmap.h"
 #include "gcheat.h"
+#include "cheatgrp.h"
 
 extern struct SCheatData Cheat;
 
@@ -138,11 +139,11 @@ const uint8 DIRECTION_DOWN_DISPLAY[] = {0xE2, 0x86, 0x93, 0x00};
   NULL,                                                                       \
   &cheat_data_ptr[number],                                                    \
   NULL /* enable_disable_options */,                                                     \
-  &(Cheat.c[number].enabled),				                            	  \
+  NULL,				                            	  \
   2,                                                                          \
   NULL,                                                                       \
   line_number,                                                                \
-  STRING_SELECTION_TYPE | ACTION_TYPE                                         \
+  ACTION_TYPE                                         \
 }                                                                             \
 
 #define ACTION_OPTION(action_function, passive_function, display_string,      \
@@ -1719,6 +1720,10 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     // ^ Holds the index inside Cheat, as a number in an ASCIIZ string
     char* cheat_data_ptr[MAX_CHEATS_T];
 
+	// For cheat groups
+	char* cheat_group_name_ptr[MAX_CHEATS_T + 1];
+	char cheat_group_names[MAX_CHEATS_T * MAX_SFCCHEAT_NAME];
+
     MENU_TYPE *current_menu = NULL;
     MENU_OPTION_TYPE *current_option = NULL;
     MENU_OPTION_TYPE *display_option = NULL;
@@ -2250,6 +2255,8 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			cheat_data_ptr[i] = &cheat_data_str[i][0];
 		}
 
+		NDSSFCGetCheatGroups(cheat_group_name_ptr, cheat_group_names);
+
 		reload_cheats_page();
 	}
 
@@ -2481,6 +2488,16 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 	void cheat_option_action()
 	{
+		char tmp_buf[512];
+		strcpy(tmp_buf, *(current_option->display_string));
+		int i = atoi(tmp_buf);
+		// 'i' is the cheat group index.
+		if (cheat_group_name_ptr[i] == NULL)
+			return;
+		if (NDSSFCIsCheatGroupEnabled (cheat_group_name_ptr[i]))
+			NDSSFCDisableCheatGroup (cheat_group_name_ptr[i]);
+		else
+			NDSSFCEnableCheatGroup (cheat_group_name_ptr[i]);
 	}
 
 #define CHEAT_NUMBER_X 23
@@ -2508,11 +2525,11 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		sprintf(line_buffer, "%d.", i + 1);
 		PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, CHEAT_NUMBER_X, 40 + display_option-> line_number*27);
 
-		if (i >= Cheat.num_cheats) {
+		if (cheat_group_name_ptr[i] == NULL) {
 			PRINT_STRING_BG(down_screen_addr, msg[MSG_CHEAT_ELEMENT_NOT_LOADED], color, COLOR_TRANS, CHEAT_DESC_X, 40 + display_option-> line_number*27);
 		}
 		else {
-			strcpy(line_buffer, Cheat.c[i].name);
+			strcpy(line_buffer, cheat_group_name_ptr[i]);
 			len = BDF_cut_string(line_buffer, 0, 2);
 			if(len > CHEAT_DESC_SX)
 			{
@@ -2522,7 +2539,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			}
 			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, CHEAT_DESC_X, 40 + display_option-> line_number*27);
 
-			if (Cheat.c[i].enabled)
+			if (NDSSFCIsCheatGroupEnabled (cheat_group_name_ptr[i]))
 				strcpy(line_buffer, "+");
 			else
 				strcpy(line_buffer, "-");
@@ -3504,7 +3521,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		for(i = 0; i < CHEATS_PER_PAGE; i++)
 		{
 			cheats_options[i+1].display_string = &cheat_data_ptr[(CHEATS_PER_PAGE * menu_cheat_page) + i];
-			cheats_options[i+1].current_option = &(Cheat.c[(CHEATS_PER_PAGE * menu_cheat_page) + i].enabled);
 		}
 	}
 

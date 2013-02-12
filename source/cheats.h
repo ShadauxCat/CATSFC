@@ -101,8 +101,7 @@ struct SCheat
     uint32  address;
     uint8   byte;
     uint8   saved_byte;
-    // bool8   enabled;
-	u32	enabled; // THIS IS A TOTAL HACK FOR THE NDSSFC GUI, YOU HAVE BEEN WARNED [Neb]
+    bool8   enabled;
     bool8   saved;
     char    name[MAX_SFCCHEAT_NAME];
 };
