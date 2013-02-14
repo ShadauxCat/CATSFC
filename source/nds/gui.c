@@ -60,7 +60,7 @@ char *lang[8] =
 		"Nederlands",					// 4
 		"Español",					// 5
 		"Italiano",					// 6
-		"Português (br.)",				// 7
+		"Português (Br.)",				// 7
 	};
 
 char *language_options[] = { (char *) &lang[0], (char *) &lang[1], (char *) &lang[2], (char *) &lang[3], (char *) &lang[4], (char *) &lang[5], (char *) &lang[6], (char *) &lang[7] };

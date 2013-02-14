@@ -1564,25 +1564,25 @@ Opções
 #MSG_MAIN_MENU_EXIT
 Sair
 #FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
-Fluidez %s
+Fluidez                  %s
 #MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
 Preferir video fluido
 #MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
 Preferir audio fluido
 #FMT_VIDEO_ASPECT_RATIO
-Proporção %s
+Proporção            %s
 #FMT_VIDEO_FAST_FORWARD
-Avanço de quadro %s
+Avanço de quadro  %s
 #FMT_VIDEO_FRAME_SKIPPING
-Frame skipping %s
+Frame skipping     %s
 #FMT_AUDIO_SOUND
-Som %s
+Som                       %s
 #FMT_AUDIO_RETRO_SOUND
-Som retrô %s
+Som retrô             %s
 #FMT_SAVED_STATE_CREATE
-Criar estado %d
+Criar estado         %d
 #FMT_SAVED_STATE_LOAD
-Carregar estado %d
+Carregar estado  %d
 #MSG_SAVED_STATE_DELETE_GENERAL
 Deletar estados...
 #FMT_CHEAT_PAGE
@@ -1596,9 +1596,9 @@ Atalhos de tecla globais...
 #MSG_TOOLS_GAME_HOTKEY_GENERAL
 Atalhos de tecla do jogo atual...
 #FMT_OPTIONS_LANGUAGE
-Idioma %s
+Idioma                              %s
 #FMT_OPTIONS_CPU_FREQUENCY
-Frequencia da CPU %s
+Frequencia da CPU          %s
 #MSG_OPTIONS_CPU_FREQUENCY_0
 [0] 240 MHz
 #MSG_OPTIONS_CPU_FREQUENCY_1
@@ -1625,16 +1625,16 @@ Slideshow de fotos
 Voltar ao menu principal
 #MSG_HOTKEY_TEMPORARY_FAST_FORWARD
 Avanço de quadro temp.
-#MSG_HOTKEY_QUICK_LOAD_STATE
-Carregar estado-rápido 1
-#MSG_HOTKEY_QUICK_SAVE_STATE
-Criar estado-rápido 1
-#MSG_HOTKEY_FULL_SCREEN_TOGGLE
-Ativar tela-cheia
 #MSG_HOTKEY_SOUND_TOGGLE
 Ativar som
+#MSG_HOTKEY_QUICK_LOAD_STATE
+Carregar estado 1
+#MSG_HOTKEY_QUICK_SAVE_STATE
+Criar estado 1
+#MSG_HOTKEY_FULL_SCREEN_TOGGLE
+Ativar tela-cheia
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
-Aperte os botões que você deseja para relaizar esta ação.
+Aperte os botões que você deseja para realizar esta ação.
 #MSG_HOTKEY_DELETE_WITH_A
 *A Limpar
 #MSG_HOTKEY_CANCEL_WITH_B
@@ -1694,7 +1694,7 @@ Mudo
 #MSG_TOP_SCREEN_NO_GAME_LOADED
 Nenhum jogo carregado no momento
 #MSG_CHEAT_ELEMENT_NOT_LOADED
-<nada carregado aqui>
+<Nada carregado aqui>
 #MSG_SAVESTATE_FULL
 O slot atual contem um estado. Deseja sobrescrevê-lo?
 #MSG_PROGRESS_SAVED_STATE_CREATING
@@ -1736,17 +1736,17 @@ Executando...
 #MSG_PAUSE_SLIDE
 Pausar...
 #MSG_PLAY_SLIDE1
-*u Acelerar
+*u  Acelerar
 #MSG_PLAY_SLIDE2
-*d Desacelerar
+*d  Desacelerar
 #MSG_PLAY_SLIDE3
-*l Foto anterior
+*l  Foto anterior
 #MSG_PLAY_SLIDE4
-*r Proxima foto
+*r  Proxima foto
 #MSG_PLAY_SLIDE5
-*A Pausar
+*A  Pausar
 #MSG_PLAY_SLIDE6
-*B Voltar ao menu
+*B  Voltar ao menu
 #MSG_PROGRESS_LOADING_GAME
 Carregando...
 #MSG_EMULATOR_NAME
