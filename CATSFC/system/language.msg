@@ -1318,13 +1318,15 @@ Fluidità video
 #MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
 Fluidità audio
 #FMT_VIDEO_ASPECT_RATIO
-Modalità di visualizzazione      %s
+Modalità video      %s
 #FMT_VIDEO_FAST_FORWARD
 Avanzamento rapido    %s
 #FMT_VIDEO_FRAME_SKIPPING
 Salto fotogrammi    %s
 #FMT_AUDIO_SOUND
 Audio                  %s
+#FMT_AUDIO_RETRO_SOUND
+Audio retro               %s
 #FMT_SAVED_STATE_CREATE
 Crea salvataggio      %d
 #FMT_SAVED_STATE_LOAD
@@ -1370,11 +1372,17 @@ Sfoglia schermate
 #MSG_HOTKEY_MAIN_MENU
 Vai al menu principale
 #MSG_HOTKEY_TEMPORARY_FAST_FORWARD
-Avanzamento rapido temporaneo
+Avanzamento rapido temp.
 #MSG_HOTKEY_SOUND_TOGGLE
 Attiva/Disattiva audio
+#MSG_HOTKEY_QUICK_LOAD_STATE
+Carica salvataggio 1
+#MSG_HOTKEY_QUICK_SAVE_STATE
+Crea salvataggio 1
+#MSG_HOTKEY_FULL_SCREEN_TOGGLE
+Attiva/Disattiva schermo intero
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
-Premi il pulsante che vuoi utilizzare per questa azione.
+Premi il pulsante che vuoi utilizzare per questa azione
 #MSG_HOTKEY_DELETE_WITH_A
 *A Elimina
 #MSG_HOTKEY_CANCEL_WITH_B
