@@ -1348,25 +1348,25 @@ Opzioni
 #MSG_MAIN_MENU_EXIT
 Uscita
 #FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
-Fluidità                %s
+Fluidità                    %s
 #MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
 Fluidità video
 #MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
 Fluidità audio
 #FMT_VIDEO_ASPECT_RATIO
-Modalità video      %s
+Modalità video    %s
 #FMT_VIDEO_FAST_FORWARD
-Avanzamento rapido    %s
+Avanzamento rapido   %s
 #FMT_VIDEO_FRAME_SKIPPING
-Salto fotogrammi    %s
+Salto fotogrammi %s
 #FMT_AUDIO_SOUND
-Audio                  %s
+Audio                       %s
 #FMT_AUDIO_RETRO_SOUND
-Audio retro               %s
+Audio retro             %s
 #FMT_SAVED_STATE_CREATE
 Crea salvataggio      %d
 #FMT_SAVED_STATE_LOAD
-Carica salvataggio          %d
+Carica salvataggio    %d
 #MSG_SAVED_STATE_DELETE_GENERAL
 Cancella salvataggio...
 #FMT_CHEAT_PAGE
@@ -1380,7 +1380,7 @@ Tasti di scelta rapida globali...
 #MSG_TOOLS_GAME_HOTKEY_GENERAL
 Tasti di scelta rapida del gioco...
 #FMT_OPTIONS_LANGUAGE
-Lingua                          %s
+Lingua                               %s
 #FMT_OPTIONS_CPU_FREQUENCY
 Frequenza CPU                 %s
 #MSG_OPTIONS_CPU_FREQUENCY_0
@@ -1410,13 +1410,13 @@ Vai al menu principale
 #MSG_HOTKEY_TEMPORARY_FAST_FORWARD
 Avanzamento rapido temp.
 #MSG_HOTKEY_SOUND_TOGGLE
-Attiva/Disattiva audio
+(Dis)attiva audio
 #MSG_HOTKEY_QUICK_LOAD_STATE
 Carica salvataggio 1
 #MSG_HOTKEY_QUICK_SAVE_STATE
 Crea salvataggio 1
 #MSG_HOTKEY_FULL_SCREEN_TOGGLE
-Attiva/Disattiva schermo intero
+(Dis)attiva schermo intero
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Premi il pulsante che vuoi utilizzare per questa azione
 #MSG_HOTKEY_DELETE_WITH_A
@@ -1424,11 +1424,11 @@ Premi il pulsante che vuoi utilizzare per questa azione
 #MSG_HOTKEY_CANCEL_WITH_B
 *B Annulla
 #MSG_LOAD_GAME_RECENTLY_PLAYED
-Giochi recenti
+Giochi recenti...
 #MSG_LOAD_GAME_FROM_CARD
-Seleziona gioco dalla card
+Seleziona gioco...
 #MSG_LOAD_GAME_MENU_TITLE
-Seleziona gioco
+Nuovo gioco
 #MSG_VIDEO_ASPECT_RATIO_0
 [0] Schermo intero
 #MSG_VIDEO_ASPECT_RATIO_1
@@ -1520,17 +1520,17 @@ In Esecuzione...
 #MSG_PAUSE_SLIDE
 Pausa...
 #MSG_PLAY_SLIDE1
-Tasto SU    Aumenta velocità
+*u  Aumenta velocità
 #MSG_PLAY_SLIDE2
-Tasto GIÙ  Diminuisci velocità
+*d  Diminuisci velocità
 #MSG_PLAY_SLIDE3
-Tasto SINISTRA  Ultima immagine
+*l  Ultima immagine
 #MSG_PLAY_SLIDE4
-Tasto DESTRA Prossima immagine
+*r  Prossima immagine
 #MSG_PLAY_SLIDE5
-Tasto A     Pausa
+*A  Pausa
 #MSG_PLAY_SLIDE6
-Tasto B     Ritorna al menù principale
+*B  Ritorna al menù principale
 #MSG_PROGRESS_LOADING_GAME
 Caricando...
 #MSG_EMULATOR_NAME
