@@ -1760,15 +1760,27 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	auto void set_global_hotkey_return_to_menu();
 	auto void set_global_hotkey_temporary_fast_forward();
 	auto void set_global_hotkey_toggle_sound();
+	auto void set_global_hotkey_quick_load_state();
+	auto void set_global_hotkey_quick_save_state();
+	auto void set_global_hotkey_toggle_full_screen();
 	auto void set_game_specific_hotkey_return_to_menu();
 	auto void set_game_specific_hotkey_temporary_fast_forward();
 	auto void set_game_specific_hotkey_toggle_sound();
+	auto void set_game_specific_hotkey_quick_load_state();
+	auto void set_game_specific_hotkey_quick_save_state();
+	auto void set_game_specific_hotkey_toggle_full_screen();
 	auto void global_hotkey_return_to_menu_passive();
 	auto void global_hotkey_temporary_fast_forward_passive();
 	auto void global_hotkey_toggle_sound_passive();
+	auto void global_hotkey_quick_load_state_passive();
+	auto void global_hotkey_quick_save_state_passive();
+	auto void global_hotkey_toggle_full_screen_passive();
 	auto void game_specific_hotkey_return_to_menu_passive();
 	auto void game_specific_hotkey_temporary_fast_forward_passive();
 	auto void game_specific_hotkey_toggle_sound_passive();
+	auto void game_specific_hotkey_quick_load_state_passive();
+	auto void game_specific_hotkey_quick_save_state_passive();
+	auto void game_specific_hotkey_toggle_full_screen_passive();
 	auto void load_default_setting();
 	auto void check_gbaemu_version();
 	auto void load_lastest_played();
@@ -2934,7 +2946,13 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 	/* 02 */ ACTION_OPTION(set_global_hotkey_temporary_fast_forward, global_hotkey_temporary_fast_forward_passive, &msg[MSG_HOTKEY_TEMPORARY_FAST_FORWARD], NULL, 2),
 
-	/* 03 */ ACTION_OPTION(set_global_hotkey_toggle_sound, global_hotkey_toggle_sound_passive, &msg[MSG_HOTKEY_SOUND_TOGGLE], NULL, 3)
+	/* 03 */ ACTION_OPTION(set_global_hotkey_toggle_sound, global_hotkey_toggle_sound_passive, &msg[MSG_HOTKEY_SOUND_TOGGLE], NULL, 3),
+
+	/* 04 */ ACTION_OPTION(set_global_hotkey_quick_save_state, global_hotkey_quick_save_state_passive, &msg[MSG_HOTKEY_QUICK_SAVE_STATE], NULL, 4),
+
+	/* 05 */ ACTION_OPTION(set_global_hotkey_quick_load_state, global_hotkey_quick_load_state_passive, &msg[MSG_HOTKEY_QUICK_LOAD_STATE], NULL, 5),
+
+	/* 06 */ ACTION_OPTION(set_global_hotkey_toggle_full_screen, global_hotkey_toggle_full_screen_passive, &msg[MSG_HOTKEY_FULL_SCREEN_TOGGLE], NULL, 6)
     };
 
     MAKE_MENU(tools_global_hotkeys, NULL, NULL, NULL, NULL, 0, 0);
@@ -2950,7 +2968,13 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 	/* 02 */ ACTION_OPTION(set_game_specific_hotkey_temporary_fast_forward, game_specific_hotkey_temporary_fast_forward_passive, &msg[MSG_HOTKEY_TEMPORARY_FAST_FORWARD], NULL, 2),
 
-	/* 03 */ ACTION_OPTION(set_game_specific_hotkey_toggle_sound, game_specific_hotkey_toggle_sound_passive, &msg[MSG_HOTKEY_SOUND_TOGGLE], NULL, 3)
+	/* 03 */ ACTION_OPTION(set_game_specific_hotkey_toggle_sound, game_specific_hotkey_toggle_sound_passive, &msg[MSG_HOTKEY_SOUND_TOGGLE], NULL, 3),
+
+	/* 04 */ ACTION_OPTION(set_game_specific_hotkey_quick_save_state, game_specific_hotkey_quick_save_state_passive, &msg[MSG_HOTKEY_QUICK_SAVE_STATE], NULL, 4),
+
+	/* 05 */ ACTION_OPTION(set_game_specific_hotkey_quick_load_state, game_specific_hotkey_quick_load_state_passive, &msg[MSG_HOTKEY_QUICK_LOAD_STATE], NULL, 5),
+
+	/* 06 */ ACTION_OPTION(set_game_specific_hotkey_toggle_full_screen, game_specific_hotkey_toggle_full_screen_passive, &msg[MSG_HOTKEY_FULL_SCREEN_TOGGLE], NULL, 6)
     };
 
     MAKE_MENU(tools_game_specific_hotkeys, NULL, NULL, NULL, NULL, 0, 0);
@@ -3263,6 +3287,21 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		obtain_hotkey(&emu_config.HotkeyToggleSound);
 	}
 
+	void set_global_hotkey_quick_load_state()
+	{
+		obtain_hotkey(&emu_config.HotkeyQuickLoadState);
+	}
+
+	void set_global_hotkey_quick_save_state()
+	{
+		obtain_hotkey(&emu_config.HotkeyQuickSaveState);
+	}
+
+	void set_global_hotkey_toggle_full_screen()
+	{
+		obtain_hotkey(&emu_config.HotkeyToggleFullScreen);
+	}
+
 	void set_game_specific_hotkey_return_to_menu()
 	{
 		obtain_hotkey(&game_config.HotkeyReturnToMenu);
@@ -3276,6 +3315,21 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	void set_game_specific_hotkey_toggle_sound()
 	{
 		obtain_hotkey(&game_config.HotkeyToggleSound);
+	}
+
+	void set_game_specific_hotkey_quick_load_state()
+	{
+		obtain_hotkey(&game_config.HotkeyQuickLoadState);
+	}
+
+	void set_game_specific_hotkey_quick_save_state()
+	{
+		obtain_hotkey(&game_config.HotkeyQuickSaveState);
+	}
+
+	void set_game_specific_hotkey_toggle_full_screen()
+	{
+		obtain_hotkey(&game_config.HotkeyToggleFullScreen);
 	}
 
 #define HOTKEY_CONTENT_X 156
@@ -3323,6 +3377,21 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		hotkey_option_passive_common(emu_config.HotkeyToggleSound);
 	}
 
+	void global_hotkey_quick_load_state_passive()
+	{
+		hotkey_option_passive_common(emu_config.HotkeyQuickLoadState);
+	}
+
+	void global_hotkey_quick_save_state_passive()
+	{
+		hotkey_option_passive_common(emu_config.HotkeyQuickSaveState);
+	}
+
+	void global_hotkey_toggle_full_screen_passive()
+	{
+		hotkey_option_passive_common(emu_config.HotkeyToggleFullScreen);
+	}
+
 	void game_specific_hotkey_return_to_menu_passive()
 	{
 		hotkey_option_passive_common(game_config.HotkeyReturnToMenu);
@@ -3336,6 +3405,21 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	void game_specific_hotkey_toggle_sound_passive()
 	{
 		hotkey_option_passive_common(game_config.HotkeyToggleSound);
+	}
+
+	void game_specific_hotkey_quick_load_state_passive()
+	{
+		hotkey_option_passive_common(game_config.HotkeyQuickLoadState);
+	}
+
+	void game_specific_hotkey_quick_save_state_passive()
+	{
+		hotkey_option_passive_common(game_config.HotkeyQuickSaveState);
+	}
+
+	void game_specific_hotkey_toggle_full_screen_passive()
+	{
+		hotkey_option_passive_common(game_config.HotkeyToggleFullScreen);
 	}
 
 	int lastest_game_menu_scroll_value;
@@ -4678,6 +4762,80 @@ void SavedStateCacheInvalidate (void)
 	int i;
 	for (i = 0; i < SAVE_STATE_SLOT_NUM; i++)
 		SavedStateExistenceCached [i] = FALSE;
+}
+
+void QuickLoadState (void)
+{
+	char BaseName[MAX_PATH + 1];
+	get_savestate_filename(0, BaseName);
+
+	mdelay(100); // needed to avoid ds2_setBacklight crashing
+	ds2_setBacklight(3);
+
+	ds2_clearScreen(DOWN_SCREEN, RGB15(0, 0, 0));
+	draw_message(down_screen_addr, NULL, 28, 31, 227, 165, 0);
+	draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_LOADING]);
+	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
+
+	HighFrequencyCPU();
+	int flag = load_state(BaseName);
+	GameFrequencyCPU();
+	if(0 != flag)
+	{
+		draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_LOAD_FAILED]);
+		mdelay(500); // let the failure show
+	}
+
+	SavedStateCacheInvalidate ();
+
+	ds2_clearScreen(DOWN_SCREEN, RGB15(0, 0, 0));
+	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
+
+	mdelay(100); // needed to avoid ds2_setBacklight crashing
+	ds2_setBacklight(2);
+}
+
+void QuickSaveState (void)
+{
+	char BaseName[MAX_PATH + 1];
+	get_savestate_filename(0, BaseName);
+
+	mdelay(100); // needed to avoid ds2_setBacklight crashing
+	ds2_setBacklight(3);
+
+	ds2_clearScreen(DOWN_SCREEN, RGB15(0, 0, 0));
+	draw_message(down_screen_addr, NULL, 28, 31, 227, 165, 0);
+	draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CREATING]);
+	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
+
+	HighFrequencyCPU();
+	unsigned short screen[256*192];
+	copy_screen((void*)screen, up_screen_addr, 0, 0, 256, 192);
+	int flag = save_state(BaseName, screen);
+	GameFrequencyCPU();
+	if(flag < 0)
+	{
+		draw_string_vcenter(down_screen_addr, 36, 75, 190, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CREATION_FAILED]);
+		mdelay(500); // let the failure show
+	}
+
+	SavedStateCacheInvalidate ();
+
+	ds2_clearScreen(DOWN_SCREEN, RGB15(0, 0, 0));
+	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
+
+	mdelay(100); // needed to avoid ds2_setBacklight crashing
+	ds2_setBacklight(2);
+}
+
+void ToggleFullScreen (void)
+{
+	if (game_config.graphic == 0 /* full-screen ugly */
+	 || game_config.graphic == 4 /* full-screen smoothed */)
+		game_config.graphic = 3 /* middle of the screen */;
+	else
+		game_config.graphic = 4 /* full-screen smoothed */;
+	save_game_config_file();
 }
 
 void get_newest_savestate(char *name_buffer)

@@ -112,6 +112,12 @@ Go to main menu
 Temporary fast-forward
 #MSG_HOTKEY_SOUND_TOGGLE
 Toggle sound
+#MSG_HOTKEY_QUICK_LOAD_STATE
+Load saved state 1
+#MSG_HOTKEY_QUICK_SAVE_STATE
+Create saved state 1
+#MSG_HOTKEY_FULL_SCREEN_TOGGLE
+Toggle full-screen
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Press the buttons you wish to use to perform this action.
 #MSG_HOTKEY_DELETE_WITH_A
@@ -322,6 +328,12 @@ Go to main menu
 Temporary fast-forward
 #MSG_HOTKEY_SOUND_TOGGLE
 Toggle sound
+#MSG_HOTKEY_QUICK_LOAD_STATE
+Load saved state 1
+#MSG_HOTKEY_QUICK_SAVE_STATE
+Create saved state 1
+#MSG_HOTKEY_FULL_SCREEN_TOGGLE
+Toggle full-screen
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Press the buttons you wish to use to perform this action.
 #MSG_HOTKEY_DELETE_WITH_A
@@ -532,6 +544,12 @@ Menu principal
 Avance rapide temporaire
 #MSG_HOTKEY_SOUND_TOGGLE
 (Dés)activer le son
+#MSG_HOTKEY_QUICK_LOAD_STATE
+Charger la sauvegarde 1
+#MSG_HOTKEY_QUICK_SAVE_STATE
+Créer la sauvegarde 1
+#MSG_HOTKEY_FULL_SCREEN_TOGGLE
+(Dés)activer le plein écran
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Appuyez sur les boutons que vous voulez utiliser pour effectuer cette action.
 #MSG_HOTKEY_DELETE_WITH_A
@@ -743,6 +761,12 @@ Hauptmenü
 Temp. Schnellvorlauf
 #MSG_HOTKEY_SOUND_TOGGLE
 Audio umschalten
+#MSG_HOTKEY_QUICK_LOAD_STATE
+Speicherstand 1 laden
+#MSG_HOTKEY_QUICK_SAVE_STATE
+Speicherstand 1 erstellen
+#MSG_HOTKEY_FULL_SCREEN_TOGGLE
+Vollbild umschalten
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Knöpfe für dieses Ereignis drücken.
 #MSG_HOTKEY_DELETE_WITH_A
@@ -954,6 +978,12 @@ Ga naar het hoofdmenu
 Tijdelijk vooruitspoelen
 #MSG_HOTKEY_SOUND_TOGGLE
 Schakel geluid
+#MSG_HOTKEY_QUICK_LOAD_STATE
+Laad opgeslagen staat 1
+#MSG_HOTKEY_QUICK_SAVE_STATE
+Creëer opgeslagen staat 1
+#MSG_HOTKEY_FULL_SCREEN_TOGGLE
+Schakel volledig scherm
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Druk op de gewenste knoppencombinatie.
 #MSG_HOTKEY_DELETE_WITH_A
@@ -1165,6 +1195,12 @@ Ir al menú principal
 Avance rápido temporal
 #MSG_HOTKEY_SOUND_TOGGLE
 Encender/apagar sonido
+#MSG_HOTKEY_QUICK_LOAD_STATE
+Cargar partida 1
+#MSG_HOTKEY_QUICK_SAVE_STATE
+Grabar partida 1
+#MSG_HOTKEY_FULL_SCREEN_TOGGLE
+Alternar pantalla completa
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
 Presione la tecla para esta acción.
 #MSG_HOTKEY_DELETE_WITH_A

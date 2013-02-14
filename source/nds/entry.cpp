@@ -33,6 +33,12 @@ void S9xProcessSound (unsigned int);
 char *rom_filename = NULL;
 char *SDD1_pack = NULL;
 
+/*
+ * It is only safe to manipulate saved states between frames.
+ */
+static bool8 LoadStateNeeded = FALSE;
+static bool8 SaveStateNeeded = FALSE;
+
 static u8 Buf[MAX_BUFFER_SIZE];
 
 #define FIXED_POINT 0x10000
@@ -626,16 +632,28 @@ int sfc_main (int argc, char **argv)
 		}
 		else
 #endif
-		if (Settings.Paused)
 		{
-			S9xSetSoundMute (TRUE);
-			unsigned short screen[256*192];
+			if (SaveStateNeeded) {
+				QuickSaveState ();
+				SaveStateNeeded = FALSE;
+			}
 
-			copy_screen((void*)screen, up_screen_addr, 0, 0, 256, 192);
-			menu(screen, FirstInvocation);
-			FirstInvocation = FALSE;
-			game_disableAudio();
-			Settings.Paused = 0;
+			if (LoadStateNeeded) {
+				QuickLoadState ();
+				LoadStateNeeded = FALSE;
+			}
+
+			if (Settings.Paused)
+			{
+				S9xSetSoundMute (TRUE);
+				unsigned short screen[256*192];
+
+				copy_screen((void*)screen, up_screen_addr, 0, 0, 256, 192);
+				menu(screen, FirstInvocation);
+				FirstInvocation = FALSE;
+				game_disableAudio();
+				Settings.Paused = 0;
+			}
 		}
 
 #ifdef JOYSTICK_SUPPORT
@@ -658,7 +676,6 @@ void S9xSyncSpeed ()
 {
 	uint32 syncnow;
 	int32 syncdif;
-	unsigned int LastAutoCPUFrequency = AutoCPUFrequency;
 
 #if 0
     if (Settings.SoundSync == 2)
@@ -1197,6 +1214,9 @@ const unsigned int keymap[12] = {
 */
 
 static bool8 SoundToggleWasHeld = FALSE;
+static bool8 LoadStateWasHeld = FALSE;
+static bool8 SaveStateWasHeld = FALSE;
+static bool8 ToggleFullScreenWasHeld = FALSE;
 
 #ifdef ACCUMULATE_JOYPAD
 // These are kept as DS key bitfields until it's time to send them to Snes9x.
@@ -1252,6 +1272,9 @@ uint32 S9xReadJoypad (int which1)
 		u32 HotkeyReturnToMenu = game_config.HotkeyReturnToMenu != 0 ? game_config.HotkeyReturnToMenu : emu_config.HotkeyReturnToMenu;
 		u32 HotkeyTemporaryFastForward = game_config.HotkeyTemporaryFastForward != 0 ? game_config.HotkeyTemporaryFastForward : emu_config.HotkeyTemporaryFastForward;
 		u32 HotkeyToggleSound = game_config.HotkeyToggleSound != 0 ? game_config.HotkeyToggleSound : emu_config.HotkeyToggleSound;
+		u32 HotkeyQuickLoadState = game_config.HotkeyQuickLoadState != 0 ? game_config.HotkeyQuickLoadState : emu_config.HotkeyQuickLoadState;
+		u32 HotkeyQuickSaveState = game_config.HotkeyQuickSaveState != 0 ? game_config.HotkeyQuickSaveState : emu_config.HotkeyQuickSaveState;
+		u32 HotkeyToggleFullScreen = game_config.HotkeyToggleFullScreen != 0 ? game_config.HotkeyToggleFullScreen : emu_config.HotkeyToggleFullScreen;
 
 		if(Controls & KEY_TOUCH ||
 			(HotkeyReturnToMenu && ((Controls & HotkeyReturnToMenu) == HotkeyReturnToMenu))
@@ -1273,6 +1296,37 @@ uint32 S9xReadJoypad (int which1)
 		}
 
 		SoundToggleWasHeld = SoundToggleIsHeld;
+
+		/* It is only safe to load/save a state between frames.
+		 * entry.cpp:sfc_main will pick this up. */
+		bool8 LoadStateIsHeld = 
+			(HotkeyQuickLoadState && ((Controls & HotkeyQuickLoadState) == HotkeyQuickLoadState))
+		;
+
+		if (LoadStateIsHeld && !LoadStateWasHeld)
+			LoadStateNeeded = TRUE;
+
+		LoadStateWasHeld = LoadStateIsHeld;
+
+		bool8 SaveStateIsHeld = 
+			(HotkeyQuickSaveState && ((Controls & HotkeyQuickSaveState) == HotkeyQuickSaveState))
+		;
+
+		if (SaveStateIsHeld && !SaveStateWasHeld)
+			SaveStateNeeded = TRUE;
+
+		SaveStateWasHeld = SaveStateIsHeld;
+
+		/* Full-screen toggle? */
+		bool8 ToggleFullScreenIsHeld = 
+			(HotkeyToggleFullScreen && ((Controls & HotkeyToggleFullScreen) == HotkeyToggleFullScreen))
+		;
+
+		if (ToggleFullScreenIsHeld && !ToggleFullScreenWasHeld) {
+			ToggleFullScreen ();
+		}
+
+		ToggleFullScreenWasHeld = ToggleFullScreenIsHeld;
 
 		uint32 key = 0x80000000;  // Required by Snes9x
 

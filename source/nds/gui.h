@@ -43,7 +43,10 @@ struct _EMU_CONFIG
   u32 HotkeyReturnToMenu;
   u32 HotkeyTemporaryFastForward;
   u32 HotkeyToggleSound;
-  u32 Reserved[61];
+  u32 HotkeyQuickLoadState;
+  u32 HotkeyQuickSaveState;
+  u32 HotkeyToggleFullScreen;
+  u32 Reserved[58];
 };
 
 struct _GAME_CONFIG
@@ -73,7 +76,10 @@ struct _GAME_CONFIG
 	 */
 	u32 PreviouslyUsed_20130206_2;
 	u32 RetroSound;
-	u32  Reserved2[41];
+	u32 HotkeyQuickLoadState;
+	u32 HotkeyQuickSaveState;
+	u32 HotkeyToggleFullScreen;
+	u32  Reserved2[38];
 };
 
 typedef enum
@@ -117,7 +123,6 @@ extern char main_path[MAX_PATH];
 extern char rom_path[MAX_PATH];
 
 extern u32 game_enable_audio;
-extern u32 clock_speed_number;
 extern u32 game_fast_forward;
 extern u32 temporary_fast_forward;
 
@@ -139,13 +144,14 @@ extern GAME_CONFIG	game_config;
  ******************************************************************************/
 extern void gui_init(u32 lang_id);
 extern u32 menu(u16 *original_screen, bool8 FirstInvocation);
-extern void game_disableAudio();
-extern void game_set_frameskip();
-extern void game_set_fluidity();
-extern void game_set_retro();
 extern void LowFrequencyCPU();
 extern void HighFrequencyCPU();
 extern void GameFrequencyCPU();
+
+extern void QuickSaveState();
+extern void QuickLoadState();
+extern void ToggleFullScreen();
+
 extern int load_language_msg(char *filename, u32 language);
 
 #ifdef __cplusplus
