@@ -152,10 +152,11 @@ enum LANGUAGE {
 	FRENCH,
 	GERMAN,
 	DUTCH,
-	SPANISH
+	SPANISH,
+	ITALIAN
 };
 
-extern char* lang[6]; // Allocated in gui.c, needs to match the languages ^
+extern char* lang[7]; // Allocated in gui.c, needs to match the languages ^
 
 char *msg[MSG_END+1];
 char msg_data[32 * 1024];

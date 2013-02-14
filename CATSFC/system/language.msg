@@ -1327,3 +1327,219 @@ Versión
 Espere un momento...
 
 ENDSPANISH
+
+STARTITALIAN
+#MSG_MAIN_MENU_NEW_GAME
+Nuovo gioco
+#MSG_MAIN_MENU_RETURN_TO_GAME
+Ritorna al gioco
+#MSG_MAIN_MENU_RESET_GAME
+Riavvia gioco
+#MSG_MAIN_MENU_VIDEO_AUDIO
+Video & audio
+#MSG_MAIN_MENU_SAVED_STATES
+Salvataggi
+#MSG_MAIN_MENU_CHEATS
+Trucchi
+#MSG_MAIN_MENU_TOOLS
+Strumenti
+#MSG_MAIN_MENU_OPTIONS
+Opzioni
+#MSG_MAIN_MENU_EXIT
+Uscita
+#FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
+Fluidità                %s
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
+Fluidità video
+#MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
+Fluidità audio
+#FMT_VIDEO_ASPECT_RATIO
+Modalità video      %s
+#FMT_VIDEO_FAST_FORWARD
+Avanzamento rapido    %s
+#FMT_VIDEO_FRAME_SKIPPING
+Salto fotogrammi    %s
+#FMT_AUDIO_SOUND
+Audio                  %s
+#FMT_AUDIO_RETRO_SOUND
+Audio retro               %s
+#FMT_SAVED_STATE_CREATE
+Crea salvataggio      %d
+#FMT_SAVED_STATE_LOAD
+Carica salvataggio          %d
+#MSG_SAVED_STATE_DELETE_GENERAL
+Cancella salvataggio...
+#FMT_CHEAT_PAGE
+Pagina dei trucchi %d
+#MSG_CHEAT_LOAD_FROM_FILE
+Carica file del trucco
+#MSG_TOOLS_SCREENSHOT_GENERAL
+Cattura schermata...
+#MSG_TOOLS_GLOBAL_HOTKEY_GENERAL
+Tasti di scelta rapida globali...
+#MSG_TOOLS_GAME_HOTKEY_GENERAL
+Tasti di scelta rapida del gioco...
+#FMT_OPTIONS_LANGUAGE
+Lingua                          %s
+#FMT_OPTIONS_CPU_FREQUENCY
+Frequenza CPU                 %s
+#MSG_OPTIONS_CPU_FREQUENCY_0
+[0] 240 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_1
+[1] 300 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_2
+[2] 336 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_3
+[3] 360 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_4
+[4] 384 MHz
+#MSG_OPTIONS_CPU_FREQUENCY_5
+[5] 396 MHz
+#MSG_OPTIONS_CARD_CAPACITY
+Capacità della card
+#MSG_OPTIONS_RESET
+Ripristina impostazioni predefinite
+#MSG_OPTIONS_VERSION
+Informazioni sulla versione
+#MSG_SCREENSHOT_CREATE
+Salva schermata
+#MSG_SCREENSHOT_BROWSE
+Sfoglia schermate
+#MSG_HOTKEY_MAIN_MENU
+Vai al menu principale
+#MSG_HOTKEY_TEMPORARY_FAST_FORWARD
+Avanzamento rapido temp.
+#MSG_HOTKEY_SOUND_TOGGLE
+Attiva/Disattiva audio
+#MSG_HOTKEY_QUICK_LOAD_STATE
+Carica salvataggio 1
+#MSG_HOTKEY_QUICK_SAVE_STATE
+Crea salvataggio 1
+#MSG_HOTKEY_FULL_SCREEN_TOGGLE
+Attiva/Disattiva schermo intero
+#MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
+Premi il pulsante che vuoi utilizzare per questa azione
+#MSG_HOTKEY_DELETE_WITH_A
+*A Elimina
+#MSG_HOTKEY_CANCEL_WITH_B
+*B Annulla
+#MSG_LOAD_GAME_RECENTLY_PLAYED
+Giochi recenti
+#MSG_LOAD_GAME_FROM_CARD
+Seleziona gioco dalla card
+#MSG_LOAD_GAME_MENU_TITLE
+Seleziona gioco
+#MSG_VIDEO_ASPECT_RATIO_0
+[0] Schermo intero
+#MSG_VIDEO_ASPECT_RATIO_1
+[1] Allinea in basso
+#MSG_VIDEO_ASPECT_RATIO_2
+[2] Allinea in alto
+#MSG_VIDEO_ASPECT_RATIO_3
+[3] Centrato
+#MSG_VIDEO_ASPECT_RATIO_4
+[4] Schermo intero, Smussato
+#MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC
+[-] Automatico
+#MSG_VIDEO_FRAME_SKIPPING_0
+[0] Mostra tutti i fotogrammi
+#MSG_VIDEO_FRAME_SKIPPING_1
+[1] Mostra 1 su 2 fotogrammi
+#MSG_VIDEO_FRAME_SKIPPING_2
+[2] Mostra 1 su 3 fotogrammi
+#MSG_VIDEO_FRAME_SKIPPING_3
+[3] Mostra 1 su 4 fotogrammi
+#MSG_VIDEO_FRAME_SKIPPING_4
+[4] Mostra 1 su 5 fotogrammi
+#MSG_VIDEO_FRAME_SKIPPING_5
+[5] Mostra 1 su 6 fotogrammi
+#MSG_VIDEO_FRAME_SKIPPING_6
+[6] Mostra 1 su 7 fotogrammi
+#MSG_VIDEO_FRAME_SKIPPING_7
+[7] Mostra 1 su 8 fotogrammi
+#MSG_VIDEO_FRAME_SKIPPING_8
+[8] Mostra 1 su 9 fotogrammi
+#MSG_VIDEO_FRAME_SKIPPING_9
+[9] Mostra 1 su 10 fotogrammi
+#MSG_VIDEO_FRAME_SKIPPING_10
+[10] Mostra 1 su 11 fotogrammi
+#MSG_GENERAL_OFF
+Disabilita
+#MSG_GENERAL_ON
+Abilita
+#MSG_GENERAL_CONFIRM_WITH_A
+*A Conferma
+#MSG_GENERAL_CANCEL_WITH_B
+*B Annulla
+#MSG_AUDIO_ENABLED
+Abilita
+#MSG_AUDIO_MUTED
+Muto
+#MSG_TOP_SCREEN_NO_GAME_LOADED
+Nessun gioco caricato
+#MSG_CHEAT_ELEMENT_NOT_LOADED
+<Nessun elemento caricato>
+#MSG_SAVESTATE_FULL
+Lo slot contiene un salvataggio. Vuoi sovrascriverlo?
+#MSG_PROGRESS_SAVED_STATE_CREATING
+Slavataggio stato...
+#MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
+Fallito!
+#MSG_PROGRESS_SAVED_STATE_CREATION_SUCCEEDED
+OK!
+#MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT
+Nessun salvataggio.
+#MSG_PROGRESS_SAVED_STATE_CORRUPTED
+Il file di salvataggio non è stato trovato o è corrotto.
+#MSG_PROGRESS_SAVED_STATE_LOADING
+Caricando...
+#MSG_PROGRESS_SAVED_STATE_LOAD_FAILED
+Fallito!
+#MSG_PROGRESS_SAVED_STATE_LOAD_SUCCEEDED
+OK!
+#MSG_SAVED_STATE_DELETE_ALL
+Cancella tutti i salvataggi
+#FMT_SAVED_STATE_DELETE_ONE
+Cancella il salvataggio %d
+#MSG_DELETE_ALL_SAVESTATE_WARING
+Sicuro di voler cancellare tutti i salvataggi?
+#FMT_DIALOG_SAVED_STATE_DELETE_ONE
+Sicuro di voler cancellare il salvataggio %d?
+#MSG_PROGRESS_SAVED_STATE_ALREADY_EMPTY
+Non c'è nulla qui.
+#MSG_PROGRESS_SCREENSHOT_CREATING
+Salvataggio screenshot...
+#MSG_PROGRESS_SCREENSHOT_CREATION_SUCCEEDED
+OK!
+#MSG_PROGRESS_SCREENSHOT_CREATION_FAILED
+Fallito!
+#MSG_NO_SLIDE
+Nessuna schermata trovata
+#MSG_PLAYING_SLIDE
+In Esecuzione...
+#MSG_PAUSE_SLIDE
+Pausa...
+#MSG_PLAY_SLIDE1
+Tasto SU    Aumenta velocità
+#MSG_PLAY_SLIDE2
+Tasto GIÙ  Diminuisci velocità
+#MSG_PLAY_SLIDE3
+Tasto SINISTRA  Ultima immagine
+#MSG_PLAY_SLIDE4
+Tasto DESTRA Prossima immagine
+#MSG_PLAY_SLIDE5
+Tasto A     Pausa
+#MSG_PLAY_SLIDE6
+Tasto B     Ritorna al menù principale
+#MSG_PROGRESS_LOADING_GAME
+Caricando...
+#MSG_EMULATOR_NAME
+CATSFC SNES emulator
+#MSG_WORD_EMULATOR_VERSION
+Versione
+#MSG_DIALOG_RESET
+Ripristinare le impostazioni predefinite?
+#MSG_PROGRESS_RESETTING
+Attendere...
+
+ENDITALIAN
