@@ -1,4 +1,4 @@
-CATSFC version 1.30, 2013-02-10
+CATSFC version 1.31, 2013-02-14
 
 A Super Nintendo emulator for the Supercard DSTWO.
 
@@ -7,7 +7,7 @@ Based on:
   zsKnight, etc.)
 * NDSSFC 1.06, by the Supercard team (porting to the MIPS processor)
 * BAGSFC, by BassAceGold (improving over NDSSFC)
-* CATSFC, by ShadauxCat (improving over BAGSFC)
+* CATSFC, by ShadauxCat and Nebuleon (improving over BAGSFC)
 
 # Compiling
 
