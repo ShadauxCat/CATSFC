@@ -898,12 +898,11 @@ u32 draw_hotkey_dialog(enum SCREEN_ID screen, u32 sy, char *clear, char *cancel)
 
 	// Now, while there are keys pressed, keep a tally of keys that have
 	// been pressed. (IGNORE TOUCH AND LID! Otherwise, closing the lid or
-	// touching to get to the menu will do stuff the user doesn't expect.
-	// Also ignore the direction pad because every game uses it.)
+	// touching to get to the menu will do stuff the user doesn't expect.)
 	u32 TotalKeys = 0;
 
 	do {
-		TotalKeys |= inputdata.key & ~(KEY_TOUCH | KEY_LID | KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT);
+		TotalKeys |= inputdata.key & ~(KEY_TOUCH | KEY_LID);
 		// If there's a touch on either button, turn it into a
 		// clear (A) or cancel (B) request.
 		if (inputdata.key & KEY_TOUCH)

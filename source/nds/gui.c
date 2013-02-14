@@ -103,10 +103,10 @@ const uint8 HOTKEY_R_DISPLAY[] = {0xD7, 0x8D, 0x00};
 const uint8 HOTKEY_START_DISPLAY[] = {0xD7, 0x8E, 0x00};
 const uint8 HOTKEY_SELECT_DISPLAY[] = {0xD7, 0x8F, 0x00};
 // These are U+2190 and subsequent codepoints encoded in UTF-8.
-const uint8 DIRECTION_LEFT_DISPLAY[] = {0xE2, 0x86, 0x90, 0x00};
-const uint8 DIRECTION_UP_DISPLAY[] = {0xE2, 0x86, 0x91, 0x00};
-const uint8 DIRECTION_RIGHT_DISPLAY[] = {0xE2, 0x86, 0x92, 0x00};
-const uint8 DIRECTION_DOWN_DISPLAY[] = {0xE2, 0x86, 0x93, 0x00};
+const uint8 HOTKEY_LEFT_DISPLAY[] = {0xE2, 0x86, 0x90, 0x00};
+const uint8 HOTKEY_UP_DISPLAY[] = {0xE2, 0x86, 0x91, 0x00};
+const uint8 HOTKEY_RIGHT_DISPLAY[] = {0xE2, 0x86, 0x92, 0x00};
+const uint8 HOTKEY_DOWN_DISPLAY[] = {0xE2, 0x86, 0x93, 0x00};
 
 #define MAKE_MENU(name, init_function, passive_function, key_function, end_function, \
 	focus_option, screen_focus)												  \
@@ -3360,6 +3360,10 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		if (HotkeyBitfield & KEY_X)      strcat(tmp_buf, HOTKEY_X_DISPLAY);
 		if (HotkeyBitfield & KEY_START)  strcat(tmp_buf, HOTKEY_START_DISPLAY);
 		if (HotkeyBitfield & KEY_SELECT) strcat(tmp_buf, HOTKEY_SELECT_DISPLAY);
+		if (HotkeyBitfield & KEY_UP)     strcat(tmp_buf, HOTKEY_UP_DISPLAY);
+		if (HotkeyBitfield & KEY_DOWN)   strcat(tmp_buf, HOTKEY_DOWN_DISPLAY);
+		if (HotkeyBitfield & KEY_LEFT)   strcat(tmp_buf, HOTKEY_LEFT_DISPLAY);
+		if (HotkeyBitfield & KEY_RIGHT)  strcat(tmp_buf, HOTKEY_RIGHT_DISPLAY);
 
 		PRINT_STRING_BG(down_screen_addr, tmp_buf, color, COLOR_TRANS, HOTKEY_CONTENT_X, 40 + display_option-> line_number*27);
 	}
@@ -4334,24 +4338,24 @@ int load_language_msg(char *filename, u32 language)
 					dstLen += sizeof (HOTKEY_SELECT_DISPLAY) - 1;
 					break;
 				case 'u':
-					memcpy(&dst[dstLen], DIRECTION_UP_DISPLAY, sizeof (DIRECTION_UP_DISPLAY) - 1);
+					memcpy(&dst[dstLen], HOTKEY_UP_DISPLAY, sizeof (HOTKEY_UP_DISPLAY) - 1);
 					srcChar++;
-					dstLen += sizeof (DIRECTION_UP_DISPLAY) - 1;
+					dstLen += sizeof (HOTKEY_UP_DISPLAY) - 1;
 					break;
 				case 'd':
-					memcpy(&dst[dstLen], DIRECTION_DOWN_DISPLAY, sizeof (DIRECTION_DOWN_DISPLAY) - 1);
+					memcpy(&dst[dstLen], HOTKEY_DOWN_DISPLAY, sizeof (HOTKEY_DOWN_DISPLAY) - 1);
 					srcChar++;
-					dstLen += sizeof (DIRECTION_DOWN_DISPLAY) - 1;
+					dstLen += sizeof (HOTKEY_DOWN_DISPLAY) - 1;
 					break;
 				case 'l':
-					memcpy(&dst[dstLen], DIRECTION_LEFT_DISPLAY, sizeof (DIRECTION_LEFT_DISPLAY) - 1);
+					memcpy(&dst[dstLen], HOTKEY_LEFT_DISPLAY, sizeof (HOTKEY_LEFT_DISPLAY) - 1);
 					srcChar++;
-					dstLen += sizeof (DIRECTION_LEFT_DISPLAY) - 1;
+					dstLen += sizeof (HOTKEY_LEFT_DISPLAY) - 1;
 					break;
 				case 'r':
-					memcpy(&dst[dstLen], DIRECTION_RIGHT_DISPLAY, sizeof (DIRECTION_RIGHT_DISPLAY) - 1);
+					memcpy(&dst[dstLen], HOTKEY_RIGHT_DISPLAY, sizeof (HOTKEY_RIGHT_DISPLAY) - 1);
 					srcChar++;
-					dstLen += sizeof (DIRECTION_RIGHT_DISPLAY) - 1;
+					dstLen += sizeof (HOTKEY_RIGHT_DISPLAY) - 1;
 					break;
 				case '\0':
 					dst[dstLen] = pt[srcChar];
