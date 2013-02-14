@@ -688,7 +688,7 @@ Reset
 #MSG_MAIN_MENU_VIDEO_AUDIO
 Video & Audio
 #MSG_MAIN_MENU_SAVED_STATES
-Speicherstände
+Spielstände
 #MSG_MAIN_MENU_CHEATS
 Cheats
 #MSG_MAIN_MENU_TOOLS
@@ -710,9 +710,9 @@ Schnellvorlauf   %s
 #FMT_VIDEO_FRAME_SKIPPING
 Frames übersp.  %s
 #FMT_AUDIO_SOUND
-Musik                   %s
+Ton                     %s
 #FMT_AUDIO_RETRO_SOUND
-Retro-Musik        %s
+Retro-Ton          %s
 #FMT_SAVED_STATE_CREATE
 Speicherstand erstellen      %d
 #FMT_SAVED_STATE_LOAD
