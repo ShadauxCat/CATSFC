@@ -1402,7 +1402,7 @@ Seleziona gioco
 #MSG_VIDEO_ASPECT_RATIO_3
 [3] Centrato
 #MSG_VIDEO_ASPECT_RATIO_4
-[4] Schermo intero, Lisciato
+[4] Schermo intero, Smussato
 #MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC
 [-] Automatico
 #MSG_VIDEO_FRAME_SKIPPING_0
