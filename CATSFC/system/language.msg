@@ -1566,15 +1566,15 @@ Sair
 #FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
 Fluidez                  %s
 #MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
-Preferir video fluido
+Preferir vídeo fluído
 #MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
-Preferir audio fluido
+Preferir áudio fluído
 #FMT_VIDEO_ASPECT_RATIO
 Proporção            %s
 #FMT_VIDEO_FAST_FORWARD
 Avanço de quadro  %s
 #FMT_VIDEO_FRAME_SKIPPING
-Frame skipping     %s
+Pulo de quadros   %s
 #FMT_AUDIO_SOUND
 Som                       %s
 #FMT_AUDIO_RETRO_SOUND
@@ -1616,7 +1616,7 @@ Capacidade do SD
 #MSG_OPTIONS_RESET
 Restaurar configurações padrão
 #MSG_OPTIONS_VERSION
-Informação de versão
+Informações desta versão
 #MSG_SCREENSHOT_CREATE
 Tirar uma foto
 #MSG_SCREENSHOT_BROWSE
