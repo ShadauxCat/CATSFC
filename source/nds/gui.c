@@ -1113,7 +1113,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			//Path
 			if(-1 == redraw) {
 				draw_hscroll_over(0);
-				draw_hscroll_init(down_screen_addr, 49, 10, 170, COLOR_TRANS,
+				draw_hscroll_init(down_screen_addr, 49, 10, 199, COLOR_TRANS,
 					COLOR_WHITE, default_dir_name);
 				path_scroll = 0x8000;		//first scroll left
 			}
@@ -1139,7 +1139,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 
 				//directorys
 				if((m+1) > num_files) {
-					show_icon(down_screen_addr, &ICON_DIRECTORY, 17, 37 + k*27);
+					show_icon(down_screen_addr, &ICON_DIRECTORY, FILE_SELECTOR_ICON_X, 37 + k*27);
 					pt = dir_list[m - num_files];
 				}
 				//files
@@ -1147,20 +1147,20 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 					pt= strrchr(file_list[m], '.');
 
 					if(!strcasecmp(pt, ".smc") || !strcasecmp(pt, ".sfc"))
-						show_icon(down_screen_addr, &ICON_SFCFILE, 17, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_SFCFILE, FILE_SELECTOR_ICON_X, 37 + k*27);
 					else if(!strcasecmp(pt, ".zip"))
-						show_icon(down_screen_addr, &ICON_ZIPFILE, 17, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_ZIPFILE, FILE_SELECTOR_ICON_X, 37 + k*27);
 					else if(!strcasecmp(pt, ".cht"))
-						show_icon(down_screen_addr, &ICON_CHTFILE, 17, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_CHTFILE, FILE_SELECTOR_ICON_X, 37 + k*27);
 					else if(!strcasecmp(file_list[m], ".."))
-						show_icon(down_screen_addr, &ICON_DOTDIR, 17, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_DOTDIR, FILE_SELECTOR_ICON_X, 37 + k*27);
 					else //Not recoganized file
-						show_icon(down_screen_addr, &ICON_UNKNOW, 17, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_UNKNOW, FILE_SELECTOR_ICON_X, 37 + k*27);
 
 					pt = file_list[m];
 				}
 
-				draw_hscroll_init(down_screen_addr, 41, 40 + k*27, 185,
+				draw_hscroll_init(down_screen_addr, FILE_SELECTOR_NAME_X, 40 + k*27, FILE_SELECTOR_NAME_SX,
 					COLOR_TRANS, color, pt);
 			}
 
@@ -1175,20 +1175,20 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 
 			n = selected_item_on_list;
 			if((n+1) > num_files)
-				show_icon(down_screen_addr, &ICON_DIRECTORY, 17, 37 + m*27);
+				show_icon(down_screen_addr, &ICON_DIRECTORY, FILE_SELECTOR_ICON_X, 37 + m*27);
 			else {
 				pt= strrchr(file_list[n], '.');
 
 				if(!strcasecmp(pt, ".smc"))
-					show_icon(down_screen_addr, &ICON_SFCFILE, 17, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_SFCFILE, FILE_SELECTOR_ICON_X, 37 + m*27);
 				else if(!strcasecmp(pt, ".zip"))
-					show_icon(down_screen_addr, &ICON_ZIPFILE, 17, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_ZIPFILE, FILE_SELECTOR_ICON_X, 37 + m*27);
 				else if(!strcasecmp(pt, ".cht"))
-					show_icon(down_screen_addr, &ICON_CHTFILE, 17, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_CHTFILE, FILE_SELECTOR_ICON_X, 37 + m*27);
 				else if(!strcasecmp(file_list[m], ".."))
-					show_icon(down_screen_addr, &ICON_DOTDIR, 17, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_DOTDIR, FILE_SELECTOR_ICON_X, 37 + m*27);
 				else //Not recoganized file
-					show_icon(down_screen_addr, &ICON_UNKNOW, 17, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_UNKNOW, FILE_SELECTOR_ICON_X, 37 + m*27);
 			}
 
 			draw_hscroll(m+1, redraw);
@@ -1991,7 +1991,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			else
 				color= COLOR_INACTIVE_ITEM;
 
-			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 23, 40 + line[i]*27);
+			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, OPTION_TEXT_X, 40 + line[i]*27);
         }
 
 		unsigned int selected_write, selected_read;
@@ -2054,7 +2054,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			else
 				color= COLOR_INACTIVE_ITEM;
 
-			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 23, 40 + line[i]*27);
+			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, OPTION_TEXT_X, 40 + line[i]*27);
         }
 
 		if(current_option_num == 2)
@@ -2301,7 +2301,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					{
 						m= current_menu->screen_focus -1;
 						draw_hscroll_over(m+1);
-						draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200,
+						draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + m*27, OPTION_TEXT_SX,
 							COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
 					}
 					else
@@ -2311,7 +2311,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 						m= current_menu->focus_option - current_menu->screen_focus+2;
 						for(n= 0; n < SUBMENU_ROW_NUM-1; n++)
-							draw_hscroll_init(down_screen_addr, 23, 40 + n*27, 200,
+							draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + n*27, OPTION_TEXT_SX,
 								COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[m+n].display_string);
 					}
 				}
@@ -2332,7 +2332,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					if(m >= SUBMENU_ROW_NUM) m -= 1;
 
 					draw_hscroll_over(m+1);
-					draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200,
+					draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + m*27, OPTION_TEXT_SX,
 						COLOR_TRANS, COLOR_ACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
 				}
 
@@ -2346,7 +2346,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					{
 						m = current_menu->screen_focus -1;
 						draw_hscroll_over(m+1);
-						draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200,
+						draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + m*27, OPTION_TEXT_SX,
 							COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
 					}
 					else
@@ -2361,7 +2361,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 						if(k > SUBMENU_ROW_NUM) k = SUBMENU_ROW_NUM;
 
 						for(n= 1; n < k; n++)
-							draw_hscroll_init(down_screen_addr, 23, 40 + n*27, 200,
+							draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + n*27, OPTION_TEXT_SX,
 								COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[m+n].display_string);
 					}
 				}
@@ -2388,7 +2388,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 						m = current_menu->screen_focus -1;
 
 					draw_hscroll_over(m+1);
-					draw_hscroll_init(down_screen_addr, 23, 40 + m*27, 200,
+					draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + m*27, OPTION_TEXT_SX,
 						COLOR_TRANS, COLOR_ACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
 				}
 		        	break;
@@ -2513,11 +2513,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		else
 			NDSSFCEnableCheatGroup (cheat_group_name_ptr[i]);
 	}
-
-#define CHEAT_NUMBER_X 23
-#define CHEAT_DESC_X   49
-#define CHEAT_DESC_SX  166
-#define CHEAT_ACTIVE_X 225
 
 	void cheat_option_passive()
 	{
@@ -3347,7 +3342,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			color= COLOR_INACTIVE_ITEM;
 
 		strcpy(tmp_buf, *(display_option->display_string));
-		PRINT_STRING_BG(down_screen_addr, tmp_buf, color, COLOR_TRANS, 23, 40 + display_option-> line_number*27);
+		PRINT_STRING_BG(down_screen_addr, tmp_buf, color, COLOR_TRANS, OPTION_TEXT_X, 40 + display_option-> line_number*27);
 
 		// Construct a UTF-8 string showing the buttons in the
 		// bitfield.
@@ -3438,7 +3433,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
         {
             ext_pos= strrchr(emu_config.latest_file[k], '/');
             if(ext_pos != NULL)
-                draw_hscroll_init(down_screen_addr, 26, 40 + k*27, 200,
+                draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + k*27, OPTION_TEXT_SX,
                     COLOR_TRANS, COLOR_INACTIVE_ITEM, ext_pos+1);
 			else
 				break;
@@ -3516,7 +3511,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200,
+                	draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
                 	    COLOR_TRANS, COLOR_INACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3530,7 +3525,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200,
+                	draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
                 	    COLOR_TRANS, COLOR_ACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3542,7 +3537,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200,
+                	draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
                 	    COLOR_TRANS, COLOR_INACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3555,7 +3550,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, 26, 40 + (current_option_num-1)*27, 200,
+                	draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
                 	    COLOR_TRANS, COLOR_ACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3782,7 +3777,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					else
 						color= COLOR_INACTIVE_ITEM;
 
-					PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 23, 40 + i*27);
+					PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, OPTION_TEXT_X, 40 + i*27);
 				}
     	    }
     	}

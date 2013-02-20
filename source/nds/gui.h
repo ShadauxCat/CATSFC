@@ -27,6 +27,21 @@
 #define UP_SCREEN_UPDATE_METHOD   0
 #define DOWN_SCREEN_UPDATE_METHOD 2
 
+// For general option text
+#define OPTION_TEXT_X             10
+#define OPTION_TEXT_SX            236
+
+// For cheats [ NUM. DESC . . . . . +/- ]
+#define CHEAT_NUMBER_X            10
+#define CHEAT_DESC_X              34
+#define CHEAT_DESC_SX             197
+#define CHEAT_ACTIVE_X            241
+
+// For the file selector
+#define FILE_SELECTOR_ICON_X      10
+#define FILE_SELECTOR_NAME_X      32
+#define FILE_SELECTOR_NAME_SX     214
+
 #define MAX_GAMEPAD_MAP 16
 
 #ifdef __cplusplus
