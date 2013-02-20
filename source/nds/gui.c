@@ -5009,6 +5009,17 @@ void gui_init(u32 lang_id)
       //strip off the binary name
       char *endStr = strrchr(main_path, '/');
       *endStr = '\0';
+
+      //do a check to make sure the folder is a valid CATSFC folder
+      char tempPath[MAX_PATH];
+      strcpy(tempPath, main_path);
+      strcat(tempPath, "/system/gui");
+      DIR *testDir = opendir(tempPath);
+      if(!testDir)
+        //not a valid CATSFC install
+        strcpy(main_path, "fat:/CATSFC");
+      else //test was successful, do nothing
+        closedir(testDir);
     }
     else
       strcpy(main_path, "fat:/CATSFC");
