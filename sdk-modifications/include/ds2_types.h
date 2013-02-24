@@ -1,37 +1,29 @@
 #ifndef __DS2_TYPES_H__
 #define __DS2_TYPES_H__
 
-#ifndef u8
-#define u8	unsigned char
-#endif
+typedef           unsigned char       u8;
+typedef                    char       s8;
 
-#ifndef s8
-#define s8	char
-#endif
+typedef           unsigned short      u16;
+typedef                    short      s16;
 
-#ifndef u16
-#define u16	unsigned short
-#endif
+typedef           unsigned int        u32;
+typedef                    int        s32;
 
-#ifndef s16
-#define s16	short
-#endif
+typedef           unsigned long long  u64;
+typedef                    long long  s64;
 
-#ifndef u32
-#define u32 unsigned int
-#endif
+typedef  volatile unsigned char       vu8;
+typedef  volatile          char       vs8;
 
-#ifndef s32
-#define s32 int
-#endif
+typedef  volatile unsigned short      vu16;
+typedef  volatile          short      vs16;
 
-#ifndef u64
-#define u64 unsigned long long
-#endif
+typedef  volatile unsigned int        vu32;
+typedef  volatile          int        vs32;
 
-#ifndef s64
-#define s64 long long
-#endif 
+typedef  volatile unsigned long long  vu64;
+typedef  volatile          long long  vs64;
 
 #ifndef NULL
 #define NULL 0
