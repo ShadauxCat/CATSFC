@@ -167,9 +167,6 @@ extern u32 draw_hscroll_init(void* screen_address, u32 sx, u32 sy, u32 width,
 extern u32 draw_hscroll(u32 index, s32 scroll_val);
 extern void draw_hscroll_over(u32 index);
 extern void boxfill_alpha(u32 sx, u32 sy, u32 ex, u32 ey, u32 color, u32 alpha);
-extern void init_progress(enum SCREEN_ID screen, u32 total, char *text);
-extern void update_progress(void);
-extern void show_progress(char *text);
 extern void scrollbar(void* screen_addr, u32 sx, u32 sy, u32 ex, u32 ey, u32 all, u32 view, u32 now);
 extern u32 yesno_dialog(char *text);
 extern u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no);
