@@ -58,10 +58,6 @@
 #define GUI_SOURCE_PATH "SYSTEM/GUI"
 #define GUI_PIC_BUFSIZE 1024*512
 
-u32 screen_height = 272;//160;
-u32 screen_width2 = 256/2;
-u32 screen_height2 = 160 / 2;
-
 char gui_picture[GUI_PIC_BUFSIZE];
 
 struct gui_iconlist gui_icon_list[]= {
