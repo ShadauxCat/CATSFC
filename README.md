@@ -9,6 +9,12 @@ Based on:
 * BAGSFC, by BassAceGold (improving over NDSSFC)
 * CATSFC, by ShadauxCat and Nebuleon (improving over BAGSFC)
 
+Contains:
+* Language files written by the GBAtemp community: Dutch by Aeter, French
+  by Nebuleon, German by SignZ, Portuguese (Brazilian) by Diego Liberal,
+  Spanish by Boriar
+* Language files written by GitHub users: Italian by alexinfurs
+
 # Installing
 
 (If you got the source code and want to compile it, see the `Compiling` section
