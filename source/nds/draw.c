@@ -298,7 +298,7 @@ void draw_message(void* screen_addr, u16 *screen_bg, u32 sx, u32 sy, u32 ex, u32
     {
 //        drawbox(screen_addr, sx, sy, ex, ey, COLOR16(12, 12, 12));
 //        drawboxfill(screen_addr, sx+1, sy+1, ex-1, ey-1, color_fg);
-		show_icon(screen_addr, &ICON_MSG, 34, 48);
+		show_icon(screen_addr, &ICON_MSG, (NDS_SCREEN_WIDTH - ICON_MSG.x) / 2, (NDS_SCREEN_HEIGHT - ICON_MSG.y) / 2);
     }
     else
     {
@@ -344,28 +344,26 @@ void draw_string_vcenter(void* screen_addr, u32 sx, u32 sy, u32 width, u32 color
     while(*string)
     {
         string= utf8decode(string, unicode+num);
-        if(unicode[num] != 0x0D && unicode[num] != 0x0A) num++;
+        num++;
     }
 
     if(num== 0) return;
-
-    i= BDF_cut_unicode(unicode, num, width, 1);
-    if(i == num)
-    {
-        x= BDF_cut_unicode(unicode, num, 0, 3);
-        sx += (width - x)/2;
-    }
 
     screenp = (unsigned short*)screen_addr + sx + sy*SCREEN_WIDTH;
     i= 0;
     while(i < num)
     {
         m= BDF_cut_unicode(&unicode[i], num-i, width, 1);
-        x= 0;
+        x= (width - BDF_cut_unicode(&unicode[i], m, 0, 3)) / 2;
         while(m--)
         {
             x += BDF_render16_ucs(screenp+x, SCREEN_WIDTH, 0, COLOR_TRANS, 
                 color_fg, unicode[i++]);
+        }
+        if (i < num && (unicode[i] == 0x0D || unicode[i] == 0x0A))
+            i++;
+	else {
+            while (i < num && (unicode[i] == ' ')) i++;
         }
         screenp += FONTS_HEIGHT * SCREEN_WIDTH;
     }
@@ -787,13 +785,16 @@ u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
 	else
 		screen_addr = down_screen_addr;
 
-    i= SCREEN_WIDTH/2 - box_width - 2;
-	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 49, 128);
-    draw_string_vcenter((unsigned short*)screen_addr, 51, 130, 73, COLOR_WHITE, yes);
+	sy = (NDS_SCREEN_HEIGHT + ICON_MSG.y) / 2 - 8 - ICON_BUTTON.y;
 
-    i= SCREEN_WIDTH/2 + 3;
-	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, 136, 128);
-    draw_string_vcenter((unsigned short*)screen_addr, 138, 130, 73, COLOR_WHITE, no);
+	u32 left_sx = NDS_SCREEN_WIDTH / 2 - 8 - ICON_BUTTON.x,
+	    right_sx = NDS_SCREEN_WIDTH / 2 + 8;
+
+	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, left_sx, sy);
+    draw_string_vcenter((unsigned short*)screen_addr, left_sx + 2, sy, ICON_BUTTON.x - 4, COLOR_WHITE, yes);
+
+	show_icon((unsigned short*)screen_addr, &ICON_BUTTON, right_sx, sy);
+    draw_string_vcenter((unsigned short*)screen_addr, right_sx + 2, sy, ICON_BUTTON.x - 4, COLOR_WHITE, no);
 
 	ds2_flipScreen(screen, 2);
 
@@ -806,11 +807,11 @@ u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no)
 		struct key_buf inputdata;
 		ds2_getrawInput(&inputdata);
 		// Turn it into a SELECT (A) or BACK (B) if the button is touched.
-		if (inputdata.y >= 128 && inputdata.y < 128 + ICON_BUTTON.y)
+		if (inputdata.y >= sy && inputdata.y < sy + ICON_BUTTON.y)
 		{
-			if (inputdata.x >= 49 && inputdata.x < 49 + ICON_BUTTON.x)
+			if (inputdata.x >= left_sx && inputdata.x < left_sx + ICON_BUTTON.x)
 				gui_action = CURSOR_SELECT;
-			else if (inputdata.x >= 136 && inputdata.x < 136 + ICON_BUTTON.x)
+			else if (inputdata.x >= right_sx && inputdata.x < right_sx + ICON_BUTTON.x)
 				gui_action = CURSOR_BACK;
 		}
 	}
