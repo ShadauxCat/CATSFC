@@ -5032,11 +5032,11 @@ void gui_init(u32 lang_id)
             strcpy(main_path, "fat:");
             if(search_dir("CATSFC", main_path) == 0)
             {
-                printf("Found CATSFC directory\r\nDossier CATSFC trouve\r\n\r\n%s\r\n", main_path);
+                printf("Found CATSFC directory\nDossier CATSFC trouve\n\n%s\n", main_path);
             }
             else
             {
-				err_msg(DOWN_SCREEN, "/CATSFC: Directory missing\r\nPress any key to return to\r\nthe menu\r\n\r\n/CATSFC: Dossier manquant\r\nAppuyer sur une touche pour\r\nretourner au menu");
+				err_msg(DOWN_SCREEN, "/CATSFC: Directory missing\nPress any key to return to\nthe menu\n\n/CATSFC: Dossier manquant\nAppuyer sur une touche pour\nretourner au menu");
                 goto gui_init_err;
             }
         }
@@ -5048,7 +5048,7 @@ void gui_init(u32 lang_id)
 	flag = icon_init(lang_id);
 	if(0 != flag)
 	{
-		err_msg(DOWN_SCREEN, "Some icons are missing\r\nLoad them onto your card\r\nPress any key to return to\r\nthe menu\r\n\r\nDes icones sont manquantes\r\nChargez-les sur votre carte\r\nAppuyer sur une touche pour\r\nretourner au menu");
+		err_msg(DOWN_SCREEN, "Some icons are missing\nLoad them onto your card\nPress any key to return to\nthe menu\n\nDes icones sont manquantes\nChargez-les sur votre carte\nAppuyer sur une touche pour\nretourner au menu");
 		goto gui_init_err;
 	}
 
@@ -5057,7 +5057,7 @@ void gui_init(u32 lang_id)
 	if(0 != flag)
 	{
 		char message[512];
-		sprintf(message, "Font library initialisation\r\nerror (%d)\r\nPress any key to return to\r\nthe menu\r\n\r\nErreur d'initalisation de la\r\npolice de caracteres (%d)\r\nAppuyer sur une touche pour\r\nretourner au menu", flag, flag);
+		sprintf(message, "Font library initialisation\nerror (%d)\nPress any key to return to\nthe menu\n\nErreur d'initalisation de la\npolice de caracteres (%d)\nAppuyer sur une touche pour\nretourner au menu", flag, flag);
 		err_msg(DOWN_SCREEN, message);
 		goto gui_init_err;
 	}
@@ -5069,7 +5069,7 @@ void gui_init(u32 lang_id)
 	if(0 != flag)
 	{
 		char message[512];
-		sprintf(message, "Language pack initialisation\r\nerror (%d)\r\nPress any key to return to\r\nthe menu\r\n\r\nErreur d'initalisation du\r\npack de langue (%d)\r\nAppuyer sur une touche pour\r\nretourner au menu", flag, flag);
+		sprintf(message, "Language pack initialisation\nerror (%d)\nPress any key to return to\nthe menu\n\nErreur d'initalisation du\npack de langue (%d)\nAppuyer sur une touche pour\nretourner au menu", flag, flag);
 		err_msg(DOWN_SCREEN, message);
 		goto gui_init_err;
 	}
