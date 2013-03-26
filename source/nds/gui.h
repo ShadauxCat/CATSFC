@@ -48,6 +48,10 @@
 #define FILE_SELECTOR_NAME_X      32
 #define FILE_SELECTOR_NAME_SX     214
 
+// Back button
+#define BACK_BUTTON_X             229
+#define BACK_BUTTON_Y             10
+
 #define MAX_GAMEPAD_MAP 16
 
 #ifdef __cplusplus

@@ -1951,9 +1951,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
 
 		if(current_option_num == 0)
-			show_icon(down_screen_addr, &ICON_BACK, 229, 10);
+			show_icon(down_screen_addr, &ICON_BACK, BACK_BUTTON_X, BACK_BUTTON_Y);
 		else
-			show_icon(down_screen_addr, &ICON_NBACK, 229, 10);
+			show_icon(down_screen_addr, &ICON_NBACK, BACK_BUTTON_X, BACK_BUTTON_Y);
 
 		strcpy(line_buffer, *(display_option->display_string));
 		draw_string_vcenter(down_screen_addr, 0, 9, 256, COLOR_ACTIVE_ITEM, line_buffer);
@@ -2014,9 +2014,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
 
 		if(current_option_num == 0)
-			show_icon(down_screen_addr, &ICON_BACK, 229, 6);
+			show_icon(down_screen_addr, &ICON_BACK, BACK_BUTTON_X, BACK_BUTTON_Y);
 		else
-			show_icon(down_screen_addr, &ICON_NBACK, 229, 6);
+			show_icon(down_screen_addr, &ICON_NBACK, BACK_BUTTON_X, BACK_BUTTON_Y);
 
 		strcpy(line_buffer, *(display_option->display_string));
 		draw_string_vcenter(down_screen_addr, 0, 9, 256, COLOR_ACTIVE_ITEM, line_buffer);
@@ -2454,12 +2454,12 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		{
 			draw_hscroll(0, dynamic_cheat_scroll_value);
 			dynamic_cheat_scroll_value = 0;
-			show_icon(down_screen_addr, &ICON_BACK, 229, 10);
+			show_icon(down_screen_addr, &ICON_BACK, BACK_BUTTON_X, BACK_BUTTON_Y);
 		}
 		else
 		{
 			draw_hscroll(0, 0);
-			show_icon(down_screen_addr, &ICON_NBACK, 229, 10);
+			show_icon(down_screen_addr, &ICON_NBACK, BACK_BUTTON_X, BACK_BUTTON_Y);
 		}
 
 		k = current_menu->num_options -1;
@@ -3459,10 +3459,10 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
 
 		if(current_option_num == 0)
-			show_icon(down_screen_addr, &ICON_BACK, 229, 10);
+			show_icon(down_screen_addr, &ICON_BACK, BACK_BUTTON_X, BACK_BUTTON_Y);
 		else
 		{
-			show_icon(down_screen_addr, &ICON_NBACK, 229, 10);
+			show_icon(down_screen_addr, &ICON_NBACK, BACK_BUTTON_X, BACK_BUTTON_Y);
 			show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + (current_option_num-1)*27);
 		}
 
@@ -3733,9 +3733,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				line_num = SUBMENU_ROW_NUM;
 
 			if(focus_option == 0)
-				show_icon(down_screen_addr, &ICON_BACK, 229, 10);
+				show_icon(down_screen_addr, &ICON_BACK, BACK_BUTTON_X, BACK_BUTTON_Y);
 			else
-				show_icon(down_screen_addr, &ICON_NBACK, 229, 10);
+				show_icon(down_screen_addr, &ICON_NBACK, BACK_BUTTON_X, BACK_BUTTON_Y);
 
 			for(i= 0; i < line_num; i++, display_option++)
     	    {
