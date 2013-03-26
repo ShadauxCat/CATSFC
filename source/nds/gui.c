@@ -1107,7 +1107,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			//draw background
 			show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
 			show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
-			show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
+			show_icon(down_screen_addr, &ICON_TITLEICON, TITLE_ICON_X, TITLE_ICON_Y);
 
 			//release data struct to draw scrolling string
 			//Path
@@ -1201,7 +1201,7 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			path_scroll += 1;
 		else {
 			show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
-			show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
+			show_icon(down_screen_addr, &ICON_TITLEICON, TITLE_ICON_X, TITLE_ICON_Y);
 
 			if(path_scroll & 0x8000)	//scroll left
 			{
@@ -1948,7 +1948,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		//draw background
 		show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
 		show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
-		show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
+		show_icon(down_screen_addr, &ICON_TITLEICON, TITLE_ICON_X, TITLE_ICON_Y);
 
 		if(current_option_num == 0)
 			show_icon(down_screen_addr, &ICON_BACK, BACK_BUTTON_X, BACK_BUTTON_Y);
@@ -2011,7 +2011,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		//draw background
 		show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
 		show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
-		show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
+		show_icon(down_screen_addr, &ICON_TITLEICON, TITLE_ICON_X, TITLE_ICON_Y);
 
 		if(current_option_num == 0)
 			show_icon(down_screen_addr, &ICON_BACK, BACK_BUTTON_X, BACK_BUTTON_Y);
@@ -2445,7 +2445,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		//draw background
 		show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
 		show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
-		show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
+		show_icon(down_screen_addr, &ICON_TITLEICON, TITLE_ICON_X, TITLE_ICON_Y);
 
 		if(current_menu -> screen_focus > 0)
 			show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + (current_menu -> screen_focus-1)*27);
@@ -3456,7 +3456,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		//draw background
 		show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
 		show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
-		show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
+		show_icon(down_screen_addr, &ICON_TITLEICON, TITLE_ICON_X, TITLE_ICON_Y);
 
 		if(current_option_num == 0)
 			show_icon(down_screen_addr, &ICON_BACK, BACK_BUTTON_X, BACK_BUTTON_Y);
@@ -3690,7 +3690,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			//draw background
 			show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
 			show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
-			show_icon(down_screen_addr, &ICON_TITLEICON, 12, 9);
+			show_icon(down_screen_addr, &ICON_TITLEICON, TITLE_ICON_X, TITLE_ICON_Y);
 
 			strcpy(line_buffer, *(display_option->display_string));
 			draw_string_vcenter(down_screen_addr, 0, 9, 256, COLOR_ACTIVE_ITEM, line_buffer);
