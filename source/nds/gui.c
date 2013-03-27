@@ -1651,7 +1651,13 @@ int save_state(char* file, void* screen)
     sprintf(str, "%02d-%02d %02d:%02d:%02d",
 		time.month, time.day, time.hours, time.minutes, time.seconds);
 
-	PRINT_STRING_BG(screen, str, COLOR_WHITE, COLOR_BLACK, 0, 0);
+	// A black outline in all four directions...
+	PRINT_STRING_BG(screen, str, COLOR_BLACK, 0x8000, 0, 1);
+	PRINT_STRING_BG(screen, str, COLOR_BLACK, 0x8000, 2, 1);
+	PRINT_STRING_BG(screen, str, COLOR_BLACK, 0x8000, 1, 0);
+	PRINT_STRING_BG(screen, str, COLOR_BLACK, 0x8000, 1, 2);
+	// ... and white text.
+	PRINT_STRING_BG(screen, str, COLOR_WHITE, 0x8000, 1, 1);
 	fwrite((void*)&time, 1, sizeof(struct rtc), fp);
 	fwrite(screen, 1, 256*192*2, fp);
 
