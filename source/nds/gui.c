@@ -2300,7 +2300,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					bg_screenp_color = COLOR_BG;
 
 				wait_Allkey_release(0);
-				if(current_option_num == 1)         //delette all
+				if(current_option_num == 2)         //delette all
 				{
 					u32 i, flag;
 
@@ -2335,7 +2335,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 						mdelay(500);
 					}
 				}
-				else if(current_option_num == 2)    //delette single
+				else if(current_option_num == 1)    //delette single
 				{
 					draw_message(down_screen_addr, bg_screenp, 28, 31, 227, 165, bg_screenp_color);
 
