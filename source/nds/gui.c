@@ -2162,7 +2162,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				get_savestate_filename(savestate_index, tmp_filename);
 
 				draw_message(down_screen_addr, NULL, 28, 31, 227, 165, 0);
-				draw_string_vcenter(down_screen_addr, MESSAGE_BOX_TEXT_X, 100, MESSAGE_BOX_TEXT_SX, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CREATING]);
+				draw_string_vcenter(down_screen_addr, MESSAGE_BOX_TEXT_X, MESSAGE_BOX_TEXT_Y, MESSAGE_BOX_TEXT_SX, COLOR_MSSG, msg[MSG_PROGRESS_SAVED_STATE_CREATING]);
 				ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 				HighFrequencyCPU();
