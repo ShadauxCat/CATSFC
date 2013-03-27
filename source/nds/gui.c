@@ -1361,7 +1361,7 @@ u32 play_screen_snapshot(void)
     			        }
 					}
 
-					ds2_flipScreen(UP_SCREEN, 1);
+					ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 				}
 
 				closeBMP(&SbmpInfo);
@@ -1951,7 +1951,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		{
 			ds2_clearScreen(UP_SCREEN, 0);
             draw_string_vcenter(up_screen_addr, 0, 88, 256, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_GAME_LOADED]);
-			ds2_flipScreen(UP_SCREEN, 1);
+			ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 		}
 		else if(SavedStateFileExists(savestate_index))
 		{
@@ -1978,7 +1978,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		{
 			ds2_clearScreen(UP_SCREEN, 0);
             draw_string_vcenter(up_screen_addr, 0, 88, 256, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_GAME_LOADED]);
-			ds2_flipScreen(UP_SCREEN, 1);
+			ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 		}
 	}
 
@@ -2052,7 +2052,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		{
 			ds2_clearScreen(UP_SCREEN, 0);
             draw_string_vcenter(up_screen_addr, 0, 88, 256, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_GAME_LOADED]);
-			ds2_flipScreen(UP_SCREEN, 1);
+			ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 		}
 		else if(SavedStateFileExists(delette_savestate_num))
 		{
@@ -2079,7 +2079,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		{
 			ds2_clearScreen(UP_SCREEN, 0);
             draw_string_vcenter(up_screen_addr, 0, 88, 256, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_GAME_LOADED]);
-			ds2_flipScreen(UP_SCREEN, 1);
+			ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 		}
 	}
 
@@ -2828,7 +2828,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 			ds2_clearScreen(UP_SCREEN, 0);
             draw_string_vcenter(up_screen_addr, 0, 88, 256, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_GAME_LOADED]);
-			ds2_flipScreen(UP_SCREEN, 1);
+			ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 
 			// mdelay(500); // Delete this delay
         }
@@ -2864,7 +2864,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
             {
 				ds2_clearScreen(UP_SCREEN, 0);
                 draw_string_vcenter(up_screen_addr, 0, 88, 256, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_GAME_LOADED]);
-				ds2_flipScreen(UP_SCREEN, 1);
+				ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
             }
 
             LowFrequencyCPU(); // and back down
@@ -3774,7 +3774,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		{
 			ds2_clearScreen(UP_SCREEN, COLOR_BLACK);
 			draw_string_vcenter(up_screen_addr, 0, 88, 256, COLOR_WHITE, msg[MSG_TOP_SCREEN_NO_GAME_LOADED]);
-			ds2_flipScreen(UP_SCREEN, 1);
+			ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
 		}
 	}
 	else
