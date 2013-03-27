@@ -2963,7 +2963,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		&game_config.RetroSound, 2, NULL, ACTION_TYPE, 6)
 	};
 
-	MAKE_MENU(graphics, NULL, NULL, NULL, NULL, 0, 0);
+	MAKE_MENU(graphics, NULL, NULL, NULL, NULL, 1, 1);
 
   /*--------------------------------------------------------
      Game state -- delette
@@ -2980,7 +2980,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	/* 02 */ ACTION_OPTION(delette_savestate, NULL, &msg[MSG_SAVED_STATE_DELETE_ALL], NULL, 2)
 	};
 
-	MAKE_MENU(gamestate_delette, gamestate_delette_menu_init, gamestate_delette_menu_passive, NULL, gamestate_delette_menu_end, 0, 0);
+	MAKE_MENU(gamestate_delette, gamestate_delette_menu_init, gamestate_delette_menu_passive, NULL, gamestate_delette_menu_end, 1, 1);
 
   /*--------------------------------------------------------
      Game state
@@ -2999,7 +2999,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	/* 03 */ SUBMENU_OPTION(&gamestate_delette_menu, &msg[MSG_SAVED_STATE_DELETE_GENERAL], NULL, 5),
 	};
 
-	INIT_MENU(game_state, game_state_menu_init, game_state_menu_passive, NULL, game_state_menu_end, 0, 0);
+	INIT_MENU(game_state, game_state_menu_init, game_state_menu_passive, NULL, game_state_menu_end, 1, 1);
 
   /*--------------------------------------------------------
      Cheat options
@@ -3024,7 +3024,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
         NULL, 6)
 	};
 
-	INIT_MENU(cheats, cheat_menu_init, NULL, NULL, cheat_menu_end, 0, 0);
+	INIT_MENU(cheats, cheat_menu_init, NULL, NULL, cheat_menu_end, 1, 1);
 
   /*--------------------------------------------------------
      Tools-screensanp
@@ -3040,7 +3040,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	/* 02 */ ACTION_OPTION(browse_screen_snapshot, NULL, &msg[MSG_SCREENSHOT_BROWSE], NULL, 2)
     };
 
-    MAKE_MENU(tools_screensnap, NULL, NULL, NULL, NULL, 0, 0);
+    MAKE_MENU(tools_screensnap, NULL, NULL, NULL, NULL, 1, 1);
 
   /*--------------------------------------------------------
      Tools - Global hotkeys
@@ -3062,7 +3062,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	/* 06 */ ACTION_OPTION(set_global_hotkey_toggle_full_screen, global_hotkey_toggle_full_screen_passive, &msg[MSG_HOTKEY_FULL_SCREEN_TOGGLE], NULL, 6)
     };
 
-    MAKE_MENU(tools_global_hotkeys, NULL, NULL, NULL, NULL, 0, 0);
+    MAKE_MENU(tools_global_hotkeys, NULL, NULL, NULL, NULL, 1, 1);
 
   /*--------------------------------------------------------
      Tools - Game-specific hotkey overrides
@@ -3084,7 +3084,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	/* 06 */ ACTION_OPTION(set_game_specific_hotkey_toggle_full_screen, game_specific_hotkey_toggle_full_screen_passive, &msg[MSG_HOTKEY_FULL_SCREEN_TOGGLE], NULL, 6)
     };
 
-    MAKE_MENU(tools_game_specific_hotkeys, NULL, NULL, NULL, NULL, 0, 0);
+    MAKE_MENU(tools_game_specific_hotkeys, NULL, NULL, NULL, NULL, 1, 1);
 
   /*--------------------------------------------------------
      Tools
@@ -3108,7 +3108,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 //		&game_config.backward_time, 6, NULL, 4)
     };
 
-    INIT_MENU(tools, tools_menu_init, NULL, NULL, NULL, 0, 0);
+    INIT_MENU(tools, tools_menu_init, NULL, NULL, NULL, 1, 1);
 
   /*--------------------------------------------------------
      Others
