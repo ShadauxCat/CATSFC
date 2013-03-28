@@ -4077,12 +4077,10 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				else if(current_menu == ((main_menu.options + 1)->sub_menu->options + 3)->sub_menu)
 				{
 					u32 next_option_num;
-					if(inputdata.y <= 33)
+					if(inputdata.y <= 60)
 						break;
-					else if(inputdata.y <= 60)
-						next_option_num = 1;
 					else if(inputdata.y <= 87)
-						break;
+						next_option_num = 1;
 					else if(inputdata.y <= 114)
 						next_option_num = 2;
 					else
@@ -4090,7 +4088,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 					struct _MENU_OPTION_TYPE *next_option = current_menu->options + next_option_num;
 
-					if(next_option_num == 2)
+					if(next_option_num == 1)
 					{
 						u32 current_option_val = *(next_option->current_option);
 						u32 old_option_val = current_option_val;
