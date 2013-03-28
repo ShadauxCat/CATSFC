@@ -3942,13 +3942,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					else if(current_option->option_type & SUBMENU_TYPE)
 						choose_menu(current_option->sub_menu);
 				}
-				/* This is the majority case, covering all menus except save states, screen shots, and game loading */
+				/* This is the majority case, covering all menus except save states (and deletion thereof) */
 				else if(current_menu != (main_menu.options + 1)->sub_menu
-				&& current_menu != ((main_menu.options +1)->sub_menu->options + 3)->sub_menu
-				&& current_menu != (main_menu.options +3)->sub_menu
-				&& current_menu != ((main_menu.options +3)->sub_menu->options + 1)->sub_menu
-				&& current_menu != (main_menu.options +6)->sub_menu
-				&& current_menu != ((main_menu.options +6)->sub_menu->options + 2)->sub_menu)
+				&& current_menu != ((main_menu.options +1)->sub_menu->options + 3)->sub_menu)
 				{
 					if (inputdata.y <= 33 || inputdata.y > 192)
 						break;
@@ -3971,7 +3967,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					current_option_num = next_option_num;
 					current_option = current_menu->options + current_option_num;
 
-					if(current_menu->key_function)
+					if(current_option->option_type & ACTION_TYPE)
+						current_option->action_function();
+					else if(current_menu->key_function)
 					{
 						gui_action = CURSOR_RIGHT;
 						current_menu->key_function();
@@ -3990,8 +3988,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 						if(current_option->action_function)
 							current_option->action_function();
 					}
-					else if(current_option->option_type & ACTION_TYPE)
-						current_option->action_function();
 					else if(current_option->option_type & SUBMENU_TYPE)
 						choose_menu(current_option->sub_menu);
 				}
@@ -4127,35 +4123,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					}
 
 					gui_action = CURSOR_SELECT;
-					if(next_option -> option_type & HIDEN_TYPE)
-						break;
-
-					current_option_num = next_option_num;
-					current_option = next_option;
-
-					if(current_option->option_type & ACTION_TYPE)
-						current_option->action_function();
-					else if(current_option->option_type & SUBMENU_TYPE)
-						choose_menu(current_option->sub_menu);
-				}
-				/* Screenshots and new game loading */
-				else if(current_menu == (main_menu.options + 3)->sub_menu
-				|| current_menu == ((main_menu.options +3)->sub_menu->options + 1)->sub_menu
-				|| current_menu == (main_menu.options + 6)->sub_menu
-				|| current_menu == ((main_menu.options +6)->sub_menu->options + 2)->sub_menu)
-				{
-					if (inputdata.y <= 33 || inputdata.y > 192)
-						break;
-					// ___ 33        This screen has 6 possible rows. Touches
-					// ___ 60        above or below these are ignored.
-					// . . . (+27)   The row between 33 and 60 is [1], though!
-					// ___ 192
-					u32 next_option_num = (inputdata.y - 33) / 27 + 1;
-					if (next_option_num > current_menu->num_options)
-						break;
-
-					struct _MENU_OPTION_TYPE *next_option = current_menu->options + next_option_num;
-
 					if(next_option -> option_type & HIDEN_TYPE)
 						break;
 
