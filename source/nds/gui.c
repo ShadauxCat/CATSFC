@@ -3909,6 +3909,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     	    }
     	}
 
+	mdelay(20); // to prevent the DSTwo-DS link from being too clogged
+	            // to return button statuses
+
 		struct key_buf inputdata;
 		gui_action = get_gui_input();
 
