@@ -3694,7 +3694,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
+                	hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
                 	    COLOR_TRANS, COLOR_INACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3708,7 +3708,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
+                	hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
                 	    COLOR_TRANS, COLOR_ACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3720,7 +3720,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
+                	hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
                 	    COLOR_TRANS, COLOR_INACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3733,7 +3733,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
+                	hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
                 	    COLOR_TRANS, COLOR_ACTIVE_ITEM, ext_pos+1);
 				}
 
