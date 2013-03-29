@@ -2816,6 +2816,8 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		}
 	}
 
+    MENU_TYPE latest_game_menu;
+
     void load_default_setting()
     {
         if(bg_screenp != NULL)
@@ -2840,6 +2842,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
             remove(line_buffer);
 
             first_load= 1;
+            latest_game_menu.focus_option = latest_game_menu.screen_focus = 0;
             init_emulator_config();
             init_game_config();
 
@@ -3169,7 +3172,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
   /*--------------------------------------------------------
      Load_game
   --------------------------------------------------------*/
-    MENU_TYPE latest_game_menu;
 
     MENU_OPTION_TYPE load_game_options[] =
     {
@@ -3232,7 +3234,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	void main_menu_passive()
 	{
 		show_icon(down_screen_addr, &ICON_MAINBG, 0, 0);
-		current_menu -> focus_option = current_option -> line_number;
 
 		//Audio/Video
 		strcpy(line_buffer, *(display_option->display_string));
@@ -3756,6 +3757,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			if(current_menu->end_function)
 				current_menu->end_function();
 			SaveConfigsIfNeeded();
+			current_menu->focus_option = current_menu->screen_focus = current_option_num;
 		}
 
 		current_menu = new_menu;
