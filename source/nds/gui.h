@@ -31,6 +31,17 @@
 #define OPTION_TEXT_X             10
 #define OPTION_TEXT_SX            236
 
+// For option rows
+#define GUI_ROW1_Y                36
+#define GUI_ROW_SY                19
+// The following offset is added to the row's Y coordinate to provide
+// the Y coordinate for its text.
+#define TEXT_OFFSET_Y             2
+// The following offset is added to the row's Y coordinate to provide
+// the Y coordinate for its ICON_SUBSELA (sub-screen selection type A).
+#define SUBSELA_OFFSET_Y          -2
+#define SUBSELA_X                 ((NDS_SCREEN_WIDTH - ICON_SUBSELA.x) / 2)
+
 // For message boxes
 #define MESSAGE_BOX_TEXT_X        ((NDS_SCREEN_WIDTH - ICON_MSG.x) / 2 + 3)
 #define MESSAGE_BOX_TEXT_SX       (ICON_MSG.x - 6)
@@ -45,6 +56,7 @@
 
 // For the file selector
 #define FILE_SELECTOR_ICON_X      10
+#define FILE_SELECTOR_ICON_Y      (TEXT_OFFSET_Y - 1)
 #define FILE_SELECTOR_NAME_X      32
 #define FILE_SELECTOR_NAME_SX     214
 

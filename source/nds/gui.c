@@ -68,7 +68,7 @@ char *language_options[] = { (char *) &lang[0], (char *) &lang[1], (char *) &lan
 /******************************************************************************
 *	Macro definition
  ******************************************************************************/
-#define SUBMENU_ROW_NUM	6
+#define SUBMENU_ROW_NUM	8
 
 #define NDSSFC_VERSION "1.33"
 
@@ -825,7 +825,7 @@ static int load_file_list(struct FILE_LIST_INFO *filelist_infop)
 /*--------------------------------------------------------
   读取文件
 --------------------------------------------------------*/
-#define FILE_LIST_ROWS 6
+#define FILE_LIST_ROWS 8
 #define FILE_LIST_ROWS_CENTER   ((FILE_LIST_ROWS+1)/2-1)
 #define FILE_LIST_POSITION 42		//Started displaying x position
 
@@ -1187,14 +1187,14 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			{
 				if(k == selected_item_on_screen) {
 					color = COLOR_ACTIVE_ITEM;
-					show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + k*27);
+					show_icon(down_screen_addr, &ICON_SUBSELA, SUBSELA_X, GUI_ROW1_Y + k * GUI_ROW_SY + SUBSELA_OFFSET_Y);
 				}
 				else
 					color = COLOR_INACTIVE_ITEM;
 
 				//directorys
 				if((m+1) > num_files) {
-					show_icon(down_screen_addr, &ICON_DIRECTORY, FILE_SELECTOR_ICON_X, 37 + k*27);
+					show_icon(down_screen_addr, &ICON_DIRECTORY, FILE_SELECTOR_ICON_X, GUI_ROW1_Y + k * GUI_ROW_SY + FILE_SELECTOR_ICON_Y);
 					pt = dir_list[m - num_files];
 				}
 				//files
@@ -1202,20 +1202,20 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 					pt= strrchr(file_list[m], '.');
 
 					if(!strcasecmp(pt, ".smc") || !strcasecmp(pt, ".sfc"))
-						show_icon(down_screen_addr, &ICON_SFCFILE, FILE_SELECTOR_ICON_X, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_SFCFILE, FILE_SELECTOR_ICON_X, GUI_ROW1_Y + k * GUI_ROW_SY + FILE_SELECTOR_ICON_Y);
 					else if(!strcasecmp(pt, ".zip"))
-						show_icon(down_screen_addr, &ICON_ZIPFILE, FILE_SELECTOR_ICON_X, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_ZIPFILE, FILE_SELECTOR_ICON_X, GUI_ROW1_Y + k * GUI_ROW_SY + FILE_SELECTOR_ICON_Y);
 					else if(!strcasecmp(pt, ".cht"))
-						show_icon(down_screen_addr, &ICON_CHTFILE, FILE_SELECTOR_ICON_X, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_CHTFILE, FILE_SELECTOR_ICON_X, GUI_ROW1_Y + k * GUI_ROW_SY + FILE_SELECTOR_ICON_Y);
 					else if(!strcasecmp(file_list[m], ".."))
-						show_icon(down_screen_addr, &ICON_DOTDIR, FILE_SELECTOR_ICON_X, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_DOTDIR, FILE_SELECTOR_ICON_X, GUI_ROW1_Y + k * GUI_ROW_SY + FILE_SELECTOR_ICON_Y);
 					else //Not recoganized file
-						show_icon(down_screen_addr, &ICON_UNKNOW, FILE_SELECTOR_ICON_X, 37 + k*27);
+						show_icon(down_screen_addr, &ICON_UNKNOW, FILE_SELECTOR_ICON_X, GUI_ROW1_Y + k * GUI_ROW_SY + FILE_SELECTOR_ICON_Y);
 
 					pt = file_list[m];
 				}
 
-				draw_hscroll_init(down_screen_addr, FILE_SELECTOR_NAME_X, 40 + k*27, FILE_SELECTOR_NAME_SX,
+				draw_hscroll_init(down_screen_addr, FILE_SELECTOR_NAME_X, GUI_ROW1_Y + k * GUI_ROW_SY + TEXT_OFFSET_Y, FILE_SELECTOR_NAME_SX,
 					COLOR_TRANS, color, pt);
 			}
 
@@ -1226,24 +1226,24 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 			char *pt;
 
 			m = selected_item_on_screen;
-			show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + m*27);
+			show_icon(down_screen_addr, &ICON_SUBSELA, SUBSELA_X, GUI_ROW1_Y + m * GUI_ROW_SY + SUBSELA_OFFSET_Y);
 
 			n = selected_item_on_list;
 			if((n+1) > num_files)
-				show_icon(down_screen_addr, &ICON_DIRECTORY, FILE_SELECTOR_ICON_X, 37 + m*27);
+				show_icon(down_screen_addr, &ICON_DIRECTORY, FILE_SELECTOR_ICON_X, GUI_ROW1_Y + m * GUI_ROW_SY + FILE_SELECTOR_ICON_Y);
 			else {
 				pt= strrchr(file_list[n], '.');
 
 				if(!strcasecmp(pt, ".smc"))
-					show_icon(down_screen_addr, &ICON_SFCFILE, FILE_SELECTOR_ICON_X, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_SFCFILE, FILE_SELECTOR_ICON_X, GUI_ROW1_Y + m * GUI_ROW_SY + FILE_SELECTOR_ICON_Y);
 				else if(!strcasecmp(pt, ".zip"))
-					show_icon(down_screen_addr, &ICON_ZIPFILE, FILE_SELECTOR_ICON_X, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_ZIPFILE, FILE_SELECTOR_ICON_X, GUI_ROW1_Y + m * GUI_ROW_SY + FILE_SELECTOR_ICON_Y);
 				else if(!strcasecmp(pt, ".cht"))
-					show_icon(down_screen_addr, &ICON_CHTFILE, FILE_SELECTOR_ICON_X, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_CHTFILE, FILE_SELECTOR_ICON_X, GUI_ROW1_Y + m * GUI_ROW_SY + FILE_SELECTOR_ICON_Y);
 				else if(!strcasecmp(file_list[m], ".."))
-					show_icon(down_screen_addr, &ICON_DOTDIR, FILE_SELECTOR_ICON_X, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_DOTDIR, FILE_SELECTOR_ICON_X, GUI_ROW1_Y + m * GUI_ROW_SY + FILE_SELECTOR_ICON_Y);
 				else //Not recoganized file
-					show_icon(down_screen_addr, &ICON_UNKNOW, FILE_SELECTOR_ICON_X, 37 + m*27);
+					show_icon(down_screen_addr, &ICON_UNKNOW, FILE_SELECTOR_ICON_X, GUI_ROW1_Y + m * GUI_ROW_SY + FILE_SELECTOR_ICON_Y);
 			}
 
 			draw_hscroll(m+1, redraw);
@@ -1764,8 +1764,6 @@ void dump_mem(unsigned char* addr, unsigned int len)
 }
 #endif
 
-unsigned int frame_interval;
-
 /*--------------------------------------------------------
 	Main Menu
 --------------------------------------------------------*/
@@ -1814,9 +1812,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	auto void delette_savestate();
 	auto void save_screen_snapshot();
 	auto void browse_screen_snapshot();
-	auto void time_backward_action();
-	auto void time_period_passive();
-	auto void time_period_action();
 	auto void tools_menu_init();
 	auto void obtain_hotkey (u32 *HotkeyBitfield);
 	auto void set_global_hotkey_return_to_menu();
@@ -1867,7 +1862,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	auto void reload_cheats_page();
 	auto void cheat_option_action();
 	auto void cheat_option_passive();
-	auto void dynamic_cheat_menu_end();
 
 //Local function definition
 
@@ -2070,7 +2064,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
             unsigned short color;
 
 			if(display_option == current_option)
-				show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + line[i]*27);
+				show_icon(down_screen_addr, &ICON_SUBSELA, SUBSELA_X, GUI_ROW1_Y + line[i] * GUI_ROW_SY + SUBSELA_OFFSET_Y);
 
 			if(display_option->option_type & NUMBER_SELECTION_TYPE)
 			{
@@ -2092,7 +2086,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			else
 				color= COLOR_INACTIVE_ITEM;
 
-			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, OPTION_TEXT_X, 40 + line[i]*27);
+			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, OPTION_TEXT_X, GUI_ROW1_Y + line[i] * GUI_ROW_SY + TEXT_OFFSET_Y);
         }
 
 		unsigned int selected_write, selected_read;
@@ -2105,8 +2099,8 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		if(current_option_num == 2 /* read */)
 			selected_read = savestate_index;
 
-		savestate_selitem(selected_write, 66);
-		savestate_selitem(selected_read, 120);
+		savestate_selitem(selected_write, GUI_ROW1_Y + 1 * GUI_ROW_SY + (GUI_ROW_SY - ICON_STATEFULL.y) / 2);
+		savestate_selitem(selected_read, GUI_ROW1_Y + 3 * GUI_ROW_SY + (GUI_ROW_SY - ICON_STATEFULL.y) / 2);
 	}
 
     u32 delette_savestate_num= 0;
@@ -2171,7 +2165,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
             unsigned short color;
 
 			if(display_option == current_option)
-				show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + line[i]*27);
+				show_icon(down_screen_addr, &ICON_SUBSELA, SUBSELA_X, GUI_ROW1_Y + line[i] * GUI_ROW_SY + SUBSELA_OFFSET_Y);
 
 			if(display_option->option_type & NUMBER_SELECTION_TYPE)
 			{
@@ -2193,13 +2187,13 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			else
 				color= COLOR_INACTIVE_ITEM;
 
-			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, OPTION_TEXT_X, 40 + line[i]*27);
+			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, OPTION_TEXT_X, GUI_ROW1_Y + line[i] * GUI_ROW_SY + TEXT_OFFSET_Y);
         }
 
 		if(current_option_num == 1)
-			savestate_selitem(delette_savestate_num, 66);
+			savestate_selitem(delette_savestate_num, GUI_ROW1_Y + 1 * GUI_ROW_SY+ (GUI_ROW_SY - ICON_STATEFULL.y) / 2);
         else
-            savestate_selitem(-1, 66);
+            savestate_selitem(-1, GUI_ROW1_Y + 1 * GUI_ROW_SY + (GUI_ROW_SY - ICON_STATEFULL.y) / 2);
 	}
 
 	void menu_save_state()
@@ -2471,218 +2465,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		S9xSaveCheatFile (S9xGetFilename (".chb"));
 	}
 
-	void dynamic_cheat_key()
-	{
-		unsigned int m, n;
-
-		switch(gui_action)
-		{
-			case CURSOR_DOWN:
-				if(current_menu->screen_focus > 0 && (current_option_num+1) < current_menu->num_options)
-				{
-					if(current_menu->screen_focus < SUBMENU_ROW_NUM)
-					{
-						m= current_menu->screen_focus -1;
-						draw_hscroll_over(m+1);
-						draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + m*27, OPTION_TEXT_SX,
-							COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
-					}
-					else
-					{
-						for(n= 0; n < SUBMENU_ROW_NUM; n++)
-							draw_hscroll_over(n+1);
-
-						m= current_menu->focus_option - current_menu->screen_focus+2;
-						for(n= 0; n < SUBMENU_ROW_NUM-1; n++)
-							draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + n*27, OPTION_TEXT_SX,
-								COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[m+n].display_string);
-					}
-				}
-
-				if(current_option_num == 0)
-				{
-					draw_hscroll_over(0);
-					draw_hscroll_init(down_screen_addr, 50, 9, 180,
-						COLOR_TRANS, COLOR_ACTIVE_ITEM, *dynamic_cheat_options[0].display_string);
-				}
-
-				current_option_num += 1;
-				if(current_option_num >= current_menu->num_options)
-					current_option_num -=1;
-				else
-				{
-					m= current_menu->screen_focus;
-					if(m >= SUBMENU_ROW_NUM) m -= 1;
-
-					draw_hscroll_over(m+1);
-					draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + m*27, OPTION_TEXT_SX,
-						COLOR_TRANS, COLOR_ACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
-				}
-
-				current_option = current_menu->options + current_option_num;
-				break;
-
-			case CURSOR_UP:
-				if(current_menu->screen_focus > 0)
-				{
-					if(current_menu->screen_focus > 1 || current_option_num < 2)
-					{
-						m = current_menu->screen_focus -1;
-						draw_hscroll_over(m+1);
-						draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + m*27, OPTION_TEXT_SX,
-							COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
-					}
-					else
-					{
-						unsigned int k;
-
-						for(n= 1; n < SUBMENU_ROW_NUM; n++)
-							draw_hscroll_over(n+1);
-
-						m = current_option_num -1;
-						k = current_menu->num_options - m -1;
-						if(k > SUBMENU_ROW_NUM) k = SUBMENU_ROW_NUM;
-
-						for(n= 1; n < k; n++)
-							draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + n*27, OPTION_TEXT_SX,
-								COLOR_TRANS, COLOR_INACTIVE_ITEM, *dynamic_cheat_options[m+n].display_string);
-					}
-				}
-
-				if(current_option_num)
-				{
-					current_option_num--;
-
-					if(current_option_num == 0)
-					{
-						draw_hscroll_over(0);
-						draw_hscroll_init(down_screen_addr, 50, 9, 180,
-							COLOR_TRANS, COLOR_ACTIVE_ITEM, *dynamic_cheat_options[0].display_string);
-					}
-				}
-
-				current_option = current_menu->options + current_option_num;
-
-				if(current_option_num > 0)
-				{
-					if(current_menu->screen_focus > 1)
-						m = current_menu->screen_focus -2;
-					else
-						m = current_menu->screen_focus -1;
-
-					draw_hscroll_over(m+1);
-					draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + m*27, OPTION_TEXT_SX,
-						COLOR_TRANS, COLOR_ACTIVE_ITEM, *dynamic_cheat_options[current_option_num].display_string);
-				}
-		        	break;
-
-			case CURSOR_RIGHT:
-				dynamic_cheat_scroll_value= -5;
-				break;
-
-			case CURSOR_LEFT:
-				dynamic_cheat_scroll_value= 5;
-	        		break;
-
-			default:
-				break;
-		}
-	}
-
-	void dynamic_cheat_action()
-	{
-		dynamic_cheat_active &= 1;
-		dynamic_cheat_active |= (current_option_num -1) << 16;
-	}
-
-	void dynamic_cheat_menu_passive()
-	{
-		unsigned int m, n, k;
-		u32 line_num, screen_focus, focus_option;
-
-		line_num = current_option_num;
-		screen_focus = current_menu -> screen_focus;
-		focus_option = current_menu -> focus_option;
-
-		if(focus_option < line_num)	//focus next option
-		{
-			focus_option = line_num - focus_option;
-			screen_focus += focus_option;
-			if(screen_focus > SUBMENU_ROW_NUM)	//Reach max row numbers can display
-				screen_focus = SUBMENU_ROW_NUM;
-
-			current_menu -> screen_focus = screen_focus;
-			focus_option = line_num;
-		}
-		else if(focus_option > line_num)	//focus last option
-		{
-			focus_option = focus_option - line_num;
-			if(screen_focus > focus_option)
-				screen_focus -= focus_option;
-			else
-				screen_focus = 0;
-
-			if(screen_focus == 0 && line_num > 0)
-				screen_focus = 1;
-
-			current_menu -> screen_focus = screen_focus;
-			focus_option = line_num;
-		}
-		current_menu -> focus_option = focus_option;
-
-		//draw background
-		show_icon(down_screen_addr, &ICON_SUBBG, 0, 0);
-		show_icon(down_screen_addr, &ICON_TITLE, 0, 0);
-		show_icon(down_screen_addr, &ICON_TITLEICON, TITLE_ICON_X, TITLE_ICON_Y);
-
-		if(current_menu -> screen_focus > 0)
-			show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + (current_menu -> screen_focus-1)*27);
-
-		if(current_menu->screen_focus == 0)
-		{
-			draw_hscroll(0, dynamic_cheat_scroll_value);
-			dynamic_cheat_scroll_value = 0;
-			show_icon(down_screen_addr, &ICON_BACK, BACK_BUTTON_X, BACK_BUTTON_Y);
-		}
-		else
-		{
-			draw_hscroll(0, 0);
-			show_icon(down_screen_addr, &ICON_NBACK, BACK_BUTTON_X, BACK_BUTTON_Y);
-		}
-
-		k = current_menu->num_options -1;
-		if(k > SUBMENU_ROW_NUM) k = SUBMENU_ROW_NUM;
-
-		m = (dynamic_cheat_active>>16) +1;
-		n = current_option_num - current_menu->screen_focus + 1;
-
-		for(i= 0; i < k; i++)
-		{
-			if((i+1) == current_menu->screen_focus)
-			{
-				draw_hscroll(i+1, dynamic_cheat_scroll_value);
-				dynamic_cheat_scroll_value = 0;
-			}
-			else
-				draw_hscroll(i+1, 0);
-
-			if(m == (n +i))
-			{
-				if(dynamic_cheat_active & 1)
-					show_icon((unsigned short*)down_screen_addr, &ICON_STATEFULL, 230, 40 + i*27);
-				else
-					show_icon((unsigned short*)down_screen_addr, &ICON_NSTATEFULL, 230, 40 + i*27);
-			}
-			else
-			{
-				if(dynamic_cheat_active & 1)
-					show_icon((unsigned short*)down_screen_addr, &ICON_STATEEMPTY, 230, 40 + i*27);
-				else
-					show_icon((unsigned short*)down_screen_addr, &ICON_NSTATEEMPTY, 230, 40 + i*27);
-			}
-		}
-	}
-
 	void cheat_option_action()
 	{
 		char tmp_buf[512];
@@ -2715,10 +2497,10 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		int i = atoi(tmp_buf);
 
 		sprintf(line_buffer, "%d.", i + 1);
-		PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, CHEAT_NUMBER_X, 40 + display_option-> line_number*27);
+		PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, CHEAT_NUMBER_X, GUI_ROW1_Y + display_option-> line_number * GUI_ROW_SY + TEXT_OFFSET_Y);
 
 		if (cheat_group_name_ptr[i] == NULL) {
-			PRINT_STRING_BG(down_screen_addr, msg[MSG_CHEAT_ELEMENT_NOT_LOADED], color, COLOR_TRANS, CHEAT_DESC_X, 40 + display_option-> line_number*27);
+			PRINT_STRING_BG(down_screen_addr, msg[MSG_CHEAT_ELEMENT_NOT_LOADED], color, COLOR_TRANS, CHEAT_DESC_X, GUI_ROW1_Y + display_option-> line_number * GUI_ROW_SY + TEXT_OFFSET_Y);
 		}
 		else {
 			strcpy(line_buffer, cheat_group_name_ptr[i]);
@@ -2729,39 +2511,14 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				line_buffer[len] = '\0';
 				strcat(line_buffer, "...");
 			}
-			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, CHEAT_DESC_X, 40 + display_option-> line_number*27);
+			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, CHEAT_DESC_X, GUI_ROW1_Y + display_option-> line_number * GUI_ROW_SY + TEXT_OFFSET_Y);
 
 			if (NDSSFCIsCheatGroupEnabled (cheat_group_name_ptr[i]))
 				strcpy(line_buffer, "+");
 			else
 				strcpy(line_buffer, "-");
-			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, CHEAT_ACTIVE_X, 40 + display_option-> line_number*27);
+			PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, CHEAT_ACTIVE_X, GUI_ROW1_Y + display_option-> line_number * GUI_ROW_SY + TEXT_OFFSET_Y);
 		}
-	}
-
-	void dynamic_cheat_menu_end()
-	{
-		unsigned int m, k;
-
-		m = cheats_menu.focus_option-1;
-		// game_config.cheats_flag[(CHEATS_PER_PAGE * menu_cheat_page) + m].sub_active = dynamic_cheat_active >> 16;
-		// REVISIT [Neb]
-
-		k = SUBMENU_ROW_NUM +1;
-		for(m= 0; m<k; m++)
-			draw_hscroll_over(m);
-	}
-
-	void destroy_dynamic_cheats()
-	{
-		if(dynamic_cheat_menu) free((void*)dynamic_cheat_menu);
-		if(dynamic_cheat_options) free((void*)dynamic_cheat_options);
-		if(dynamic_cheat_msg) free((void*)dynamic_cheat_msg);
-		if(dynamic_cheat_pt) free((void*)dynamic_cheat_pt);
-		dynamic_cheat_menu = NULL;
-		dynamic_cheat_options = NULL;
-		dynamic_cheat_msg = NULL;
-		dynamic_cheat_pt = NULL;
 	}
 
     void menu_load_cheat_file()
@@ -2831,45 +2588,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     {
         play_screen_snapshot();
     }
-
-	void time_backward_action()
-	{
-		tools_menu_init();
-		if(game_config.backward)
-			savefast_int();
-	}
-
-	void time_period_passive()
-	{
-		char* str[] = {"0.2", "0.5", "1.0", "2.0", "5.0", "10 "};
-		unsigned int mm;
-		unsigned short color;
-
-		if(display_option == current_option)
-			color= COLOR_ACTIVE_ITEM;
-		else
-			color= COLOR_INACTIVE_ITEM;
-
-		mm = *(display_option->current_option);
-		sprintf(line_buffer, *(display_option->display_string), str[mm]);
-
-        PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, 27,
-            38 + (display_option-> line_number)*32);
-	}
-
-	void time_period_action()
-	{
-		switch(game_config.backward_time)
-		{
-			case 0 : frame_interval = 15; break;
-			case 1 : frame_interval = 30; break;
-			case 2 : frame_interval = 60; break;
-			case 3 : frame_interval = 120; break;
-			case 4 : frame_interval = 300; break;
-			case 5 : frame_interval = 600; break;
-			default: frame_interval = 60; break;
-		}
-	}
 
     MENU_TYPE latest_game_menu;
 
@@ -2955,8 +2673,8 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
         strcpy(line_buffer, *(display_option->display_string));
         line_num= display_option-> line_number;
-        PRINT_STRING_BG(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, 27,
-            40 + (display_option->line_number)*27);
+        PRINT_STRING_BG(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, OPTION_TEXT_X,
+            GUI_ROW1_Y + (display_option->line_number) * GUI_ROW_SY + TEXT_OFFSET_Y);
 
 		num_byte = freespace;
 
@@ -2988,7 +2706,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
         }
 
         PRINT_STRING_BG(down_screen_addr, line_buffer, COLOR_INACTIVE_ITEM, COLOR_TRANS, 147,
-            40 + (display_option->line_number)*27);
+            GUI_ROW1_Y + (display_option->line_number) * GUI_ROW_SY + TEXT_OFFSET_Y);
     }
 #endif
 
@@ -3091,12 +2809,16 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		((CHEATS_PER_PAGE * menu_cheat_page) + 2), 3),
 	/* 04 */ CHEAT_OPTION(cheat_option_action, cheat_option_passive,
 		((CHEATS_PER_PAGE * menu_cheat_page) + 3), 4),
+	/* 03 */ CHEAT_OPTION(cheat_option_action, cheat_option_passive,
+		((CHEATS_PER_PAGE * menu_cheat_page) + 4), 5),
+	/* 04 */ CHEAT_OPTION(cheat_option_action, cheat_option_passive,
+		((CHEATS_PER_PAGE * menu_cheat_page) + 5), 6),
 
 	/* 05 */ NUMERIC_SELECTION_ACTION_OPTION(reload_cheats_page, NULL, &msg[FMT_CHEAT_PAGE],
-        &menu_cheat_page, MAX_CHEATS_PAGE, NULL, 5),
+        &menu_cheat_page, MAX_CHEATS_PAGE, NULL, 7),
 
 	/* 06 */ ACTION_OPTION(menu_load_cheat_file, NULL, &msg[MSG_CHEAT_LOAD_FROM_FILE],
-        NULL, 6)
+        NULL, 8)
 	};
 
 	INIT_MENU(cheats, cheat_menu_init, NULL, NULL, cheat_menu_end, 1, 1);
@@ -3173,14 +2895,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	/* 02 */ SUBMENU_OPTION(&tools_global_hotkeys_menu, &msg[MSG_TOOLS_GLOBAL_HOTKEY_GENERAL], NULL, 2),
 
 	/* 03 */ SUBMENU_OPTION(&tools_game_specific_hotkeys_menu, &msg[MSG_TOOLS_GAME_HOTKEY_GENERAL], NULL, 3)
-
-//	/* 02 */ SUBMENU_OPTION(&tools_keyremap_menu, &msg[MSG_SUB_MENU_31], NULL, 2),
-
-//	/* 03 */ STRING_SELECTION_OPTION(time_backward_action, NULL, &msg[MSG_SUB_MENU_302], on_off_options,
-//			&game_config.backward, 2, NULL, ACTION_TYPE, 3),
-
-//	/* 04 */ NUMERIC_SELECTION_ACTION_OPTION(time_period_action, time_period_passive, &msg[MSG_SUB_MENU_32],
-//		&game_config.backward_time, 6, NULL, 4)
     };
 
     INIT_MENU(tools, tools_menu_init, NULL, NULL, NULL, 1, 1);
@@ -3525,7 +3239,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 			color= COLOR_INACTIVE_ITEM;
 
 		strcpy(tmp_buf, *(display_option->display_string));
-		PRINT_STRING_BG(down_screen_addr, tmp_buf, color, COLOR_TRANS, OPTION_TEXT_X, 40 + display_option-> line_number*27);
+		PRINT_STRING_BG(down_screen_addr, tmp_buf, color, COLOR_TRANS, OPTION_TEXT_X, GUI_ROW1_Y + display_option-> line_number * GUI_ROW_SY + TEXT_OFFSET_Y);
 
 		// Construct a UTF-8 string showing the buttons in the
 		// bitfield.
@@ -3543,7 +3257,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		if (HotkeyBitfield & KEY_LEFT)   strcat(tmp_buf, HOTKEY_LEFT_DISPLAY);
 		if (HotkeyBitfield & KEY_RIGHT)  strcat(tmp_buf, HOTKEY_RIGHT_DISPLAY);
 
-		PRINT_STRING_BG(down_screen_addr, tmp_buf, color, COLOR_TRANS, HOTKEY_CONTENT_X, 40 + display_option-> line_number*27);
+		PRINT_STRING_BG(down_screen_addr, tmp_buf, color, COLOR_TRANS, HOTKEY_CONTENT_X, GUI_ROW1_Y + display_option-> line_number * GUI_ROW_SY + TEXT_OFFSET_Y);
 	}
 
 	void global_hotkey_return_to_menu_passive()
@@ -3616,7 +3330,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
         {
             ext_pos= strrchr(emu_config.latest_file[k], '/');
             if(ext_pos != NULL)
-                draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + k*27, OPTION_TEXT_SX,
+                draw_hscroll_init(down_screen_addr, OPTION_TEXT_X, GUI_ROW1_Y + k * GUI_ROW_SY + TEXT_OFFSET_Y, OPTION_TEXT_SX,
                     COLOR_TRANS, COLOR_INACTIVE_ITEM, ext_pos+1);
 			else
 				break;
@@ -3652,7 +3366,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		else
 		{
 			show_icon(down_screen_addr, &ICON_NBACK, BACK_BUTTON_X, BACK_BUTTON_Y);
-			show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + (current_option_num-1)*27);
+			show_icon(down_screen_addr, &ICON_SUBSELA, SUBSELA_X, GUI_ROW1_Y + (current_option_num-1) * GUI_ROW_SY + SUBSELA_OFFSET_Y);
 		}
 
 		strcpy(line_buffer, *(display_option->display_string));
@@ -3694,7 +3408,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
+                	hscroll_init(down_screen_addr, OPTION_TEXT_X, GUI_ROW1_Y + (current_option_num-1) * GUI_ROW_SY + TEXT_OFFSET_Y, OPTION_TEXT_SX,
                 	    COLOR_TRANS, COLOR_INACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3708,7 +3422,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
+                	hscroll_init(down_screen_addr, OPTION_TEXT_X, GUI_ROW1_Y + (current_option_num-1) * GUI_ROW_SY + TEXT_OFFSET_Y, OPTION_TEXT_SX,
                 	    COLOR_TRANS, COLOR_ACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3720,7 +3434,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
+                	hscroll_init(down_screen_addr, OPTION_TEXT_X, GUI_ROW1_Y + (current_option_num-1) * GUI_ROW_SY + TEXT_OFFSET_Y, OPTION_TEXT_SX,
                 	    COLOR_TRANS, COLOR_INACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3733,7 +3447,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				{
 					draw_hscroll_over(current_option_num-1);
 	            	ext_pos= strrchr(emu_config.latest_file[current_option_num-1], '/');
-                	hscroll_init(down_screen_addr, OPTION_TEXT_X, 40 + (current_option_num-1)*27, OPTION_TEXT_SX,
+                	hscroll_init(down_screen_addr, OPTION_TEXT_X, GUI_ROW1_Y + (current_option_num-1) * GUI_ROW_SY + TEXT_OFFSET_Y, OPTION_TEXT_SX,
                 	    COLOR_TRANS, COLOR_ACTIVE_ITEM, ext_pos+1);
 				}
 
@@ -3932,7 +3646,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
     	        unsigned short color;
 
 				if(display_option == current_option)
-					show_icon(down_screen_addr, &ICON_SUBSELA, 6, 35 + i*27);
+					show_icon(down_screen_addr, &ICON_SUBSELA, SUBSELA_X, GUI_ROW1_Y + i * GUI_ROW_SY + SUBSELA_OFFSET_Y);
 
 				if(display_option->passive_function)
 				{
@@ -3961,7 +3675,7 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 					else
 						color= COLOR_INACTIVE_ITEM;
 
-					PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, OPTION_TEXT_X, 40 + i*27);
+					PRINT_STRING_BG(down_screen_addr, line_buffer, color, COLOR_TRANS, OPTION_TEXT_X, GUI_ROW1_Y + i * GUI_ROW_SY + TEXT_OFFSET_Y);
 				}
     	    }
     	}
@@ -4006,13 +3720,13 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				else if(current_menu != (main_menu.options + 1)->sub_menu
 				&& current_menu != ((main_menu.options +1)->sub_menu->options + 3)->sub_menu)
 				{
-					if (inputdata.y <= 33 || inputdata.y > 192)
+					if (inputdata.y < GUI_ROW1_Y || inputdata.y >= GUI_ROW1_Y + SUBMENU_ROW_NUM * GUI_ROW_SY)
 						break;
 					// ___ 33        This screen has 6 possible rows. Touches
 					// ___ 60        above or below these are ignored.
 					// . . . (+27)   The row between 33 and 60 is [1], though!
 					// ___ 192
-					u32 next_option_num = (inputdata.y - 33) / 27 + 1;
+					u32 next_option_num = (inputdata.y - GUI_ROW1_Y) / GUI_ROW_SY + 1;
 					struct _MENU_OPTION_TYPE *next_option = current_menu->options + next_option_num;
 
 					if (next_option_num >= current_menu->num_options)
@@ -4055,17 +3769,15 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				else if(current_menu == (main_menu.options + 1)->sub_menu)
 				{
 					u32 next_option_num;
-					if(inputdata.y <= 33)
-						break;
-					else if(inputdata.y <= 60)
+					if(inputdata.y < GUI_ROW1_Y + 1 * GUI_ROW_SY)
 						break; // "Create saved state"
-					else if(inputdata.y <= 87) // Save cell
+					else if(inputdata.y < GUI_ROW1_Y + 2 * GUI_ROW_SY) // Save cell
 						next_option_num = 1;
-					else if(inputdata.y <= 114)
+					else if(inputdata.y < GUI_ROW1_Y + 3 * GUI_ROW_SY)
 						break; // "Load saved state"
-					else if(inputdata.y <= 141) // Load cell
+					else if(inputdata.y < GUI_ROW1_Y + 4 * GUI_ROW_SY) // Load cell
 						next_option_num = 2;
-					else if(inputdata.y <= 168) // Del...
+					else if(inputdata.y < GUI_ROW1_Y + 5 * GUI_ROW_SY) // Del...
 						next_option_num = 3;
 					else
 						break;
@@ -4133,11 +3845,11 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 				else if(current_menu == ((main_menu.options + 1)->sub_menu->options + 3)->sub_menu)
 				{
 					u32 next_option_num;
-					if(inputdata.y <= 60)
+					if(inputdata.y < GUI_ROW1_Y + 1 * GUI_ROW_SY)
 						break;
-					else if(inputdata.y <= 87)
+					else if(inputdata.y < GUI_ROW1_Y + 2 * GUI_ROW_SY)
 						next_option_num = 1;
-					else if(inputdata.y <= 114)
+					else if(inputdata.y < GUI_ROW1_Y + 3 * GUI_ROW_SY)
 						next_option_num = 2;
 					else
 						break;
@@ -4306,7 +4018,6 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		current_menu->end_function();
 	SaveConfigsIfNeeded();
 
-	destroy_dynamic_cheats();
 	if(bg_screenp != NULL) free((void*)bg_screenp);
 
 	ds2_clearScreen(DOWN_SCREEN, 0);

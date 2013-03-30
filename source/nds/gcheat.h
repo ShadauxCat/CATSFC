@@ -26,7 +26,7 @@ extern "C" {
 
 #include "cheats.h"
 
-#define CHEATS_PER_PAGE 4
+#define CHEATS_PER_PAGE 6
 #define MAX_CHEATS_PAGE (MAX_CHEATS_T / CHEATS_PER_PAGE)
 
 extern int NDSSFCLoadCheatFile(const char* filename);
