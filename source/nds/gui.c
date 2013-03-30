@@ -70,7 +70,7 @@ char *language_options[] = { (char *) &lang[0], (char *) &lang[1], (char *) &lan
  ******************************************************************************/
 #define SUBMENU_ROW_NUM	8
 
-#define NDSSFC_VERSION "1.33"
+#define NDSSFC_VERSION "1.34"
 
 #define SAVE_STATE_SLOT_NUM		16
 
