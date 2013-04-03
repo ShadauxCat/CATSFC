@@ -1557,9 +1557,9 @@ Carregar arquivo de trapaça
 #MSG_TOOLS_SCREENSHOT_GENERAL
 Foto...
 #MSG_TOOLS_GLOBAL_HOTKEY_GENERAL
-Atalhos de tecla globais...
+Atalhos de botões globais...
 #MSG_TOOLS_GAME_HOTKEY_GENERAL
-Atalhos de tecla do jogo atual...
+Atalhos de botões do jogo atual...
 #FMT_OPTIONS_LANGUAGE
 Idioma                              %s
 #FMT_OPTIONS_CPU_FREQUENCY
@@ -1577,9 +1577,9 @@ Frequência da CPU          %s
 #MSG_OPTIONS_CPU_FREQUENCY_5
 [5] 396 MHz
 #MSG_OPTIONS_CARD_CAPACITY
-Capacidade do SD
+Capacidade do cartão SD
 #MSG_OPTIONS_RESET
-Restaurar configurações padrão
+Restaurar configuração padrão
 #MSG_OPTIONS_VERSION
 Informações desta versão
 #MSG_SCREENSHOT_CREATE
@@ -1661,7 +1661,7 @@ Nenhum jogo carregado no momento
 #MSG_CHEAT_ELEMENT_NOT_LOADED
 <Nada carregado aqui>
 #MSG_SAVESTATE_FULL
-O slot atual contem um estado. Deseja sobrescrevê-lo?
+O slot atual contém um estado. Deseja sobrescrevê-lo?
 #MSG_PROGRESS_SAVED_STATE_CREATING
 Salvando estado...
 #MSG_PROGRESS_SAVED_STATE_CREATION_FAILED
@@ -1671,7 +1671,7 @@ OK!
 #MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT
 Nenhum estado salvo aqui
 #MSG_PROGRESS_SAVED_STATE_CORRUPTED
-O arquivo de estado deste jogo não foi encontrado ou está corrupto.
+O arquivo de estado deste jogo não foi encontrado ou está corrompido.
 #MSG_PROGRESS_SAVED_STATE_LOADING
 Carregando...
 #MSG_PROGRESS_SAVED_STATE_LOAD_FAILED
@@ -1679,7 +1679,7 @@ Falhou!
 #MSG_PROGRESS_SAVED_STATE_LOAD_SUCCEEDED
 OK!
 #MSG_SAVED_STATE_DELETE_ALL
-Delete todos os estads salvos
+Delete todos os estados salvos
 #FMT_SAVED_STATE_DELETE_ONE
 Delete o estado salvo %d
 #MSG_DIALOG_SAVE_STATE_DELETE_ALL
@@ -1704,7 +1704,7 @@ Pausar...
 *u  Acelerar\n
 *d  Desacelerar\n
 *l  Foto anterior\n
-*r  Proxima foto\n
+*r  Próxima foto\n
 *A  Pausar\n
 *B  Voltar ao menu
 #MSG_PROGRESS_LOADING_GAME
