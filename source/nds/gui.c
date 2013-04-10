@@ -1707,8 +1707,8 @@ int save_state(char* file, void* screen)
 	n = ftell(fp);
 
 	ds2_getTime(&time);
-    sprintf(str, "%02d-%02d %02d:%02d:%02d",
-		time.month, time.day, time.hours, time.minutes, time.seconds);
+    sprintf(str, "%04d-%02d-%02d %02d:%02d:%02d",
+		time.year + 2000, time.month, time.day, time.hours, time.minutes, time.seconds);
 
 	// A black outline in all four directions...
 	PRINT_STRING_BG(screen, str, COLOR_BLACK, 0x8000, 0, 1);
