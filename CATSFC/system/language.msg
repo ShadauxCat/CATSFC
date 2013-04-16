@@ -945,7 +945,7 @@ CPU frequentie                 %s
 #MSG_OPTIONS_CARD_CAPACITY
 Kaartcapaciteit
 #MSG_OPTIONS_RESET
-Herstel standaard instellingen
+Herstel standaardinstellingen
 #MSG_OPTIONS_VERSION
 Versie-informatie
 #MSG_SCREENSHOT_CREATE
@@ -965,7 +965,7 @@ Sla spelstaat 1 op
 #MSG_HOTKEY_FULL_SCREEN_TOGGLE
 Schakel naar volledig scherm
 #MSG_PROGRESS_HOTKEY_WAITING_FOR_KEYS
-Druk op de gewenste knoppencombinatie.
+Druk op de gewenste toetsencombinatie.
 #MSG_HOTKEY_DELETE_WITH_A
 *A Wissen
 #MSG_HOTKEY_CANCEL_WITH_B
@@ -1037,7 +1037,7 @@ Opslaan geslaagd!
 #MSG_TOP_SCREEN_NO_SAVED_STATE_IN_SLOT
 Geen spelstaat in slot.
 #MSG_PROGRESS_SAVED_STATE_CORRUPTED
-State niet gevonden of corrupt.
+Staat niet gevonden of corrupt.
 #MSG_PROGRESS_SAVED_STATE_LOADING
 Laden...
 #MSG_PROGRESS_SAVED_STATE_LOAD_FAILED
@@ -1080,7 +1080,7 @@ CATSFC SNES emulator
 #MSG_WORD_EMULATOR_VERSION
 Versie
 #MSG_DIALOG_RESET
-Alle standaard instellingen herstellen?
+Alle standaardinstellingen herstellen?
 #MSG_PROGRESS_RESETTING
 Even geduld A.U.B.
 
