@@ -4678,9 +4678,16 @@ void QuickSaveState (void)
 {
 	char BaseName[MAX_PATH + 1];
 	get_savestate_filename(0, BaseName);
+	void* screen_addr = emu_config.BottomScreenGame
+		? down_screen_addr
+		: up_screen_addr;
 	SCREEN_ID screen_num = emu_config.BottomScreenGame
 		? DOWN_SCREEN
 		: UP_SCREEN;
+
+	S9xDeinitUpdate(256, 224, TRUE);
+	unsigned short screen[256*192];
+	copy_screen((void*)screen, screen_addr, 0, 0, 256, 192);
 
 	mdelay(100); // needed to avoid ds2_setBacklight crashing
 	ds2_setBacklight((3 - DOWN_SCREEN) | (3 - screen_num));
@@ -4691,8 +4698,6 @@ void QuickSaveState (void)
 	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 	HighFrequencyCPU();
-	unsigned short screen[256*192];
-	copy_screen((void*)screen, up_screen_addr, 0, 0, 256, 192);
 	int flag = save_state(BaseName, screen);
 	GameFrequencyCPU();
 	if(flag < 0)
