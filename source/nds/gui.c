@@ -4451,61 +4451,42 @@ int save_emu_config_file()
 --------------------------------------------------------*/
 void reorder_latest_file(void)
 {
-    char *ext_pos, *ext_pos1;
-    u32 i, len;
-    char full_file[512];
+	s32 i, FoundIndex = -1;
 
-    if(gamepak_name[0] == '\0')
-        return;
-
-    for(i= 0; i < 5; i++)
-    {
-        ext_pos= strrchr(emu_config.latest_file[i], '/');
-        if(ext_pos != NULL)
-        {
-            ext_pos1= strrchr(ext_pos + 1, '.');
-            len= ext_pos1 - ext_pos -1;
-            if(!strncasecmp(ext_pos + 1, gamepak_name, len))
-                break;
-        }
-    }
-
-    //some one match, move to last
-    if(i < 5)
-    {
-        if(i < 4)
-        {
-            strcpy(full_file, emu_config.latest_file[i]);
-            for(i+=1; i < 5; i++)
-            {
-                if(emu_config.latest_file[i][0] != '\0')
-                    strcpy(emu_config.latest_file[i-1], emu_config.latest_file[i]);
-                else
-                    break;
-            }
-
-            strcpy(emu_config.latest_file[i-1], full_file);
-        }
-        return ;
-    }
-
-    //none match
-    for(i= 0; i < 5; i++)
-    {
-        if(emu_config.latest_file[i][0] == '\0')
-        {
-            sprintf(emu_config.latest_file[i], "%s/%s", g_default_rom_dir, gamepak_name);
-            break;
-        }
-    }
-
-    if(i < 5) return;
-
-    //queue full
-    for(i=1; i < 5; i++)
-        strcpy(emu_config.latest_file[i-1], emu_config.latest_file[i]);
-
-    sprintf(emu_config.latest_file[i-1], "%s/%s", g_default_rom_dir, gamepak_name);
+	if(gamepak_name[0] == '\0')
+		return;
+ 
+	// Is the file's name already here?
+	for (i = 0; i < 5; i++)
+	{
+		char* RecentFileName = strrchr(emu_config.latest_file[i], '/');
+		if (RecentFileName)
+		{
+			if (strcasecmp(RecentFileName + 1, gamepak_name) == 0)
+			{
+				FoundIndex = i; // Yes.
+				break;
+			}
+		}
+	}
+ 
+	if (FoundIndex > -1)
+	{
+		// Already here, move all of those until the existing one 1 down
+		memmove(emu_config.latest_file[1],
+			emu_config.latest_file[0],
+			FoundIndex * sizeof(emu_config.latest_file[0]));
+	}
+	else
+	{
+		// Not here, move everything down
+		memmove(emu_config.latest_file[1],
+			emu_config.latest_file[0],
+			4 * sizeof(emu_config.latest_file[0]));
+	}
+ 
+	//Removing rom_path due to confusion, replacing with g_default_rom_dir
+	sprintf(emu_config.latest_file[0], "%s/%s", g_default_rom_dir, gamepak_name);
 }
 
 /*--------------------------------------------------------
