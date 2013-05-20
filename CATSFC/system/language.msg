@@ -713,7 +713,7 @@ Schnellvorlauf   %s
 #FMT_VIDEO_FRAME_SKIPPING
 Frames übersp.  %s
 #FMT_VIDEO_GAME_SCREEN
-Game screen      %s
+Bildschirm           %s
 #FMT_AUDIO_SOUND
 Ton                     %s
 #FMT_AUDIO_RETRO_SOUND
@@ -819,9 +819,9 @@ Neues Spiel
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] Zeige 1 von 11 Frames
 #MSG_VIDEO_GAME_SCREEN_TOP
-Upper Screen
+Oberer Bildschirm
 #MSG_VIDEO_GAME_SCREEN_BOTTOM
-Lower Screen
+Unterer Bildschirm
 #MSG_GENERAL_OFF
 Aus
 #MSG_GENERAL_ON
@@ -931,7 +931,7 @@ Vooruitspoelen     %s
 #FMT_VIDEO_FRAME_SKIPPING
 Beeld overslaan   %s
 #FMT_VIDEO_GAME_SCREEN
-Game screen        %s
+Spelscherm           %s
 #FMT_AUDIO_SOUND
 Geluid                    %s
 #FMT_AUDIO_RETRO_SOUND
@@ -1037,9 +1037,9 @@ Nieuw spel
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] 1 uit 11 beelden tonen
 #MSG_VIDEO_GAME_SCREEN_TOP
-Upper Screen
+Bovenste scherm
 #MSG_VIDEO_GAME_SCREEN_BOTTOM
-Lower Screen
+Onderste scherm
 #MSG_GENERAL_OFF
 Uit
 #MSG_GENERAL_ON
@@ -1149,7 +1149,7 @@ Modo avance rápido   %s
 #FMT_VIDEO_FRAME_SKIPPING
 Salto de fotogramas  %s
 #FMT_VIDEO_GAME_SCREEN
-Game screen              %s
+Pantalla de juego       %s
 #FMT_AUDIO_SOUND
 Sonido                         %s
 #FMT_AUDIO_RETRO_SOUND
@@ -1255,9 +1255,9 @@ Nuevo juego
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] Mostrar 1/11
 #MSG_VIDEO_GAME_SCREEN_TOP
-Upper Screen
+Pantalla superior
 #MSG_VIDEO_GAME_SCREEN_BOTTOM
-Lower Screen
+Pantalla inferior
 #MSG_GENERAL_OFF
 Apagado
 #MSG_GENERAL_ON
@@ -1571,23 +1571,23 @@ Opções
 #MSG_MAIN_MENU_EXIT
 Sair
 #FMT_VIDEO_AUDIO_FLUIDITY_PREFERENCE
-Fluidez                  %s
+Fluidez                    %s
 #MSG_VIDEO_AUDIO_FLUIDITY_PREFER_VIDEO
 Preferir vídeo fluído
 #MSG_VIDEO_AUDIO_FLUIDITY_PREFER_AUDIO
 Preferir áudio fluído
 #FMT_VIDEO_ASPECT_RATIO
-Proporção            %s
+Proporção              %s
 #FMT_VIDEO_FAST_FORWARD
 Avanço de quadro  %s
 #FMT_VIDEO_FRAME_SKIPPING
-Pulo de quadros   %s
+Pulo de quadros     %s
 #FMT_VIDEO_GAME_SCREEN
-Game screen        %s
+Tela de jogo           %s
 #FMT_AUDIO_SOUND
-Som                       %s
+Som                         %s
 #FMT_AUDIO_RETRO_SOUND
-Som retrô             %s
+Som retrô               %s
 #FMT_SAVED_STATE_CREATE
 Criar estado         %d
 #FMT_SAVED_STATE_LOAD
@@ -1663,7 +1663,7 @@ Novo jogo
 #MSG_VIDEO_ASPECT_RATIO_3
 [3] Meio, pixels exatos
 #MSG_VIDEO_ASPECT_RATIO_4
-[4] Toda a tela, alisado
+[4] Toda a tela, suavizado
 #MSG_VIDEO_FRAME_SKIPPING_AUTOMATIC
 [-] Variar conforme o jogo
 #MSG_VIDEO_FRAME_SKIPPING_0
@@ -1689,9 +1689,9 @@ Novo jogo
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] Mostrar 1 em 11 frames
 #MSG_VIDEO_GAME_SCREEN_TOP
-Upper Screen
+Tela superior
 #MSG_VIDEO_GAME_SCREEN_BOTTOM
-Lower Screen
+Tela inferior
 #MSG_GENERAL_OFF
 Desligado
 #MSG_GENERAL_ON
