@@ -86,7 +86,8 @@ struct _EMU_CONFIG
   u32 HotkeyQuickLoadState;
   u32 HotkeyQuickSaveState;
   u32 HotkeyToggleFullScreen;
-  u32 Reserved[58];
+  u32 BottomScreenGame;
+  u32 Reserved[57];
 };
 
 struct _GAME_CONFIG

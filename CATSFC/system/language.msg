@@ -60,6 +60,8 @@ Aspect ratio       %s
 Fast-forward     %s
 #FMT_VIDEO_FRAME_SKIPPING
 Frame skipping    %s
+#FMT_VIDEO_GAME_SCREEN
+Game screen      %s
 #FMT_AUDIO_SOUND
 Sound                  %s
 #FMT_AUDIO_RETRO_SOUND
@@ -164,6 +166,10 @@ New game
 [9] Show 1 in 10 frames
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] Show 1 in 11 frames
+#MSG_VIDEO_GAME_SCREEN_TOP
+Upper Screen
+#MSG_VIDEO_GAME_SCREEN_BOTTOM
+Lower Screen
 #MSG_GENERAL_OFF
 Off
 #MSG_GENERAL_ON
@@ -271,6 +277,8 @@ STARTCHINESESIM
 游戏快进                 %s
 #FMT_VIDEO_FRAME_SKIPPING
 跳帧方式                 %s
+#FMT_VIDEO_GAME_SCREEN
+Game screen      %s
 #FMT_AUDIO_SOUND
 声音开关                 %s
 #FMT_AUDIO_RETRO_SOUND
@@ -375,6 +383,10 @@ CPU主频                          %s
 [9] 显示 1/10
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] 显示 1/11
+#MSG_VIDEO_GAME_SCREEN_TOP
+Upper Screen
+#MSG_VIDEO_GAME_SCREEN_BOTTOM
+Lower Screen
 #MSG_GENERAL_OFF
 关
 #MSG_GENERAL_ON
@@ -482,6 +494,8 @@ Format d'image     %s
 Avance rapide       %s
 #FMT_VIDEO_FRAME_SKIPPING
 Omission d'images  %s
+#FMT_VIDEO_GAME_SCREEN
+Écran de jeu          %s
 #FMT_AUDIO_SOUND
 Son                         %s
 #FMT_AUDIO_RETRO_SOUND
@@ -586,6 +600,10 @@ Nouveau jeu
 [9] Montrer 1 image sur 10
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] Montrer 1 image sur 11
+#MSG_VIDEO_GAME_SCREEN_TOP
+Écran supérieur
+#MSG_VIDEO_GAME_SCREEN_BOTTOM
+Écran inférieur
 #MSG_GENERAL_OFF
 Hors fonction
 #MSG_GENERAL_ON
@@ -694,6 +712,8 @@ Bildformat          %s
 Schnellvorlauf   %s
 #FMT_VIDEO_FRAME_SKIPPING
 Frames übersp.  %s
+#FMT_VIDEO_GAME_SCREEN
+Game screen      %s
 #FMT_AUDIO_SOUND
 Ton                     %s
 #FMT_AUDIO_RETRO_SOUND
@@ -798,6 +818,10 @@ Neues Spiel
 [9] Zeige 1 von 10 Frames
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] Zeige 1 von 11 Frames
+#MSG_VIDEO_GAME_SCREEN_TOP
+Upper Screen
+#MSG_VIDEO_GAME_SCREEN_BOTTOM
+Lower Screen
 #MSG_GENERAL_OFF
 Aus
 #MSG_GENERAL_ON
@@ -906,6 +930,8 @@ Beeldverhouding  %s
 Vooruitspoelen     %s
 #FMT_VIDEO_FRAME_SKIPPING
 Beeld overslaan   %s
+#FMT_VIDEO_GAME_SCREEN
+Game screen        %s
 #FMT_AUDIO_SOUND
 Geluid                    %s
 #FMT_AUDIO_RETRO_SOUND
@@ -1010,6 +1036,10 @@ Nieuw spel
 [9] 1 uit 10 beelden tonen
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] 1 uit 11 beelden tonen
+#MSG_VIDEO_GAME_SCREEN_TOP
+Upper Screen
+#MSG_VIDEO_GAME_SCREEN_BOTTOM
+Lower Screen
 #MSG_GENERAL_OFF
 Uit
 #MSG_GENERAL_ON
@@ -1118,6 +1148,8 @@ Modo de pantalla        %s
 Modo avance rápido   %s
 #FMT_VIDEO_FRAME_SKIPPING
 Salto de fotogramas  %s
+#FMT_VIDEO_GAME_SCREEN
+Game screen              %s
 #FMT_AUDIO_SOUND
 Sonido                         %s
 #FMT_AUDIO_RETRO_SOUND
@@ -1222,6 +1254,10 @@ Nuevo juego
 [9] Mostrar 1/10
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] Mostrar 1/11
+#MSG_VIDEO_GAME_SCREEN_TOP
+Upper Screen
+#MSG_VIDEO_GAME_SCREEN_BOTTOM
+Lower Screen
 #MSG_GENERAL_OFF
 Apagado
 #MSG_GENERAL_ON
@@ -1329,6 +1365,8 @@ Modalità video    %s
 Avanzamento rapido   %s
 #FMT_VIDEO_FRAME_SKIPPING
 Salto fotogrammi %s
+#FMT_VIDEO_GAME_SCREEN
+Game screen           %s
 #FMT_AUDIO_SOUND
 Audio                       %s
 #FMT_AUDIO_RETRO_SOUND
@@ -1433,6 +1471,10 @@ Nuovo gioco
 [9] Mostra 1 su 10 fotogrammi
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] Mostra 1 su 11 fotogrammi
+#MSG_VIDEO_GAME_SCREEN_TOP
+Upper Screen
+#MSG_VIDEO_GAME_SCREEN_BOTTOM
+Lower Screen
 #MSG_GENERAL_OFF
 Disabilita
 #MSG_GENERAL_ON
@@ -1540,6 +1582,8 @@ Proporção            %s
 Avanço de quadro  %s
 #FMT_VIDEO_FRAME_SKIPPING
 Pulo de quadros   %s
+#FMT_VIDEO_GAME_SCREEN
+Game screen        %s
 #FMT_AUDIO_SOUND
 Som                       %s
 #FMT_AUDIO_RETRO_SOUND
@@ -1644,6 +1688,10 @@ Novo jogo
 [9] Mostrar 1 em 10 frames
 #MSG_VIDEO_FRAME_SKIPPING_10
 [10] Mostrar 1 em 11 frames
+#MSG_VIDEO_GAME_SCREEN_TOP
+Upper Screen
+#MSG_VIDEO_GAME_SCREEN_BOTTOM
+Lower Screen
 #MSG_GENERAL_OFF
 Desligado
 #MSG_GENERAL_ON

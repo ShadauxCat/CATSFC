@@ -140,22 +140,29 @@ bool8 S9xInitUpdate ()
 }
 
 
-extern void NDSSFCDrawFrameAntialiased();
+extern void NDSSFCDrawFrameAntialiased(void* screen_addr);
 	
 
 bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 {
+	void* screen_addr = emu_config.BottomScreenGame
+		? down_screen_addr
+		: up_screen_addr;
+	SCREEN_ID screen_num = emu_config.BottomScreenGame
+		? DOWN_SCREEN
+		: UP_SCREEN;
+
 	switch(game_config.graphic)
 	{
 		//Up
 		case 1:
 #ifdef DS2_DMA
 			__dcache_writeback_all();
-			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 32 * 2, 256 * 192 * 2);
+			ds2_DMAcopy_32Byte(1 /* channel: graphics */, screen_addr, GFX.Screen + 256 * 32 * 2, 256 * 192 * 2);
 			ds2_DMA_wait(1);
 			ds2_DMA_stop(1);
 #else
-		    memcpy(up_screen_addr, GFX.Screen+256*32*2, 256*192*2);
+		    memcpy(screen_addr, GFX.Screen+256*32*2, 256*192*2);
 #endif
 			break;
 
@@ -163,11 +170,11 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		case 2:
 #ifdef DS2_DMA
 			__dcache_writeback_all();
-			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen, 256 * 192 * 2);
+			ds2_DMAcopy_32Byte(1 /* channel: graphics */, screen_addr, GFX.Screen, 256 * 192 * 2);
 			ds2_DMA_wait(1);
 			ds2_DMA_stop(1);
 #else
-		    memcpy(up_screen_addr, GFX.Screen, 256*192*2);
+		    memcpy(screen_addr, GFX.Screen, 256*192*2);
 #endif
 			break;
 
@@ -175,16 +182,16 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 		case 3:
 #ifdef DS2_DMA
 			__dcache_writeback_all();
-			ds2_DMAcopy_32Byte(1 /* channel: graphics */, up_screen_addr, GFX.Screen + 256 * 16 * 2, 256 * 192 * 2);
+			ds2_DMAcopy_32Byte(1 /* channel: graphics */, screen_addr, GFX.Screen + 256 * 16 * 2, 256 * 192 * 2);
 			ds2_DMA_wait(1);
 			ds2_DMA_stop(1);
 #else
-		    memcpy(up_screen_addr, GFX.Screen+256*16*2, 256*192*2);
+		    memcpy(screen_addr, GFX.Screen+256*16*2, 256*192*2);
 #endif
 			break;
 			
 		case 4:
-			NDSSFCDrawFrameAntialiased ();
+			NDSSFCDrawFrameAntialiased (screen_addr);
 		break;
 		
 
@@ -197,7 +204,7 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 			register unsigned int m;
 
 			src = GFX.Screen;
-			dst = (unsigned char*)up_screen_addr;
+			dst = (unsigned char*)screen_addr;
 			for(m = 0; m < 32; m++)
 			{
 #ifdef DS2_DMA
@@ -214,7 +221,7 @@ bool8 S9xDeinitUpdate (int Width, int Height, bool8 /*sixteen_bit*/)
 			break;
 	}
 
-	ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
+	ds2_flipScreen(screen_num, UP_SCREEN_UPDATE_METHOD);
 	// A problem with update method 1 (wait, double buffer) means that, after
 	// about 15 minutes of play time, the screen starts to half-redraw every
 	// frame. With update method 0, this is mitigated. (Method 2 is too slow.)
@@ -648,7 +655,19 @@ int sfc_main (int argc, char **argv)
 				S9xSetSoundMute (TRUE);
 				unsigned short screen[256*192];
 
-				copy_screen((void*)screen, up_screen_addr, 0, 0, 256, 192);
+				if (FirstInvocation) {
+					memset(screen, 0, sizeof(screen));
+				}
+				else {
+					S9xDeinitUpdate(256, 224, TRUE);
+
+					void* screen_addr = emu_config.BottomScreenGame
+						? down_screen_addr
+						: up_screen_addr;
+
+					copy_screen((void*)screen, screen_addr, 0, 0, 256, 192);
+				}
+
 				menu(screen, FirstInvocation);
 				FirstInvocation = FALSE;
 				game_disableAudio();
@@ -1262,10 +1281,13 @@ uint32 S9xReadJoypad (int which1)
 				mdelay(1);
 			} while (inputdata.key & KEY_LID);
 			ds2_wakeup();
-			// Before starting to emulate again, turn off the lower
-			// screen's backlight.
+			// Before starting to emulate again, turn on only the
+			// game screen's backlight.
+			SCREEN_ID screen_num = emu_config.BottomScreenGame
+				? DOWN_SCREEN
+				: UP_SCREEN;
 			mdelay(100); // needed to avoid ds2_setBacklight crashing
-			ds2_setBacklight(2);
+			ds2_setBacklight(3 - screen_num);
 			GameFrequencyCPU();
 		}
 

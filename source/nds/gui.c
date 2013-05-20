@@ -2728,6 +2728,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
     char *sound_seletion[] = { (char*)&msg[MSG_AUDIO_MUTED], (char*)&msg[MSG_AUDIO_ENABLED] };
 
+    char *game_screen_options[] = { (char*)&msg[MSG_VIDEO_GAME_SCREEN_TOP], (char*)&msg[MSG_VIDEO_GAME_SCREEN_BOTTOM] };
+
+
 //    char *snap_frame_options[] = { (char*)&msg[MSG_SNAP_FRAME_0], (char*)&msg[MSG_SNAP_FRAME_1] };
 
 //    char *enable_disable_options[] = { (char*)&msg[MSG_EN_DIS_ABLE_0], (char*)&msg[MSG_EN_DIS_ABLE_1] };
@@ -2755,7 +2758,11 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 		&game_config.frameskip_value, 12 /* auto (0) and 0..10 (1..11) make 12 option values */, NULL, ACTION_TYPE, 5),
 
 	/* 06 */	STRING_SELECTION_OPTION(game_set_retro, NULL, &msg[FMT_AUDIO_RETRO_SOUND], on_off_options,
-		&game_config.RetroSound, 2, NULL, ACTION_TYPE, 6)
+		&game_config.RetroSound, 2, NULL, ACTION_TYPE, 6),
+
+	/* 07 */	STRING_SELECTION_OPTION(NULL, NULL, &msg[FMT_VIDEO_GAME_SCREEN], game_screen_options,
+		&emu_config.BottomScreenGame, 2, NULL, PASSIVE_TYPE, 7)
+
 	};
 
 	MAKE_MENU(graphics, NULL, NULL, NULL, NULL, 1, 1);
@@ -3569,12 +3576,9 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 	}
 	else
 	{
-		/*
-		 * It's pretty complicated. These two flips are needed because,
-		 * otherwise, the menu freezes if S9xAutoSaveSRAM was called after
-		 * loading from a save state.
-		 */
+		copy_screen(up_screen_addr, (void*) screen, 0, 0, 256, 192);
 		ds2_flipScreen(UP_SCREEN, 1);
+		copy_screen(up_screen_addr, (void*) screen, 0, 0, 256, 192);
 		ds2_flipScreen(UP_SCREEN, 1);
 	}
 
@@ -4022,14 +4026,31 @@ u32 menu(u16 *screen, bool8 FirstInvocation)
 
 	if(bg_screenp != NULL) free((void*)bg_screenp);
 
-	ds2_clearScreen(DOWN_SCREEN, 0);
-	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
-	copy_screen(up_screen_addr, (void*) screen, 0, 0, 256, 192);
-	ds2_flipScreen(UP_SCREEN, UP_SCREEN_UPDATE_METHOD);
+	void* screen_addr;
+	SCREEN_ID screen_num;
+	if (emu_config.BottomScreenGame)
+	{
+		screen_addr = down_screen_addr;
+		screen_num = DOWN_SCREEN;
+		ds2_clearScreen(UP_SCREEN, 0);
+		ds2_flipScreen(UP_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
+	}
+	else
+	{
+		screen_addr = up_screen_addr;
+		screen_num = UP_SCREEN;
+		ds2_clearScreen(DOWN_SCREEN, 0);
+		ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
+	}
+
+	copy_screen(screen_addr, (void*) screen, 0, 0, 256, 192);
+	ds2_flipScreen(screen_num, UP_SCREEN_UPDATE_METHOD);
+	copy_screen(screen_addr, (void*) screen, 0, 0, 256, 192);
+	ds2_flipScreen(screen_num, UP_SCREEN_UPDATE_METHOD);
 	wait_Allkey_release(0);
 
 	mdelay(100); // to prevent ds2_setBacklight() from crashing
-	ds2_setBacklight(2);
+	ds2_setBacklight(3 - screen_num);
 
 	GameFrequencyCPU();
 
@@ -4623,9 +4644,12 @@ void QuickLoadState (void)
 {
 	char BaseName[MAX_PATH + 1];
 	get_savestate_filename(0, BaseName);
+	SCREEN_ID screen_num = emu_config.BottomScreenGame
+		? DOWN_SCREEN
+		: UP_SCREEN;
 
 	mdelay(100); // needed to avoid ds2_setBacklight crashing
-	ds2_setBacklight(3);
+	ds2_setBacklight((3 - DOWN_SCREEN) | (3 - screen_num));
 
 	ds2_clearScreen(DOWN_SCREEN, RGB15(0, 0, 0));
 	draw_message(down_screen_addr, NULL, 28, 31, 227, 165, 0);
@@ -4647,16 +4671,19 @@ void QuickLoadState (void)
 	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 	mdelay(100); // needed to avoid ds2_setBacklight crashing
-	ds2_setBacklight(2);
+	ds2_setBacklight(3 - screen_num);
 }
 
 void QuickSaveState (void)
 {
 	char BaseName[MAX_PATH + 1];
 	get_savestate_filename(0, BaseName);
+	SCREEN_ID screen_num = emu_config.BottomScreenGame
+		? DOWN_SCREEN
+		: UP_SCREEN;
 
 	mdelay(100); // needed to avoid ds2_setBacklight crashing
-	ds2_setBacklight(3);
+	ds2_setBacklight((3 - DOWN_SCREEN) | (3 - screen_num));
 
 	ds2_clearScreen(DOWN_SCREEN, RGB15(0, 0, 0));
 	draw_message(down_screen_addr, NULL, 28, 31, 227, 165, 0);
@@ -4680,7 +4707,7 @@ void QuickSaveState (void)
 	ds2_flipScreen(DOWN_SCREEN, DOWN_SCREEN_UPDATE_METHOD);
 
 	mdelay(100); // needed to avoid ds2_setBacklight crashing
-	ds2_setBacklight(2);
+	ds2_setBacklight(3 - screen_num);
 }
 
 void ToggleFullScreen (void)

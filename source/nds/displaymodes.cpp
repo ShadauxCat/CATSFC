@@ -56,10 +56,10 @@ static uint16 SevenToSixScanlineResize (uint16 TopColour, uint16 BottomColour, u
 	;
 }
 
-void NDSSFCDrawFrameAntialiased ()
+void NDSSFCDrawFrameAntialiased (void* screen_addr)
 {
 	uint16 X, Y;
-	uint16 *SrcTop = (uint16 *) GFX.Screen, *SrcBottom = SrcTop + 256, *Dest = (uint16 *) up_screen_addr;
+	uint16 *SrcTop = (uint16 *) GFX.Screen, *SrcBottom = SrcTop + 256, *Dest = (uint16 *) screen_addr;
 
 	for (Y = 0; Y < 224; Y += 7)
 	{
