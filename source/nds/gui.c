@@ -318,6 +318,7 @@ static u32 parse_line(char *current_line, char *current_str);
 static void get_timestamp_string(char *buffer, u16 msg_id, u16 year, u16 mon, u16 day, u16 wday, u16 hour, u16 min, u16 sec, u32 msec);
 static void get_time_string(char *buff, struct rtc *rtcp);
 static u32 save_ss_bmp(u16 *image);
+static u32 save_menu_ss_bmp(u16 *image);
 static void init_game_config(void);
 static void init_emulator_config(void);
 static void load_game_config_file(void);
@@ -386,6 +387,15 @@ gui_action_type get_gui_input(void)
 		// and it is on right away after resuming from suspend.
 		// mdelay(100); // needed to avoid ds2_setBacklight crashing
 		// ds2_setBacklight(3);
+	}
+
+	if ((inputdata.key & (KEY_L | KEY_R)) == (KEY_L | KEY_R))
+	{
+		save_menu_ss_bmp(down_screen_addr);
+		do {
+			ds2_getrawInput(&inputdata);
+			mdelay(1);
+		} while ((inputdata.key & (KEY_L | KEY_R)) == (KEY_L | KEY_R));
 	}
 
 	unsigned int i;
@@ -4819,6 +4829,53 @@ static u32 save_ss_bmp(u16 *image)
     fclose( ss );
 
     return 1;
+}
+
+u32 save_menu_ss_bmp(u16 *image)
+{
+    static unsigned char header[] ={ 'B',  'M',  0x00, 0x00, 0x00, 0x00, 0x00,
+                                    0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00,
+                                    0x28, 0x00, 0x00, 0x00, 0x00,    1, 0x00, /* <00 01> == 256 */
+                                    0x00,  192, 0x00, 0x00, 0x00, 0x01, 0x00,
+                                    0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                    0x00, 0x00, 0x00, 0x00, 0x00};
+
+	char save_ss_path[MAX_PATH];
+	struct rtc current_time;
+	unsigned char rgb_data[NDS_SCREEN_WIDTH*NDS_SCREEN_HEIGHT*3];
+	int x,y;
+	unsigned short col;
+	unsigned char r,g,b;
+
+	ds2_getTime(&current_time);
+	sprintf(save_ss_path, "%s/%s%02d%02d%02d%02d%02d.bmp", DEFAULT_SS_DIR, "gui_",
+		current_time.month, current_time.day,
+		current_time.hours, current_time.minutes, current_time.seconds);
+
+	for(y = 0; y < NDS_SCREEN_HEIGHT; y++)
+	{
+		for(x = 0; x < NDS_SCREEN_WIDTH; x++)
+		{
+			col = image[y * NDS_SCREEN_WIDTH + x];
+			r = (col >> 10) & 0x1F;
+			g = (col >> 5) & 0x1F;
+			b = (col) & 0x1F;
+
+			rgb_data[(NDS_SCREEN_HEIGHT-y-1)*NDS_SCREEN_WIDTH*3+x*3+2] = b << 3;
+			rgb_data[(NDS_SCREEN_HEIGHT-y-1)*NDS_SCREEN_WIDTH*3+x*3+1] = g << 3;
+			rgb_data[(NDS_SCREEN_HEIGHT-y-1)*NDS_SCREEN_WIDTH*3+x*3+0] = r << 3;
+		}
+	}
+
+	FILE *ss = fopen( save_ss_path, "wb" );
+	if( ss == NULL ) return 0;
+	fwrite( header, sizeof(header), 1, ss );
+	fwrite( rgb_data, 1, sizeof(rgb_data), ss);
+	fclose( ss );
+
+	return 1;
 }
 
 void quit(void)
