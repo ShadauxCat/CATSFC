@@ -965,12 +965,17 @@ s32 load_file(char **wildcards, char *result, char *default_dir_name)
 				else
 				{
 					char* Extension = strrchr(EntryNames[i], '.');
-					if (strcasecmp(Extension, ".smc") == 0 || strcasecmp(Extension, ".sfc") == 0)
-						icon = &ICON_SFCFILE;
-					else if (strcasecmp(Extension, ".zip") == 0)
-						icon = &ICON_ZIPFILE;
-					else if (strcasecmp(Extension, ".cht") == 0)
-						icon = &ICON_CHTFILE;
+					if (Extension != NULL)
+					{
+						if (strcasecmp(Extension, ".smc") == 0 || strcasecmp(Extension, ".sfc") == 0)
+							icon = &ICON_SFCFILE;
+						else if (strcasecmp(Extension, ".zip") == 0)
+							icon = &ICON_ZIPFILE;
+						else if (strcasecmp(Extension, ".cht") == 0)
+							icon = &ICON_CHTFILE;
+						else
+							icon = &ICON_UNKNOW;
+					}
 					else
 						icon = &ICON_UNKNOW;
 				}
