@@ -71,7 +71,7 @@ char *language_options[] = { (char *) &lang[0], (char *) &lang[1], (char *) &lan
 #define SUBMENU_ROW_NUM	8
 #define FILE_LIST_ROWS SUBMENU_ROW_NUM
 
-#define NDSSFC_VERSION "1.35"
+#define NDSSFC_VERSION "1.36"
 
 #define SAVE_STATE_SLOT_NUM		16
 
