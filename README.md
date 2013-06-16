@@ -38,11 +38,6 @@ old format used in Mightymo's BSNES Cheat Code Pack.
 4. Open your storage card's CATSFC folder, then descend into gamecht.
 5. Drag the cheat code files from the zip archive to the card's gamecht
    folder.
-6. In the card's gamecht directory, create two folders. Name the first one
-   *a-m* and the second one *n-z*. Drag the cheat files from the games whose
-   name starts with A to M into *a-m* and the rest into *n-z*.
-
-This is because the directory display does not handle more than 512 files.
 
 To add cheats to the menu in a game, first load the game, then use the Cheats
 menu's "Load a cheat file" option.
