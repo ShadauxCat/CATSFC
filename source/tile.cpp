@@ -456,11 +456,11 @@ void DrawLargePixelHalfWidth (uint32 Tile, uint32 Offset,
 }
 #endif
 
-static void WRITE_4PIXELS16 (uint32 Offset, uint8 *Pixels, uint16 *ScreenColors)
+static void WRITE_4PIXELS16 (int32 Offset, uint8 *Pixels, uint16 *ScreenColors)
 {
 	uint8  Pixel;
-	uint16 *Screen = (uint16 *) GFX.S + Offset;
-	uint8  *Depth = GFX.DB + Offset;
+   uint16 *Screen = (uint16 *) GFX.S + Offset;
+   uint8  *Depth = GFX.DB + Offset;
 
 	for (uint8 N = 0; N < 4; N++)
 	{
@@ -472,7 +472,7 @@ static void WRITE_4PIXELS16 (uint32 Offset, uint8 *Pixels, uint16 *ScreenColors)
 	}
 }
 
-static void WRITE_4PIXELS16_FLIPPED (uint32 Offset, uint8 *Pixels, uint16 *ScreenColors)
+static void WRITE_4PIXELS16_FLIPPED (int32 Offset, uint8 *Pixels, uint16 *ScreenColors)
 {
 	uint8  Pixel;
 	uint16 *Screen = (uint16 *) GFX.S + Offset;

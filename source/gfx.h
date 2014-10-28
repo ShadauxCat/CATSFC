@@ -137,7 +137,9 @@ struct SGFX{
     uint32 PPL;	      // Number of pixels on each of Screen buffer
     uint32 PPLx2;
     uint32 PixSize;
+    uint8 S_safety_margin[8];
     uint8  *S;
+    uint8 DB_safety_margin[8];
     uint8  *DB;
     uint32 DepthDelta;
     uint8  Z1;          // Depth for comparison
