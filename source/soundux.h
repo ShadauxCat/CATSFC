@@ -144,14 +144,8 @@ typedef struct {
     uint32 err_rate;
 } SoundStatus;
 
-// Define NO_VOLATILE_SOUND if you're always reading or writing sound from one
-// thread or one co-routine. If you're using interrupts or a thread, sound must
-// be volatile.
-#ifndef NO_VOLATILE_SOUND
-EXTERN_C volatile SoundStatus so;
-#else
 EXTERN_C SoundStatus so;
-#endif
+
 
 typedef struct {
     int state;
@@ -196,12 +190,6 @@ typedef struct {
 
 typedef struct
 {
-#ifndef FOREVER_FORWARD_STEREO
-    short master_volume_left; /* range is -128 .. 127 */
-    short master_volume_right; /* range is -128 .. 127 */
-    short echo_volume_left; /* range is -128 .. 127 */
-    short echo_volume_right; /* range is -128 .. 127 */
-#endif
     int echo_enable;
     int echo_feedback; /* range is -128 .. 127 */
     int echo_ptr;

@@ -388,17 +388,12 @@ static int ReadOrigSnapshot (STREAM snap)
 				 sizeof (SOrigSoundData), snap)) != SUCCESS)
 	    return (result);
 
-#ifndef FOREVER_FORWARD_STEREO
-	SoundData.master_volume_left = OrigSoundData.master_volume_left;
-	SoundData.master_volume_right = OrigSoundData.master_volume_right;
-	SoundData.echo_volume_left = OrigSoundData.echo_volume_left;
-	SoundData.echo_volume_right = OrigSoundData.echo_volume_right; 
-#else
+
 	SoundData.master_volume [0] = OrigSoundData.master_volume_left;
 	SoundData.master_volume [1] = OrigSoundData.master_volume_right;
 	SoundData.echo_volume [0] = OrigSoundData.echo_volume_left;
-	SoundData.echo_volume [1] = OrigSoundData.echo_volume_right; 
-#endif
+   SoundData.echo_volume [1] = OrigSoundData.echo_volume_right;
+
 	SoundData.echo_enable = OrigSoundData.echo_enable;
 	SoundData.echo_feedback = OrigSoundData.echo_feedback;
 	SoundData.echo_ptr = OrigSoundData.echo_ptr;

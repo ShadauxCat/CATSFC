@@ -839,22 +839,6 @@ void S9xEndScreenRefresh ()
     }
 
     S9xApplyCheats ();
-#ifdef DEBUGGER
-    if (CPU.Flags & FRAME_ADVANCE_FLAG)
-    {
-	if (ICPU.FrameAdvanceCount)
-	{
-	    ICPU.FrameAdvanceCount--;
-	    IPPU.RenderThisFrame = TRUE;
-	    IPPU.FrameSkip = 0;
-	}
-	else
-	{
-	    CPU.Flags &= ~FRAME_ADVANCE_FLAG;
-	    CPU.Flags |= DEBUG_MODE_FLAG;
-	}
-    }
-#endif
 
     if (CPU.SRAMModified)
     {

@@ -176,11 +176,6 @@ void S9xExit ()
 //    Memory.Deinit ();
 //    S9xDeinitAPU ();
 
-//#ifdef _NETPLAY_SUPPORT
-//    if (Settings.NetPlay)
-//   S9xNetPlayDisconnect ();
-//#endif
-
 //   exit(0);
 }
 
@@ -402,9 +397,6 @@ void init_sfc_setting(void)
 #endif
 
     Settings.SoundPlaybackRate = 44100;	// -> ds2sound.h for defs
-#ifndef FOREVER_STEREO
-    Settings.Stereo = TRUE;
-#endif
     Settings.SoundBufferSize = 512;
     Settings.CyclesPercentage = 100;
     Settings.DisableSoundEcho = FALSE;
@@ -424,25 +416,10 @@ void init_sfc_setting(void)
     Settings.ControllerOption = SNES_JOYPAD;
 
     Settings.Transparency = TRUE;
-#ifndef FOREVER_16_BIT
-    Settings.SixteenBit = TRUE;
-#endif
-#ifndef FOREVER_16_BIT_SOUND
-    Settings.SixteenBitSound = TRUE;
-#endif
-
     Settings.SupportHiRes = FALSE;
     Settings.ThreadSound = FALSE;
-   Settings.SoundSync = TRUE;
-    Settings.AutoSaveDelay = 0;
-#ifdef _NETPLAY_SUPPORT
-    Settings.NetPlay = FALSE;
-    Settings.ServerName [0] = 0;
-    Settings.Port = NP_DEFAULT_PORT;
-#endif
+    Settings.SoundSync = TRUE;
     Settings.ApplyCheats = TRUE;
-    Settings.TurboMode = FALSE;
-    Settings.TurboSkipFrames = 10;
     Settings.StretchScreenshots = 1;
 
    Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
@@ -497,40 +474,6 @@ int load_gamepak(const char* file)
    // mdelay(50); // Delete this delay
    S9xLoadCheatFile (S9xGetFilename (".chb")); // cheat binary file, as opposed to text
 
-#ifdef _NETPLAY_SUPPORT
-    if (strlen (Settings.ServerName) == 0)
-    {
-   char *server = getenv ("S9XSERVER");
-   if (server)
-   {
-       strncpy (Settings.ServerName, server, 127);
-       Settings.ServerName [127] = 0;
-   }
-    }
-    char *port = getenv ("S9XPORT");
-    if (Settings.Port >= 0 && port)
-      Settings.Port = atoi (port);
-    else if (Settings.Port < 0)
-        Settings.Port = -Settings.Port;
-
-    if (Settings.NetPlay)
-    {
-   int player;
-
-   if (!S9xNetPlayConnectToServer (Settings.ServerName, Settings.Port,
-               Memory.ROMName, player))
-   {
-       fprintf (stderr, "Failed to connected to Snes9x netplay"
-                     " server \"%s\" on port %d.\n",
-                     Settings.ServerName, Settings.Port);
-       S9xExit ();
-   }
-   fprintf (stderr, "Connected to \"%s\" on port %d as"
-                 " player #%d playing \"%s\"\n",
-       Settings.ServerName, Settings.Port, player, Memory.ROMName);
-    }
-
-#endif
 /*
     if (snapshot_filename)
     {
@@ -572,11 +515,7 @@ void retro_init (void)
       OutOfMemory ();
 
     S9xInitSound (Settings.SoundPlaybackRate,
-#ifndef FOREVER_STEREO
-                  Settings.Stereo,
-#else
                   TRUE,
-#endif
                   Settings.SoundBufferSize);
 #ifdef GFX_MULTI_FORMAT
 //    S9xSetRenderPixelFormat (RGB565);

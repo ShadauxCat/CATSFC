@@ -97,7 +97,6 @@
 #include "gfx.h"
 #include "display.h"
 #include "sa1.h"
-#include "netplay.h"
 #include "sdd1.h"
 #include "srtc.h"
 #include "spc7110.h"
@@ -120,10 +119,6 @@ void S9xLatchCounters (bool force)
 {
 	if(!force && !(Memory.FillRAM[0x4213] & 0x80)) return;
 
-	// Latch h and v counters, like the gun
-#ifdef DEBUGGER
-	missing.h_v_latch = 1;
-#endif
 #if 0
 # ifdef CPU_SHUTDOWN
 	CPU.WaitAddress = CPU.PCAtOpcodeStart;
@@ -145,9 +140,6 @@ void S9xUpdateHTimer ()
 {
 	if (PPU.HTimerEnabled)
 	{
-#ifdef DEBUGGER
-		missing.hirq_pos = PPU.IRQHBeamPos;
-#endif
 		PPU.HTimerPosition = PPU.IRQHBeamPos * Settings.H_Max / SNES_HCOUNTER_MAX;
 		if (PPU.HTimerPosition == Settings.H_Max ||
 			PPU.HTimerPosition == Settings.HBlankStart)
@@ -202,22 +194,15 @@ void S9xUpdateHTimer ()
 
 void S9xFixColourBrightness ()
 {
-    IPPU.XB = mul_brightness [PPU.Brightness];
-#ifndef FOREVER_16_BIT
-    if (Settings.SixteenBit)
-	{
-#endif
-		for (int i = 0; i < 256; i++)
-		{
-			IPPU.Red [i] = IPPU.XB [PPU.CGDATA [i] & 0x1f];
-			IPPU.Green [i] = IPPU.XB [(PPU.CGDATA [i] >> 5) & 0x1f];
-			IPPU.Blue [i] = IPPU.XB [(PPU.CGDATA [i] >> 10) & 0x1f];
-			IPPU.ScreenColors [i] = BUILD_PIXEL (IPPU.Red [i], IPPU.Green [i],
-												 IPPU.Blue [i]);
-		}
-#ifndef FOREVER_16_BIT
-	}
-#endif
+ IPPU.XB = mul_brightness [PPU.Brightness];
+   for (int i = 0; i < 256; i++)
+   {
+      IPPU.Red [i] = IPPU.XB [PPU.CGDATA [i] & 0x1f];
+      IPPU.Green [i] = IPPU.XB [(PPU.CGDATA [i] >> 5) & 0x1f];
+      IPPU.Blue [i] = IPPU.XB [(PPU.CGDATA [i] >> 10) & 0x1f];
+      IPPU.ScreenColors [i] = BUILD_PIXEL (IPPU.Red [i], IPPU.Green [i],
+                                  IPPU.Blue [i]);
+   }
 }
 
 /******************************************************************************/
@@ -275,9 +260,6 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			{
 				PPU.FirstSprite = (PPU.OAMAddr&0xFE) >> 1;
 				IPPU.OBJChanged = TRUE;
-#ifdef DEBUGGER
-				missing.sprite_priority_rotation = 1;
-#endif
 			}
 			break;
 
@@ -293,18 +275,12 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				{
 					PPU.FirstSprite = (PPU.OAMAddr&0xFE) >> 1;
 					IPPU.OBJChanged = TRUE;
-#ifdef DEBUGGER
-					missing.sprite_priority_rotation = 1;
-#endif
 				}
 			} else {
 				if (PPU.FirstSprite != 0)
 				{
 					PPU.FirstSprite = 0;
 					IPPU.OBJChanged = TRUE;
-#ifdef DEBUGGER
-					missing.sprite_priority_rotation = 1;
-#endif
 				}
 			}
 			PPU.OAMFlip = 0;
@@ -330,9 +306,6 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				PPU.BGMode = Byte & 7;
 				// BJ: BG3Priority only takes effect if BGMode==1 and the bit is set
 				PPU.BG3Priority  = ((Byte & 0x0f) == 0x09);
-#ifdef DEBUGGER
-				missing.modes[PPU.BGMode] = 1;
-#endif
 				if(PPU.BGMode==5||PPU.BGMode==6)
 					IPPU.Interlace = Memory.FillRAM[0x2133]&1;
 			}
@@ -343,10 +316,6 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			if (Byte != Memory.FillRAM [0x2106])
 			{
 				FLUSH_REDRAW ();
-#ifdef DEBUGGER
-				if ((Byte & 0xf0) && (Byte & 0x0f))
-					missing.mosaic = 1;
-#endif
 				PPU.Mosaic = (Byte >> 4) + 1;
 				PPU.BGMosaic [0] = (Byte & 1) && PPU.Mosaic > 1;
 				PPU.BGMosaic [1] = (Byte & 2) && PPU.Mosaic > 1;
@@ -455,17 +424,10 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				PPU.VMA.Increment = 128;
 				break;
 			}
-#ifdef DEBUGGER
-			if ((Byte & 3) != 0)
-				missing.vram_inc = Byte & 3;
-#endif
 			if (Byte & 0x0c)
 			{
 				static uint16 IncCount [4] = { 0, 32, 64, 128 };
 				static uint16 Shift [4] = { 0, 5, 6, 7 };
-#ifdef DEBUGGER
-				missing.vram_full_graphic_inc = (Byte & 0x0c) >> 2;
-#endif
 //				PPU.VMA.Increment = 1;
 				uint8 i = (Byte & 0x0c) >> 2;
 				PPU.VMA.FullGraphicCount = IncCount [i];
@@ -596,16 +558,6 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				PPU.ClipWindow2Inside [0] = !(Byte & 0x04);
 				PPU.ClipWindow2Inside [1] = !(Byte & 0x40);
 				PPU.RecomputeClipWindows = TRUE;
-#ifdef DEBUGGER
-				if (Byte & 0x80)
-					missing.window2[1] = 1;
-				if (Byte & 0x20)
-					missing.window1[1] = 1;
-				if (Byte & 0x08)
-					missing.window2[0] = 1;
-				if (Byte & 0x02)
-					missing.window1[0] = 1;
-#endif
 			}
 			break;
 		  case 0x2124:
@@ -622,16 +574,6 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				PPU.ClipWindow2Inside [2] = !(Byte & 0x04);
 				PPU.ClipWindow2Inside [3] = !(Byte & 0x40);
 				PPU.RecomputeClipWindows = TRUE;
-#ifdef DEBUGGER
-				if (Byte & 0x80)
-					missing.window2[3] = 1;
-				if (Byte & 0x20)
-					missing.window1[3] = 1;
-				if (Byte & 0x08)
-					missing.window2[2] = 1;
-				if (Byte & 0x02)
-					missing.window1[2] = 1;
-#endif
 			}
 			break;
 		  case 0x2125:
@@ -648,16 +590,6 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				PPU.ClipWindow2Inside [4] = !(Byte & 0x04);
 				PPU.ClipWindow2Inside [5] = !(Byte & 0x40);
 				PPU.RecomputeClipWindows = TRUE;
-#ifdef DEBUGGER
-				if (Byte & 0x80)
-					missing.window2[5] = 1;
-				if (Byte & 0x20)
-					missing.window1[5] = 1;
-				if (Byte & 0x08)
-					missing.window2[4] = 1;
-				if (Byte & 0x02)
-					missing.window1[4] = 1;
-#endif
 			}
 			break;
 		  case 0x2126:
@@ -733,10 +665,6 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			if (Byte != Memory.FillRAM [0x212d])
 			{
 				FLUSH_REDRAW ();
-#ifdef DEBUGGER
-				if (Byte & 0x1f)
-					missing.subscreen = 1;
-#endif
 				PPU.RecomputeClipWindows = TRUE;
 				Memory.FillRAM [Address] = Byte;
 				return;
@@ -758,10 +686,6 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			{
 				FLUSH_REDRAW ();
 				PPU.RecomputeClipWindows = TRUE;
-#ifdef DEBUGGER
-				if ((Byte & 1) && (PPU.BGMode == 3 || PPU.BGMode == 4 || PPU.BGMode == 7))
-					missing.direct = 1;
-#endif
 			}
 			break;
 		  case 0x2131:
@@ -770,24 +694,6 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			{
 				FLUSH_REDRAW ();
 				// Backgrounds 1 - 4, objects and backdrop colour add/sub enable
-#ifdef DEBUGGER
-				if (Byte & 0x80)
-				{
-					// Subtract
-					if (Memory.FillRAM[0x2130] & 0x02)
-						missing.subscreen_sub = 1;
-					else
-						missing.fixed_colour_sub = 1;
-				}
-				else
-				{
-					// Addition
-					if (Memory.FillRAM[0x2130] & 0x02)
-						missing.subscreen_add = 1;
-					else
-						missing.fixed_colour_add = 1;
-				}
-#endif
 				Memory.FillRAM[0x2131] = Byte;
 			}
 			break;
@@ -808,12 +714,6 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			// Screen settings
 			if (Byte != Memory.FillRAM [0x2133])
 			{
-#ifdef DEBUGGER
-				if (Byte & 0x40)
-					missing.mode7_bgmode = 1;
-				if (Byte & 0x08)
-					missing.pseudo_512 = 1;
-#endif
 				if (Byte & 0x04)
 				{
 					PPU.ScreenHeight = SNES_HEIGHT_EXTENDED;
@@ -821,19 +721,9 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 						IPPU.RenderedScreenHeight = PPU.ScreenHeight << 1;
 					else
 						IPPU.RenderedScreenHeight = PPU.ScreenHeight;
-#ifdef DEBUGGER
-					missing.lines_239 = 1;
-#endif
 				}
 				else PPU.ScreenHeight = SNES_HEIGHT;
 
-#ifdef DEBUGGER
-				if (Byte & 0x02)
-					missing.sprite_double_height = 1;
-
-				if (Byte & 1)
-					missing.interlace = 1;
-#endif
 				//if((Byte & 1)&&(PPU.BGMode==5||PPU.BGMode==6))
 				//IPPU.Interlace=1;
 				if((Memory.FillRAM [0x2133] ^ Byte)&3)
@@ -939,19 +829,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			if (Address == 0x2801 && Settings.SRTC)
 				S9xSetSRTC (Byte, Address);
 			else
-				if (Address < 0x3000 || Address >= 0x3300)
-				{
-#ifdef DEBUGGER
-					missing.unknownppu_write = Address;
-					if (Settings.TraceUnknownRegisters)
-					{
-						sprintf (String, "Unknown register write: $%02X->$%04X\n",
-								 Byte, Address);
-						S9xMessage (S9X_TRACE, S9X_PPU_TRACE, String);
-					}
-#endif
-				}
-				else
+            if (Address >= 0x3000 && Address < 0x3300)
 				{
 					if (!Settings.SuperFX)
 					{
@@ -1040,9 +918,6 @@ uint8 S9xGetPPU (uint16 Address)
   	case 0x2101:
   	case 0x2102:
     case 0x2103:
-  #ifdef DEBUGGER
-  	    missing.oam_address_read = 1;
-  #endif
 		return OpenBus;
 
 	case 0x2104:
@@ -1090,25 +965,15 @@ uint8 S9xGetPPU (uint16 Address)
 	case 0x2111:
 	case 0x2112:
 	case 0x2113:
-#ifdef DEBUGGER
-		missing.bg_offset_read = 1;
-#endif
 		return OpenBus;
 
 	case 0x2114:
-#ifdef DEBUGGER
-	    missing.bg_offset_read = 1;
-#endif
-
 	case 0x211b:
 	case 0x211c:
 	case 0x211d:
 	case 0x211e:
 	case 0x211f:
 	case 0x2120:
-#ifdef DEBUGGER
-	    missing.matrix_read = 1;
-#endif
 		return OpenBus;
 
 
@@ -1125,9 +990,6 @@ uint8 S9xGetPPU (uint16 Address)
 		Memory.FillRAM[0x2136] = (uint8)(r >> 16);
 		PPU.Need16x8Mulitply = FALSE;
 	    }
-#ifdef DEBUGGER
-	    missing.matrix_multiply = 1;
-#endif
 		return (PPU.OpenBus1 = Memory.FillRAM[Address]);
 	case 0x2137:
 		S9xLatchCounters(0);
@@ -1148,9 +1010,6 @@ uint8 S9xGetPPU (uint16 Address)
 				{
 					PPU.FirstSprite = (PPU.OAMAddr&0xFE) >> 1;
 					IPPU.OBJChanged = TRUE;
-#ifdef DEBUGGER
-					missing.sprite_priority_rotation = 1;
-#endif
 				}
 			}
 		} else {
@@ -1166,23 +1025,14 @@ uint8 S9xGetPPU (uint16 Address)
 				{
 					PPU.FirstSprite = (PPU.OAMAddr&0xFE) >> 1;
 					IPPU.OBJChanged = TRUE;
-#ifdef DEBUGGER
-					missing.sprite_priority_rotation = 1;
-#endif
 				}
 			}
 		}
 		PPU.OAMFlip ^= 1;
-#ifdef DEBUGGER
-	    missing.oam_read = 1;
-#endif
 		return (PPU.OpenBus1 = byte);
 
 	case 0x2139:
 		// Read vram low byte
-#ifdef DEBUGGER
-		missing.vram_read = 1;
-#endif
 #ifdef CORRECT_VRAM_READS
 		byte = IPPU.VRAMReadBuffer & 0xff;
 		if (!PPU.VMA.High)
@@ -1225,9 +1075,6 @@ uint8 S9xGetPPU (uint16 Address)
 			break;
 	case 0x213A:
 		// Read vram high byte
-#ifdef DEBUGGER
-		missing.vram_read = 1;
-#endif
 #ifdef CORRECT_VRAM_READS
 		byte = (IPPU.VRAMReadBuffer>>8) & 0xff;
 		if (PPU.VMA.High)
@@ -1270,9 +1117,6 @@ uint8 S9xGetPPU (uint16 Address)
 
 	case 0x213B:
 	    // Read palette data
-#ifdef DEBUGGER
-	    missing.cgram_read = 1;
-#endif
 	    if (PPU.CGFLIPRead)
 		byte = PPU.CGDATA [PPU.CGADD++] >> 8;
 	    else
@@ -1283,9 +1127,6 @@ uint8 S9xGetPPU (uint16 Address)
 	    
 	case 0x213C:
 	    // Horizontal counter value 0-339
-#ifdef DEBUGGER
-	    missing.h_counter_read = 1;
-#endif
 	    if (PPU.HBeamFlip)
 		byte = (PPU.OpenBus2 & 0xfe)
 			| ((PPU.HBeamPosLatched >> 8) & 0x01);
@@ -1298,9 +1139,6 @@ uint8 S9xGetPPU (uint16 Address)
 
 	case 0x213D:
 	    // Vertical counter value 0-262
-#ifdef DEBUGGER
-	    missing.v_counter_read = 1;
-#endif
 	    if (PPU.VBeamFlip)
                 byte = (PPU.OpenBus2 & 0xfe)
 			| ((PPU.VBeamPosLatched >> 8) & 0x01);
@@ -1395,9 +1233,6 @@ uint8 S9xGetPPU (uint16 Address)
 
 	case 0x2180:
 	    // Read WRAM
-#ifdef DEBUGGER
-	    missing.wram_read = 1;
-#endif
 	    byte = Memory.RAM [PPU.WRAM++];
 	    PPU.WRAM &= 0x1FFFF;
 	    break;
@@ -1435,14 +1270,6 @@ uint8 S9xGetPPU (uint16 Address)
 		/*FALL*/
 			    
 	    default:
-#ifdef DEBUGGER
-	        missing.unknownppu_read = Address;
-	        if (Settings.TraceUnknownRegisters)
-		{
-		    sprintf (String, "Unknown register read: $%04X\n", Address);
-		    S9xMessage (S9X_TRACE, S9X_PPU_TRACE, String);
-		}
-#endif
 		return OpenBus;
 	    }
 	}
@@ -1511,15 +1338,6 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 		  case 0x4017:
 			break;
 		  default:
-#ifdef DEBUGGER
-			missing.unknowncpu_write = Address;
-			if (Settings.TraceUnknownRegisters)
-			{
-				sprintf (String, "Unknown register register write: $%02X->$%04X\n",
-						 byte, Address);
-				S9xMessage (S9X_TRACE, S9X_PPU_TRACE, String);
-			}
-#endif
 			break;
 		}
 	}
@@ -1533,10 +1351,6 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 				//if(!SNESGameFixes.umiharakawaseFix && PPU.IRQVBeamPos==262) fprintf(stderr, "PPU.IRQVBeamPos = %d, CPU.V_Counter = %d\n", PPU.IRQVBeamPos, CPU.V_Counter);
 				if (!PPU.VTimerEnabled)
 				{
-#ifdef DEBUGGER
-					missing.virq = 1;
-					missing.virq_pos = PPU.IRQVBeamPos;
-#endif
 					PPU.VTimerEnabled = TRUE;
 					if (PPU.HTimerEnabled)
 						S9xUpdateHTimer ();
@@ -1556,10 +1370,6 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 			{
 				if (!PPU.HTimerEnabled)
 				{
-#ifdef DEBUGGER
-					missing.hirq = 1;
-					missing.hirq_pos = PPU.IRQHBeamPos;
-#endif
 					PPU.HTimerEnabled = TRUE;
 					S9xUpdateHTimer ();
 				}
@@ -1659,9 +1469,6 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 		  case 0x4209:
 			d = PPU.IRQVBeamPos;
 			PPU.IRQVBeamPos = (PPU.IRQVBeamPos & 0xFF00) | byte;
-#ifdef DEBUGGER
-			missing.virq_pos = PPU.IRQVBeamPos;
-#endif
 			if (PPU.VTimerEnabled && PPU.IRQVBeamPos != d)
 			{
 				if (PPU.HTimerEnabled)
@@ -1677,9 +1484,6 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 		  case 0x420A:
 			d = PPU.IRQVBeamPos;
 			PPU.IRQVBeamPos = (PPU.IRQVBeamPos & 0xFF) | ((byte & 1) << 8);
-#ifdef DEBUGGER
-			missing.virq_pos = PPU.IRQVBeamPos;
-#endif
 			if (PPU.VTimerEnabled && PPU.IRQVBeamPos != d)
 			{
 				if (PPU.HTimerEnabled)
@@ -1693,10 +1497,6 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 			break;
 
 		  case 0x420B:
-#ifdef DEBUGGER
-			missing.dma_this_frame = byte;
-			missing.dma_channels = byte;
-#endif
 			if ((byte & 0x01) != 0)
 				S9xDoDMA (0);
 			if ((byte & 0x02) != 0)
@@ -1715,10 +1515,6 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 				S9xDoDMA (7);
 			break;
 		  case 0x420C:
-#ifdef DEBUGGER
-			missing.hdma_this_frame |= byte;
-			missing.hdma_channels |= byte; 
-#endif
 			if (Settings.DisableHDMA)
 				byte = 0;
 			Memory.FillRAM[0x420c] = byte;
@@ -1732,9 +1528,6 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 				if (byte & 1)
 				{
 					CPU.FastROMSpeed = ONE_CYCLE;
-#ifdef DEBUGGER
-					missing.fast_rom = 1;
-#endif
 				}
 				else CPU.FastROMSpeed = SLOW_ONE_CYCLE;
 
@@ -1950,7 +1743,7 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 		  case 0x437B:
 
 			// Unknown, but they seem to be RAM-ish
-#ifdef DEBUGGER
+#if 0
 			fprintf(stderr, "Write %02x to %04x!\n", byte, Address);
 #endif
 			break;
@@ -2022,15 +1815,6 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 			}
 
 		  default:
-#ifdef DEBUGGER
-			missing.unknowncpu_write = Address;
-			if (Settings.TraceUnknownRegisters)
-			{
-				sprintf (String, "Unknown register write: $%02X->$%04X\n",
-						 byte, Address);
-				S9xMessage (S9X_TRACE, S9X_PPU_TRACE, String);
-			}
-#endif
 			break;
 		}
 	Memory.FillRAM [Address] = byte;
@@ -2122,14 +1906,6 @@ uint8 S9xGetCPU (uint16 Address)
 				return ((IPPU.Joypads[ind] >> (PPU.Joypad2ButtonReadPos++ ^ 15)) & 1);
 			}
 		  default:
-#ifdef DEBUGGER
-			missing.unknowncpu_read = Address;
-			if (Settings.TraceUnknownRegisters)
-			{
-				sprintf (String, "Unknown register read: $%04X\n", Address);
-				S9xMessage (S9X_TRACE, S9X_PPU_TRACE, String);
-			}
-#endif
 		return OpenBus;
 		}
 //		return (Memory.FillRAM [Address]);
@@ -2341,16 +2117,6 @@ uint8 S9xGetCPU (uint16 Address)
 		return (Memory.FillRAM[Address]);
 
     default:
-#ifdef DEBUGGER
-	missing.unknowncpu_read = Address;
-	if (Settings.TraceUnknownRegisters)
-	{
-	    sprintf (String, "Unknown register read: $%04X\n", Address);
-	    S9xMessage (S9X_TRACE, S9X_PPU_TRACE, String);
-	}
-	    
-#endif
-
 		if(Address>= 0x4800&&Settings.SPC7110)
 			return S9xGetSPC7110(Address);
 
@@ -3234,14 +3000,6 @@ void REGISTER_2118 (uint8 Byte)
     IPPU.TileCached [TILE_8BIT][address >> 6] = FALSE;
     if (!PPU.VMA.High)
     {
-#ifdef DEBUGGER
-    if (Settings.TraceVRAM && !CPU.InDMA)
-    {
-        printf ("VRAM write byte: $%04X (%d,%d)\n", PPU.VMA.Address,
-            Memory.FillRAM[0x2115] & 3,
-            (Memory.FillRAM [0x2115] & 0x0c) >> 2);
-    }
-#endif  
     PPU.VMA.Address += PPU.VMA.Increment;
     }
 //    Memory.FillRAM [0x2118] = Byte;
@@ -3295,14 +3053,6 @@ void REGISTER_2119 (uint8 Byte)
     IPPU.TileCached [TILE_8BIT][address >> 6] = FALSE;
     if (PPU.VMA.High)
     {
-#ifdef DEBUGGER
-    if (Settings.TraceVRAM && !CPU.InDMA)
-    {
-        printf ("VRAM write word: $%04X (%d,%d)\n", PPU.VMA.Address,
-            Memory.FillRAM[0x2115] & 3,
-            (Memory.FillRAM [0x2115] & 0x0c) >> 2);
-    }
-#endif  
     PPU.VMA.Address += PPU.VMA.Increment;
     }
 //    Memory.FillRAM [0x2119] = Byte;

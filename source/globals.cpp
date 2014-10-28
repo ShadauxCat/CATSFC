@@ -100,7 +100,6 @@
 #include "soundux.h"
 #include "cheats.h"
 #include "sa1.h"
-#include "netplay.h"
 #include "spc7110.h"
 
 START_EXTERN_C
@@ -215,14 +214,7 @@ uint32 current_graphic_format = RGB565;
 
 struct SCheatData Cheat;
 
-// Define NO_VOLATILE_SOUND if you're always reading or writing sound from one
-// thread or one co-routine. If you're using interrupts or a thread, sound must
-// be volatile.
-#ifndef NO_VOLATILE_SOUND
-volatile SoundStatus so;
-#else
 SoundStatus so;
-#endif
 
 int Echo [24000];
 int DummyEchoBuffer [SOUND_BUFFER_SIZE];
@@ -341,9 +333,6 @@ uint8 APUROM [64] =
     0xF4,0xC4,0xF4,0xDD,0x5D,0xD0,0xDB,0x1F,0x00,0x00,0xC0,0xFF
 };
 
-#ifdef NETPLAY_SUPPORT
-struct SNetPlay NetPlay;
-#endif
 
 // Raw SPC700 instruction cycle lengths
 uint16 S9xAPUCycleLengths [256] = 

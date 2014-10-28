@@ -412,9 +412,6 @@ void S9xSetByte (uint8 Byte, uint32 Address)
 		MessageBox(GUI.hWnd, address, TEXT("SetByte"), MB_OK);
 #endif
 
-#ifdef DEBUGGER
-		printf ("W(B) %06x\n", Address);
-#endif
 		return;
     }
 }
@@ -525,9 +522,6 @@ void S9xSetWord (uint16 Word, uint32 Address)
 		return;
 		
     case CMemory::MAP_DEBUG:
-#ifdef DEBUGGER
-		printf ("W(W) %06x\n", Address);
-#endif
 	
 	case CMemory::MAP_SPC7110_DRAM:
 #ifdef SPC7110_DEBUG
@@ -570,9 +564,6 @@ void S9xSetWord (uint16 Word, uint32 Address)
 		MessageBox(GUI.hWnd, address, TEXT("SetWord"), MB_OK);
 #endif
 
-#ifdef DEBUGGER
-		printf ("W(W) %06x\n", Address);
-#endif
 		return;
     }
 }
@@ -624,9 +615,6 @@ uint8 *GetBasePointer (uint32 Address)
 	case CMemory::MAP_SETA_DSP:
 		return Memory.SRAM;
     case CMemory::MAP_DEBUG:
-#ifdef DEBUGGER
-		printf ("GBP %06x\n", Address);
-#endif
 		
     default:
     case CMemory::MAP_NONE:
@@ -636,9 +624,6 @@ uint8 *GetBasePointer (uint32 Address)
 		MessageBox(GUI.hWnd, fsd, TEXT("Rogue DMA"), MB_OK);
 #endif
 
-#ifdef DEBUGGER
-		printf ("GBP %06x\n", Address);
-#endif
 		return (0);
     }
 }

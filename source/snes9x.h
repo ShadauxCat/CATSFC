@@ -327,15 +327,6 @@ struct SSettings{
     /* Sound options */
     uint32 SoundPlaybackRate;
     bool8  TraceSoundDSP;
-#ifndef FOREVER_STEREO
-    bool8  Stereo;
-#endif
-#ifndef FOREVER_FORWARD_STEREO
-    bool8  ReverseStereo;
-#endif
-#ifndef FOREVER_16_BIT_SOUND
-    bool8  SixteenBitSound;
-#endif
     bool8  EightBitConsoleSound;  // due to caching, this needs S9xSetEightBitConsoleSound()
     int    SoundBufferSize;
     int    SoundMixInterval;
@@ -368,18 +359,8 @@ struct SSettings{
     bool8  DisableRangeTimeOver; /* XXX: unused */
 
     /* Others */
-    bool8  NetPlay;
-    bool8  NetPlayServer;
-    char   ServerName [128];
-    int    Port;
-    bool8  GlideEnable;
-    bool8  OpenGLEnable;
-    int32  AutoSaveDelay; /* Time in seconds before S-RAM auto-saved if modified. */
     bool8  ApplyCheats;
-    bool8  TurboMode;
-    uint32 TurboSkipFrames;
-    uint32 AutoMaxSkipFrames;
-    
+
 /* Fixes for individual games */
     bool8  StarfoxHack;
     bool8  WinterGold;
@@ -425,16 +406,6 @@ void S9xMessage (int type, int number, const char *message);
 void S9xLoadSDD1Data ();
 END_EXTERN_C
 
-enum {
-    PAUSE_NETPLAY_CONNECT = (1 << 0),
-    PAUSE_TOGGLE_FULL_SCREEN = (1 << 1),
-    PAUSE_EXIT = (1 << 2),
-    PAUSE_MENU = (1 << 3),
-    PAUSE_INACTIVE_WINDOW = (1 << 4),
-    PAUSE_WINDOW_ICONISED = (1 << 5),
-    PAUSE_RESTORE_GUI = (1 << 6),
-    PAUSE_FREEZE_FILE = (1 << 7)
-};
 void S9xSetPause (uint32 mask);
 void S9xClearPause (uint32 mask);
 
