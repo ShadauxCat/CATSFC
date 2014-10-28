@@ -174,21 +174,11 @@ EXTERN_C int32 ESPC (int32);
 
 #else
 
-#ifdef DEBUGGER
-#define APU_EXECUTE1() \
-{ \
-    if (APU.Flags & TRACE_FLAG) \
-	S9xTraceAPU ();\
-    APU.Cycles += S9xAPUCycles [*IAPU.PC]; \
-    (*S9xApuOpcodes[*IAPU.PC]) (); \
-}
-#else
 #define APU_EXECUTE1() \
 { \
     APU.Cycles += S9xAPUCycles [*IAPU.PC]; \
     (*S9xApuOpcodes[*IAPU.PC]) (); \
 }
-#endif
 
 #define APU_EXECUTE() \
 if (IAPU.APUExecuting) \

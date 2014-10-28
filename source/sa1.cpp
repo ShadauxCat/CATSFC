@@ -225,9 +225,6 @@ uint8 S9xSA1GetByte (uint32 address)
 
     case CMemory::MAP_DEBUG:
     default:
-#ifdef DEBUGGER
-//	printf ("R(B) %06x\n", address);
-#endif
         return OpenBus;
     }
 }
@@ -343,9 +340,6 @@ void S9xSA1SetPCBase (uint32 address)
 	return;
 
     case CMemory::MAP_DEBUG:
-#ifdef DEBUGGER
-	printf ("SBP %06x\n", address);
-#endif
 	
     default:
     case CMemory::MAP_NONE:
@@ -463,9 +457,6 @@ void S9xSetSA1 (uint8 byte, uint32 address)
 	if (byte & 0x10)
 	{
 	    Memory.FillRAM [0x2301] |= 0x10;
-#ifdef DEBUGGER
-		printf ("###SA1 NMI\n");
-#endif
 	    if (Memory.FillRAM [0x220a] & 0x10)
 	    {
 	    }

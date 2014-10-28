@@ -48,10 +48,10 @@ NM           = $(CROSS)nm
 OBJDUMP      = $(CROSS)objdump
 
 #C_SOURCES   = libretro.c
-CPP_SOURCES = source/apu.cpp source/apudebug.cpp source/c4.cpp \
+CPP_SOURCES = source/apu.cpp source/c4.cpp \
               source/c4emu.cpp source/cheats2.cpp source/cheats.cpp \
               source/clip.cpp source/cpu.cpp source/cpuexec.cpp \
-              source/cpuops.cpp source/data.cpp source/debug.cpp \
+              source/cpuops.cpp source/data.cpp\
               source/dma.cpp source/dsp1.cpp \
               source/fxdbg.cpp source/fxemu.cpp source/fxinst.cpp \
               source/gfx.cpp source/globals.cpp source/loadzip.cpp \

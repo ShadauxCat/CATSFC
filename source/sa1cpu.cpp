@@ -233,20 +233,7 @@ void S9xSA1MainLoop ()
 	else
 	    SA1.Flags &= ~IRQ_PENDING_FLAG;
     }
-#ifdef DEBUGGER
-    if (SA1.Flags & TRACE_FLAG)
-    {
-	for (i = 0; i < 3 && SA1.Executing; i++)
-	{
-	    S9xSA1Trace ();
-#ifdef CPU_SHUTDOWN
-	    SA1.PCAtOpcodeStart = SA1.PC;
-#endif
-	    (*SA1.S9xOpcodes [*SA1.PC++].S9xOpcode) ();
-	}
-    }
-    else
-#endif
+
     for (i = 0; i < 3 && SA1.Executing; i++)
     {
 #ifdef CPU_SHUTDOWN

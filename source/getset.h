@@ -174,10 +174,7 @@ uint8 S9xGetByte (uint32 Address)
 
 
  
-     case CMemory::MAP_DEBUG:
- #ifdef DEBUGGER
- 		printf ("DEBUG R(B) %06x\n", Address);
- #endif
+   case CMemory::MAP_DEBUG:
 		return OpenBus;
 
 
@@ -189,9 +186,6 @@ uint8 S9xGetByte (uint32 Address)
 		MessageBox(GUI.hWnd, address, TEXT("GetByte"), MB_OK);
 #endif
 
-#ifdef DEBUGGER
-		printf ("R(B) %06x\n", Address);
-#endif
 		return OpenBus;
     }
 }
@@ -298,9 +292,6 @@ uint16 S9xGetWord (uint32 Address)
 		return S9xGetST018(Address)| (S9xGetST018((Address+1))<<8);
 
      case CMemory::MAP_DEBUG:
- #ifdef DEBUGGER
- 		printf ("DEBUG R(W) %06x\n", Address);
- #endif
 		return (OpenBus | (OpenBus<<8));
 
     default:
@@ -311,9 +302,6 @@ uint16 S9xGetWord (uint32 Address)
 		MessageBox(GUI.hWnd, address, TEXT("GetWord"), MB_OK);
 #endif
 
-#ifdef DEBUGGER
-		printf ("R(W) %06x\n", Address);
-#endif
 		return (OpenBus | (OpenBus<<8));
     }
 }
@@ -388,9 +376,6 @@ void S9xSetByte (uint8 Byte, uint32 Address)
 		return;
 		
     case CMemory::MAP_DEBUG:
-#ifdef DEBUGGER
-		printf ("W(B) %06x\n", Address);
-#endif
 		
     case CMemory::MAP_SA1RAM:
 		*(Memory.SRAM + (Address & 0xffff)) = Byte;
@@ -670,9 +655,6 @@ uint8 *S9xGetMemPointer (uint32 Address)
     switch ((intptr_t) GetAddress)
     {
 	case CMemory::MAP_SPC7110_DRAM:
-#ifdef SPC7110_DEBUG
-		printf("Getting Base pointer to DRAM\n");
-#endif
 		return &s7r.bank50[Address&0x0000FFFF];
     case CMemory::MAP_PPU:
 		return (Memory.FillRAM + (Address & 0xffff));
@@ -694,9 +676,6 @@ uint8 *S9xGetMemPointer (uint32 Address)
 	case CMemory::MAP_SETA_DSP:
 		return Memory.SRAM+ ((Address & 0xffff) & Memory.SRAMMask);
     case CMemory::MAP_DEBUG:
-#ifdef DEBUGGER
-		printf ("GMP %06x\n", Address);
-#endif
     default:
     case CMemory::MAP_NONE:
 #if defined(MK_TRACE_BAD_READS) || defined(MK_TRACE_BAD_WRITES)
@@ -705,9 +684,6 @@ uint8 *S9xGetMemPointer (uint32 Address)
 		MessageBox(GUI.hWnd, fsd, TEXT("Rogue DMA"), MB_OK);
 #endif
 
-#ifdef DEBUGGER
-		printf ("GMP %06x\n", Address);
-#endif
 		return (0);
     }
 }
@@ -765,15 +741,9 @@ void S9xSetPCBase (uint32 Address)
 		return;
 		
     case CMemory::MAP_DEBUG:
-#ifdef DEBUGGER
-		printf ("SBP %06x\n", Address);
-#endif
 		
     default:
     case CMemory::MAP_NONE:
-#ifdef DEBUGGER
-		printf ("SBP %06x\n", Address);
-#endif
 		CPU.PCBase = Memory.SRAM;
 		CPU.PC = Memory.SRAM + (Address & 0xffff);
 		return;

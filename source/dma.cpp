@@ -438,34 +438,6 @@ void S9xDoDMA (uint8 Channel)
 		}
     }
 	
-#ifdef DEBUGGER
-    if (Settings.TraceDMA)
-    {
-		sprintf (String, "DMA[%d]: %s Mode: %d 0x%02X%04X->0x21%02X Bytes: %d (%s) V-Line:%ld",
-			Channel, d->TransferDirection ? "read" : "write",
-			d->TransferMode, d->ABank, d->AAddress,
-			d->BAddress, d->TransferBytes,
-			d->AAddressFixed ? "fixed" :
-		(d->AAddressDecrement ? "dec" : "inc"),
-			CPU.V_Counter);
-		if (d->BAddress == 0x18 || d->BAddress == 0x19 || d->BAddress == 0x39 || d->BAddress == 0x3a)
-			sprintf (String, "%s VRAM: %04X (%d,%d) %s", String,
-				PPU.VMA.Address,
-				PPU.VMA.Increment, PPU.VMA.FullGraphicCount,
-				PPU.VMA.High ? "word" : "byte");
-
-		else
-			if (d->BAddress == 0x22 || d->BAddress == 0x3b)
-			
-				sprintf (String, "%s CGRAM: %02X (%x)", String, PPU.CGADD,
-					PPU.CGFLIP);			
-			else
-				if (d->BAddress == 0x04 || d->BAddress == 0x38)
-					sprintf (String, "%s OBJADDR: %04X", String, PPU.OAMAddr);
-				S9xMessage (S9X_TRACE, S9X_DMA_TRACE, String);
-    }
-#endif
-	
     if (!d->TransferDirection)
     {
 		/* XXX: DMA is potentially broken here for cases where we DMA across
@@ -738,17 +710,6 @@ void S9xDoDMA (uint8 Channel)
 								count -= 4;
 							} while (count > 0);
 						}
-						else
-						{
-#ifdef DEBUGGER
-							//	    if (Settings.TraceDMA)
-							{
-								sprintf (String, "Unknown DMA transfer mode: %d on channel %d\n",
-									d->TransferMode, Channel);
-								S9xMessage (S9X_TRACE, S9X_DMA_TRACE, String);
-							}
-#endif
-						}
     }
     else
     {
@@ -836,14 +797,6 @@ void S9xDoDMA (uint8 Channel)
 				break;
 				
 			default:
-#ifdef DEBUGGER
-				if (1) //Settings.TraceDMA)
-				{
-					sprintf (String, "Unknown DMA transfer mode: %d on channel %d\n",
-						d->TransferMode, Channel);
-					S9xMessage (S9X_TRACE, S9X_DMA_TRACE, String);
-				}
-#endif
 				count = 0;
 				break;
 			}
@@ -917,12 +870,6 @@ void S9xStartHDMA ()
 #endif
     }
 }
-
-#ifdef DEBUGGER
-void S9xTraceSoundDSP (const char *s, int i1 = 0, int i2 = 0, int i3 = 0,
-					   int i4 = 0, int i5 = 0, int i6 = 0, int i7 = 0);
-#endif
-
 
 uint8 S9xDoHDMA (uint8 byte)
 {
@@ -1033,24 +980,6 @@ uint8 S9xDoHDMA (uint8 byte)
 					PPU.OAMFlip=0;
 				}
 			}
-
-#ifdef DEBUGGER
-			if (Settings.TraceSoundDSP && p->FirstLine && 
-					p->BAddress >= 0x40 && p->BAddress <= 0x43)
-				S9xTraceSoundDSP ("Spooling data!!!\n");
-			if (Settings.TraceHDMA && p->FirstLine)
-			{
-				sprintf (String, "H-DMA[%d] (%d) 0x%02X%04X->0x21%02X %s, Count: %3d, Rep: %s, V-LINE: %3ld %02X%04X",
-						p-DMA, p->TransferMode, p->IndirectBank,
-						p->IndirectAddress,
-						p->BAddress,
-						p->HDMAIndirectAddressing ? "ind" : "abs",
-						p->LineCount,
-						p->Repeat ? "yes" : "no ", CPU.V_Counter,
-						p->ABank, p->Address);
-				S9xMessage (S9X_TRACE, S9X_HDMA_TRACE, String);
-			}
-#endif
 
 			switch (p->TransferMode)
 			{

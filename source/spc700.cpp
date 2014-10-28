@@ -141,22 +141,14 @@ void STOP (char *s)
 {
     char buffer[100];
 
-#ifdef DEBUGGER
-    S9xAPUOPrint (buffer, IAPU.PC - IAPU.RAM);
-#else
     buffer[0] = '\0';
-#endif
 
     sprintf (String, "Sound CPU in unknown state executing %s at %04X\n%s\n", s, IAPU.PC - IAPU.RAM, buffer);
     S9xMessage (S9X_ERROR, S9X_APU_STOPPED, String);
     APU.TimerEnabled[0] = APU.TimerEnabled[1] = APU.TimerEnabled[2] = FALSE;
     IAPU.APUExecuting = FALSE;
 
-#ifdef DEBUGGER
-    CPU.Flags |= DEBUG_MODE_FLAG;
-#else
     S9xExit ();
-#endif
 }
 
 #define TCALL(n)\
