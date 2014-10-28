@@ -111,8 +111,6 @@
 #include "spc7110.h"
 #include "seta.h"
 
-#include "unzip/unzip.h"
-
 #ifdef DS2_DMA
 //#include "ds2_cpu.h"
 //#include "ds2_dma.h"

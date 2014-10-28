@@ -623,10 +623,11 @@ void retro_run (void)
 {
    int i, port;
 
-   bool updated = false;
+//   IPPU.RenderThisFrame = FALSE;
+//   video_cb(GFX.Screen, 256, 224, 512);
+
    poll_cb();
 
-//   so.sound_switch = 0;
    S9xSetPlaybackRate(32040);
    so.mute_sound = FALSE;
    SoundData.echo_enable = FALSE;
@@ -650,6 +651,7 @@ void retro_run (void)
 
 //   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
 //      check_variables();
+
 }
 
 
