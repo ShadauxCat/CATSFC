@@ -95,7 +95,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#if defined(__unix) || defined(__linux) || defined(__sun) || defined(__DJGPP)
+#if defined(__unix) || defined(__linux) || defined(__sun) || defined(__DJGPP) || defined (PSP)
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>

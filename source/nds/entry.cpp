@@ -1,11 +1,11 @@
 //entry.c
 #include <stdio.h>
 
-#include "ds2_types.h"
-#include "ds2_cpu.h"
-#include "ds2_timer.h"
-#include "ds2io.h"
-#include "fs_api.h"
+//#include "ds2_types.h"
+//#include "ds2_cpu.h"
+//#include "ds2_timer.h"
+//#include "ds2io.h"
+//#include "fs_api.h"
 
 #include "snes9x.h"
 #include "soundux.h"

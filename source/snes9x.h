@@ -93,9 +93,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
-#include "fs_api.h"
-#include "ds2_malloc.h"
+//#include "fs_api.h"
+//#include "ds2_malloc.h"
 
 #ifdef __cplusplus
 extern "C" {

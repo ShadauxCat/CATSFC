@@ -86,9 +86,9 @@
   Super NES and Super Nintendo Entertainment System are trademarks of
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
-#include "ds2_timer.h"
-#include "ds2_cpu.h"
-#include "ds2io.h"
+//#include "ds2_timer.h"
+//#include "ds2_cpu.h"
+//#include "ds2io.h"
 
 #include "snes9x.h"
 #include "memmap.h"

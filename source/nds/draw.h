@@ -20,8 +20,10 @@
 #ifndef __DRAW_H__
 #define __DRAW_H__
 
-#include "ds2_types.h"
-#include "ds2io.h"
+//#include "ds2_types.h"
+//#include "ds2io.h"
+#include <psptypes.h>
+
 #include "bdf_font.h"
 
 #define NDS_SCREEN_WIDTH 256
@@ -176,8 +178,8 @@ extern void draw_hscroll_over(u32 index);
 extern void boxfill_alpha(u32 sx, u32 sy, u32 ex, u32 ey, u32 color, u32 alpha);
 extern void scrollbar(void* screen_addr, u32 sx, u32 sy, u32 ex, u32 ey, u32 all, u32 view, u32 now);
 extern u32 yesno_dialog(char *text);
-extern u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no);
-extern u32 draw_hotkey_dialog(enum SCREEN_ID screen, u32 sy, char *clear, char *cancel);
+//extern u32 draw_yesno_dialog(enum SCREEN_ID screen, u32 sy, char *yes, char *no);
+//extern u32 draw_hotkey_dialog(enum SCREEN_ID screen, u32 sy, char *clear, char *cancel);
 extern void msg_screen_init(const char *title);
 extern void msg_screen_draw();
 extern void msg_printf(const char *text, ...);

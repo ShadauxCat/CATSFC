@@ -1,43 +1,53 @@
-# - - - Modifiable paths - - -
-DS2SDKPATH  := /opt/ds2sdk
-CROSS       := /opt/mipsel-4.1.2-nopic/bin/mipsel-linux-
+TARGET_NAME   := catsfc
 
-# - - - Libraries and includes - - -
-FS_DIR       = $(DS2SDKPATH)/libsrc/fs
-CONSOLE_DIR  = $(DS2SDKPATH)/libsrc/console
-KEY_DIR      = $(DS2SDKPATH)/libsrc/key
-ZLIB_DIR     = $(DS2SDKPATH)/libsrc/zlib
-CORE_DIR     = $(DS2SDKPATH)/libsrc/core
+INCLUDE     := -Isource -Isource/unzip -Isource/nds
+INCLUDE     += -I.
 
-LIBS        := $(DS2SDKPATH)/lib/libds2b.a -lc -lm -lgcc
-EXTLIBS     := $(DS2SDKPATH)/lib/libds2a.a
+platform = unix
 
-INCLUDE     := -Isource -Isource/unzip -Isource/nds -I$(DS2SDKPATH)/include \
-               -I$(FS_DIR) -I$(CONSOLE_DIR) -I$(KEY_DIR) -I$(ZLIB_DIR) \
-               -I$(CORE_DIR)
+ifeq ($(platform), unix)
+   TARGET := $(TARGET_NAME)_libretro.so
+   fpic   := -fPIC
+   SHARED := -shared -Wl,--version-script=link.T
+   CROSS  :=
 
-LINK_SPEC   := $(DS2SDKPATH)/specs/link.xn
-START_ASM   := $(DS2SDKPATH)/specs/start.S
-START_O     := start.o
+   CFLAGS := -fno-builtin \
+            -fno-exceptions -ffunction-sections \
+             -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
+             -fweb -fpeel-loops \
+             -Wall -Wno-unused-function -Wno-unused-variable
 
-# - - - Names - - -
-OUTPUT      := catsfc
-PLUGIN_DIR  := CATSFC
+   DEFS   :=
+else
+   TARGET := $(TARGET_NAME)_libretro_psp1.a
+   CROSS  := psp-
+   CFLAGS := -G0 -march=allegrex -mno-abicalls -fno-pic -fno-builtin \
+            -fno-exceptions -ffunction-sections -mno-long-calls \
+             -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
+             -fweb -fpeel-loops \
+             -Wall -Wno-unused-function -Wno-unused-variable
+
+#   CFLAGS   += -march=allegrex -mfp32 -mgp32 -mlong32 -mabi=eabi
+#   CFLAGS   += -fomit-frame-pointer -fstrict-aliasing
+#   CFLAGS   += -falign-functions=32 -falign-loops -falign-labels -falign-jumps
+#   CFLAGS   += -Wall -Wundef -Wpointer-arith -Wbad-function-cast -Wwrite-strings -Wsign-compare
+
+   DEFS   :=  -DPSP -D_PSP_FW_VERSION=371
+
+   INCLUDE     += -I$(shell psp-config --pspsdk-path)/include
+#   INCLUDE     += -I$(shell psp-config --psp-prefix)/include
+   STATIC_LINKING := 1
+endif
 
 # - - - Tools - - -
 CC           = $(CROSS)gcc
-AR           = $(CROSS)ar rcsv
+AR           = $(CROSS)ar
 LD           = $(CROSS)ld
 OBJCOPY      = $(CROSS)objcopy
 NM           = $(CROSS)nm
 OBJDUMP      = $(CROSS)objdump
 
-# - - - Sources and objects - - -
-C_SOURCES   = source/unzip/explode.c source/unzip/unreduce.c \
-              source/unzip/unshrink.c source/unzip/unzip.c \
-              source/nds/bdf_font.c source/nds/bitmap.c \
-              source/nds/draw.c source/nds/ds2_main.c source/nds/gcheat.c \
-              source/nds/gui.c source/nds/dma_adj.c source/nds/cheatgrp.c
+#C_SOURCES   = libretro.c
 CPP_SOURCES = source/apu.cpp source/apudebug.cpp source/c4.cpp \
               source/c4emu.cpp source/cheats2.cpp source/cheats.cpp \
               source/clip.cpp source/cpu.cpp source/cpuexec.cpp \
@@ -55,70 +65,59 @@ CPP_SOURCES = source/apu.cpp source/apudebug.cpp source/c4.cpp \
               source/spc700.cpp source/spc7110.cpp \
               source/srtc.cpp \
               source/tile.cpp \
-              source/nds/displaymodes.cpp source/nds/entry.cpp
+              libretro.cpp
+
 SOURCES      = $(C_SOURCES) $(CPP_SOURCES)
 C_OBJECTS    = $(C_SOURCES:.c=.o)
 CPP_OBJECTS  = $(CPP_SOURCES:.cpp=.o)
 OBJECTS      = $(C_OBJECTS) $(CPP_OBJECTS)
 
 # - - - Compilation flags - - -
-CFLAGS := -mips32 -mno-abicalls -fno-pic -fno-builtin \
-	      -fno-exceptions -ffunction-sections -mno-long-calls \
-	      -msoft-float -G 4 \
-          -O3 -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
-          -fweb -fpeel-loops
 
-DEFS   := -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
+DEFS   += -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
           -DVAR_CYCLES -DCPU_SHUTDOWN -DSPC700_SHUTDOWN \
           -DNO_INLINE_SET_GET -DNOASM -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t' \
-          -DUNZIP_SUPPORT -DFOREVER_16_BIT_SOUND -DFOREVER_STEREO \
-          -DFOREVER_FORWARD_STEREO -DNO_VOLATILE_SOUND \
-          -DDS2_DMA
+          -DFOREVER_16_BIT_SOUND -DFOREVER_STEREO \
+          -DFOREVER_FORWARD_STEREO -DNO_VOLATILE_SOUND
 
-.PHONY: clean makedirs
-.SUFFIXES: .elf .dat .plg
+ifeq ($(DEBUG), 1)
+OPTIMIZE	      := -O0 -g
+OPTIMIZE_SAFE  := -O0 -g
+else
+OPTIMIZE	      := -O3
+OPTIMIZE_SAFE  := -O2
+endif
 
-all: $(OUTPUT).plg makedirs
 
-release: all
-	-rm -f $(OUTPUT).zip
-	zip -r $(OUTPUT).zip $(PLUGIN_DIR) $(OUTPUT).plg $(OUTPUT).bmp $(OUTPUT).ini copyright installation.txt README.md source.txt version
+DEFS  += -D__LIBRETRO__
 
-# $< is the source (OUTPUT.dat); $@ is the target (OUTPUT.plg)
-.dat.plg:
-	$(DS2SDKPATH)/tools/makeplug $< $@
+CFLAGS += $(fpic)
 
-# $< is the source (OUTPUT.elf); $@ is the target (OUTPUT.dat)
-.elf.dat:
-	$(OBJCOPY) -x -O binary $< $@
+all: $(TARGET)
 
-$(OUTPUT).elf: Makefile $(OBJECTS) $(START_O) $(LINK_SPEC) $(EXTLIBS)
-	$(CC) -nostdlib -static -T $(LINK_SPEC) -o $@ $(START_O) $(OBJECTS) $(EXTLIBS) $(LIBS)
-
-$(EXTLIBS):
-	$(MAKE) -C $(DS2SDKPATH)/source/
-
-$(START_O): $(START_ASM)
-	$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $<
-
-makedirs:
-	-mkdir $(PLUGIN_DIR)/gamepak
-	-mkdir $(PLUGIN_DIR)/gamecht
-	-mkdir $(PLUGIN_DIR)/gamerts
-	-mkdir $(PLUGIN_DIR)/gamepic
+$(TARGET): $(OBJECTS)
+ifeq ($(STATIC_LINKING), 1)
+	$(AR) rcs $@ $(OBJECTS)
+else
+	$(CC) $(fpic) $(SHARED) $(INCLUDES) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBM)
+endif
 
 clean:
-	-rm -rf $(OUTPUT).plg $(OUTPUT).dat $(OUTPUT).elf depend $(OBJECTS) $(START_O)
+	rm -f $(OBJECTS)
+	rm -f depend
+	rm -f $(TARGET)
 
 .c.o:
-	$(CC) $(CFLAGS) $(INCLUDE) $(DEFS) -o $@ -c $<
+	$(CC) $(OPTIMIZE) $(CFLAGS) $(INCLUDE) $(DEFS) -o $@ -c $<
 .cpp.o:
-	$(CC) $(CFLAGS) $(INCLUDE) $(DEFS) -fno-rtti -o $@ -c $<
+	$(CC) $(OPTIMIZE) $(CFLAGS) $(INCLUDE) $(DEFS) -fno-rtti -o $@ -c $<
 
 Makefile: depend
 
 depend: $(SOURCES)
 	$(CC) -MM $(CFLAGS) $(INCLUDE) $(DEFS) $(SOURCES) > $@
 	touch Makefile
+
+.PHONY: clean
 
 -include depend

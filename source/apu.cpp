@@ -408,7 +408,7 @@ void S9xSetAPUDSP (uint8 byte)
 			{
 				IAPU.Registers.PC = IAPU.PC - IAPU.RAM;
 				S9xAPUPackStatus();
-				S9xSPCDump (S9xGetFilenameInc (".spc"));
+            S9xSPCDump (".spc");
 				spc_is_dumping = 0;
 			}
 		}

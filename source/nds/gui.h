@@ -20,8 +20,8 @@
 #ifndef __GUI_H__
 #define __GUI_H__
 
-#include "ds2_types.h"
-#include "fs_api.h"
+//#include "ds2_types.h"
+//#include "fs_api.h"
 #include "gcheat.h"
 
 #define UP_SCREEN_UPDATE_METHOD   0

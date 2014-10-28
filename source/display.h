@@ -100,12 +100,12 @@ void S9xExtraUsage ();
 #ifdef ACCUMULATE_JOYPAD
 void NDSSFCAccumulateJoypad ();
 #endif
-uint32 S9xReadJoypad (int which1_0_to_4);
+uint32 S9xReadJoypad (int port);
 bool8 S9xReadMousePosition (int which1_0_to_1, int &x, int &y, uint32 &buttons);
 bool8 S9xReadSuperScopePosition (int &x, int &y, uint32 &buttons);
 
 void S9xUsage ();
-void S9xInitDisplay (int argc, char **argv);
+void S9xInitDisplay (void);
 void S9xDeinitDisplay ();
 void S9xInitInputDevices ();
 void S9xSetTitle (const char *title);

@@ -93,7 +93,7 @@
 #include <limits.h>
 
 #ifndef STORM
-#include <memory.h>
+//#include <memory.h>
 #include <string.h>
 #else
 #include <strings.h>
@@ -111,7 +111,11 @@
 #include <sys/types.h>
 
 /* #define PIXEL_FORMAT RGB565 */
+#ifdef PSP
 #define PIXEL_FORMAT BGR555
+#else
+#define PIXEL_FORMAT RGB565
+#endif
 #define FOREVER_16_BIT
 // The above is used to disable the 16-bit graphics mode checks sprinkled
 // throughout the code, if the pixel format is always 16-bit.

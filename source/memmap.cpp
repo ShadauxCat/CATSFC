@@ -114,9 +114,9 @@
 #include "unzip/unzip.h"
 
 #ifdef DS2_DMA
-#include "ds2_cpu.h"
-#include "ds2_dma.h"
-#include "dma_adj.h"
+//#include "ds2_cpu.h"
+//#include "ds2_dma.h"
+//#include "dma_adj.h"
 #endif
 
 #ifdef __W32_HEAP

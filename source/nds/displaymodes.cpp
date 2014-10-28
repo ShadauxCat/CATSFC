@@ -18,8 +18,8 @@
  */
 #include <stdio.h>
 
-#include "ds2_types.h"
-#include "ds2io.h"
+//#include "ds2_types.h"
+//#include "ds2io.h"
 
 #include "gfx.h"
 

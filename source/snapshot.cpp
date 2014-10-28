@@ -532,19 +532,19 @@ static FreezeData SnapS7RTC [] = {
 //static char ROMFilename [_MAX_PATH];
 //static char SnapshotFilename [_MAX_PATH];
 
-void FreezeStruct (STREAM stream, char *name, void *base, FreezeData *fields,
-				   int num_fields);
-void FreezeBlock (STREAM stream, char *name, uint8 *block, int size);
+void FreezeStruct (STREAM stream, const char *name, void *base, FreezeData *fields,
+               int num_fields);
+void FreezeBlock (STREAM stream, const char *name, uint8 *block, int size);
 
-int UnfreezeStruct (STREAM stream, char *name, void *base, FreezeData *fields,
+int UnfreezeStruct (STREAM stream, const char *name, void *base, FreezeData *fields,
 					int num_fields);
-int UnfreezeBlock (STREAM stream, char *name, uint8 *block, int size);
+int UnfreezeBlock (STREAM stream, const char *name, uint8 *block, int size);
 
-int UnfreezeStructCopy (STREAM stream, char *name, uint8** block, FreezeData *fields, int num_fields);
+int UnfreezeStructCopy (STREAM stream, const char *name, uint8** block, FreezeData *fields, int num_fields);
 
 void UnfreezeStructFromCopy (void *base, FreezeData *fields, int num_fields, uint8* block);
 
-int UnfreezeBlockCopy (STREAM stream, char *name, uint8** block, int size);
+int UnfreezeBlockCopy (STREAM stream, const char *name, uint8** block, int size);
 
 bool8 Snapshot (const char *filename)
 {
@@ -977,7 +977,7 @@ int FreezeSize (int size, int type)
     }
 }
 
-void FreezeStruct (STREAM stream, char *name, void *base, FreezeData *fields,
+void FreezeStruct (STREAM stream, const char *name, void *base, FreezeData *fields,
 				   int num_fields)
 {
     // Work out the size of the required block
@@ -1065,7 +1065,7 @@ void FreezeStruct (STREAM stream, char *name, void *base, FreezeData *fields,
     delete[] block;
 }
 
-void FreezeBlock (STREAM stream, char *name, uint8 *block, int size)
+void FreezeBlock (STREAM stream, const char *name, uint8 *block, int size)
 {
     char buffer [512];
     sprintf (buffer, "%s:%06d:", name, size);
@@ -1074,8 +1074,8 @@ void FreezeBlock (STREAM stream, char *name, uint8 *block, int size)
     
 }
 
-int UnfreezeStruct (STREAM stream, char *name, void *base, FreezeData *fields,
-					int num_fields)
+int UnfreezeStruct (STREAM stream, const char *name, void *base, FreezeData *fields,
+               int num_fields)
 {
     // Work out the size of the required block
     int len = 0;
@@ -1169,7 +1169,7 @@ int UnfreezeStruct (STREAM stream, char *name, void *base, FreezeData *fields,
     return (result);
 }
 
-int UnfreezeBlock (STREAM stream, char *name, uint8 *block, int size)
+int UnfreezeBlock (STREAM stream, const char *name, uint8 *block, int size)
 {
     char buffer [20];
     int len = 0;
@@ -1203,7 +1203,7 @@ int UnfreezeBlock (STREAM stream, char *name, uint8 *block, int size)
     return (SUCCESS);
 }
 
-int UnfreezeStructCopy (STREAM stream, char *name, uint8** block, FreezeData *fields, int num_fields)
+int UnfreezeStructCopy (STREAM stream, const char *name, uint8** block, FreezeData *fields, int num_fields)
 {
     // Work out the size of the required block
     int len = 0;
@@ -1292,7 +1292,7 @@ void UnfreezeStructFromCopy (void *base, FreezeData *fields, int num_fields, uin
     }
 }
 
-int UnfreezeBlockCopy (STREAM stream, char *name, uint8** block, int size)
+int UnfreezeBlockCopy (STREAM stream, const char *name, uint8** block, int size)
 {
     *block = new uint8 [size];
     int result;
