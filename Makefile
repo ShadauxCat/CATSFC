@@ -55,7 +55,7 @@ CPP_SOURCES = source/apu.cpp source/c4.cpp \
               source/dma.cpp source/dsp1.cpp \
               source/fxdbg.cpp source/fxemu.cpp source/fxinst.cpp \
               source/gfx.cpp source/globals.cpp source/loadzip.cpp \
-              source/memmap.cpp source/movie.cpp \
+              source/memmap.cpp \
               source/obc1.cpp source/ppu.cpp \
               source/sa1.cpp source/sa1cpu.cpp source/screenshot.cpp \
               source/sdd1.cpp source/sdd1emu.cpp \

@@ -113,7 +113,6 @@
 #include "srtc.h"
 #include "sdd1.h"
 #include "spc7110.h"
-#include "movie.h"
 
 extern uint8 *SRAM;
 
@@ -700,22 +699,6 @@ void S9xFreezeToStream (STREAM stream)
 		FreezeStruct (stream, "RTC", &rtc_f9, SnapS7RTC, COUNT (SnapS7RTC));
 	}
 
-	if (S9xMovieActive ())
-	{
-		uint8* movie_freeze_buf;
-		uint32 movie_freeze_size;
-
-		S9xMovieFreeze(&movie_freeze_buf, &movie_freeze_size);
-		if(movie_freeze_buf)
-		{
-			struct SnapshotMovieInfo mi;
-			mi.MovieInputDataSize = movie_freeze_size;
-			FreezeStruct (stream, "MOV", &mi, SnapMovie, COUNT (SnapMovie));
-		    FreezeBlock (stream, "MID", movie_freeze_buf, movie_freeze_size);
-			delete [] movie_freeze_buf;
-		}
-	}
-
 	S9xSetSoundMute (FALSE);
 #ifdef ZSNES_FX
 	if (Settings.SuperFX)
@@ -809,28 +792,6 @@ int S9xUnfreezeFromStream (STREAM stream)
 		{
 			if(Settings.SPC7110RTC)
 				break;
-		}
-
-		if (S9xMovieActive ())
-		{
-			SnapshotMovieInfo mi;
-			if ((result = UnfreezeStruct (stream, "MOV", &mi, SnapMovie, COUNT(SnapMovie))) != SUCCESS)
-			{
-				result = NOT_A_MOVIE_SNAPSHOT;
-				break;
-			}
-
-			if ((result = UnfreezeBlockCopy (stream, "MID", &local_movie_data, mi.MovieInputDataSize)) != SUCCESS)
-			{
-				result = NOT_A_MOVIE_SNAPSHOT;
-				break;
-			}
-
-			if (!S9xMovieUnfreeze(local_movie_data, mi.MovieInputDataSize))
-			{
-				result = WRONG_MOVIE_SNAPSHOT;
-				break;
-			}
 		}
 
 		result=SUCCESS;

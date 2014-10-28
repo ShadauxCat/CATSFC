@@ -111,8 +111,6 @@ extern int cprintf(const char *fmt, ...);
 #include "..\zlib\zlib.h"
 #endif
 
-#include "language.h"
-
 #include "port.h"
 #include "65c816.h"
 #include "messages.h"

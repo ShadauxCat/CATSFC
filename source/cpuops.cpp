@@ -94,7 +94,6 @@
 
 #include "snes9x.h"
 #include "memmap.h"
-#include "debug.h"
 #include "missing.h"
 #include "apu.h"
 #include "sa1.h"

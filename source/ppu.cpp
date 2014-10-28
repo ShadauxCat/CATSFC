@@ -101,7 +101,6 @@
 #include "sdd1.h"
 #include "srtc.h"
 #include "spc7110.h"
-#include "movie.h"
 
 #ifndef ZSNES_FX
 #include "fxemu.h"
