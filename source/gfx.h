@@ -312,12 +312,12 @@ inline uint16 COLOR_SUB(uint16 C1, uint16 C2)
 GFX.ZERO [(((C1) | RGB_HI_BITS_MASKx2) - \
 	   ((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1]
 
-typedef void (*NormalTileRenderer) (uint32 Tile, uint32 Offset, 
+typedef void (*NormalTileRenderer) (uint32 Tile, int32 Offset,
 				    uint32 StartLine, uint32 LineCount);
-typedef void (*ClippedTileRenderer) (uint32 Tile, uint32 Offset,
+typedef void (*ClippedTileRenderer) (uint32 Tile, int32 Offset,
 				     uint32 StartPixel, uint32 Width,
 				     uint32 StartLine, uint32 LineCount);
-typedef void (*LargePixelRenderer) (uint32 Tile, uint32 Offset,
+typedef void (*LargePixelRenderer) (uint32 Tile, int32 Offset,
 				    uint32 StartPixel, uint32 Pixels,
 				    uint32 StartLine, uint32 LineCount);
 
