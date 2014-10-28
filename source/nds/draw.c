@@ -884,7 +884,7 @@ int show_background(void *screen, char *bgname)
         ret= BMP_read(bgname, buff, 256, 192, &type);
         if(ret != BMP_OK)
         {
-            free((int)buff);
+            free((intptr_t)buff);
             return(-1);
         }
 
@@ -919,11 +919,11 @@ int show_background(void *screen, char *bgname)
 		}
 		else
 		{
-            free((int)buff);
+            free((intptr_t)buff);
             return(-1);
 		}
 
-        free((int)src);
+        free((intptr_t)src);
         strcpy(back_ground.bgname, bgname);
     }
 
@@ -1101,7 +1101,7 @@ int icon_init(u32 language_id)
     printf("GUI buff %d\n", icondst - gui_picture);
 #endif
 
-    free((int)src);
+    free((intptr_t)src);
 #endif
 
     return ret;

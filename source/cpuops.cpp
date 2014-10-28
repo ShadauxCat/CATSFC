@@ -790,7 +790,7 @@ static void Op3CM0 (void)
 /* CMP *************************************************************************************** */
 static void OpC9M1 (void)
 {
-    int32 Int32 = (int) ICPU.Registers.AL - (int) *CPU.PC++;
+    int32 Int32 = (int) ICPU.Registers.AL - (intptr_t) *CPU.PC++;
     ICPU._Carry = Int32 >= 0;
     SetZN8 ((uint8) Int32);
 #ifndef SA1_OPCODES
@@ -1052,7 +1052,7 @@ static void OpD3M0 (void)
 /* CMX *************************************************************************************** */
 static void OpE0X1 (void)
 {
-    int32 Int32 = (int) ICPU.Registers.XL - (int) *CPU.PC++;
+    int32 Int32 = (int) ICPU.Registers.XL - (intptr_t) *CPU.PC++;
     ICPU._Carry = Int32 >= 0;
     SetZN8 ((uint8) Int32);
 #ifndef SA1_OPCODES
@@ -1114,7 +1114,7 @@ static void OpECX0 (void)
 /* CMY *************************************************************************************** */
 static void OpC0X1 (void)
 {
-    int32 Int32 = (int) ICPU.Registers.YL - (int) *CPU.PC++;
+    int32 Int32 = (int) ICPU.Registers.YL - (intptr_t) *CPU.PC++;
     ICPU._Carry = Int32 >= 0;
     SetZN8 ((uint8) Int32);
 #ifndef SA1_OPCODES

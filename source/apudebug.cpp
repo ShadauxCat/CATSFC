@@ -326,7 +326,7 @@ int S9xAPUOPrint (char *buffer, uint16 Address)
 	break;
     case DPREL:
 	sprintf (mnem, S9xMnemonics [*p], *(p + 1),
-		(int) (p + 3 - IAPU.RAM) + (signed char) *(p + 2));
+      (intptr_t) (p + 3 - IAPU.RAM) + (signed char) *(p + 2));
 	break;
     case ABSBIT:
 	sprintf (mnem, S9xMnemonics [*p], (*(p + 1) + (*(p + 2) << 8)) & 0x1fff,
@@ -334,7 +334,7 @@ int S9xAPUOPrint (char *buffer, uint16 Address)
 	break;
     case REL:
 	sprintf (mnem, S9xMnemonics [*p],
-		(int) (p + 2 - IAPU.RAM) + (signed char) *(p + 1));
+      (intptr_t) (p + 2 - IAPU.RAM) + (signed char) *(p + 1));
 	break;
     }
 
