@@ -48,24 +48,26 @@ NM           = $(CROSS)nm
 OBJDUMP      = $(CROSS)objdump
 
 #C_SOURCES   = libretro.c
-CPP_SOURCES = source/apu.cpp source/c4.cpp \
-              source/c4emu.cpp source/cheats2.cpp source/cheats.cpp \
-              source/clip.cpp source/cpu.cpp source/cpuexec.cpp \
-              source/cpuops.cpp source/data.cpp\
-              source/dma.cpp source/dsp1.cpp \
-              source/fxdbg.cpp source/fxemu.cpp source/fxinst.cpp \
-              source/gfx.cpp source/globals.cpp \
-              source/memmap.cpp \
-              source/obc1.cpp source/ppu.cpp \
-              source/sa1.cpp source/sa1cpu.cpp source/screenshot.cpp \
-              source/sdd1.cpp source/sdd1emu.cpp \
-              source/seta010.cpp source/seta011.cpp source/seta018.cpp \
-              source/seta.cpp source/snaporig.cpp source/snapshot.cpp \
-              source/soundux.cpp \
-              source/spc700.cpp source/spc7110.cpp \
-              source/srtc.cpp \
-              source/tile.cpp \
-              libretro.cpp
+C_SOURCES = source/apu.c source/c4.c \
+              source/c4emu.c source/cheats2.c source/cheats.c \
+              source/clip.c source/cpu.c source/cpuexec.c \
+              source/cpuops.c source/data.c\
+              source/dma.c source/dsp1.c \
+              source/fxdbg.c source/fxemu.c source/fxinst.c \
+              source/gfx.c source/globals.c \
+              source/memmap.c \
+              source/obc1.c source/ppu.c \
+              source/sa1.c source/sa1cpu.c source/screenshot.c \
+              source/sdd1.c source/sdd1emu.c \
+              source/seta010.c source/seta011.c source/seta018.c \
+              source/seta.c source/snaporig.c source/snapshot.c \
+              source/soundux.c \
+              source/spc700.c source/spc7110.c \
+              source/srtc.c \
+              source/tile.c \
+              libretro.c
+
+CPP_SOURCES =
 
 SOURCES      = $(C_SOURCES) $(CPP_SOURCES)
 C_OBJECTS    = $(C_SOURCES:.c=.o)
