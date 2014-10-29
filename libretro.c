@@ -155,14 +155,6 @@ void S9xInitDisplay (void)
    GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
 }
 
-void S9xParseArg (char **argv, int &i, int argc)
-{
-}
-
-void S9xParseDisplayArg (char **argv, int &ind, int)
-{
-}
-
 void S9xExit ()
 {
 //  if(Settings.SPC7110)
@@ -715,12 +707,12 @@ void S9xLoadSDD1Data ()
 
 }
 
-bool8 S9xReadMousePosition (int which1, int &x, int &y, uint32 &buttons)
+bool8 S9xReadMousePosition (int which1, int *x, int *y, uint32 *buttons)
 {
     return (FALSE);
 }
 
-bool8 S9xReadSuperScopePosition (int &x, int &y, uint32 &buttons)
+bool8 S9xReadSuperScopePosition (int *x, int *y, uint32 *buttons)
 {
     return (TRUE);
 }

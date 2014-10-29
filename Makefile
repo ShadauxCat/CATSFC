@@ -14,8 +14,8 @@ ifeq ($(platform), unix)
    CFLAGS := -fno-builtin \
             -fno-exceptions -ffunction-sections \
              -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
-             -fweb -fpeel-loops \
-             -Wall -Wno-unused-function -Wno-unused-variable
+             -fweb -fpeel-loops
+#             -Wall -Wno-unused-function -Wno-unused-variable
 
    DEFS   :=
 else
@@ -24,8 +24,8 @@ else
    CFLAGS := -G0 -march=allegrex -mno-abicalls -fno-pic -fno-builtin \
             -fno-exceptions -ffunction-sections -mno-long-calls \
              -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
-             -fweb -fpeel-loops \
-             -Wall -Wno-unused-function -Wno-unused-variable
+             -fweb -fpeel-loops
+#             -Wall -Wno-unused-function -Wno-unused-variable
 
 #   CFLAGS   += -march=allegrex -mfp32 -mgp32 -mlong32 -mabi=eabi
 #   CFLAGS   += -fomit-frame-pointer -fstrict-aliasing

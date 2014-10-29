@@ -1215,7 +1215,7 @@ sprite_found:
 			int16 plane;
 			int16 car_left, car_right, car_left_a;
 			int16 focal_back, focal_front;
-			uint8 distance, id;
+         uint8 distance, id;
 
 			// we already have 4 bytes we want
 			DSP4.in_count = 6+12;
@@ -1357,7 +1357,7 @@ sprite_found:
 			DSP4.in_count = 6;
 			DSP4.in_index = 2;
 
-			DSP4_WAIT(7) resume7:
+         DSP4_WAIT(7)
 
 			/////////////////////////////////////
 			// process tile data
@@ -1365,6 +1365,8 @@ sprite_found:
 			bool8 clip;
 			int16 sp_x, sp_y, sp_oam, sp_msb;
 			int16 sp_dx, sp_dy;
+
+         resume7:
 
 			// sprite deltas
 			sp_dy = DSP4_READ_WORD(2);

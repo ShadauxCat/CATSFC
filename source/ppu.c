@@ -2364,7 +2364,7 @@ void S9xProcessMouse (int which1)
     int x, y;
     uint32 buttons;
     
-    if ((IPPU.Controller == SNES_MOUSE || IPPU.Controller == SNES_MOUSE_SWAPPED) && S9xReadMousePosition (which1, x, y, buttons))
+    if ((IPPU.Controller == SNES_MOUSE || IPPU.Controller == SNES_MOUSE_SWAPPED) && S9xReadMousePosition (which1, &x, &y, &buttons))
     {
 		int delta_x, delta_y;
 #define MOUSE_SIGNATURE 0x1
@@ -2432,7 +2432,7 @@ void ProcessSuperScope ()
     uint32 buttons;
 
     if (IPPU.Controller == SNES_SUPERSCOPE &&
-		S9xReadSuperScopePosition (x, y, buttons))
+      S9xReadSuperScopePosition (&x, &y, &buttons))
 	{
 #define SUPERSCOPE_SIGNATURE 0x00ff
 		uint32 scope;
@@ -2535,7 +2535,7 @@ void S9xUpdateJustifiers()
 	if(Memory.FillRAM[0x4201]&0x80)
 	{
 		
-		S9xReadSuperScopePosition(x,y,buttons);
+      S9xReadSuperScopePosition(&x,&y,&buttons);
 		
 		x+=40;
 		if (x > 295)

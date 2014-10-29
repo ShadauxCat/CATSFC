@@ -94,14 +94,13 @@
 void S9xTextMode ();
 void S9xGraphicsMode ();
 char *S9xParseArgs (char **argv, int argc);
-void S9xParseArg (char **argv, int &index, int argc);
 void S9xExtraUsage ();
 #ifdef ACCUMULATE_JOYPAD
 void NDSSFCAccumulateJoypad ();
 #endif
 uint32 S9xReadJoypad (int port);
-bool8 S9xReadMousePosition (int which1_0_to_1, int &x, int &y, uint32 &buttons);
-bool8 S9xReadSuperScopePosition (int &x, int &y, uint32 &buttons);
+bool8 S9xReadMousePosition (int which1_0_to_1, int* x, int* y, uint32* buttons);
+bool8 S9xReadSuperScopePosition (int* x, int* y, uint32* buttons);
 
 void S9xUsage ();
 void S9xInitDisplay (void);
@@ -109,7 +108,6 @@ void S9xDeinitDisplay ();
 void S9xInitInputDevices ();
 void S9xSetTitle (const char *title);
 void S9xPutImage (int width, int height);
-void S9xParseDisplayArg (char **argv, int &index, int argc);
 void S9xToggleSoundChannel (int channel);
 void S9xSetInfoString (const char *string);
 int S9xMinCommandLineArgs ();

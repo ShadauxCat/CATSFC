@@ -146,15 +146,15 @@ struct FxInit_s SuperFX;
 uint8 *SFXPlotTable = NULL;
 #endif
 
-struct SPPU PPU;
-struct InternalPPU IPPU;
+SPPU PPU;
+InternalPPU IPPU;
 
-struct SDMA DMA[8];
+SDMA DMA[8];
 
 uint8 *HDMAMemPointers [8];
 uint8 *HDMABasePointers [8];
 
-struct SBG BG;
+SBG BG;
 
 struct SGFX GFX;
 struct SLineData LineData[240];
@@ -172,7 +172,7 @@ uint32 odd_low[4][16];
 uint32 even_high[4][16];
 uint32 even_low[4][16];
 
-struct SCheatData Cheat;
+SCheatData Cheat;
 
 SoundStatus so;
 
