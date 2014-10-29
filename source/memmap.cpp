@@ -892,8 +892,7 @@ uint32 CMemory::FileLoader (uint8* buffer, const char* filename, int32 maxsize)
  
 	FILE* ROMFile;
 	int32 TotalFileSize = 0;
-	int len = 0;
-	int nFormat=DEFAULT;
+   int len = 0;
  
 	char dir [_MAX_DIR + 1];
     char drive [_MAX_DRIVE + 1];
@@ -902,10 +901,6 @@ uint32 CMemory::FileLoader (uint8* buffer, const char* filename, int32 maxsize)
     char fname [_MAX_PATH + 1];
 
 	unsigned long FileSize = 0;
-
-#ifdef UNZIP_SUPPORT
-	unzFile file=NULL;
-#endif
     
 	_splitpath (filename, drive, dir, name, ext);
     _makepath (fname, drive, dir, name, ext);
@@ -915,134 +910,83 @@ uint32 CMemory::FileLoader (uint8* buffer, const char* filename, int32 maxsize)
     memmove (&ext [0], &ext[1], 4);
 #endif
 
-	if (strcasecmp (ext, "zip") == 0)
-		nFormat = ZIP;
-	else if (strcasecmp (ext, "rar") == 0)
-		nFormat = RAR;
-	else
-		nFormat = DEFAULT;
+   if ((ROMFile = fopen(fname, "rb")) == NULL)
+      return (0);
 
+   strcpy (ROMFilename, fname);
 
-	switch( nFormat )
-	{
-	case ZIP:
+   HeaderCount = 0;
+   uint8 *ptr = buffer;
+   bool8 more = FALSE;
 
-#ifdef UNZIP_SUPPORT
+   do
+   {
+      FileSize = fread (ptr, 1, maxsize + 0x200 - (ptr - ROM), ROMFile);
+      fclose (ROMFile);
 
-		file = unzOpen(fname);
+      int calc_size = FileSize & ~0x1FFF; // round to the lower 0x2000
 
-		if(file != NULL)	
-		{
-			
-			// its a valid ZIP, close it and let LoadZIP handle it.
-
-			unzClose(file);
-		
-			if (!LoadZip (fname, &TotalFileSize, &HeaderCount, ROM))
-				return (0);
-		
-			strcpy (ROMFilename, fname);
-
-		}
-		else
-		{
-			// its a bad zip file. Walk away
-
-		 	S9xMessage (S9X_ERROR, S9X_ROM_INFO, "Invalid Zip Archive.");
-			return (0);
-		}
-#endif
-		break;
-
-	case RAR:
-		// non existant rar loading
-		S9xMessage (S9X_ERROR, S9X_ROM_INFO, "Rar Archives are not currently supported.");
-		return (0);
-		break;
-
-	case DEFAULT:
-	default:
-		// any other roms go here
-		if ((ROMFile = fopen(fname, "rb")) == NULL)
-			return (0);
-		
-		strcpy (ROMFilename, fname);
-		
-		HeaderCount = 0;
-		uint8 *ptr = buffer;
-		bool8 more = FALSE;
-		
-		do
-		{
-			FileSize = fread (ptr, 1, maxsize + 0x200 - (ptr - ROM), ROMFile);
-			fclose (ROMFile);
-			
-			int calc_size = FileSize & ~0x1FFF; // round to the lower 0x2000
-		
-			if ((FileSize - calc_size == 512 && !Settings.ForceNoHeader) ||
-				Settings.ForceHeader)
-			{
-				// memmove required: Overlapping addresses [Neb]
-				// DS2 DMA notes: Can be split into 512-byte DMA blocks [Neb]
+      if ((FileSize - calc_size == 512 && !Settings.ForceNoHeader) ||
+         Settings.ForceHeader)
+      {
+         // memmove required: Overlapping addresses [Neb]
+         // DS2 DMA notes: Can be split into 512-byte DMA blocks [Neb]
 #ifdef DS2_DMA
-				__dcache_writeback_all();
-				{
-					unsigned int i;
-					for (i = 0; i < calc_size; i += 512)
-					{
-						ds2_DMAcopy_32Byte (2 /* channel: emu internal */, ptr + i, ptr + i + 512, 512);
-						ds2_DMA_wait(2);
-						ds2_DMA_stop(2);
-					}
-				}
+         __dcache_writeback_all();
+         {
+            unsigned int i;
+            for (i = 0; i < calc_size; i += 512)
+            {
+               ds2_DMAcopy_32Byte (2 /* channel: emu internal */, ptr + i, ptr + i + 512, 512);
+               ds2_DMA_wait(2);
+               ds2_DMA_stop(2);
+            }
+         }
 #else
-				memmove (ptr, ptr + 512, calc_size);
+         memmove (ptr, ptr + 512, calc_size);
 #endif
-				HeaderCount++;
-				FileSize -= 512;
-			}
-			
-			ptr += FileSize;
-			TotalFileSize += FileSize;
-		
+         HeaderCount++;
+         FileSize -= 512;
+      }
 
-			// check for multi file roms
+      ptr += FileSize;
+      TotalFileSize += FileSize;
 
-			if ((ptr - ROM) < (maxsize + 0x200) &&
-				(isdigit (ext [0]) && ext [1] == 0 && ext [0] < '9'))
-			{
-				more = TRUE;
-				ext [0]++;
+
+      // check for multi file roms
+
+      if ((ptr - ROM) < (maxsize + 0x200) &&
+         (isdigit (ext [0]) && ext [1] == 0 && ext [0] < '9'))
+      {
+         more = TRUE;
+         ext [0]++;
 #ifdef __WIN32__
-				// memmove required: Overlapping addresses [Neb]
-		        memmove (&ext [1], &ext [0], 4);
-			    ext [0] = '.';
+         // memmove required: Overlapping addresses [Neb]
+           memmove (&ext [1], &ext [0], 4);
+          ext [0] = '.';
 #endif
-				_makepath (fname, drive, dir, name, ext);
-			}
-			else if (ptr - ROM < maxsize + 0x200 &&
-					(((len = strlen (name)) == 7 || len == 8) &&
-					strncasecmp (name, "sf", 2) == 0 &&
-					isdigit (name [2]) && isdigit (name [3]) && isdigit (name [4]) &&
-					isdigit (name [5]) && isalpha (name [len - 1])))
-			{
-				more = TRUE;
-				name [len - 1]++;
+         _makepath (fname, drive, dir, name, ext);
+      }
+      else if (ptr - ROM < maxsize + 0x200 &&
+            (((len = strlen (name)) == 7 || len == 8) &&
+            strncasecmp (name, "sf", 2) == 0 &&
+            isdigit (name [2]) && isdigit (name [3]) && isdigit (name [4]) &&
+            isdigit (name [5]) && isalpha (name [len - 1])))
+      {
+         more = TRUE;
+         name [len - 1]++;
 #ifdef __WIN32__
-				// memmove required: Overlapping addresses [Neb]
-				memmove (&ext [1], &ext [0], 4);
-				ext [0] = '.';
+         // memmove required: Overlapping addresses [Neb]
+         memmove (&ext [1], &ext [0], 4);
+         ext [0] = '.';
 #endif
-				_makepath (fname, drive, dir, name, ext);
-			}
-			else
-				more = FALSE;
+         _makepath (fname, drive, dir, name, ext);
+      }
+      else
+         more = FALSE;
 
-		} while (more && (ROMFile = fopen (fname, "rb")) != NULL);
+   } while (more && (ROMFile = fopen (fname, "rb")) != NULL);
     
-		break;
-	}
- 
 
 
     if (HeaderCount == 0)

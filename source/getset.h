@@ -152,15 +152,9 @@ uint8 S9xGetByte (uint32 Address)
 		return (S9xGetC4 (Address & 0xffff));
 		
 	case CMemory::MAP_SPC7110_ROM:
-#ifdef SPC7110_DEBUG
-		printf("reading spc7110 ROM (byte) at %06X\n", Address);
-#endif
 		return S9xGetSPC7110Byte(Address);
 
 	case CMemory::MAP_SPC7110_DRAM:
-#ifdef SPC7110_DEBUG
-		printf("reading Bank 50 (byte)\n");
-#endif
 		return S9xGetSPC7110(0x4800);
 
 	case CMemory::MAP_OBC_RAM:
@@ -271,15 +265,9 @@ uint16 S9xGetWord (uint32 Address)
 			(S9xGetC4 ((Address + 1) & 0xffff) << 8));
 	
 	case CMemory::MAP_SPC7110_ROM:
-#ifdef SPC7110_DEBUG
-		printf("reading spc7110 ROM (word) at %06X\n", Address);
-#endif
 	return (S9xGetSPC7110Byte(Address)|
 			(S9xGetSPC7110Byte (Address+1))<<8);	
 	case CMemory::MAP_SPC7110_DRAM:
-#ifdef SPC7110_DEBUG
-		printf("reading Bank 50 (word)\n");
-#endif
 		return (S9xGetSPC7110(0x4800)|
 			(S9xGetSPC7110 (0x4800) << 8));
 	case CMemory::MAP_OBC_RAM:
@@ -387,9 +375,6 @@ void S9xSetByte (uint8 Byte, uint32 Address)
 		return;
 	
 	case CMemory::MAP_SPC7110_DRAM:
-#ifdef SPC7110_DEBUG
-		printf("Writing Byte at %06X\n", Address);
-#endif
 		s7r.bank50[(Address & 0xffff)]= (uint8) Byte;
 		break;
 	
@@ -524,9 +509,6 @@ void S9xSetWord (uint16 Word, uint32 Address)
     case CMemory::MAP_DEBUG:
 	
 	case CMemory::MAP_SPC7110_DRAM:
-#ifdef SPC7110_DEBUG
-		printf("Writing Word at %06X\n", Address);
-#endif
 		s7r.bank50[(Address & 0xffff)]= (uint8) Word;
 		s7r.bank50[((Address + 1) & 0xffff)]= (uint8) Word;
 		break;
@@ -580,16 +562,10 @@ uint8 *GetBasePointer (uint32 Address)
     switch ((intptr_t) GetAddress)
     {
 	case CMemory::MAP_SPC7110_DRAM:
-#ifdef SPC7110_DEBUG
-		printf("Getting Base pointer to DRAM\n");
-#endif
 		{
 			return s7r.bank50;
 		}
 	case CMemory::MAP_SPC7110_ROM:
-#ifdef SPC7110_DEBUG
-		printf("Getting Base pointer to SPC7110ROM\n");
-#endif
 		return Get7110BasePtr(Address);
     case CMemory::MAP_PPU:
 //just a guess, but it looks like this should match the CPU as a source.

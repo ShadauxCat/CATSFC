@@ -137,11 +137,6 @@
 #define BIGFIRST 2
 #define SMALLFIRST 3
 
-//File Formats go here
-#define ZIP			0
-#define RAR			1
-#define DEFAULT		2
-
 class CMemory {
 public:
     bool8 LoadROM (const char *);

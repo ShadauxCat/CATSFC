@@ -169,35 +169,6 @@ extern uint8  Mode7Depths [2];
 
 #define BLACK BUILD_PIXEL(0,0,0)
 
-#ifndef FOREVER_16_BIT
-void DrawTile (uint32 Tile, int32 Offset, uint32 StartLine,
-	       uint32 LineCount);
-void DrawClippedTile (uint32 Tile, int32 Offset,
-		      uint32 StartPixel, uint32 Width,
-		      uint32 StartLine, uint32 LineCount);
-void DrawTileHalfWidth (uint32 Tile, int32 Offset, uint32 StartLine,
-	       uint32 LineCount);
-void DrawClippedTileHalfWidth (uint32 Tile, int32 Offset,
-		      uint32 StartPixel, uint32 Width,
-		      uint32 StartLine, uint32 LineCount);
-void DrawTilex2 (uint32 Tile, int32 Offset, uint32 StartLine,
-		 uint32 LineCount);
-void DrawClippedTilex2 (uint32 Tile, int32 Offset,
-			uint32 StartPixel, uint32 Width,
-			uint32 StartLine, uint32 LineCount);
-void DrawTilex2x2 (uint32 Tile, int32 Offset, uint32 StartLine,
-	       uint32 LineCount);
-void DrawClippedTilex2x2 (uint32 Tile, int32 Offset,
-			  uint32 StartPixel, uint32 Width,
-			  uint32 StartLine, uint32 LineCount);
-void DrawLargePixel (uint32 Tile, int32 Offset,
-		     uint32 StartPixel, uint32 Pixels,
-		     uint32 StartLine, uint32 LineCount);
-void DrawLargePixelHalfWidth (uint32 Tile, int32 Offset,
-		     uint32 StartPixel, uint32 Pixels,
-		     uint32 StartLine, uint32 LineCount);
-#endif
-
 void DrawTile16 (uint32 Tile, int32 Offset, uint32 StartLine,
 	         uint32 LineCount);
 void DrawClippedTile16 (uint32 Tile, int32 Offset,
@@ -287,11 +258,6 @@ bool8 S9xGraphicsInit ()
 {
     register uint32 PixelOdd = 1;
     register uint32 PixelEven = 2;
-
-#ifdef GFX_MULTI_FORMAT
-    if (GFX.BuildPixel == NULL)
-	S9xSetRenderPixelFormat (RGB565);
-#endif
 
     for (uint8 bitshift = 0; bitshift < 4; bitshift++)
     {
@@ -385,10 +351,7 @@ bool8 S9xGraphicsInit ()
 
     GFX.RealPitch = GFX.Pitch2 = GFX.Pitch;
     GFX.ZPitch = GFX.Pitch;
-#ifndef FOREVER_16_BIT
-    if (Settings.SixteenBit)
-#endif
-	GFX.ZPitch >>= 1;
+    GFX.ZPitch >>= 1;
     GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
     GFX.DepthDelta = GFX.SubZBuffer - GFX.ZBuffer;
     //GFX.InfoStringTimeout = 0;
@@ -396,17 +359,9 @@ bool8 S9xGraphicsInit ()
 
     PPU.BG_Forced = 0;
     IPPU.OBJChanged = TRUE;
-#ifndef FOREVER_16_BIT
-    if (Settings.Transparency)
-	Settings.SixteenBit = TRUE;
-#endif
 
     IPPU.DirectColourMapsNeedRebuild = TRUE;
     GFX.PixSize = 1;
-#ifndef FOREVER_16_BIT
-    if (Settings.SixteenBit)
-    {
-#endif
 	DrawTilePtr = DrawTile16;
 	DrawClippedTilePtr = DrawClippedTile16;
 	DrawLargePixelPtr = DrawLargePixel16;
@@ -422,33 +377,8 @@ bool8 S9xGraphicsInit ()
 	}
 	GFX.PPL = GFX.Pitch >> 1;
 	GFX.PPLx2 = GFX.Pitch;
-#ifndef FOREVER_16_BIT
-    }
-    else
-    {
-	DrawTilePtr = DrawTile;
-	DrawClippedTilePtr = DrawClippedTile;
-	DrawLargePixelPtr = DrawLargePixel;
-	if (Settings.SupportHiRes)
-	{
-		DrawHiResTilePtr= DrawTile;
-		DrawHiResClippedTilePtr = DrawClippedTile;
-	}
-	else
-	{
-		DrawHiResTilePtr= DrawTileHalfWidth;
-		DrawHiResClippedTilePtr = DrawClippedTileHalfWidth;
-	}
-	GFX.PPL = GFX.Pitch;
-	GFX.PPLx2 = GFX.Pitch * 2;
-    }
-#endif
     S9xFixColourBrightness ();
 
-#ifndef FOREVER_16_BIT
-    if (Settings.SixteenBit)
-    {
-#endif
 	if (!(GFX.X2 = (uint16 *) malloc (sizeof (uint16) * 0x10000)))
 	    return (FALSE);
 
@@ -595,16 +525,6 @@ bool8 S9xGraphicsInit ()
 		}
 	    }
 	}
-#ifndef FOREVER_16_BIT
-    }
-    else
-    {
-	GFX.X2 = NULL;
-	GFX.ZERO_OR_X2 = NULL;
-	GFX.ZERO = NULL;
-    }
-#endif
-
     return (TRUE);
 }
 
@@ -675,28 +595,14 @@ void S9xStartScreenRefresh ()
 				IPPU.DoubleHeightPixels = TRUE;
 				GFX.Pitch2 = GFX.RealPitch;
 				GFX.Pitch = GFX.RealPitch * 2;
-#ifndef FOREVER_16_BIT
-				if (Settings.SixteenBit)
-#endif
-					GFX.PPL = GFX.PPLx2 = GFX.RealPitch;
-#ifndef FOREVER_16_BIT
-				else
-					GFX.PPL = GFX.PPLx2 = GFX.RealPitch << 1;
-#endif
+            GFX.PPL = GFX.PPLx2 = GFX.RealPitch;
 			}
 			else
 			{
 				IPPU.RenderedScreenHeight = PPU.ScreenHeight;
 				GFX.Pitch2 = GFX.Pitch = GFX.RealPitch;
-	            IPPU.DoubleHeightPixels = FALSE;
-#ifndef FOREVER_16_BIT
-				if (Settings.SixteenBit)
-#endif
-					GFX.PPL = GFX.Pitch >> 1;
-#ifndef FOREVER_16_BIT
-				else
-					GFX.PPL = GFX.Pitch;
-#endif
+            IPPU.DoubleHeightPixels = FALSE;
+            GFX.PPL = GFX.Pitch >> 1;
 				GFX.PPLx2 = GFX.PPL << 1;
 			}
 		}
@@ -719,10 +625,7 @@ void S9xStartScreenRefresh ()
 				GFX.Pitch2 = GFX.Pitch = GFX.RealPitch;
 				GFX.PPL = GFX.PPLx2 >> 1;
 				GFX.ZPitch = GFX.RealPitch;
-#ifndef FOREVER_16_BIT
-				if (Settings.SixteenBit)
-#endif
-				    GFX.ZPitch >>= 1;
+            GFX.ZPitch >>= 1;
 		    }
 		}
 
@@ -791,51 +694,14 @@ void S9xEndScreenRefresh ()
 		FLUSH_REDRAW ();
 		if (IPPU.ColorsChanged)
 		{
-	    		uint32 saved = PPU.CGDATA[0];
-#ifndef FOREVER_16_BIT
-			if (!Settings.SixteenBit)
-	    		{
-				// Hack for Super Mario World - to get its sky blue
-				// (It uses Fixed colour addition on the backdrop colour)
-				if (!(Memory.FillRAM [0x2131] & 0x80) && (Memory.FillRAM[0x2131] & 0x20) &&
-		    		(PPU.FixedColourRed || PPU.FixedColourGreen || PPU.FixedColourBlue))
-				{
-					PPU.CGDATA[0] = PPU.FixedColourRed | (PPU.FixedColourGreen << 5) |
-					    (PPU.FixedColourBlue << 10);
-				}
-	    		}
-#endif
+         uint32 saved = PPU.CGDATA[0];
 			IPPU.ColorsChanged = FALSE;
 			PPU.CGDATA[0] = saved;
 		}
 
 		GFX.Pitch = GFX.Pitch2 = GFX.RealPitch;
 		GFX.PPL = GFX.PPLx2 >> 1;
-#if 0
-		//take screenshot here.
-        if(Settings.TakeScreenshot)
-		{
-            S9xDoScreenshot(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
-			cprintf("%s:%d\n", __FILE__, __LINE__);
-		}
-		if (Settings.DisplayFrameRate)
-		{
-			S9xDisplayFrameRate ();
-			cprintf("%s:%d\n", __FILE__, __LINE__);
-		}
-		if (GFX.InfoString)
-		{
-			S9xDisplayString (GFX.InfoString);
-			cprintf("%s:%d\n", __FILE__, __LINE__);
-		}
-#endif
-		S9xDeinitUpdate (IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight,
-#ifndef FOREVER_16_BIT
-			Settings.SixteenBit
-#else
-			TRUE
-#endif
-		);
+      S9xDeinitUpdate (IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
     }
 
     S9xApplyCheats ();
@@ -844,19 +710,6 @@ void S9xEndScreenRefresh ()
     {
 		S9xAutoSaveSRAM ();
 		CPU.SRAMModified = FALSE;
-		/*if (!CPU.AutoSaveTimer)
-		{
-			if (!(CPU.AutoSaveTimer = Settings.AutoSaveDelay * Memory.ROMFramesPerSecond))
-				CPU.SRAMModified = FALSE;
-		}
-		else
-		{
-			if (!--CPU.AutoSaveTimer)
-			{
-				S9xAutoSaveSRAM ();
-				CPU.SRAMModified = FALSE;
-			}
-		}*/
     }
 
 }
@@ -1237,55 +1090,19 @@ if(Settings.BGLayering) {
 			GFX.PixSize = 2;
 			if (IPPU.DoubleHeightPixels)
 			{
-#ifndef FOREVER_16_BIT
-				if (Settings.SixteenBit)
-				{
-#endif
-					DrawTilePtr = DrawTile16x2x2;
-					DrawClippedTilePtr = DrawClippedTile16x2x2;
-#ifndef FOREVER_16_BIT
-				}
-				else
-				{
-					DrawTilePtr = DrawTilex2x2;
-					DrawClippedTilePtr = DrawClippedTilex2x2;
-				}
-#endif
+            DrawTilePtr = DrawTile16x2x2;
+            DrawClippedTilePtr = DrawClippedTile16x2x2;
 			}
 			else
 			{
-#ifndef FOREVER_16_BIT
-				if (Settings.SixteenBit)
-				{
-#endif
-					DrawTilePtr = DrawTile16x2;
-					DrawClippedTilePtr = DrawClippedTile16x2;
-#ifndef FOREVER_16_BIT
-				}
-				else
-				{
-					DrawTilePtr = DrawTilex2;
-					DrawClippedTilePtr = DrawClippedTilex2;
-				}
-#endif
+            DrawTilePtr = DrawTile16x2;
+            DrawClippedTilePtr = DrawClippedTile16x2;
 			}
 		}
 		else
 		{
-#ifndef FOREVER_16_BIT
-			if (Settings.SixteenBit)
-			{
-#endif
-				DrawTilePtr = DrawTile16;
-				DrawClippedTilePtr = DrawClippedTile16;
-#ifndef FOREVER_16_BIT
-			}
-			else
-			{
-				DrawTilePtr = DrawTile;
-				DrawClippedTilePtr = DrawClippedTile;
-			}
-#endif
+         DrawTilePtr = DrawTile16;
+         DrawClippedTilePtr = DrawClippedTile16;
 		}
 	}
 	else // if (!Settings.SupportHiRes)
@@ -1298,20 +1115,8 @@ if(Settings.BGLayering) {
 			// problems.
 			OnMain = FALSE;
 		}
-#ifndef FOREVER_16_BIT
-		if (Settings.SixteenBit)
-		{
-#endif
 			DrawTilePtr = DrawTile16;
 			DrawClippedTilePtr = DrawClippedTile16;
-#ifndef FOREVER_16_BIT
-		}
-		else
-		{
-			DrawTilePtr = DrawTile;
-			DrawClippedTilePtr = DrawClippedTile;
-		}
-#endif
 	}
 	GFX.Z1 = D + 2;
 
@@ -3495,63 +3300,37 @@ static void RenderScreen (uint8 *Screen, bool8 sub, bool8 force_no_add, uint8 D)
 
 void DisplayChar (uint8 *Screen, uint8 c)
 {
-    int line = (((c & 0x7f) - 32) >> 4) * font_height;
-    int offset = (((c & 0x7f) - 32) & 15) * font_width;
-#ifndef FOREVER_16_BIT
-    if (Settings.SixteenBit)
-    {
-#endif
-		int h, w;
-		uint16 *s = (uint16 *) Screen;
-		for (h = 0; h < font_height; h++, line++,
-			s += GFX.PPL - font_width)
-		{
-			for (w = 0; w < font_width; w++, s++)
-			{
-				uint8 p = font [line][offset + w];
-				
-				if (p == '#')
-				{
-					/*
-					if(Memory.Hacked)
-						*s= BUILD_PIXEL(31,0,0);
-					else if(Memory.Iffy)
-						*s= BUILD_PIXEL(31,31,0);
-					else if(Memory.Iformat==1)
-						*s= BUILD_PIXEL(0,31,0);
-					else if(Memory.Iformat==2)
-						*s= BUILD_PIXEL(0,31,31);
-					else *s = 0xffff;
-					*/
-					*s=Settings.DisplayColor;
-				}
-				else
-					if (p == '.')
-						*s = BLACK;
-			}
-		}
-#ifndef FOREVER_16_BIT
-    }
-    else
-    {
-		int h, w;
-		uint8 *s = Screen;
-		for (h = 0; h < font_height; h++, line++,
-			s += GFX.PPL - font_width)
-		{
-			for (w = 0; w < font_width; w++, s++)
-			{
-				uint8 p = font [line][offset + w];
-				
-				if (p == '#')
-					*s = 255;
-				else
-					if (p == '.')
-						*s = BLACK;
-			}
-		}
-    }
-#endif
+   int line = (((c & 0x7f) - 32) >> 4) * font_height;
+   int offset = (((c & 0x7f) - 32) & 15) * font_width;
+   int h, w;
+   uint16 *s = (uint16 *) Screen;
+   for (h = 0; h < font_height; h++, line++,
+      s += GFX.PPL - font_width)
+   {
+      for (w = 0; w < font_width; w++, s++)
+      {
+         uint8 p = font [line][offset + w];
+
+         if (p == '#')
+         {
+            /*
+            if(Memory.Hacked)
+               *s= BUILD_PIXEL(31,0,0);
+            else if(Memory.Iffy)
+               *s= BUILD_PIXEL(31,31,0);
+            else if(Memory.Iformat==1)
+               *s= BUILD_PIXEL(0,31,0);
+            else if(Memory.Iformat==2)
+               *s= BUILD_PIXEL(0,31,31);
+            else *s = 0xffff;
+            */
+            *s=Settings.DisplayColor;
+         }
+         else
+            if (p == '.')
+               *s = BLACK;
+      }
+   }
 }
 
 static void S9xDisplayFrameRate ()
@@ -3568,12 +3347,7 @@ static void S9xDisplayFrameRate ()
     for (i = 0; i < len; i++)
     {
 	DisplayChar (Screen, string [i]);
-#ifndef FOREVER_16_BIT
-	Screen += Settings.SixteenBit ? (font_width - 1) * sizeof (uint16) : 
-		  (font_width - 1);
-#else
 	Screen += (font_width - 1) * sizeof (uint16);
-#endif
     }
 }
 
@@ -3590,13 +3364,7 @@ static void S9xDisplayString (const char *string)
     {
 	if (char_count >= max_chars || string [i] < 32)
 	{
-#ifndef FOREVER_16_BIT
-	    Screen -= Settings.SixteenBit ? 
-			(font_width - 1) * sizeof (uint16) * max_chars :
-			(font_width - 1) * max_chars;
-#else
 	    Screen -= (font_width - 1) * max_chars * sizeof (uint16);
-#endif
 	    Screen += font_height * GFX.Pitch;
 	    if (Screen >= GFX.Screen + GFX.Pitch * IPPU.RenderedScreenHeight)
 		break;
@@ -3605,12 +3373,7 @@ static void S9xDisplayString (const char *string)
 	if (string [i] < 32)
 	    continue;
 	DisplayChar (Screen, string [i]);
-#ifndef FOREVER_16_BIT
-	Screen += Settings.SixteenBit ? (font_width - 1) * sizeof (uint16) : 
-		  (font_width - 1);
-#else
 	Screen += (font_width - 1) * sizeof (uint16);
-#endif
     }
 }
 
@@ -3676,31 +3439,14 @@ void S9xUpdateScreen ()
 		{
 			// The game has switched from lo-res to hi-res mode part way down
 			// the screen. Scale any existing lo-res pixels on screen
-#ifndef FOREVER_16_BIT
-			if (Settings.SixteenBit)
-			{
-#endif
-				for (register uint32 y = 0; y < starty; y++)
-				{
-					register uint16 *p = (uint16 *) (GFX.Screen + y * GFX.Pitch2) + 255;
-					register uint16 *q = (uint16 *) (GFX.Screen + y * GFX.Pitch2) + 510;
-	
-					for (register int x = 255; x >= 0; x--, p--, q -= 2)
-						*q = *(q + 1) = *p;
-				}
-#ifndef FOREVER_16_BIT
-			}
-			else
-			{
-				for (register uint32 y = 0; y < starty; y++)
-				{
-					register uint8 *p = GFX.Screen + y * GFX.Pitch2 + 255;
-					register uint8 *q = GFX.Screen + y * GFX.Pitch2 + 510;
-					for (register int x = 255; x >= 0; x--, p--, q -= 2)
-						*q = *(q + 1) = *p;
-				}
-			}
-#endif
+         for (register uint32 y = 0; y < starty; y++)
+         {
+            register uint16 *p = (uint16 *) (GFX.Screen + y * GFX.Pitch2) + 255;
+            register uint16 *q = (uint16 *) (GFX.Screen + y * GFX.Pitch2) + 510;
+
+            for (register int x = 255; x >= 0; x--, p--, q -= 2)
+               *q = *(q + 1) = *p;
+         }
 			IPPU.DoubleWidthPixels = TRUE;
 			IPPU.HalfWidthPixels = FALSE;
 		}
@@ -3714,14 +3460,8 @@ void S9xUpdateScreen ()
             IPPU.DoubleHeightPixels = TRUE;
             GFX.Pitch2 = GFX.RealPitch;
             GFX.Pitch = GFX.RealPitch * 2;
-#ifndef FOREVER_16_BIT
-            if (Settings.SixteenBit)
-#endif
-                GFX.PPL = GFX.PPLx2 = GFX.RealPitch;
-#ifndef FOREVER_16_BIT
-            else
-                GFX.PPL = GFX.PPLx2 = GFX.RealPitch << 1;
-#endif
+            GFX.PPL = GFX.PPLx2 = GFX.RealPitch;
+
 			
             // The game has switched from non-interlaced to interlaced mode
             // part way down the screen. Scale everything.
@@ -3763,11 +3503,7 @@ void S9xUpdateScreen ()
 	
     uint32 black = BLACK | (BLACK << 16);
 
-    if (Settings.Transparency
-#ifndef FOREVER_16_BIT
-        && Settings.SixteenBit
-#endif
-        )
+    if (Settings.Transparency)
     {
 		if (GFX.Pseudo)
 		{
@@ -4178,30 +3914,13 @@ void S9xUpdateScreen ()
 		{
 			// Mixure of background modes used on screen - scale width
 			// of all non-mode 5 and 6 pixels.
-#ifndef FOREVER_16_BIT
-			if (Settings.SixteenBit)
-			{
-#endif
-				for (register uint32 y = starty; y <= endy; y++)
-				{
-					register uint16 *p = (uint16 *) (GFX.Screen + y * GFX.Pitch2) + 255;
-					register uint16 *q = (uint16 *) (GFX.Screen + y * GFX.Pitch2) + 510;
-					for (register int x = 255; x >= 0; x--, p--, q -= 2)
-						*q = *(q + 1) = *p;
-				}
-#ifndef FOREVER_16_BIT
-			}
-			else
-			{
-				for (register uint32 y = starty; y <= endy; y++)
-				{
-					register uint8 *p = GFX.Screen + y * GFX.Pitch2 + 255;
-					register uint8 *q = GFX.Screen + y * GFX.Pitch2 + 510;
-					for (register int x = 255; x >= 0; x--, p--, q -= 2)
-						*q = *(q + 1) = *p;
-				}
-			}
-#endif
+         for (register uint32 y = starty; y <= endy; y++)
+         {
+            register uint16 *p = (uint16 *) (GFX.Screen + y * GFX.Pitch2) + 255;
+            register uint16 *q = (uint16 *) (GFX.Screen + y * GFX.Pitch2) + 510;
+            for (register int x = 255; x >= 0; x--, p--, q -= 2)
+               *q = *(q + 1) = *p;
+         }
 		}
 
         // Double the height of the pixels just drawn

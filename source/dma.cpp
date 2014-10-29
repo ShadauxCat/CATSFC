@@ -293,9 +293,6 @@ void S9xDoDMA (uint8 Channel)
 	{
 		uint32 i,j;
 		i=(s7r.reg4805|(s7r.reg4806<<8));
-#ifdef SPC7110_DEBUG
-		printf("DMA Transfer of %04X bytes from %02X%02X%02X:%02X, offset of %04X, internal bank of %04X, multiplier %02X\n",d->TransferBytes,s7r.reg4803,s7r.reg4802,s7r.reg4801, s7r.reg4804,i,  s7r.bank50Internal, s7r.AlignBy);
-#endif
 		i*=s7r.AlignBy;
 		i+=s7r.bank50Internal;
 		i%=DECOMP_BUFFER_SIZE;

@@ -116,11 +116,8 @@
 #else
 #define PIXEL_FORMAT RGB565
 #endif
-#define FOREVER_16_BIT
 // The above is used to disable the 16-bit graphics mode checks sprinkled
 // throughout the code, if the pixel format is always 16-bit.
-
-// #define GFX_MULTI_FORMAT
 
 #if defined(TARGET_OS_MAC) && TARGET_OS_MAC
 
@@ -137,7 +134,6 @@
 #undef  _MAX_PATH
 
 #undef DEBUGGER /* Apple Universal Headers sometimes #define DEBUGGER */
-#undef GFX_MULTI_FORMAT
 
 int    strncasecmp(const char *s1, const char *s2, unsigned n);
 int    strcasecmp(const char *s1, const char *s2 );

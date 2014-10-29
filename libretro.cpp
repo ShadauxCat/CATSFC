@@ -227,7 +227,7 @@ void S9xDeinitUpdate (int width, int height, bool8 /*sixteen_bit*/)
 }
 
 #else
-void S9xDeinitUpdate (int width, int height, bool8 /*sixteen_bit*/)
+void S9xDeinitUpdate (int width, int height)
 {
    video_cb(GFX.Screen, width, height, GFX.Pitch);
 }
@@ -471,20 +471,7 @@ int load_gamepak(const char* file)
    Settings.FrameTime = (Settings.PAL ? Settings.FrameTimePAL : Settings.FrameTimeNTSC);
 
    Memory.LoadSRAM (S9xGetFilename (".srm"));
-   // mdelay(50); // Delete this delay
    S9xLoadCheatFile (S9xGetFilename (".chb")); // cheat binary file, as opposed to text
-
-/*
-    if (snapshot_filename)
-    {
-        int Flags = CPU.Flags & (DEBUG_MODE_FLAG | TRACE_FLAG);
-        if (!S9xLoadSnapshot (snapshot_filename))
-            exit (1);
-        CPU.Flags |= Flags;
-    }
-*/
-
-   // mdelay(50); // Delete this delay
 
    return 0;
 }
@@ -517,10 +504,6 @@ void retro_init (void)
     S9xInitSound (Settings.SoundPlaybackRate,
                   TRUE,
                   Settings.SoundBufferSize);
-#ifdef GFX_MULTI_FORMAT
-//    S9xSetRenderPixelFormat (RGB565);
-    S9xSetRenderPixelFormat (BGR555);
-#endif
 
 #ifdef JOYSTICK_SUPPORT
     uint32 JoypadSkip = 0;
@@ -620,12 +603,7 @@ void S9xGenerateSound ()
 
 void S9xGenerateSound0 ()
 {
-#ifndef FOREVER_16_BIT_SOUND
-   int bytes_so_far = so.sixteen_bit ? (so.samples_mixed_so_far << 1) :
-      so.samples_mixed_so_far;
-#else
    int bytes_so_far = so.samples_mixed_so_far << 1;
-#endif
 
    if (bytes_so_far >= so.buffer_size)
       return;
@@ -635,10 +613,7 @@ void S9xGenerateSound0 ()
    {
       // Write this many samples overall
       int samples_to_write = so.err_counter >> FIXED_POINT_SHIFT;
-#ifndef FOREVER_STEREO
-      if (so.stereo)
-#endif
-         samples_to_write <<= 1;
+      samples_to_write <<= 1;
       int byte_offset = (bytes_so_far + so.play_position) & SOUND_BUFFER_SIZE_MASK;
 
       so.err_counter &= FIXED_POINT_REMAINDER;
@@ -646,10 +621,7 @@ void S9xGenerateSound0 ()
       do
       {
          int bytes_this_run = samples_to_write;
-#ifndef FOREVER_16_BIT_SOUND
-         if (so.sixteen_bit)
-#endif
-            bytes_this_run <<= 1;
+         bytes_this_run <<= 1;
 
          if (byte_offset + bytes_this_run > SOUND_BUFFER_SIZE)
          {
@@ -664,20 +636,12 @@ void S9xGenerateSound0 ()
          }
 
          int samples_this_run = bytes_this_run;
-#ifndef FOREVER_16_BIT_SOUND
-         if (so.sixteen_bit)
-#endif
-            samples_this_run >>= 1;
+         samples_this_run >>= 1;
 
          S9xMixSamples (Buf + byte_offset, samples_this_run);
          so.samples_mixed_so_far += samples_this_run;
          samples_to_write -= samples_this_run;
-#ifndef FOREVER_16_BIT_SOUND
-         bytes_so_far += so.sixteen_bit ? (samples_this_run << 1) :
-            samples_this_run;
-#else
          bytes_so_far += samples_this_run << 1;
-#endif
          byte_offset = (byte_offset + bytes_this_run) & SOUND_BUFFER_SIZE_MASK;
       } while (samples_to_write > 0);
    }

@@ -125,12 +125,6 @@ typedef struct {
     // int noise_gen;
     // Moved to soundux.cpp's noise_gen; this doesn't need volatility! [Neb]
     bool8 mute_sound;
-#ifndef FOREVER_STEREO
-    int stereo;
-#endif
-#ifndef FOREVER_16_BIT_SOUND
-    bool8 sixteen_bit;
-#endif
     bool8 encoded;
 #ifdef __sun
     int last_eof;

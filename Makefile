@@ -54,7 +54,7 @@ CPP_SOURCES = source/apu.cpp source/c4.cpp \
               source/cpuops.cpp source/data.cpp\
               source/dma.cpp source/dsp1.cpp \
               source/fxdbg.cpp source/fxemu.cpp source/fxinst.cpp \
-              source/gfx.cpp source/globals.cpp source/loadzip.cpp \
+              source/gfx.cpp source/globals.cpp \
               source/memmap.cpp \
               source/obc1.cpp source/ppu.cpp \
               source/sa1.cpp source/sa1cpu.cpp source/screenshot.cpp \
@@ -76,8 +76,7 @@ OBJECTS      = $(C_OBJECTS) $(CPP_OBJECTS)
 
 DEFS   += -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
           -DVAR_CYCLES -DCPU_SHUTDOWN -DSPC700_SHUTDOWN \
-          -DNO_INLINE_SET_GET -DNOASM -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t' \
-          -DFOREVER_16_BIT_SOUND -DFOREVER_STEREO
+          -DNO_INLINE_SET_GET -DNOASM -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t'
 
 ifeq ($(DEBUG), 1)
 OPTIMIZE	      := -O0 -g

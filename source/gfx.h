@@ -109,12 +109,8 @@ extern struct SGFX GFX;
 bool8 S9xGraphicsInit ();
 void S9xGraphicsDeinit();
 bool8 S9xInitUpdate (void);
-void S9xDeinitUpdate (int width, int height, bool8 sixteen_bit);
+void S9xDeinitUpdate (int width, int height);
 void S9xSyncSpeed ();
-
-#ifdef GFX_MULTI_FORMAT
-bool8 S9xSetRenderPixelFormat (int format);
-#endif
 
 END_EXTERN_C
 
@@ -170,12 +166,6 @@ struct SGFX{
     uint8  r2131;
     bool8  Pseudo;
     
-#ifdef GFX_MULTI_FORMAT
-    uint32 PixelFormat;
-    uint32 (*BuildPixel) (uint32 R, uint32 G, uint32 B);
-    uint32 (*BuildPixel2) (uint32 R, uint32 G, uint32 B);
-    void   (*DecomposePixel) (uint32 Pixel, uint32 &R, uint32 &G, uint32 &B);
-#endif
 };
 
 struct SLineData {

@@ -87,8 +87,6 @@
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
 
-//#define SPC7110_DEBUG
-
 #include "spc7110.h"
 #include "memmap.h"
 #include <time.h>
@@ -528,9 +526,6 @@ extern "C"{
 //reads SPC7110 and RTC registers.
 uint8 S9xGetSPC7110(uint16 Address)
 {
-#ifdef SPC7110_DEBUG
-	printf("%04X read\n", Address);
-#endif
 	switch (Address)
 	{
 		//decompressed data read port. decrements 4809-A (with wrap)
@@ -557,9 +552,6 @@ uint8 S9xGetSPC7110(uint16 Address)
 			
 			s7r.bank50Internal++;
 			s7r.bank50Internal%=DECOMP_BUFFER_SIZE;
-#ifdef SPC7110_DEBUG
-			printf("Returned %02X\n", s7r.reg4800);
-#endif
 		}
 		return s7r.reg4800;
 	//table register low
@@ -721,11 +713,7 @@ uint8 S9xGetSPC7110(uint16 Address)
 					}
 				}
 			}
-			
-#ifdef SPC7110_DEBUG
-			printf("Returned %02X\n", tmp);
-#endif
-			
+
 			i%=s7r.DataRomSize;
 			s7r.reg4811=i&0x00FF;
 			s7r.reg4812=(i&0x00FF00)>>8;
@@ -818,9 +806,6 @@ uint8 S9xGetSPC7110(uint16 Address)
 					}
 				}
 			}
-#ifdef SPC7110_DEBUG
-			printf("Returned %02X\n", tmp);
-#endif
 			return tmp;
 		}
 		else return 0;
@@ -900,9 +885,6 @@ uint8 S9xGetSPC7110(uint16 Address)
 			uint8 tmp=rtc_f9.reg[rtc_f9.index];
 			rtc_f9.index++;
 			rtc_f9.index%=0x10;
-#ifdef SPC7110_DEBUG
-			printf("$4841 returned %02X\n", tmp);
-#endif
 			return tmp;
 		}
 		else return 0;
@@ -913,18 +895,12 @@ uint8 S9xGetSPC7110(uint16 Address)
 		s7r.reg4842^=0x80;
 		return s7r.reg4842^0x80;
 	default:
-#ifdef SPC7110_DEBUG
-		printf("Access to Reg %04X\n", Address);
-#endif
 		return 0x00;
 	}
 }
 }
 void S9xSetSPC7110 (uint8 data, uint16 Address)
 {
-#ifdef SPC7110_DEBUG
-	printf("%04X written to, value %02X\n", Address, data);
-#endif
 	switch(Address)
 	{
 //Writes to $4800 are undefined.
