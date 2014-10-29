@@ -804,6 +804,7 @@ void S9xSetSA1 (uint8 byte, uint32 address)
 
 static void S9xSA1CharConv2 ()
 {
+   int l,b;
     uint32 dest = Memory.FillRAM [0x2235] | (Memory.FillRAM [0x2236] << 8);
     uint32 offset = (SA1.in_char_dma & 7) ? 0 : 1;
     int depth = (Memory.FillRAM [0x2231] & 3) == 0 ? 8 :
@@ -818,10 +819,10 @@ static void S9xSA1CharConv2 ()
 	break;
     case 4:
 	break;
-    case 8:
-	for (int l = 0; l < 8; l++, q += 8)
+    case 8:       
+   for (l = 0; l < 8; l++, q += 8)
 	{
-	    for (int b = 0; b < 8; b++)
+       for (b = 0; b < 8; b++)
 	    {
 		uint8 r = *(q + b);
 		*(p +  0) = (*(p +  0) << 1) | ((r >> 0) & 1);

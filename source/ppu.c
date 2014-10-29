@@ -195,7 +195,8 @@ void S9xUpdateHTimer ()
 void S9xFixColourBrightness ()
 {
  IPPU.XB = mul_brightness [PPU.Brightness];
-   for (int i = 0; i < 256; i++)
+ int i;
+   for (i = 0; i < 256; i++)
    {
       IPPU.Red [i] = IPPU.XB [PPU.CGDATA [i] & 0x1f];
       IPPU.Green [i] = IPPU.XB [(PPU.CGDATA [i] >> 5) & 0x1f];
@@ -1531,7 +1532,7 @@ void S9xSetCPU (uint8 byte, uint16 Address)
 				}
 				else CPU.FastROMSpeed = SLOW_ONE_CYCLE;
 
-				Memory.FixROMSpeed ();
+            FixROMSpeed ();
 			}
 			break;
 
@@ -2141,7 +2142,8 @@ static void CommonPPUReset ()
 	PPU.VMA.FullGraphicCount = 0;
 	PPU.VMA.Shift = 0;
 
-	for (uint8 B = 0; B != 4; B++)
+   uint8 B;
+   for (B = 0; B != 4; B++)
 	{
 		PPU.BG[B].SCBase = 0;
 		PPU.BG[B].VOffset = 0;
@@ -2179,7 +2181,8 @@ static void CommonPPUReset ()
 
 	PPU.FirstSprite = 0;
 	PPU.LastSprite = 127;
-	for (int Sprite = 0; Sprite < 128; Sprite++)
+   int Sprite;
+   for (Sprite = 0; Sprite < 128; Sprite++)
 	{
 		PPU.OBJ[Sprite].HPos = 0;
 		PPU.OBJ[Sprite].VPos = 0;
@@ -2309,7 +2312,8 @@ void S9xResetPPU ()
 	IPPU.PrevMouseX[0] = IPPU.PrevMouseX[1] = 256 / 2;
 	IPPU.PrevMouseY[0] = IPPU.PrevMouseY[1] = 224 / 2;
 
-	for (int c = 0; c < 0x8000; c += 0x100)
+   int c;
+   for (c = 0; c < 0x8000; c += 0x100)
 	{
 		if ( !Settings.SuperFX )
 		{
@@ -2347,7 +2351,8 @@ void S9xSoftResetPPU ()
 //	IPPU.PrevMouseX[0] = IPPU.PrevMouseX[1] = 256 / 2;
 //	IPPU.PrevMouseY[0] = IPPU.PrevMouseY[1] = 224 / 2;
 
-	for (int c = 0; c < 0x8000; c += 0x100)
+   int c;
+   for (c = 0; c < 0x8000; c += 0x100)
 		memset (&Memory.FillRAM [c], c >> 8, 0x100);
 
 	ZeroMemory (&Memory.FillRAM [0x2100], 0x100);

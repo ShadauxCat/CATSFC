@@ -186,7 +186,8 @@ void S9xSetST011(uint32 Address, uint8 Byte)
 			{
 				// 9x9 board data: top to bottom, left to right
 				// Values represent piece types and ownership
-				for( int lcv=0; lcv<9; lcv++ )
+         int lcv;
+            for(lcv=0; lcv<9; lcv++ )
 					memcpy( board[lcv], ST011.parameters+lcv*10, 9*1 );
 			}
 			break;
