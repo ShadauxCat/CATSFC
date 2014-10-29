@@ -298,7 +298,8 @@ void S9xSetEchoEnable (uint8 byte)
     }
 	
     SoundData.echo_enable = byte;
-    for (int i = 0; i < NUM_CHANNELS; i++)
+    int i;
+    for (i = 0; i < NUM_CHANNELS; i++)
     {
 		if (byte & (1 << i))
 			SoundData.channels [i].echo_buf_ptr = EchoBuffer;
@@ -362,7 +363,8 @@ void S9xFixSoundAfterSnapshotLoad ()
     S9xSetFilterCoefficient (5, (signed char) APU.DSP [APU_C5]);
     S9xSetFilterCoefficient (6, (signed char) APU.DSP [APU_C6]);
     S9xSetFilterCoefficient (7, (signed char) APU.DSP [APU_C7]);
-    for (int i = 0; i < 8; i++)
+    int i;
+    for (i = 0; i < 8; i++)
     {
 		SoundData.channels[i].needs_decode = TRUE;
 		S9xSetSoundFrequency (i, SoundData.channels[i].hertz);
@@ -447,7 +449,7 @@ int S9xGetEnvelopeHeight (int channel)
 }
 
 #if 1
-void S9xSetSoundSample (int, uint16) 
+void S9xSetSoundSample (int channel, uint16 sample_number)
 {
 }
 #else
@@ -832,7 +834,8 @@ void DecodeBlock (Channel *ch)
 			sample1 >>= 4;
 				if (invalid_header) { sample1>>=3; sample2>>=3; }
 		
-			for (int nybblesmp = 0; nybblesmp<2; nybblesmp++){
+            int nybblesmp;
+         for (nybblesmp = 0; nybblesmp<2; nybblesmp++){
 				out=(((nybblesmp) ? sample2 : sample1) << shift);
 				out >>= 1;
 			
@@ -1013,7 +1016,8 @@ void DecodeBlock (Channel *ch)
 			sample1 >>= 4;
 				if (invalid_header) { sample1>>=3; sample2>>=3; }
 		
-			for (int nybblesmp = 0; nybblesmp<2; nybblesmp++){
+         int nybblesmp;
+         for (nybblesmp = 0; nybblesmp<2; nybblesmp++){
 				out=(((nybblesmp) ? sample2 : sample1) << shift);
 				out >>= 1;
 			
@@ -1057,7 +1061,8 @@ static inline void MixStereo (int sample_count)
 
 	int pitch_mod = SoundData.pitch_mod & ~APU.DSP[APU_NON];
 
-	for (uint32 J = 0; J < NUM_CHANNELS; J++) 
+   uint32 J;
+   for (J = 0; J < NUM_CHANNELS; J++)
 	{
 		Channel *ch = &SoundData.channels[J];
 
@@ -1093,7 +1098,8 @@ static inline void MixStereo (int sample_count)
 		VL = (ch->sample * ch-> left_vol_level) / 128;
 		VR = (ch->sample * ch->right_vol_level) / 128;
 
-		for (uint32 I = 0; I < (uint32) sample_count; I += 2)
+      uint32 I;
+      for (I = 0; I < (uint32) sample_count; I += 2)
 		{
 			unsigned long freq = freq0;
 
@@ -1463,7 +1469,8 @@ END_OF_FUNCTION(S9xMixSamples);
 
 void S9xResetSound (bool8 full)
 {
-    for (int i = 0; i < 8; i++)
+   int i;
+    for (i = 0; i < 8; i++)
     {
 		SoundData.channels[i].state = SOUND_SILENT;
 		SoundData.channels[i].mode = MODE_NONE;
@@ -1534,7 +1541,8 @@ void S9xSetPlaybackRate (uint32 playback_rate)
     so.playback_rate = playback_rate;
     so.err_rate = (uint32) (SNES_SCANLINE_TIME * FIXED_POINT / (1.0 / (double) so.playback_rate));
     S9xSetEchoDelay (APU.DSP [APU_EDL] & 0xf);
-    for (int i = 0; i < 8; i++)
+    int i;
+    for (i = 0; i < 8; i++)
 		S9xSetSoundFrequency (i, SoundData.channels [i].hertz);
 }
 

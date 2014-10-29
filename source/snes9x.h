@@ -95,16 +95,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#if defined(_MSC_VER) && !defined(SN_TARGET_PS3)
-/* Hack applied for MSVC when compiling in C89 mode
- * as it isn't C99-compliant. */
-#define bool unsigned char
-#define true 1
-#define false 0
-#else
-#include <stdbool.h>
-#endif
-
 //#include "fs_api.h"
 //#include "ds2_malloc.h"
 
@@ -219,7 +209,7 @@ enum {
 #define DELAYED_NMI_FLAG2   (1 << 10)
 #define IRQ_PENDING_FLAG    (1 << 11)
 
-struct SCPUState{
+typedef struct {
     uint32  Flags;
     bool8   BranchSkip;
     bool8   NMIActive;
@@ -248,7 +238,7 @@ struct SCPUState{
 #ifdef DEBUG_MAXCOUNT
     unsigned long GlobalLoopCount;
 #endif
-};
+}SCPUState;
 
 #define HBLANK_START_EVENT 0
 #define HBLANK_END_EVENT 1
@@ -256,7 +246,7 @@ struct SCPUState{
 #define HTIMER_AFTER_EVENT 3
 #define NO_EVENT 4
 
-struct SSettings{
+typedef struct {
     /* CPU options */
     bool8  APUEnabled;
     bool8  Shutdown;
@@ -384,9 +374,9 @@ struct SSettings{
 #ifdef DEBUG_MAXCOUNT
     unsigned int MaxCount;
 #endif
-};
+}SSettings;
 
-struct SSNESGameFixes
+typedef struct
 {
     uint8 alienVSpredetorFix;
     uint8 APU_OutPorts_ReturnValueFix;
@@ -394,11 +384,11 @@ struct SSNESGameFixes
     uint8 SRAMInitialValue;
 	uint8 Uniracers;
 	bool8 EchoOnlyOutput;
-};
+}SSNESGameFixes;
 
-extern struct SSettings Settings;
-extern struct SCPUState CPU;
-extern struct SSNESGameFixes SNESGameFixes;
+extern SSettings Settings;
+extern SCPUState CPU;
+extern SSNESGameFixes SNESGameFixes;
 extern char String [513];
 
 void S9xExit ();

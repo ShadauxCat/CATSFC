@@ -88,7 +88,7 @@ unsigned retro_api_version() { return RETRO_API_VERSION; }
 
 
 
-void S9xProcessSound (unsigned int);
+void S9xProcessSound (unsigned int samples);
 
 char *rom_filename = NULL;
 char *SDD1_pack = NULL;
@@ -105,7 +105,7 @@ static u8 Buf[MAX_BUFFER_SIZE];
 #define FIXED_POINT_SHIFT 16
 #define FIXED_POINT_REMAINDER 0xffff
 
-void S9xMessage (int /*type*/, int /*number*/, const char *message)
+void S9xMessage (int type, int number, const char *message)
 {
 #if 1
 #define MAX_MESSAGE_LEN (36 * 3)
@@ -226,7 +226,7 @@ void S9xDeinitUpdate (int width, int height)
 
 #endif
 
-void _makepath (char *path, const char *, const char *dir,
+void _makepath (char *path, const char *drive, const char *dir,
       const char *fname, const char *ext)
 {
     if (dir && *dir)
@@ -419,7 +419,7 @@ void init_sfc_setting(void)
 
 void S9xAutoSaveSRAM ()
 {
-    Memory.SaveSRAM (S9xGetFilename (".srm"));
+    SaveSRAM (S9xGetFilename (".srm"));
 }
 
 int game_load_state(char* file)
@@ -456,13 +456,13 @@ int load_gamepak(const char* file)
 {
    CPU.Flags = 0;
    // mdelay(50); // Delete this delay
-   if (!Memory.LoadROM (file))
+   if (!LoadROM (file))
       return -1;
    S9xReset ();
 
    Settings.FrameTime = (Settings.PAL ? Settings.FrameTimePAL : Settings.FrameTimeNTSC);
 
-   Memory.LoadSRAM (S9xGetFilename (".srm"));
+   LoadSRAM (S9xGetFilename (".srm"));
    S9xLoadCheatFile (S9xGetFilename (".chb")); // cheat binary file, as opposed to text
 
    return 0;
@@ -486,7 +486,7 @@ void retro_init (void)
 
    init_sfc_setting();
 
-    if (!Memory.Init () || !S9xInitAPU())
+    if (!Init () || !S9xInitAPU())
       OutOfMemory ();
 
    S9xInitDisplay ();
@@ -654,7 +654,7 @@ static unsigned int LastSoundEmissionTime = 0;
  */
 static unsigned int SoundEmissionTimeError = 0;
 
-void S9xProcessSound (unsigned int)
+void S9xProcessSound (unsigned int samples)
 {
 
 }
@@ -839,7 +839,7 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
 bool retro_load_game(const struct retro_game_info *game)
 
 {
-   Memory.LoadROM(game->path);
+   LoadROM(game->path);
    return true;
 }
 

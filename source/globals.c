@@ -106,19 +106,19 @@ char String[513];
 
 struct Missing missing;
 
-struct SICPU ICPU;
+SICPU ICPU;
 
-struct SCPUState CPU;
+SCPUState CPU;
 
-struct SAPU APU;
+SAPU APU;
 
-struct SIAPU IAPU;
+SIAPU IAPU;
 
-struct SSettings Settings;
+SSettings Settings;
 
-struct SDSP1 DSP1;
+SDSP1 DSP1;
 
-struct SSA1 SA1;
+SSA1 SA1;
 
 SSoundData SoundData;
 
@@ -127,16 +127,16 @@ SnesModel M2SNES={2,4,3};
 SnesModel* Model=&M1SNES;
 
 
-uint8 *SRAM = NULL;
-uint8 *ROM = NULL;
-uint8 *RegRAM = NULL;
+uint8 *SRAM_g = NULL;
+uint8 *ROM_g = NULL;
+uint8 *RegRAM_g = NULL;
 uint8 *C4RAM = NULL;
 
 long OpAddress = 0;
 
 CMemory Memory;
 
-struct SSNESGameFixes SNESGameFixes;
+SSNESGameFixes SNESGameFixes;
 
 uint8 OpenBus = 0;
 

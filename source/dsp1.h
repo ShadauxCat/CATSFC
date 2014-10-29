@@ -105,7 +105,7 @@ uint8 DSP3GetByte(uint16 address);
 void DSP4SetByte(uint8 byte, uint16 address);
 uint8 DSP4GetByte(uint16 address);
 
-struct SDSP1 {
+typedef struct{
     bool8 waiting4command;
     bool8 first_parameter;
     uint8 command;
@@ -116,12 +116,12 @@ struct SDSP1 {
     uint8 parameters [512];
 //output was 512 for DSP-2 work, updated to reflect current thinking on DSP-3
     uint8 output [512];
-};
+}SDSP1;
 
 void S9xResetDSP1 ();
 uint8 S9xGetDSP (uint16 Address);
 void S9xSetDSP (uint8 Byte, uint16 Address);
-extern struct SDSP1 DSP1;
+extern SDSP1 DSP1;
 
 //extern struct SDSP1 DSP1;
 

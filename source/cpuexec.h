@@ -101,19 +101,19 @@
     if (CPU.Cycles >= CPU.NextEvent) \
 	S9xDoHBlankProcessing_NoSFX ();
 
-struct SOpcodes {
+typedef struct {
 #ifdef __WIN32__
 	void (__cdecl *S9xOpcode)( void);
 #else
 	void (*S9xOpcode)( void);
 #endif
-};
+}SOpcodes;
 
-struct SICPU
+typedef struct
 {
     uint8  *Speed;
-    struct SOpcodes *S9xOpcodes;
-    struct SRegisters Registers;
+    SOpcodes *S9xOpcodes;
+    SRegisters Registers;
     uint8  _Carry;
     uint8  _Zero;
     uint8  _Negative;
@@ -124,7 +124,7 @@ struct SICPU
     uint32 Frame;
     uint32 Scanline;
     uint32 FrameAdvanceCount;
-};
+}SICPU;
 
 void S9xMainLoop (void);
 void S9xReset (void);
@@ -134,13 +134,13 @@ void S9xDoHBlankProcessing_NoSFX ();
 void S9xClearIRQ (uint32);
 void S9xSetIRQ (uint32);
 
-extern struct SOpcodes S9xOpcodesE1 [256];
-extern struct SOpcodes S9xOpcodesM1X1 [256];
-extern struct SOpcodes S9xOpcodesM1X0 [256];
-extern struct SOpcodes S9xOpcodesM0X1 [256];
-extern struct SOpcodes S9xOpcodesM0X0 [256];
+extern SOpcodes S9xOpcodesE1 [256];
+extern SOpcodes S9xOpcodesM1X1 [256];
+extern SOpcodes S9xOpcodesM1X0 [256];
+extern SOpcodes S9xOpcodesM0X1 [256];
+extern SOpcodes S9xOpcodesM0X0 [256];
 
-extern struct SICPU ICPU;
+extern SICPU ICPU;
 
 STATIC inline void S9xUnpackStatus()
 {

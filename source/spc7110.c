@@ -252,7 +252,7 @@ void MovePackData()
 		s7r.AlignBy=0;
 	else
 	{
-		switch(ROM[j])
+      switch(Memory.ROM[j])
 		{
 		case 0x03:
 			s7r.AlignBy=8;
@@ -343,7 +343,7 @@ void ReadPackData()
 		s7r.AlignBy=0;
 	else
 	{
-		switch(ROM[j])
+      switch(Memory.ROM[j])
 		{
 		case 0x03:
 			s7r.AlignBy=8;
@@ -472,7 +472,7 @@ void GetPackData()
 		s7r.AlignBy=0;
 	else
 	{
-		switch(ROM[j])
+      switch(Memory.ROM[j])
 		{
 		case 0x03:
 			s7r.AlignBy=8;
@@ -622,7 +622,7 @@ uint8 S9xGetSPC7110(uint16 Address)
 				}
 			}
 			i+=s7r.DataRomOffset;
-			uint8 tmp=ROM[i];
+         uint8 tmp=Memory.ROM[i];
 			i=(s7r.reg4813<<16)|(s7r.reg4812<<8)|s7r.reg4811;
 			
 			if(s7r.reg4818&0x02)
@@ -760,7 +760,7 @@ uint8 S9xGetSPC7110(uint16 Address)
 			
 			i%=s7r.DataRomSize;
 			i+=s7r.DataRomOffset;
-			uint8 tmp=ROM[i];
+         uint8 tmp=Memory.ROM[i];
 			i=((s7r.reg4813<<16)|(s7r.reg4812<<8)|s7r.reg4811);
 			if(0x60==(s7r.reg4818&0x60))
 			{
@@ -967,7 +967,7 @@ void S9xSetSPC7110 (uint8 data, uint16 Address)
 				s7r.AlignBy=0;
 			else
 			{
-				switch(ROM[j])
+            switch(Memory.ROM[j])
 				{
 				case 0x03:
 					s7r.AlignBy=8;
@@ -1274,7 +1274,7 @@ void S9xSetSPC7110 (uint8 data, uint16 Address)
 
 	//SRAM toggle
 	case 0x4830:
-		Memory.SPC7110Sram(data);
+      SPC7110Sram(data);
 		s7r.reg4830=data;
 		break;
 	//Bank DX mapping
@@ -1418,7 +1418,7 @@ uint8 S9xGetSPC7110Byte(uint32 Address)
 	}
 	i+=Address&0x000FFFFF;
 	i+=s7r.DataRomOffset;
-	return ROM[i];
+   return Memory.ROM[i];
 }
 
 /**********************************************************************************************/
@@ -1621,7 +1621,7 @@ uint8* Get7110BasePtr(uint32 Address)
 	default:i=0;
 	}
 	i+=Address&0x000F0000;
-	return &ROM[i];
+   return &Memory.ROM[i];
 }
 
 //loads the index into memory.
@@ -1677,7 +1677,7 @@ void SPC7110Load(char* dirname)
 	char temp_path[PATH_MAX];
 	int i=0;
 
-	decompack=new Pack7110;
+   decompack=(Pack7110*)malloc(sizeof(Pack7110));
 
 #ifndef _XBOX
 	getcwd(temp_path,PATH_MAX);
@@ -1711,7 +1711,7 @@ void SPC7110Load(char* dirname)
 #endif
 			struct stat buf;
 			if(-1!=stat(binname, &buf))
-				decompack->binfiles[i]=new uint8[buf.st_size];
+            decompack->binfiles[i]=(uint8*)malloc(buf.st_size);
 			FILE* fp=fopen(binname, "rb");
 			if(fp)
 			{
@@ -1740,7 +1740,7 @@ void SPC7110Open(char* dirname)
 	char temp_path[PATH_MAX];
 	int i=0;
 
-	decompack=new Pack7110;
+   decompack=(Pack7110*)malloc(sizeof(Pack7110));
 
 #ifndef _XBOX
 	getcwd(temp_path,PATH_MAX);
@@ -1787,7 +1787,7 @@ void SPC7110Grab(char* dirname)
 	char temp_path[PATH_MAX];
 	int i=0;
 
-	decompack=new Pack7110;
+   decompack=(Pack7110*)malloc(sizeof(Pack7110));
 
 #ifndef _XBOX
 	getcwd(temp_path,PATH_MAX);
@@ -1826,7 +1826,7 @@ void SPC7110Grab(char* dirname)
 			if(-1!=stat(binname, &buf))
 			{
 				if(buf.st_size<buffer_size)
-					decompack->binfiles[i]=new uint8[buf.st_size];
+               decompack->binfiles[i]=(uint8*)malloc(buf.st_size);
 				FILE* fp=fopen(binname, "rb");
 				//use them here
 				if(fp)
@@ -1880,14 +1880,14 @@ void Del7110Gfx()
 	{
 		if(decompack->binfiles[i]!=NULL)
 		{
-			delete []decompack->binfiles[i];
+         free(decompack->binfiles[i]);
 			decompack->binfiles[i]=NULL;
 		}
 	}
 	Settings.SPC7110=false;
 	Settings.SPC7110RTC=false;
 	if(NULL!=decompack)
-		delete decompack;
+      free(decompack);
 	decompack=NULL;
 	CleanUp7110=NULL;
 	Copy7110=NULL;
@@ -1917,7 +1917,7 @@ void Close7110Gfx()
 	Settings.SPC7110=false;
 	Settings.SPC7110RTC=false;
 	if(NULL!=decompack)
-		delete decompack;
+      free(decompack);
 	decompack=NULL;
 	CleanUp7110=NULL;
 	Copy7110=NULL;
@@ -1947,7 +1947,7 @@ void Drop7110Gfx()
 			}
 			else
 			{
-				delete []decompack->binfiles[i];
+            free(decompack->binfiles[i]);
 				decompack->binfiles[i]=NULL;
 			}
 		}
@@ -1955,7 +1955,7 @@ void Drop7110Gfx()
 	Settings.SPC7110=false;
 	Settings.SPC7110RTC=false;
 	if(NULL!=decompack)
-		delete decompack;
+      free(decompack);
 	decompack=NULL;
 	CleanUp7110=NULL;
 	Copy7110=NULL;
@@ -2159,7 +2159,8 @@ void Do7110Logging()
 			int temp=0;
 			for(j=0;j<MAX_TABLES;j++)
 			{
-				for(int k=0;k<256;k++)
+            int k;
+            for(k=0;k<256;k++)
 				{
 					if(decompack->tableEnts[j].location[k].used_len!=0)
 						entries++;
@@ -2190,7 +2191,8 @@ void Do7110Logging()
 			
 			for(j=0;j<MAX_TABLES;j++)
 			{
-				for(int k=0;k<256;k++)
+            int k;
+            for(k=0;k<256;k++)
 				{
 					if(decompack->tableEnts[j].location[k].used_len!=0)
 					{
@@ -2255,7 +2257,8 @@ bool8 S9xLoadSPC7110RTC (S7RTC *rtc_f9)
 
     if((fp=fopen(S9xGetFilename(".rtc"), "rb"))==NULL)
         return (FALSE);
-	for (int i=0; i<16;i++)
+    int i;
+   for (i=0; i<16;i++)
 	{
 		fread(&(rtc_f9->reg[i]),1,1,fp);
 	}

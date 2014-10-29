@@ -139,20 +139,20 @@ enum {
 
 #define COUNT(ARRAY) (sizeof (ARRAY) / sizeof (ARRAY[0]))
 
-struct SnapshotMovieInfo
+typedef struct
 {
 	uint32	MovieInputDataSize;
-};
+}SnapshotMovieInfo;
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SnapshotMovieInfo *)
+#define OFFSET(f) Offset(f,SnapshotMovieInfo *)
 
 static FreezeData SnapMovie [] = {
     {OFFSET (MovieInputDataSize), 4, INT_V},
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SCPUState *)
+#define OFFSET(f) Offset(f,SCPUState *)
 
 static FreezeData SnapCPU [] = {
     {OFFSET (Flags), 4, INT_V},
@@ -170,7 +170,7 @@ static FreezeData SnapCPU [] = {
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SRegisters *)
+#define OFFSET(f) Offset(f,SRegisters *)
 
 static FreezeData SnapRegisters [] = {
     {OFFSET (PB),  1, INT_V},
@@ -185,7 +185,7 @@ static FreezeData SnapRegisters [] = {
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SPPU *)
+#define OFFSET(f) Offset(f,SPPU *)
 
 static FreezeData SnapPPU [] = {
     {OFFSET (BGMode), 1, INT_V},
@@ -318,32 +318,32 @@ static FreezeData SnapPPU [] = {
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SDMA *)
+#define OFFSET(f) Offset(f,SDMA *)
 
 static FreezeData SnapDMA [] = {
 #define O(N) \
-    {OFFSET (TransferDirection) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (AAddressFixed) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (AAddressDecrement) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (TransferMode) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (ABank) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (AAddress) + N * sizeof (struct SDMA), 2, INT_V}, \
-    {OFFSET (Address) + N * sizeof (struct SDMA), 2, INT_V}, \
-    {OFFSET (BAddress) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (TransferBytes) + N * sizeof (struct SDMA), 2, INT_V}, \
-    {OFFSET (HDMAIndirectAddressing) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (IndirectAddress) + N * sizeof (struct SDMA), 2, INT_V}, \
-    {OFFSET (IndirectBank) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (Repeat) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (LineCount) + N * sizeof (struct SDMA), 1, INT_V}, \
-    {OFFSET (FirstLine) + N * sizeof (struct SDMA), 1, INT_V}
+    {OFFSET (TransferDirection) + N * sizeof (SDMA), 1, INT_V}, \
+    {OFFSET (AAddressFixed) + N * sizeof (SDMA), 1, INT_V}, \
+    {OFFSET (AAddressDecrement) + N * sizeof (SDMA), 1, INT_V}, \
+    {OFFSET (TransferMode) + N * sizeof (SDMA), 1, INT_V}, \
+    {OFFSET (ABank) + N * sizeof (SDMA), 1, INT_V}, \
+    {OFFSET (AAddress) + N * sizeof (SDMA), 2, INT_V}, \
+    {OFFSET (Address) + N * sizeof (SDMA), 2, INT_V}, \
+    {OFFSET (BAddress) + N * sizeof (SDMA), 1, INT_V}, \
+    {OFFSET (TransferBytes) + N * sizeof (SDMA), 2, INT_V}, \
+    {OFFSET (HDMAIndirectAddressing) + N * sizeof (SDMA), 1, INT_V}, \
+    {OFFSET (IndirectAddress) + N * sizeof (SDMA), 2, INT_V}, \
+    {OFFSET (IndirectBank) + N * sizeof (SDMA), 1, INT_V}, \
+    {OFFSET (Repeat) + N * sizeof (SDMA), 1, INT_V}, \
+    {OFFSET (LineCount) + N * sizeof (SDMA), 1, INT_V}, \
+    {OFFSET (FirstLine) + N * sizeof (SDMA), 1, INT_V}
 	
     O(0), O(1), O(2), O(3), O(4), O(5), O(6), O(7)
 #undef O
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SAPU *)
+#define OFFSET(f) Offset(f, SAPU *)
 
 static FreezeData SnapAPU [] = {
     {OFFSET (Cycles), 4, INT_V},
@@ -360,7 +360,7 @@ static FreezeData SnapAPU [] = {
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SAPURegisters *)
+#define OFFSET(f) Offset(f, SAPURegisters *)
 
 static FreezeData SnapAPURegisters [] = {
     {OFFSET (P), 1, INT_V},
@@ -421,7 +421,7 @@ static FreezeData SnapSoundData [] = {
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SSA1Registers *)
+#define OFFSET(f) Offset(f,SSA1Registers *)
 
 static FreezeData SnapSA1Registers [] = {
     {OFFSET (PB),  1, INT_V},
@@ -436,7 +436,7 @@ static FreezeData SnapSA1Registers [] = {
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SSA1 *)
+#define OFFSET(f) Offset(f,SSA1 *)
 
 static FreezeData SnapSA1 [] = {
     {OFFSET (Flags), 4, INT_V},
@@ -451,7 +451,7 @@ static FreezeData SnapSA1 [] = {
 };
 
 #undef OFFSET
-#define OFFSET(f) Offset(f,struct SPC7110EmuVars *)
+#define OFFSET(f) Offset(f,SPC7110Regs *)
 
 static FreezeData SnapSPC7110 [] = {
     {OFFSET (reg4800), 1, INT_V},
@@ -660,7 +660,7 @@ void S9xFreezeToStream (STREAM stream)
 	// RAM and VRAM
     FreezeBlock (stream, "VRA", Memory.VRAM, 0x10000);
     FreezeBlock (stream, "RAM", Memory.RAM, 0x20000);
-    FreezeBlock (stream, "SRA", ::SRAM, 0x20000);
+    FreezeBlock (stream, "SRA", SRAM_g, 0x20000);
     FreezeBlock (stream, "FIL", Memory.FillRAM, 0x8000);
     if (Settings.APUEnabled)
     {
@@ -803,7 +803,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 		UnfreezeStructFromCopy (DMA, SnapDMA, COUNT (SnapDMA), local_dma);
 		memcpy (Memory.VRAM, local_vram, 0x10000);
 		memcpy (Memory.RAM, local_ram, 0x20000);
-		memcpy (::SRAM, local_sram, 0x20000);
+      memcpy (SRAM_g, local_sram, 0x20000);
 		memcpy (Memory.FillRAM, local_fillram, 0x8000);
 		if(local_apu)
 		{
@@ -826,7 +826,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 			UnfreezeStructFromCopy (&rtc_f9, SnapS7RTC, COUNT (SnapS7RTC), local_spc_rtc);
 		}
 
-		Memory.FixROMSpeed ();
+      FixROMSpeed ();
 		CPU.Flags |= old_flags & (DEBUG_MODE_FLAG | TRACE_FLAG |
 			SINGLE_STEP_FLAG | FRAME_ADVANCE_FLAG);
 
@@ -895,23 +895,23 @@ int S9xUnfreezeFromStream (STREAM stream)
 			S9xSDD1PostLoadState ();
 	}
 
-	if (local_cpu)           delete [] local_cpu;
-	if (local_registers)     delete [] local_registers;
-	if (local_ppu)           delete [] local_ppu;
-	if (local_dma)           delete [] local_dma;
-	if (local_vram)          delete [] local_vram;
-	if (local_ram)           delete [] local_ram;
-	if (local_sram)          delete [] local_sram;
-	if (local_fillram)       delete [] local_fillram;
-	if (local_apu)           delete [] local_apu;
-	if (local_apu_registers) delete [] local_apu_registers;
-	if (local_apu_ram)       delete [] local_apu_ram;
-	if (local_apu_sounddata) delete [] local_apu_sounddata;
-	if (local_sa1)           delete [] local_sa1;
-	if (local_sa1_registers) delete [] local_sa1_registers;
-	if (local_spc)           delete [] local_spc;
-	if (local_spc_rtc)       delete [] local_spc_rtc;
-	if (local_movie_data)    delete [] local_movie_data;
+   if (local_cpu)           free(local_cpu);
+   if (local_registers)     free(local_registers);
+   if (local_ppu)           free(local_ppu);
+   if (local_dma)           free(local_dma);
+   if (local_vram)          free(local_vram);
+   if (local_ram)           free(local_ram);
+   if (local_sram)          free(local_sram);
+   if (local_fillram)       free(local_fillram);
+   if (local_apu)           free(local_apu);
+   if (local_apu_registers) free(local_apu_registers);
+   if (local_apu_ram)       free(local_apu_ram);
+   if (local_apu_sounddata) free(local_apu_sounddata);
+   if (local_sa1)           free(local_sa1);
+   if (local_sa1_registers) free(local_sa1_registers);
+   if (local_spc)           free(local_spc);
+   if (local_spc_rtc)       free(local_spc_rtc);
+   if (local_movie_data)    free(local_movie_data);
 
 	return (result);
 }
@@ -945,7 +945,7 @@ void FreezeStruct (STREAM stream, const char *name, void *base, FreezeData *fiel
 			fields [i].type);
     }
 	
-    uint8 *block = new uint8 [len];
+    uint8 *block = (uint8*) malloc(len);
     uint8 *ptr = block;
     uint16 word;
     uint32 dword;
@@ -1014,7 +1014,7 @@ void FreezeStruct (STREAM stream, const char *name, void *base, FreezeData *fiel
     }
 	
     FreezeBlock (stream, name, block, len);
-    delete[] block;
+    free(block);
 }
 
 void FreezeBlock (STREAM stream, const char *name, uint8 *block, int size)
@@ -1042,7 +1042,7 @@ int UnfreezeStruct (STREAM stream, const char *name, void *base, FreezeData *fie
 			fields [i].type);
     }
 	
-    uint8 *block = new uint8 [len];
+    uint8 *block = (uint8*) malloc(len);
     uint8 *ptr = block;
     uint16 word;
     uint32 dword;
@@ -1051,7 +1051,7 @@ int UnfreezeStruct (STREAM stream, const char *name, void *base, FreezeData *fie
 	
     if ((result = UnfreezeBlock (stream, name, block, len)) != SUCCESS)
     {
-		delete block;
+      free(block);
 		return (result);
     }
 	
@@ -1117,7 +1117,7 @@ int UnfreezeStruct (STREAM stream, const char *name, void *base, FreezeData *fie
 		}
     }
 	
-    delete [] block;
+    free(block);
     return (result);
 }
 
@@ -1147,9 +1147,9 @@ int UnfreezeBlock (STREAM stream, const char *name, uint8 *block, int size)
 	}
     if (rem)
     {
-		char *junk = new char [rem];
+      char *junk = (char*) malloc(rem);
 		READ_STREAM (junk, rem, stream);
-		delete [] junk;
+      free(junk);
     }
 	
     return (SUCCESS);
@@ -1246,12 +1246,12 @@ void UnfreezeStructFromCopy (void *base, FreezeData *fields, int num_fields, uin
 
 int UnfreezeBlockCopy (STREAM stream, const char *name, uint8** block, int size)
 {
-    *block = new uint8 [size];
+    *block = (uint8*) malloc(size);
     int result;
 	
     if ((result = UnfreezeBlock (stream, name, *block, size)) != SUCCESS)
     {
-		delete [] (*block);
+      free((*block));
 		*block = NULL;
 		return (result);
     }
@@ -1585,7 +1585,7 @@ bool8 S9xUnfreezeZSNES (const char *filename)
 		
 		if (Settings.SuperFX)
 		{
-			fread (::SRAM, 1, 64 * 1024, fs);
+         fread (SRAM_g, 1, 64 * 1024, fs);
 			fseek (fs, 64 * 1024, SEEK_CUR);
 			fread (Memory.FillRAM + 0x7000, 1, 692, fs);
 		}
@@ -1617,7 +1617,7 @@ bool8 S9xUnfreezeZSNES (const char *filename)
 			// DS2 DMA notes: This code path is not used [Neb]
 			memcpy (&Memory.FillRAM [0x3000], t + 692, 2 * 1024);
 			
-			fread (::SRAM, 1, 64 * 1024, fs);
+         fread (SRAM_g, 1, 64 * 1024, fs);
 			fseek (fs, 64 * 1024, SEEK_CUR);
 			S9xFixSA1AfterSnapshotLoad ();
 		}
@@ -1747,12 +1747,15 @@ fread(&temp, 1, 4, fs);
 			s7r.reg4809=temp&(0x0FF);
 			s7r.reg480A=(temp>>8)&(0x0FF);
 //NEWSYM SPCCompCommand, dd 0  480B
-fread(&temp, 1, 4, fs);
+      fread(&temp, 1, 4, fs);
 			
 			s7r.reg480B=temp&(0x0FF);
 //NEWSYM SPCCheckFix, dd 0		written(if 1, then set writtne to max value!)
-fread(&temp, 1, 4, fs);
-(temp&(0x0FF))?s7r.written=0x1F:s7r.written=0x00;
+      fread(&temp, 1, 4, fs);
+      if (temp&(0x0FF))
+         s7r.written=0x1F;
+      else
+         s7r.written=0x00;
 //NEWSYM SPCSignedVal, dd 0	482E
 fread(&temp, 1, 4, fs);
 			
@@ -1761,7 +1764,7 @@ fread(&temp, 1, 4, fs);
 		}
 		fclose (fs);
 		
-		Memory.FixROMSpeed ();
+      FixROMSpeed ();
 		IPPU.ColorsChanged = TRUE;
 		IPPU.OBJChanged = TRUE;
 		CPU.InDMA = FALSE;

@@ -98,7 +98,7 @@ extern SCheatData Cheat;
 void S9xInitCheatData ()
 {
     Cheat.RAM = Memory.RAM;
-    Cheat.SRAM = SRAM;
+    Cheat.SRAM = Memory.SRAM;
     Cheat.FillRAM = Memory.FillRAM;
 }
 

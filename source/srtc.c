@@ -523,16 +523,16 @@ void S9xSRTCPreSaveState ()
 	if (s > 0x20000)
 	    s = 0x20000;
 
-	SRAM [s + 0] = rtc.needs_init;
-	SRAM [s + 1] = rtc.count_enable;
+   Memory.SRAM [s + 0] = rtc.needs_init;
+   Memory.SRAM [s + 1] = rtc.count_enable;
 	// memmove converted: Different mallocs [Neb]
-	memcpy (&SRAM [s + 2], rtc.data, MAX_RTC_INDEX + 1);
-	SRAM [s + 3 + MAX_RTC_INDEX] = rtc.index;
-	SRAM [s + 4 + MAX_RTC_INDEX] = rtc.mode;
+   memcpy (&Memory.SRAM [s + 2], rtc.data, MAX_RTC_INDEX + 1);
+   Memory.SRAM [s + 3 + MAX_RTC_INDEX] = rtc.index;
+   Memory.SRAM [s + 4 + MAX_RTC_INDEX] = rtc.mode;
 
 #ifdef LSB_FIRST
 	// memmove converted: Different mallocs [Neb]
-	memcpy (&SRAM [s + 5 + MAX_RTC_INDEX], &rtc.system_timestamp, 8);
+   memcpy (&Memory.SRAM [s + 5 + MAX_RTC_INDEX], &rtc.system_timestamp, 8);
 #else
 	SRAM [s + 5  + MAX_RTC_INDEX] = (uint8) (rtc.system_timestamp >>  0);
 	SRAM [s + 6  + MAX_RTC_INDEX] = (uint8) (rtc.system_timestamp >>  8);
@@ -555,16 +555,16 @@ void S9xSRTCPostLoadState ()
 	if (s > 0x20000)
 	    s = 0x20000;
 
-	rtc.needs_init = SRAM [s + 0];
-	rtc.count_enable = SRAM [s + 1];
+   rtc.needs_init = Memory.SRAM [s + 0];
+   rtc.count_enable = Memory.SRAM [s + 1];
 	// memmove converted: Different mallocs [Neb]
-	memcpy (rtc.data, &SRAM [s + 2], MAX_RTC_INDEX + 1);
-	rtc.index = SRAM [s + 3 + MAX_RTC_INDEX];
-	rtc.mode = SRAM [s + 4 + MAX_RTC_INDEX];
+   memcpy (rtc.data, &Memory.SRAM [s + 2], MAX_RTC_INDEX + 1);
+   rtc.index = Memory.SRAM [s + 3 + MAX_RTC_INDEX];
+   rtc.mode = Memory.SRAM [s + 4 + MAX_RTC_INDEX];
 
 #ifdef LSB_FIRST
 	// memmove converted: Different mallocs [Neb]
-	memcpy (&rtc.system_timestamp, &SRAM [s + 5 + MAX_RTC_INDEX], 8);
+   memcpy (&rtc.system_timestamp, &Memory.SRAM [s + 5 + MAX_RTC_INDEX], 8);
 #else
 	rtc.system_timestamp |= (SRAM [s +  5 + MAX_RTC_INDEX] <<  0);
 	rtc.system_timestamp |= (SRAM [s +  6 + MAX_RTC_INDEX] <<  8);

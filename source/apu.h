@@ -92,10 +92,10 @@
 
 #include "spc700.h"
 
-struct SIAPU
+typedef struct
 {
     uint8  *PC;
-    struct SAPURegisters Registers;
+    SAPURegisters Registers;
     uint8  *RAM;
     uint8  *DirectPage;
     bool8  APUExecuting;
@@ -111,9 +111,9 @@ struct SIAPU
     uint32 Scanline;
     int32  OneCycle;
     int32  TwoCycles;
-};
+}SIAPU;
 
-struct SAPU
+typedef struct
 {
     int32  Cycles;
     bool8  ShowROM;
@@ -126,10 +126,10 @@ struct SAPU
     uint16 TimerTarget [3];
     bool8  TimerEnabled [3];
     bool8  TimerValueWritten [3];
-};
+}SAPU;
 
-struct SAPU APU;
-struct SIAPU IAPU;
+SAPU APU;
+SIAPU IAPU;
 extern int spc_is_dumping;
 extern int spc_is_dumping_temp;
 extern uint8 spc_dump_dsp[0x100];

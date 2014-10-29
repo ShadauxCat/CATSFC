@@ -141,13 +141,13 @@ typedef union
     uint16 W;
 } YAndA;
 
-struct SAPURegisters{
+typedef struct{
     uint8  P;
     YAndA YA;
     uint8  X;
     uint8  S;
     uint16  PC;
-};
+}SAPURegisters;
 
 // Needed by ILLUSION OF GAIA
 //#define ONE_APU_CYCLE 14

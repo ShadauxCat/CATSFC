@@ -93,7 +93,7 @@
 #include "memmap.h"
 #include "cpuexec.h"
 
-struct SSA1Registers {
+typedef struct {
     uint8   PB;
     uint8   DB;
     pair    P;
@@ -103,10 +103,10 @@ struct SSA1Registers {
     pair    X;
     pair    Y;
     uint16  PC;
-};
+}SSA1Registers;
 
-struct SSA1 {
-    struct  SOpcodes *S9xOpcodes;
+typedef struct{
+    SOpcodes *S9xOpcodes;
     uint8   _Carry;
     uint8   _Zero;
     uint8   _Negative;
@@ -142,8 +142,8 @@ struct SSA1 {
     uint8   VirtualBitmapFormat;
     bool8   in_char_dma;
     uint8   variable_bit_pos;
-    struct  SSA1Registers Registers;
-};
+    SSA1Registers Registers;
+}SSA1;
 
 #define SA1CheckZero() (SA1._Zero == 0)
 #define SA1CheckCarry() (SA1._Carry)
@@ -168,11 +168,11 @@ void S9xSA1SetPCBase (uint32);
 uint8 S9xGetSA1 (uint32);
 void S9xSetSA1 (uint8, uint32);
 
-extern struct SOpcodes S9xSA1OpcodesM1X1 [256];
-extern struct SOpcodes S9xSA1OpcodesM1X0 [256];
-extern struct SOpcodes S9xSA1OpcodesM0X1 [256];
-extern struct SOpcodes S9xSA1OpcodesM0X0 [256];
-extern struct SSA1 SA1;
+extern SOpcodes S9xSA1OpcodesM1X1 [256];
+extern SOpcodes S9xSA1OpcodesM1X0 [256];
+extern SOpcodes S9xSA1OpcodesM0X1 [256];
+extern SOpcodes S9xSA1OpcodesM0X0 [256];
+extern SSA1 SA1;
 
 void S9xSA1MainLoop ();
 void S9xSA1Init ();

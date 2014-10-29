@@ -154,7 +154,7 @@ typedef union
     uint16 W;
 } pair;
 
-struct SRegisters{
+typedef struct {
     uint8  PB;
     uint8  DB;
     pair   P;
@@ -164,7 +164,7 @@ struct SRegisters{
     pair   X;
     pair   Y;
     uint16 PC;
-};
+}SRegisters;
 
 #endif
 

@@ -245,9 +245,9 @@ GFX.X2 [((((C1) & RGB_REMOVE_LOW_BITS_MASK) + \
 	  ((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1) + \
 	((C1) & (C2) & RGB_LOW_BITS_MASK)]
 #else
-inline uint16 COLOR_ADD (uint16, uint16);
+static inline uint16 COLOR_ADD (uint16, uint16);
 
-inline uint16 COLOR_ADD (uint16 C1, uint16 C2)
+static inline uint16 COLOR_ADD (uint16 C1, uint16 C2)
 {
 	if (C1 == 0)
 		return C2;

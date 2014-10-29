@@ -230,7 +230,7 @@ static int ReadOrigSnapshot (STREAM snap)
     if ((result = ReadBlock ("REG:", &OrigRegisters, sizeof (OrigRegisters), snap)) != SUCCESS)
 	return (result);
 
-    ICPU.Registers = *(struct SRegisters *) &OrigRegisters;
+    ICPU.Registers = *(SRegisters *) &OrigRegisters;
 
     if ((result = ReadBlock ("PPU:", &OrigPPU, sizeof (OrigPPU), snap)) != SUCCESS)
 	return (result);
@@ -376,12 +376,12 @@ static int ReadOrigSnapshot (STREAM snap)
 	return (result);
     if (ReadBlock ("APU:", &OrigAPU, sizeof (OrigAPU), snap) == SUCCESS)
     {
-	APU = *(struct SAPU *) &OrigAPU;
+   APU = *(SAPU *) &OrigAPU;
 
 	if ((result = ReadBlock ("ARE:", &OrigAPURegisters,
 				 sizeof (OrigAPURegisters), snap)) != SUCCESS)
 	    return (result);
-	IAPU.Registers = *(struct SAPURegisters *) &OrigAPURegisters;
+   IAPU.Registers = *(SAPURegisters *) &OrigAPURegisters;
 	if ((result = ReadBlock ("ARA:", IAPU.RAM, 0x10000, snap)) != SUCCESS)
 	    return (result);
 	if ((result = ReadBlock ("SOU:", &OrigSoundData,
