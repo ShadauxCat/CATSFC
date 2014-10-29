@@ -137,68 +137,68 @@
 #define BIGFIRST 2
 #define SMALLFIRST 3
 
-class CMemory {
-public:
-    bool8 LoadROM (const char *);
-    uint32 FileLoader (uint8* buffer, const char* filename, int32 maxsize);
-    void  InitROM (bool8);
-    bool8 LoadSRAM (const char *);
-    bool8 SaveSRAM (const char *);
-    bool8 Init ();
-    void  Deinit ();
-    void  FreeSDD1Data ();
-    
-    void WriteProtectROM ();
-    void FixROMSpeed ();
-    void MapRAM ();
-    void MapExtraRAM ();
-    char *Safe (const char *);
-    
-	void BSLoROMMap();
-	void JumboLoROMMap (bool8);
-    void LoROMMap ();
-    void LoROM24MBSMap ();
-    void SRAM512KLoROMMap ();
+bool8 LoadROM (const char *);
+uint32 FileLoader (uint8* buffer, const char* filename, int32 maxsize);
+void  InitROM (bool8);
+bool8 LoadSRAM (const char *);
+bool8 SaveSRAM (const char *);
+bool8 Init ();
+void  Deinit ();
+void  FreeSDD1Data ();
+
+void WriteProtectROM ();
+void FixROMSpeed ();
+void MapRAM ();
+void MapExtraRAM ();
+char *Safe (const char *);
+
+void BSLoROMMap();
+void JumboLoROMMap (bool8);
+void LoROMMap ();
+void LoROM24MBSMap ();
+void SRAM512KLoROMMap ();
 //    void SRAM1024KLoROMMap ();
-    void SufamiTurboLoROMMap ();
-    void HiROMMap ();
-    void SuperFXROMMap ();
-    void TalesROMMap (bool8);
-    void AlphaROMMap ();
-    void SA1ROMMap ();
-    void BSHiROMMap ();
-	void SPC7110HiROMMap();
-	void SPC7110Sram(uint8);
-	void SetaDSPMap();
-    bool8 AllASCII (uint8 *b, int size);
-    int  ScoreHiROM (bool8 skip_header, int32 offset=0);
-    int  ScoreLoROM (bool8 skip_header, int32 offset=0);
+void SufamiTurboLoROMMap ();
+void HiROMMap ();
+void SuperFXROMMap ();
+void TalesROMMap (bool8);
+void AlphaROMMap ();
+void SA1ROMMap ();
+void BSHiROMMap ();
+void SPC7110HiROMMap();
+void SPC7110Sram(uint8);
+void SetaDSPMap();
+bool8 AllASCII (uint8 *b, int size);
+int  ScoreHiROM (bool8 skip_header, int32 offset);
+int  ScoreLoROM (bool8 skip_header, int32 offset);
 #if 0
-    void SufamiTurboAltROMMap();
+void SufamiTurboAltROMMap();
 #endif
-    void ApplyROMFixes ();
-    void CheckForIPSPatch (const char *rom_filename, bool8 header,
-			   int32 &rom_size);
-    
-    const char *TVStandard ();
-    const char *Speed ();
-    const char *StaticRAMSize ();
-    const char *MapType ();
-    const char *MapMode ();
-    const char *KartContents ();
-    const char *Size ();
-    const char *Headers ();
-    const char *ROMID ();
-    const char *CompanyID ();
-    void ParseSNESHeader(uint8*);
-	enum {
-	MAP_PPU, MAP_CPU, MAP_DSP, MAP_LOROM_SRAM, MAP_HIROM_SRAM,
-	MAP_NONE, MAP_DEBUG, MAP_C4, MAP_BWRAM, MAP_BWRAM_BITMAP,
-	MAP_BWRAM_BITMAP2, MAP_SA1RAM, MAP_SPC7110_ROM, MAP_SPC7110_DRAM,
-	MAP_RONLY_SRAM, MAP_OBC_RAM, MAP_SETA_DSP, MAP_SETA_RISC, MAP_LAST
-    };
-    enum { MAX_ROM_SIZE = 0x800000 };
-    
+void ApplyROMFixes ();
+void CheckForIPSPatch (const char *rom_filename, bool8 header,
+        int32* rom_size);
+
+const char *TVStandard ();
+const char *Speed ();
+const char *StaticRAMSize ();
+const char *MapType ();
+const char *MapMode ();
+const char *KartContents ();
+const char *Size ();
+const char *Headers ();
+const char *ROMID ();
+const char *CompanyID ();
+void ParseSNESHeader(uint8*);
+enum {
+MAP_PPU, MAP_CPU, MAP_DSP, MAP_LOROM_SRAM, MAP_HIROM_SRAM,
+MAP_NONE, MAP_DEBUG, MAP_C4, MAP_BWRAM, MAP_BWRAM_BITMAP,
+MAP_BWRAM_BITMAP2, MAP_SA1RAM, MAP_SPC7110_ROM, MAP_SPC7110_DRAM,
+MAP_RONLY_SRAM, MAP_OBC_RAM, MAP_SETA_DSP, MAP_SETA_RISC, MAP_LAST
+};
+enum { MAX_ROM_SIZE = 0x800000 };
+
+typedef struct
+{
     uint8 *RAM;
     uint8 *ROM;
     uint8 *VRAM;
@@ -237,28 +237,14 @@ public:
 	uint8 ROMRegion;
     uint32 ROMCRC32;
 	uint8 ExtendedFormat;
-#if 0
-	bool8 SufamiTurbo;
-	char Slot1Filename [_MAX_PATH];
-	char Slot2Filename [_MAX_PATH];
-	uint8* ROMOffset1;
-	uint8* ROMOffset2;
-	uint8* SRAMOffset1;
-	uint8* SRAMOffset2;
-	uint32 Slot1Size;
-	uint32 Slot2Size;
-	uint32 Slot1SRAMSize;
-	uint32 Slot2SRAMSize;
-	uint8 SlotContents;
-#endif
 	uint8 *BSRAM;
-	void ResetSpeedMap();
 #if 0
 	bool8 LoadMulti (const char *,const char *,const char *);
 #endif
-};
+}CMemory;
 
-START_EXTERN_C
+void ResetSpeedMap();
+
 extern CMemory Memory;
 extern uint8 *SRAM;
 extern uint8 *ROM;
@@ -268,11 +254,9 @@ bool8 LoadZip(const char* zipname,
 	      int32 *TotalFileSize,
 	      int32 *headers, 
               uint8 *buffer);
-END_EXTERN_C
 
-extern "C" {
-	void S9xAutoSaveSRAM ();
-}
+
+void S9xAutoSaveSRAM ();
 
 #ifdef NO_INLINE_SET_GET
 uint8 S9xGetByte (uint32 Address);
@@ -283,9 +267,7 @@ void S9xSetPCBase (uint32 Address);
 uint8 *S9xGetMemPointer (uint32 Address);
 uint8 *GetBasePointer (uint32 Address);
 
-extern "C" {
-	extern uint8 OpenBus;
-}
+extern uint8 OpenBus;
 
 #else
 #define INLINE inline

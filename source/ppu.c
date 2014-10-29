@@ -106,8 +106,8 @@
 #include "fxinst.h"
 extern struct FxInit_s SuperFX;
 #else
-EXTERN_C void S9xSuperFXWriteReg (uint8, uint32);
-EXTERN_C uint8 S9xSuperFXReadReg (uint32);
+void S9xSuperFXWriteReg (uint8, uint32);
+uint8 S9xSuperFXReadReg (uint32);
 #endif
 
 uint32 justifiers=0xFFFF00AA;
@@ -2518,7 +2518,7 @@ void S9xUpdateJustifiers()
 
 	bool offscreen=JustifierOffscreen();
 
-	JustifierButtons(justifiers);
+   JustifierButtons(&justifiers);
 //	if(p1count==32)
 //	{
 		last_p1=!last_p1;

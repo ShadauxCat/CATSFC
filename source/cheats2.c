@@ -98,7 +98,7 @@ extern SCheatData Cheat;
 void S9xInitCheatData ()
 {
     Cheat.RAM = Memory.RAM;
-    Cheat.SRAM = ::SRAM;
+    Cheat.SRAM = SRAM;
     Cheat.FillRAM = Memory.FillRAM;
 }
 
@@ -168,7 +168,7 @@ void S9xRemoveCheat (uint32 which1)
 	int block = (address >> MEMMAP_SHIFT) & MEMMAP_MASK;
 	uint8 *ptr = Memory.Map [block];
 	    
-	if (ptr >= (uint8 *) CMemory::MAP_LAST)
+   if (ptr >= (uint8 *) MAP_LAST)
 	    *(ptr + (address & 0xffff)) = Cheat.c [which1].saved_byte;
 	else
 	    S9xSetByte (Cheat.c [which1].saved_byte, address);
@@ -187,7 +187,7 @@ void S9xApplyCheat (uint32 which1)
     int block = (address >> MEMMAP_SHIFT) & MEMMAP_MASK;
     uint8 *ptr = Memory.Map [block];
     
-    if (ptr >= (uint8 *) CMemory::MAP_LAST)
+    if (ptr >= (uint8 *) MAP_LAST)
 	*(ptr + (address & 0xffff)) = Cheat.c [which1].byte;
     else
 	S9xSetByte (Cheat.c [which1].byte, address);
@@ -196,9 +196,10 @@ void S9xApplyCheat (uint32 which1)
 
 void S9xApplyCheats ()
 {
+    uint32 i;
     if (Settings.ApplyCheats)
     {
-        for (uint32 i = 0; i < Cheat.num_cheats; i++)
+        for (i = 0; i < Cheat.num_cheats; i++)
             if (Cheat.c [i].enabled)
                 S9xApplyCheat (i);
     }
@@ -206,9 +207,10 @@ void S9xApplyCheats ()
 
 void S9xRemoveCheats ()
 {
-    for (uint32 i = 0; i < Cheat.num_cheats; i++)
-	if (Cheat.c [i].enabled)
-	    S9xRemoveCheat (i);
+   uint32 i;
+   for (i = 0; i < Cheat.num_cheats; i++)
+      if (Cheat.c [i].enabled)
+         S9xRemoveCheat (i);
 }
 
 bool8 S9xLoadCheatFile (const char *filename)

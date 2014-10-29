@@ -138,7 +138,7 @@ typedef struct {
     uint32 err_rate;
 } SoundStatus;
 
-EXTERN_C SoundStatus so;
+SoundStatus so;
 
 
 typedef struct {
@@ -200,7 +200,7 @@ typedef struct
     int noise_hertz;
 } SSoundData;
 
-EXTERN_C SSoundData SoundData;
+SSoundData SoundData;
 
 void S9xSetEightBitConsoleSound (bool8 Enabled);
 
@@ -237,8 +237,8 @@ void S9xPlaySample (int channel);
 void S9xFixEnvelope (int channel, uint8 gain, uint8 adsr1, uint8 adsr2);
 void S9xStartSample (int channel);
 
-EXTERN_C void S9xMixSamples (uint8 *buffer, int sample_count);
-EXTERN_C void S9xMixSamplesO (uint8 *buffer, int sample_count, int byte_offset);
+void S9xMixSamples (uint8 *buffer, int sample_count);
+void S9xMixSamplesO (uint8 *buffer, int sample_count, int byte_offset);
 bool8 S9xOpenSoundDevice (int, bool8, int);
 void S9xSetPlaybackRate (uint32 rate);
 #endif

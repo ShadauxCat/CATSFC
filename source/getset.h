@@ -98,10 +98,7 @@
 #include "obc1.h"
 #include "seta.h"
 
-extern "C"
-{
-	extern uint8 OpenBus;
-}
+extern uint8 OpenBus;
 
 uint8 S9xGetByte (uint32 Address)
 {

@@ -109,8 +109,8 @@
 #define FREEZEFOLDER S9xGetSnapshotDirectory ()
 #endif
 
-extern "C" const char *S9xGetFilename (const char *);
-extern "C" char *osd_GetPackDir();
+const char *S9xGetFilename (const char *);
+char *osd_GetPackDir();
 //really not needed, but usually MS adds the _ to POSIX functions,
 //while *nix doesn't, so this was to "un-M$" the function.
 #define splitpath _splitpath
@@ -522,7 +522,6 @@ void GetPackData()
 	}
 }
 
-extern "C"{
 //reads SPC7110 and RTC registers.
 uint8 S9xGetSPC7110(uint16 Address)
 {
@@ -898,7 +897,7 @@ uint8 S9xGetSPC7110(uint16 Address)
 		return 0x00;
 	}
 }
-}
+
 void S9xSetSPC7110 (uint8 data, uint16 Address)
 {
 	switch(Address)
@@ -1399,7 +1398,7 @@ void S9xSetSPC7110 (uint8 data, uint16 Address)
 		//16 BIT MULTIPLIER: ($FF00) high byte, defval:00
 	}
 }
-extern "C"{
+
 //emulate the SPC7110's ability to remap banks Dx, Ex, and Fx.
 uint8 S9xGetSPC7110Byte(uint32 Address)
 {
@@ -1421,7 +1420,7 @@ uint8 S9xGetSPC7110Byte(uint32 Address)
 	i+=s7r.DataRomOffset;
 	return ROM[i];
 }
-}
+
 /**********************************************************************************************/
 /* S9xSRTCDaysInMonth()                                                                       */
 /* Return the number of days in a specific month for a certain year                           */
@@ -1603,7 +1602,6 @@ void	S9xUpdateRTC ()
         }
     }
 }
-extern "C"{
 
 //allows DMA from the ROM (is this even possible on the SPC7110?
 uint8* Get7110BasePtr(uint32 Address)
@@ -1624,8 +1622,6 @@ uint8* Get7110BasePtr(uint32 Address)
 	}
 	i+=Address&0x000F0000;
 	return &ROM[i];
-}
-//end extern
 }
 
 //loads the index into memory.

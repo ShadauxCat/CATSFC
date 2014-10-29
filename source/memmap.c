@@ -125,9 +125,7 @@
 #include "fxemu.h"
 extern struct FxInit_s SuperFX;
 #else
-START_EXTERN_C
 extern uint8 *SFXPlotTable;
-END_EXTERN_C
 #endif
 
 #ifndef SET_UI_COLOR
@@ -4237,7 +4235,7 @@ static long ReadInt (FILE *f, unsigned nbytes)
 #define IPS_EOF 0x00454F46l
 
 void CMemory::CheckForIPSPatch (const char *rom_filename, bool8 header,
-								int32 &rom_size)
+                        int32* rom_size)
 {
     char  dir [_MAX_DIR + 1];
     char  drive [_MAX_DRIVE + 1];
@@ -4297,8 +4295,8 @@ void CMemory::CheckForIPSPatch (const char *rom_filename, bool8 header,
 					goto err_eof;
 				ROM [ofs++] = (uint8) rchar;
             }
-			if (ofs > rom_size)
-				rom_size = ofs;
+         if (ofs > *rom_size)
+            *rom_size = ofs;
 		}
 		else
 		{
@@ -4316,17 +4314,17 @@ void CMemory::CheckForIPSPatch (const char *rom_filename, bool8 header,
 			while (rlen--) 
 				ROM [ofs++] = (uint8) rchar;
 			
-			if (ofs > rom_size)
-				rom_size = ofs;
+         if (ofs > *rom_size)
+            *rom_size = ofs;
 		}
     }
 	
     // Check if ROM image needs to be truncated
     ofs = ReadInt (patch_file, 3);
-    if (ofs != -1 && ofs - offset < rom_size)
+    if (ofs != -1 && ofs - offset < *rom_size)
     {
 		// Need to truncate ROM image
-		rom_size = ofs - offset;
+      *rom_size = ofs - offset;
     }
     fclose (patch_file);
     return;

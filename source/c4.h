@@ -91,8 +91,6 @@
 
 #include "port.h"
 
-extern "C" {
-
 extern int16 C4WFXVal;
 extern int16 C4WFYVal;
 extern int16 C4WFZVal;
@@ -117,8 +115,6 @@ void C4Op0D();
 
 extern int16 C4CosTable[];
 extern int16 C4SinTable[];
-
-}
 
 #endif
 

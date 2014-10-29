@@ -126,7 +126,6 @@ struct SICPU
     uint32 FrameAdvanceCount;
 };
 
-START_EXTERN_C
 void S9xMainLoop (void);
 void S9xReset (void);
 void S9xSoftReset (void);
@@ -142,7 +141,6 @@ extern struct SOpcodes S9xOpcodesM0X1 [256];
 extern struct SOpcodes S9xOpcodesM0X0 [256];
 
 extern struct SICPU ICPU;
-END_EXTERN_C
 
 STATIC inline void S9xUnpackStatus()
 {

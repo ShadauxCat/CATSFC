@@ -476,7 +476,7 @@ int load_gamepak(const char* file)
    return 0;
 }
 
-extern "C" void sfc_main(void);
+void sfc_main(void);
 
 void retro_init (void)
 {
@@ -730,11 +730,10 @@ bool JustifierOffscreen()
     return (FALSE);
 }
 
-void JustifierButtons(uint32& justifiers)
+void JustifierButtons(uint32* justifiers)
 {
 }
 
-START_EXTERN_C
 char* osd_GetPackDir()
 {
   static char filename[_MAX_PATH];
@@ -782,8 +781,6 @@ char* osd_GetPackDir()
   } else strcat(filename, "/MISC-SP7");
   return filename;
 }
-END_EXTERN_C
-
 
 void retro_deinit (void)
 {

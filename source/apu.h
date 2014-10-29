@@ -128,8 +128,8 @@ struct SAPU
     bool8  TimerValueWritten [3];
 };
 
-EXTERN_C struct SAPU APU;
-EXTERN_C struct SIAPU IAPU;
+struct SAPU APU;
+struct SIAPU IAPU;
 extern int spc_is_dumping;
 extern int spc_is_dumping_temp;
 extern uint8 spc_dump_dsp[0x100];
@@ -147,7 +147,6 @@ STATIC inline void S9xAPUPackStatus()
 		      (IAPU._Zero & 0x80) | (IAPU._Overflow << 6);
 }
 
-START_EXTERN_C
 void S9xResetAPU (void);
 bool8 S9xInitAPU ();
 void S9xDeinitAPU ();
@@ -164,7 +163,6 @@ void S9xPrintAPUState ();
 extern uint16 S9xAPUCycles [256];	// Scaled cycle lengths
 extern uint16 S9xAPUCycleLengths [256];	// Raw data.
 extern void (*S9xApuOpcodes [256]) (void);
-END_EXTERN_C
 
 
 #define APU_VOL_LEFT 0x00

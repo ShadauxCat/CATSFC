@@ -96,8 +96,6 @@ int OBC1_Address;
 int OBC1_BasePtr;
 int OBC1_Shift;
 
-extern "C"
-{
 uint8 GetOBC1 (uint16 Address)
 {
 	switch(Address) {
@@ -199,6 +197,4 @@ void ResetOBC1()
 	OBC1_RAM = &Memory.FillRAM[0x6000];
 
 	memset(OBC1_RAM, 0x00, 0x2000);
-}
-
 }

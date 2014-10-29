@@ -117,11 +117,9 @@
 extern uint8 *SRAM;
 
 #ifdef ZSNES_FX
-START_EXTERN_C
 void S9xSuperFXPreSaveState ();
 void S9xSuperFXPostSaveState ();
 void S9xSuperFXPostLoadState ();
-END_EXTERN_C
 #endif
 
 bool8 S9xUnfreezeZSNES (const char *filename);

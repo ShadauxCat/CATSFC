@@ -93,7 +93,6 @@
 #include "port.h"
 #include "snes9x.h"
 
-START_EXTERN_C
 void S9xStartScreenRefresh ();
 void S9xDrawScanLine (uint8 Line);
 void S9xEndScreenRefresh ();
@@ -111,8 +110,6 @@ void S9xGraphicsDeinit();
 bool8 S9xInitUpdate (void);
 void S9xDeinitUpdate (int width, int height);
 void S9xSyncSpeed ();
-
-END_EXTERN_C
 
 struct SGFX{
     // Initialize these variables
@@ -179,7 +176,7 @@ struct SLineData {
 #define V_FLIP 0x8000
 #define BLANK_TILE 2
 
-struct SBG
+typedef struct
 {
     uint32 TileSize;
     uint32 BitShift;
@@ -195,7 +192,7 @@ struct SBG
     uint8 *Buffer;
     uint8 *Buffered;
     bool8  DirectColourMode;
-};
+}SBG;
 
 struct SLineMatrixData
 {

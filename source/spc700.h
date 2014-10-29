@@ -160,7 +160,7 @@ struct SAPURegisters{
 // 1.953us := 1.024065.54MHz
 
 #ifdef SPCTOOL
-EXTERN_C int32 ESPC (int32);
+int32 ESPC (int32);
 
 #define APU_EXECUTE() \
 { \

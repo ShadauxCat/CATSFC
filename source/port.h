@@ -200,22 +200,6 @@ typedef __int64 int64;
 #define FALSE 0
 #endif
 
-#ifdef STORM
-#define EXTERN_C
-#define START_EXTERN_C
-#define END_EXTERN_C
-#else
-#if defined(__cplusplus) || defined(c_plusplus)
-#define EXTERN_C extern "C"
-#define START_EXTERN_C extern "C" {
-#define END_EXTERN_C }
-#else
-#define EXTERN_C extern
-#define START_EXTERN_C
-#define END_EXTERN_C
-#endif
-#endif
-
 #ifndef __WIN32__
 
 #ifndef PATH_MAX
@@ -239,11 +223,11 @@ void _splitpath (const char *path, char *drive, char *dir, char *fname,
 #define strncasecmp strnicmp
 #endif
 
-EXTERN_C void S9xGenerateSound ();
+void S9xGenerateSound ();
 
 #ifdef STORM
-EXTERN_C int soundsignal;
-EXTERN_C void MixSound(void);
+int soundsignal;
+void MixSound(void);
 /* Yes, CHECK_SOUND is getting defined correctly! */
 #define CHECK_SOUND if (Settings.APUEnabled) if(SetSignalPPC(0L, soundsignal) & soundsignal) MixSound
 #else

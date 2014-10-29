@@ -101,7 +101,7 @@
 /* For note-triggered SPC dump support */
 #include "snapshot.h"
 
-extern "C" {const char *S9xGetFilenameInc (const char *);}
+const char *S9xGetFilenameInc (const char *);
 
 int spc_is_dumping=0;
 int spc_is_dumping_temp;
@@ -133,12 +133,12 @@ void S9xDeinitAPU ()
     }
 }
 
-EXTERN_C uint8 APUROM [64];
+uint8 APUROM [64];
 
 void S9xResetAPU ()
 {
 
-    int i;
+    int i,j;
 
     Settings.APUEnabled = Settings.NextAPUEnabled;
 
@@ -186,7 +186,7 @@ void S9xResetAPU ()
 		APU.TimerTarget [i] = 0;
 		APU.Timer [i] = 0;
     }
-    for (int j = 0; j < 0x80; j++)
+    for (j = 0; j < 0x80; j++)
 		APU.DSP [j] = 0;
 	
     IAPU.TwoCycles = IAPU.OneCycle * 2;
@@ -248,8 +248,9 @@ void S9xSetAPUDSP (uint8 byte)
     case APU_NON:
 		if (byte != APU.DSP [APU_NON])
 		{
+         int c;
 			uint8 mask = 1;
-			for (int c = 0; c < 8; c++, mask <<= 1)
+         for (c = 0; c < 8; c++, mask <<= 1)
 			{
 				int type;
 
@@ -297,8 +298,9 @@ void S9xSetAPUDSP (uint8 byte)
     case APU_KOFF:
 		//		if (byte)
 		{
+         int c;
 			uint8 mask = 1;
-			for (int c = 0; c < 8; c++, mask <<= 1)
+         for (c = 0; c < 8; c++, mask <<= 1)
 			{
 				if ((byte & mask) != 0)
 				{
@@ -340,8 +342,9 @@ void S9xSetAPUDSP (uint8 byte)
 		}
 		if (byte)
 		{
+         int c;
 			uint8 mask = 1;
-			for (int c = 0; c < 8; c++, mask <<= 1)
+         for (c = 0; c < 8; c++, mask <<= 1)
 			{
 				if ((byte & mask) != 0)
 				{

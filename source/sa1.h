@@ -91,6 +91,7 @@
 #define _sa1_h_
 
 #include "memmap.h"
+#include "cpuexec.h"
 
 struct SSA1Registers {
     uint8   PB;
@@ -159,7 +160,6 @@ struct SSA1 {
 #define SA1CheckFlag(f)  (SA1.Registers.PL & (f))
 
 
-START_EXTERN_C
 uint8 S9xSA1GetByte (uint32);
 uint16 S9xSA1GetWord (uint32);
 void S9xSA1SetByte (uint8, uint32);
@@ -178,7 +178,6 @@ void S9xSA1MainLoop ();
 void S9xSA1Init ();
 void S9xFixSA1AfterSnapshotLoad ();
 void S9xSA1ExecuteDuringSleep ();
-END_EXTERN_C
 
 #define SNES_IRQ_SOURCE	    (1 << 7)
 #define TIMER_IRQ_SOURCE    (1 << 6)

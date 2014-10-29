@@ -159,6 +159,6 @@ struct Missing
     uint16 unknowndsp_write;
 };
 
-EXTERN_C struct Missing missing;
+struct Missing missing;
 #endif
 

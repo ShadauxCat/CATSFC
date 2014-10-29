@@ -88,6 +88,7 @@
 *******************************************************************************/
 
 #include "dsp4.h"
+#include "memmap.h"
 
 #define DSP4_READ_WORD(x) \
 	READ_WORD(DSP4.parameters+x)
@@ -102,14 +103,14 @@
 //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
 
-void DSP4_Multiply(short Multiplicand, short Multiplier, int &Product)
+int DSP4_Multiply(short Multiplicand, short Multiplier)
 {
-	Product = Multiplicand * Multiplier;
+   return Multiplicand * Multiplier;
 }
 
-void DSP4_UnknownOP11(short A, short B, short C, short D, short &M)
+short DSP4_UnknownOP11(short A, short B, short C, short D)
 {
-	M = ((A * 0x0155 >>  2) & 0xf000) | ((B * 0x0155 >>  6) & 0x0f00) | 
+   return ((A * 0x0155 >>  2) & 0xf000) | ((B * 0x0155 >>  6) & 0x0f00) |
 	    ((C * 0x0155 >> 10) & 0x00f0) | ((D * 0x0155 >> 14) & 0x000f); 
 }
 
@@ -204,16 +205,22 @@ void DSP4_Op01()
 		DSP4.in_index = 2;
 		DSP4.in_count = 8;
 
-		DSP4_WAIT(2) resume2:
+      DSP4_WAIT(2)
 
-		////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////
 		// process one iteration of projection
 
 		// inspect inputs
-		int16 plane = DSP4_READ_WORD(0);
+      int16 plane;
+
 		int16 index, lcv;
-		int16 py_dy=0, px_dx=0;
+      int16 py_dy, px_dx;
 		int16 y_out, x_out;
+
+      resume2:
+      plane = DSP4_READ_WORD(0);
+      py_dy=0;
+      px_dx=0;
 
 		// ignore invalid data
 		if((uint16) plane == 0x8001) continue;
@@ -406,7 +413,7 @@ void DSP4_Op07()
 		DSP4.in_index = 2;
 		DSP4.in_count = 12;
 
-		DSP4_WAIT(2) resume2:
+      DSP4_WAIT(2)
 
 		////////////////////////////////////////////////////
 		// process one loop of projection
@@ -414,7 +421,11 @@ void DSP4_Op07()
 		int16 plane;
 		int16 index,lcv;
 		int16 y_out,x_out;
-		int16 py_dy=0,px_dx=0;
+      int16 py_dy,px_dx;
+
+      resume2:
+      py_dy=0;
+      px_dx=0;
 
 		// debug
 		++block;
@@ -952,16 +963,23 @@ void DSP4_Op0D()
 		DSP4.in_index = 2;
 		DSP4.in_count = 8;
 
-		DSP4_WAIT(2) resume2:
+      DSP4_WAIT(2)
 
 		////////////////////////////////////////////////////
 		// project section of the track
 
 		// inspect inputs
-		int16 plane = DSP4_READ_WORD(0);
+      int16 plane;
 		int16 index, lcv;
-		int16 py_dy=0, px_dx=0;
+      int16 py_dy, px_dx;
 		int16 y_out, x_out;
+
+      resume2:
+
+      plane = DSP4_READ_WORD(0);
+      py_dy=0;
+      px_dx=0;
+
 
 		// ignore invalid data
 		if((uint16) plane == 0x8001) continue;
@@ -1250,10 +1268,13 @@ sprite_found:
 			// grab a few remaining vehicle values
 			DSP4.in_count = 4;
 
-			DSP4_WAIT(4) resume4:
+         DSP4_WAIT(4)
 
 			// store final values
-			int height = DSP4_READ_WORD(0);
+         int height;
+
+         resume4:
+         height = DSP4_READ_WORD(0);
 			sprite_offset = DSP4_READ_WORD(2);
 
 			// vertical lift factor

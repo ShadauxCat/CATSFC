@@ -95,16 +95,20 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#if defined(_MSC_VER) && !defined(SN_TARGET_PS3)
+/* Hack applied for MSVC when compiling in C89 mode
+ * as it isn't C99-compliant. */
+#define bool unsigned char
+#define true 1
+#define false 0
+#else
+#include <stdbool.h>
+#endif
+
 //#include "fs_api.h"
 //#include "ds2_malloc.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 extern int cprintf(const char *fmt, ...);
-#ifdef __cplusplus
-}
-#endif
 
 #ifdef __WIN32__
 #include "..\wsnes9x.h"
@@ -392,7 +396,6 @@ struct SSNESGameFixes
 	bool8 EchoOnlyOutput;
 };
 
-START_EXTERN_C
 extern struct SSettings Settings;
 extern struct SCPUState CPU;
 extern struct SSNESGameFixes SNESGameFixes;
@@ -401,7 +404,6 @@ extern char String [513];
 void S9xExit ();
 void S9xMessage (int type, int number, const char *message);
 void S9xLoadSDD1Data ();
-END_EXTERN_C
 
 void S9xSetPause (uint32 mask);
 void S9xClearPause (uint32 mask);

@@ -127,8 +127,9 @@ static uint8 C4TestPattern [12 * 4] =
 
 
 static void C4ConvOAM(void){
+    uint8 *i;
     uint8 *OAMptr=Memory.C4RAM+(Memory.C4RAM[0x626]<<2);
-    for(uint8 *i=Memory.C4RAM+0x1fd; i>OAMptr; i-=4){
+    for(i=Memory.C4RAM+0x1fd; i>OAMptr; i-=4){
         // Clear OAM-to-be
         *i=0xe0;
     }
@@ -144,11 +145,12 @@ static void C4ConvOAM(void){
     OAMptr2=Memory.C4RAM+0x200+(Memory.C4RAM[0x626]>>2);
 
     if(Memory.C4RAM[0x0620]!=0){
+        int prio,i;
         SprCount=128-Memory.C4RAM[0x626];
         uint8 offset=(Memory.C4RAM[0x626]&3)*2;
-        for(int prio=0x30; prio>=0; prio-=0x10){
+        for(prio=0x30; prio>=0; prio-=0x10){
             uint8 *srcptr=Memory.C4RAM+0x220;
-            for(int i=Memory.C4RAM[0x0620]; i>0 && SprCount>0; i--, srcptr+=16){
+            for(i=Memory.C4RAM[0x0620]; i>0 && SprCount>0; i--, srcptr+=16){
                 if((srcptr[4]&0x30)!=prio) continue;
                 SprX=READ_WORD(srcptr)-globalX;
                 SprY=READ_WORD(srcptr+2)-globalY;
@@ -157,8 +159,9 @@ static void C4ConvOAM(void){
 
                 uint8 *sprptr=S9xGetMemPointer(READ_3WORD(srcptr+7));
                 if(*sprptr!=0){
+                    int SprCnt;
                     int16 X, Y;
-                    for(int SprCnt=*sprptr++; SprCnt>0 && SprCount>0; SprCnt--, sprptr+=4){
+                    for(SprCnt=*sprptr++; SprCnt>0 && SprCount>0; SprCnt--, sprptr+=4){
                         X=(int8)sprptr[1];
                         if(SprAttr&0x40){ // flip X
                             X=-X-((sprptr[0]&0x20)?16:8);
@@ -241,10 +244,10 @@ static void C4DoScaleRotate(int row_padding){
         C=(int16)(-XScale);
 		D=0;
     } else {
-        A=(int16)SAR(C4CosTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*XScale, 15);
-        B=(int16)(-SAR(C4SinTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*YScale, 15));
-        C=(int16)SAR(C4SinTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*XScale, 15);
-        D=(int16)SAR(C4CosTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*YScale, 15);
+        A=(int16)SAR16(C4CosTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*XScale, 15);
+        B=(int16)(-SAR16(C4SinTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*YScale, 15));
+        C=(int16)SAR16(C4SinTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*XScale, 15);
+        D=(int16)SAR16(C4CosTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*YScale, 15);
     }
 
     // Calculate Pixel Resolution
@@ -272,11 +275,12 @@ static void C4DoScaleRotate(int row_padding){
     uint32 X, Y;
     uint8 byte;
     int outidx=0;
+    int x,y;
     uint8 bit=0x80;
-    for(int y=0; y<h; y++){
+    for(y=0; y<h; y++){
         X=LineX;
         Y=LineY;
-        for(int x=0; x<w; x++){
+        for(x=0; x<w; x++){
             if((X>>12)>=w || (Y>>12)>=h){
                 byte=0;
             } else {
@@ -342,7 +346,8 @@ static void C4DrawLine(int32 X1, int32 Y1, int16 Z1,
     Y2=(int16)C4WFYVal;
 
     // render line
-    for(int i=C4WFDist?C4WFDist:1; i>0; i--)
+    int i;
+    for(i=C4WFDist?C4WFDist:1; i>0; i--)
 	{ //.loop
         if(X1>0xff && Y1>0xff && X1<0x6000 && Y1<0x6000)
 		{
@@ -367,7 +372,8 @@ static void C4DrawWireFrame(void)
     int16 X2, Y2, Z2;
     uint8 Color;
 
-    for(int i=Memory.C4RAM[0x0295]; i>0; i--, line+=5){
+    int i;
+    for(i=Memory.C4RAM[0x0295]; i>0; i--, line+=5){
         if(line[0]==0xff && line[1]==0xff){
             uint8 *tmp=line-5;
             while(line[2]==0xff && line[3]==0xff) tmp-=5;
@@ -394,10 +400,12 @@ static void C4TransformLines(void){
     C4WFDist=Memory.C4RAM[0x1f89];
     C4WFScale=Memory.C4RAM[0x1f8c];
 
+    int i;
+
     // transform vertices
     uint8 *ptr=Memory.C4RAM;
 	{
-		for(int i=READ_WORD(Memory.C4RAM+0x1f80); i>0; i--, ptr+=0x10)
+      for(i=READ_WORD(Memory.C4RAM+0x1f80); i>0; i--, ptr+=0x10)
 		{
 			C4WFXVal=READ_WORD(ptr+1);
 	        C4WFYVal=READ_WORD(ptr+5);
@@ -416,10 +424,11 @@ static void C4TransformLines(void){
     WRITE_WORD(Memory.C4RAM+0x602+8, 0x60);
     WRITE_WORD(Memory.C4RAM+0x605+8, 0x40);
 
-    ptr=Memory.C4RAM+0xb02;
+    ptr=Memory.C4RAM+0xb02;    
     uint8 *ptr2=Memory.C4RAM;
 	{
-	    for(int i=READ_WORD(Memory.C4RAM+0xb00); i>0; i--, ptr+=2, ptr2+=8)
+       int i;
+       for(i=READ_WORD(Memory.C4RAM+0xb00); i>0; i--, ptr+=2, ptr2+=8)
 		{
 		    C4WFXVal=READ_WORD(Memory.C4RAM+(ptr[0]<<4)+1);
 			C4WFYVal=READ_WORD(Memory.C4RAM+(ptr[0]<<4)+5);
@@ -446,10 +455,11 @@ static void C4BitPlaneWave(){
     uint16 mask1=0xc0c0;
     uint16 mask2=0x3f3f;
 
-    for(int j=0; j<0x10; j++){
+    int i,j;
+    for(j=0; j<0x10; j++){
         do {
             int16 height=-((int8)Memory.C4RAM[waveptr+0xb00])-16;
-            for(int i=0; i<40; i++){
+            for(i=0; i<40; i++){
                 uint16 tmp=READ_WORD(dst+bmpdata[i]) & mask2;
                 if(height>=0){
                     if(height<8){
@@ -468,8 +478,9 @@ static void C4BitPlaneWave(){
         dst+=16;
 
         do {
+            int i;
             int16 height=-((int8)Memory.C4RAM[waveptr+0xb00])-16;
-            for(int i=0; i<40; i++){
+            for(i=0; i<40; i++){
                 uint16 tmp=READ_WORD(dst+bmpdata[i]) & mask2;
                 if(height>=0){
                     if(height<8){
@@ -509,10 +520,10 @@ static void C4SprDisintegrate()
     src=Memory.C4RAM+0x600;
 
     memset(Memory.C4RAM, 0, width*height/2);
-    
-    for(uint32 y=StartY, i=0; i<height; i++, y+=scaleY)
+    uint32 x,y,i,j;
+    for( y=StartY, i=0; i<height; i++, y+=scaleY)
 	{
-        for(uint32 x=StartX, j=0; j<width; j++, x+=scaleX)
+        for(x=StartX, j=0; j<width; j++, x+=scaleX)
 		{
             if((x>>8)<width && (y>>8)<height && (y>>8)*width+(x>>8)<0x2000)
 			{
@@ -648,7 +659,8 @@ void S9xSetC4 (uint8 byte, uint16 Address)
                     int32 tan2=(C4CosTable[angle2]!=0)?((((int32)C4SinTable[angle2])<<16)/C4CosTable[angle2]):0x80000000;
                     int16 y = READ_WORD(Memory.C4RAM+0x1f83) - READ_WORD(Memory.C4RAM+0x1f89);
                     int16 left, right;
-                    for(int j=0; j<225; j++)
+                    int j;
+                    for(j=0; j<225; j++)
                     {
                         if(y>=0)
                         {
@@ -713,8 +725,9 @@ void S9xSetC4 (uint8 byte, uint16 Address)
 
               case 0x40: // Sum
                 {
+                    int i;
                     uint16 sum=0;
-                    for(int i=0; i<0x800; sum+=Memory.C4RAM[i++]);
+                    for(i=0; i<0x800; sum+=Memory.C4RAM[i++]);
                     WRITE_WORD(Memory.C4RAM+0x1f80, sum);
                 }
                 break;

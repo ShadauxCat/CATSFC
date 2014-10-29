@@ -157,8 +157,8 @@ static int32 noise_gen;
 #define VOL_DIV16 0x0080
 #define ENVX_SHIFT 24
 
-extern "C" void DecodeBlockAsm (int8 *, int16 *, int32 *, int32 *);
-extern "C" void DecodeBlockAsm2 (int8 *, int16 *, int32 *, int32 *);
+void DecodeBlockAsm (int8 *, int16 *, int32 *, int32 *);
+void DecodeBlockAsm2 (int8 *, int16 *, int32 *, int32 *);
 
 // F is channel's current frequency and M is the 16-bit modulation waveform
 // from the previous channel multiplied by the current envelope volume level.

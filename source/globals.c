@@ -102,7 +102,6 @@
 #include "sa1.h"
 #include "spc7110.h"
 
-START_EXTERN_C
 char String[513];
 
 struct Missing missing;
@@ -141,15 +140,10 @@ struct SSNESGameFixes SNESGameFixes;
 
 uint8 OpenBus = 0;
 
-
-END_EXTERN_C
-
 #ifndef ZSNES_FX
 struct FxInit_s SuperFX;
 #else
-START_EXTERN_C
 uint8 *SFXPlotTable = NULL;
-END_EXTERN_C
 #endif
 
 struct SPPU PPU;
@@ -289,7 +283,6 @@ uint32 TailMask [5] = {
 #endif
 };
 
-START_EXTERN_C
 uint8 APUROM [64] =
 {
     0xCD,0xEF,0xBD,0xE8,0x00,0xC6,0x1D,0xD0,0xFC,0x8F,0xAA,0xF4,0x8F,
@@ -344,6 +337,3 @@ uint16 S9xAPUCycles [256] =
     /* e0 */  2, 8, 4, 5, 3, 4, 3, 6, 2, 4, 5, 3, 4, 3, 4, 3, 
     /* f0 */  2, 8, 4, 5, 4, 5, 5, 6, 3, 4, 5, 4, 2, 2, 4, 3
 };
-
-END_EXTERN_C
-

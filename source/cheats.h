@@ -89,14 +89,10 @@
 #ifndef _CHEATS_H_
 #define _CHEATS_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define MAX_SFCCHEAT_NAME 48
 #define MAX_CHEATS_T 800
 
-struct SCheat
+typedef struct
 {
     uint32  address;
     uint8   byte;
@@ -104,12 +100,12 @@ struct SCheat
     bool8   enabled;
     bool8   saved;
     char    name[MAX_SFCCHEAT_NAME];
-};
+}SCheat;
 
 
-struct SCheatData
+typedef struct
 {
-    struct SCheat   c [MAX_CHEATS_T];
+    SCheat   c [MAX_CHEATS_T];
     uint32	    num_cheats;
     uint8	    CWRAM [0x20000];
     uint8	    CSRAM [0x10000];
@@ -120,7 +116,7 @@ struct SCheatData
     uint32	    WRAM_BITS [0x20000 >> 3];
     uint32	    SRAM_BITS [0x10000 >> 3];
     uint32	    IRAM_BITS [0x2000 >> 3];
-};
+}SCheatData;
 
 typedef enum
 {
@@ -153,16 +149,13 @@ void S9xDeleteCheat (uint32 which1);
 bool8 S9xLoadCheatFile (const char *filename);
 bool8 S9xSaveCheatFile (const char *filename);
 
-void S9xStartCheatSearch (struct SCheatData *cheats);
-void S9xSearchForChange (struct SCheatData *cheats, S9xCheatComparisonType cmp,
+void S9xStartCheatSearch (SCheatData *cheats);
+void S9xSearchForChange (SCheatData *cheats, S9xCheatComparisonType cmp,
                          S9xCheatDataSize size, bool8 is_signed, bool8 update);
-void S9xSearchForValue (struct SCheatData *cheats, S9xCheatComparisonType cmp,
+void S9xSearchForValue (SCheatData *cheats, S9xCheatComparisonType cmp,
                         S9xCheatDataSize size, uint32 value,
                         bool8 is_signed, bool8 update);
-void S9xOutputCheatSearchResults (struct SCheatData *cheats);
+void S9xOutputCheatSearchResults (SCheatData *cheats);
 
-#ifdef __cplusplus
-}
-#endif
 #endif
 

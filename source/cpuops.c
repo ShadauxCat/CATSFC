@@ -105,7 +105,7 @@
 #include "cpumacro.h"
 #include "apu.h"
 
-EXTERN_C long OpAddress;
+long OpAddress;
 
 // For use with the opcodes whose functions here examine the OpAddress.
 static void OpAddressPassthrough (long Addr)

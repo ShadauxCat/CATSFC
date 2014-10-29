@@ -95,7 +95,8 @@
 
 static bool8 S9xAllHex (const char *code, int len)
 {
-    for (int i = 0; i < len; i++)
+   int i;
+    for (i = 0; i < len; i++)
         if ((code [i] < '0' || code [i] > '9') &&
             (code [i] < 'a' || code [i] > 'f') &&
             (code [i] < 'A' || code [i] > 'F'))
@@ -158,7 +159,8 @@ const char *S9xGameGenieToRaw (const char *code, uint32 *address, uint8 *byte)
     static char *real_hex  = "0123456789ABCDEF";
     static char *genie_hex = "DF4709156BC8A23E";
     
-    for (int i = 2; i < 10; i++)
+    int i;
+    for (i = 2; i < 10; i++)
     {
 	if (islower (new_code [i]))
 	    new_code [i] = toupper (new_code [i]);

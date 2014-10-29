@@ -93,7 +93,6 @@ ST018_Regs ST018;
 
 static int line;	// line counter
 
-extern "C"{
 uint8 S9xGetST018(uint32 Address)
 {
 	uint8 t = 0; // Initialise to some value for the compiler
@@ -249,6 +248,5 @@ void S9xSetST018(uint8 Byte, uint32 Address)
 			break;
 		}
 	}
-}
 }
 

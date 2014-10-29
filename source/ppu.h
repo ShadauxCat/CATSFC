@@ -115,7 +115,7 @@ struct ClipData {
     uint32  Right [6][6];
 };
 
-struct InternalPPU {
+typedef struct {
     bool8  ColorsChanged;
     uint8  HDMA;
     bool8  HDMAStarted;
@@ -157,7 +157,7 @@ struct InternalPPU {
     int    PrevMouseX[2];
     int    PrevMouseY[2];
     struct ClipData Clip [2];
-};
+} InternalPPU;
 
 struct SOBJ
 {
@@ -171,7 +171,7 @@ struct SOBJ
     uint8  Size;
 };
 
-struct SPPU {
+typedef struct{
     uint8  BGMode;
     uint8  BG3Priority;
     uint8  Brightness;
@@ -269,14 +269,14 @@ struct SPPU {
     uint8 BGnxOFSbyte;
     uint8 OpenBus1;
     uint8 OpenBus2;
-};
+}SPPU;
 
 #define CLIP_OR 0
 #define CLIP_AND 1
 #define CLIP_XOR 2
 #define CLIP_XNOR 3
 
-struct SDMA {
+typedef struct {
     bool8  TransferDirection;
     bool8  AAddressFixed;
     bool8  AAddressDecrement;
@@ -297,9 +297,8 @@ struct SDMA {
     uint8  Repeat;
     uint8  LineCount;
     uint8  FirstLine;
-};
+}SDMA;
 
-START_EXTERN_C
 void S9xUpdateScreen ();
 void S9xResetPPU ();
 void S9xSoftResetPPU ();
@@ -319,10 +318,9 @@ uint8 S9xGetC4 (uint16 Address);
 void S9xSetC4RAM (uint8 Byte, uint16 Address);
 uint8 S9xGetC4RAM (uint16 Address);
 
-extern struct SPPU PPU;
-extern struct SDMA DMA [8];
-extern struct InternalPPU IPPU;
-END_EXTERN_C
+extern SPPU PPU;
+extern SDMA DMA [8];
+extern InternalPPU IPPU;
 
 #include "gfx.h"
 #include "memmap.h"
@@ -333,11 +331,9 @@ typedef struct{
 	uint8 _5A22;
 } SnesModel;
 
-START_EXTERN_C
 extern SnesModel* Model;
 extern SnesModel M1SNES;
 extern SnesModel M2SNES;
-END_EXTERN_C
 
 #define MAX_5C77_VERSION 0x01
 #define MAX_5C78_VERSION 0x03
@@ -356,7 +352,7 @@ extern void REGISTER_2122(uint8 Byte);
 extern void REGISTER_2180(uint8 Byte);
 
 //Platform specific input functions used by PPU.CPP
-void JustifierButtons(uint32&);
+void JustifierButtons(uint32 *);
 bool JustifierOffscreen();
 
 #endif

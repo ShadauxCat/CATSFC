@@ -1179,7 +1179,8 @@ uint8 DSP3GetByte(uint16 address)
 
 #endif
 
-struct SDSP4 {
+typedef struct
+{
     bool8 waiting4command;
     bool8 half_command;
     uint16 command;
@@ -1189,11 +1190,11 @@ struct SDSP4 {
     uint32 out_index;
     uint8 parameters [512];
     uint8 output [512];
-};
+}SDSP4;
 
 SDSP4 DSP4;
 
-#include "dsp4emu.cpp"
+#include "dsp4emu.c"
 
 bool DSP4_init=FALSE;
 
@@ -1280,7 +1281,7 @@ void DSP4SetByte(uint8 byte, uint16 address)
 					multiplier = DSP4_READ_WORD(0);
 					multiplicand = DSP4_READ_WORD(2);
 
-					DSP4_Multiply(multiplicand,multiplier,product);
+               product = DSP4_Multiply(multiplicand,multiplier);
 
 					DSP4.out_count = 4;
 					DSP4_WRITE_WORD(0,product);
@@ -1298,7 +1299,7 @@ void DSP4SetByte(uint8 byte, uint16 address)
 					c = DSP4_READ_WORD(2);
 					d = DSP4_READ_WORD(0);
 
-					DSP4_UnknownOP11(a,b,c,d,m);
+               m = DSP4_UnknownOP11(a,b,c,d);
 
 					DSP4.out_count = 2;
 					DSP4_WRITE_WORD(0,m);

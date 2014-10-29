@@ -90,7 +90,7 @@
 #include <stdlib.h>
 #include "c4.h"
 #include "memmap.h"
-extern "C" {
+
 
 short C4WFXVal;
 short C4WFYVal;
@@ -233,5 +233,5 @@ void C4LoaDMem(char *C4RAM)
           READ_WORD(C4RAM+0x1f43));
 }
 #endif
-}//end extern C
+
 

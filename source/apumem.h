@@ -90,10 +90,8 @@
 #ifndef _apumemory_h_
 #define _apumemory_h_
 
-START_EXTERN_C
 extern uint8 W4;
 extern uint8 APUROM[64];
-END_EXTERN_C
 
 uint8 S9xAPUGetByteZ (uint8 Address)
 {

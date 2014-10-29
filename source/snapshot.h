@@ -102,7 +102,6 @@
 #define WRONG_MOVIE_SNAPSHOT (-4)
 #define NOT_A_MOVIE_SNAPSHOT (-5)
 
-START_EXTERN_C
 bool8 S9xFreezeGame (const char *filename);
 bool8 S9xUnfreezeGame (const char *filename);
 bool8 Snapshot (const char *filename);
@@ -110,7 +109,6 @@ bool8 S9xLoadSnapshot (const char *filename);
 bool8 S9xSPCDump (const char *filename);
 void S9xFreezeToStream (STREAM);
 int S9xUnfreezeFromStream (STREAM);
-END_EXTERN_C
 
 #endif
 

@@ -92,7 +92,7 @@
 #define ORIG_SNAPSHOT_MAGIC "#!snes96"
 #define ORIG_SNAPSHOT_VERSION 4
 
-EXTERN_C bool8 S9xLoadOrigSnapshot (const char *filename);
+bool8 S9xLoadOrigSnapshot (const char *filename);
 
 struct SOrigCPUState{
     uint32  Flags;

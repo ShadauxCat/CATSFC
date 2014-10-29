@@ -161,9 +161,9 @@ static int ReadBlock (const char *key, void *block, int max_len, STREAM snap)
 
     if (rem)
     {
-	char *junk = new char [rem];
+   char *junk = (char*)malloc(rem);
 	READ_STREAM (junk, rem, snap);
-	delete[] junk;
+   free(junk);
     }
 	
     return (SUCCESS);

@@ -165,11 +165,9 @@ void S9xResetCPU ()
 }
 
 #ifdef ZSNES_FX
-START_EXTERN_C
 void S9xResetSuperFX ();
 bool8 WinterGold = 0;
 extern uint8 *C4Ram;
-END_EXTERN_C
 #endif
 
 void S9xReset (void)

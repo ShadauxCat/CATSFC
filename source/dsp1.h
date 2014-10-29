@@ -118,12 +118,10 @@ struct SDSP1 {
     uint8 output [512];
 };
 
-START_EXTERN_C
 void S9xResetDSP1 ();
 uint8 S9xGetDSP (uint16 Address);
 void S9xSetDSP (uint8 Byte, uint16 Address);
 extern struct SDSP1 DSP1;
-END_EXTERN_C
 
 //extern struct SDSP1 DSP1;
 
