@@ -239,7 +239,8 @@ void S9xDoDMA (uint8 Channel)
 #else
 			uint8 *ptr = Memory.SDD1Index;
 			
-			for (uint32 e = 0; e < Memory.SDD1Entries; e++, ptr += 12)
+         uint32 e;
+         for (e = 0; e < Memory.SDD1Entries; e++, ptr += 12)
 			{
 				if (address == *(uint32 *) ptr)
 				{
