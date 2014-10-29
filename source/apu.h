@@ -1,6 +1,6 @@
 /*******************************************************************************
   Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
- 
+
   (c) Copyright 1996 - 2002 Gary Henderson (gary.henderson@ntlworld.com) and
                             Jerremy Koot (jkoot@snes9x.com)
 
@@ -43,46 +43,46 @@
   S-DD1 C emulator code
   (c) Copyright 2003 Brad Jorsch with research by
                      Andreas Naive and John Weidman
- 
+
   S-RTC C emulator code
   (c) Copyright 2001 John Weidman
-  
+
   ST010 C++ emulator code
   (c) Copyright 2003 Feather, Kris Bleakley, John Weidman and Matthew Kendora
 
-  Super FX x86 assembler emulator code 
-  (c) Copyright 1998 - 2003 zsKnight, _Demo_, and pagefault 
+  Super FX x86 assembler emulator code
+  (c) Copyright 1998 - 2003 zsKnight, _Demo_, and pagefault
 
-  Super FX C emulator code 
+  Super FX C emulator code
   (c) Copyright 1997 - 1999 Ivar, Gary Henderson and John Weidman
 
 
   SH assembler code partly based on x86 assembler code
-  (c) Copyright 2002 - 2004 Marcus Comstedt (marcus@mc.pp.se) 
+  (c) Copyright 2002 - 2004 Marcus Comstedt (marcus@mc.pp.se)
 
- 
+
   Specific ports contains the works of other authors. See headers in
   individual files.
- 
+
   Snes9x homepage: http://www.snes9x.com
- 
+
   Permission to use, copy, modify and distribute Snes9x in both binary and
   source form, for non-commercial purposes, is hereby granted without fee,
   providing that this license information and copyright notice appear with
   all copies and any derived work.
- 
+
   This software is provided 'as-is', without any express or implied
   warranty. In no event shall the authors be held liable for any damages
   arising from the use of this software.
- 
+
   Snes9x is freeware for PERSONAL USE only. Commercial users should
   seek permission of the copyright holders first. Commercial use includes
   charging money for Snes9x or software derived from Snes9x.
- 
+
   The copyright holders request that bug fixes and improvements to the code
   should be forwarded to them so everyone can benefit from the modifications
   in future versions.
- 
+
   Super NES and Super Nintendo Entertainment System are trademarks of
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
@@ -94,39 +94,39 @@
 
 typedef struct
 {
-    uint8  *PC;
-    SAPURegisters Registers;
-    uint8  *RAM;
-    uint8  *DirectPage;
-    bool8  APUExecuting;
-    uint8  Bit;
-    uint32 Address;
-    uint8  *WaitAddress1;
-    uint8  *WaitAddress2;
-    uint32 WaitCounter;
-    uint8  _Carry;
-    uint8  _Zero;
-    uint8  _Overflow;
-    uint32 TimerErrorCounter;
-    uint32 Scanline;
-    int32  OneCycle;
-    int32  TwoCycles;
-}SIAPU;
+   uint8*  PC;
+   SAPURegisters Registers;
+   uint8*  RAM;
+   uint8*  DirectPage;
+   bool8  APUExecuting;
+   uint8  Bit;
+   uint32 Address;
+   uint8*  WaitAddress1;
+   uint8*  WaitAddress2;
+   uint32 WaitCounter;
+   uint8  _Carry;
+   uint8  _Zero;
+   uint8  _Overflow;
+   uint32 TimerErrorCounter;
+   uint32 Scanline;
+   int32  OneCycle;
+   int32  TwoCycles;
+} SIAPU;
 
 typedef struct
 {
-    int32  Cycles;
-    bool8  ShowROM;
-    uint8  Flags;
-    uint8  KeyedChannels;
-    uint8  OutPorts [4];
-    uint8  DSP [0x80];
-    uint8  ExtraRAM [64];
-    uint16 Timer [3];
-    uint16 TimerTarget [3];
-    bool8  TimerEnabled [3];
-    bool8  TimerValueWritten [3];
-}SAPU;
+   int32  Cycles;
+   bool8  ShowROM;
+   uint8  Flags;
+   uint8  KeyedChannels;
+   uint8  OutPorts [4];
+   uint8  DSP [0x80];
+   uint8  ExtraRAM [64];
+   uint16 Timer [3];
+   uint16 TimerTarget [3];
+   bool8  TimerEnabled [3];
+   bool8  TimerValueWritten [3];
+} SAPU;
 
 SAPU APU;
 SIAPU IAPU;
@@ -135,34 +135,34 @@ extern int spc_is_dumping_temp;
 extern uint8 spc_dump_dsp[0x100];
 STATIC inline void S9xAPUUnpackStatus()
 {
-    IAPU._Zero = ((IAPU.Registers.P & Zero) == 0) | (IAPU.Registers.P & Negative);
-    IAPU._Carry = (IAPU.Registers.P & Carry);
-    IAPU._Overflow = (IAPU.Registers.P & Overflow) >> 6;
+   IAPU._Zero = ((IAPU.Registers.P & Zero) == 0) | (IAPU.Registers.P & Negative);
+   IAPU._Carry = (IAPU.Registers.P & Carry);
+   IAPU._Overflow = (IAPU.Registers.P & Overflow) >> 6;
 }
 
 STATIC inline void S9xAPUPackStatus()
 {
-    IAPU.Registers.P &= ~(Zero | Negative | Carry | Overflow);
-    IAPU.Registers.P |= IAPU._Carry | ((IAPU._Zero == 0) << 1) |
-		      (IAPU._Zero & 0x80) | (IAPU._Overflow << 6);
+   IAPU.Registers.P &= ~(Zero | Negative | Carry | Overflow);
+   IAPU.Registers.P |= IAPU._Carry | ((IAPU._Zero == 0) << 1) |
+                       (IAPU._Zero & 0x80) | (IAPU._Overflow << 6);
 }
 
-void S9xResetAPU (void);
-bool8 S9xInitAPU ();
-void S9xDeinitAPU ();
-void S9xDecacheSamples ();
-int S9xTraceAPU ();
-int S9xAPUOPrint (char *buffer, uint16 Address);
-void S9xSetAPUControl (uint8 byte);
-void S9xSetAPUDSP (uint8 byte);
-uint8 S9xGetAPUDSP ();
-void S9xSetAPUTimer (uint16 Address, uint8 byte);
-bool8 S9xInitSound (int quality, bool8 stereo, int buffer_size);
-void S9xOpenCloseSoundTracingFile (bool8);
-void S9xPrintAPUState ();
-extern uint16 S9xAPUCycles [256];	// Scaled cycle lengths
-extern uint16 S9xAPUCycleLengths [256];	// Raw data.
-extern void (*S9xApuOpcodes [256]) (void);
+void S9xResetAPU(void);
+bool8 S9xInitAPU();
+void S9xDeinitAPU();
+void S9xDecacheSamples();
+int S9xTraceAPU();
+int S9xAPUOPrint(char* buffer, uint16 Address);
+void S9xSetAPUControl(uint8 byte);
+void S9xSetAPUDSP(uint8 byte);
+uint8 S9xGetAPUDSP();
+void S9xSetAPUTimer(uint16 Address, uint8 byte);
+bool8 S9xInitSound(int quality, bool8 stereo, int buffer_size);
+void S9xOpenCloseSoundTracingFile(bool8);
+void S9xPrintAPUState();
+extern uint16 S9xAPUCycles [256];   // Scaled cycle lengths
+extern uint16 S9xAPUCycleLengths [256];   // Raw data.
+extern void (*S9xApuOpcodes [256])(void);
 
 
 #define APU_VOL_LEFT 0x00

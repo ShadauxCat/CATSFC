@@ -1,6 +1,6 @@
 /*******************************************************************************
   Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
- 
+
   (c) Copyright 1996 - 2002 Gary Henderson (gary.henderson@ntlworld.com) and
                             Jerremy Koot (jkoot@snes9x.com)
 
@@ -43,46 +43,46 @@
   S-DD1 C emulator code
   (c) Copyright 2003 Brad Jorsch with research by
                      Andreas Naive and John Weidman
- 
+
   S-RTC C emulator code
   (c) Copyright 2001 John Weidman
-  
+
   ST010 C++ emulator code
   (c) Copyright 2003 Feather, Kris Bleakley, John Weidman and Matthew Kendora
 
-  Super FX x86 assembler emulator code 
-  (c) Copyright 1998 - 2003 zsKnight, _Demo_, and pagefault 
+  Super FX x86 assembler emulator code
+  (c) Copyright 1998 - 2003 zsKnight, _Demo_, and pagefault
 
-  Super FX C emulator code 
+  Super FX C emulator code
   (c) Copyright 1997 - 1999 Ivar, Gary Henderson and John Weidman
 
 
   SH assembler code partly based on x86 assembler code
-  (c) Copyright 2002 - 2004 Marcus Comstedt (marcus@mc.pp.se) 
+  (c) Copyright 2002 - 2004 Marcus Comstedt (marcus@mc.pp.se)
 
- 
+
   Specific ports contains the works of other authors. See headers in
   individual files.
- 
+
   Snes9x homepage: http://www.snes9x.com
- 
+
   Permission to use, copy, modify and distribute Snes9x in both binary and
   source form, for non-commercial purposes, is hereby granted without fee,
   providing that this license information and copyright notice appear with
   all copies and any derived work.
- 
+
   This software is provided 'as-is', without any express or implied
   warranty. In no event shall the authors be held liable for any damages
   arising from the use of this software.
- 
+
   Snes9x is freeware for PERSONAL USE only. Commercial users should
   seek permission of the copyright holders first. Commercial use includes
   charging money for Snes9x or software derived from Snes9x.
- 
+
   The copyright holders request that bug fixes and improvements to the code
   should be forwarded to them so everyone can benefit from the modifications
   in future versions.
- 
+
   Super NES and Super Nintendo Entertainment System are trademarks of
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
@@ -95,95 +95,95 @@
  *
  * The 16 generic 16 bit registers:
  * (Some have a special function in special circumstances)
- * 3000 - R0	default source/destination register
- * 3002 - R1	pixel plot X position register
- * 3004 - R2	pixel plot Y position register
+ * 3000 - R0   default source/destination register
+ * 3002 - R1   pixel plot X position register
+ * 3004 - R2   pixel plot Y position register
  * 3006 - R3
- * 3008 - R4	lower 16 bit result of lmult
- * 300a - R5 
- * 300c - R6	multiplier for fmult and lmult
- * 300e - R7	fixed point texel X position for merge
- * 3010 - R8	fixed point texel Y position for merge
- * 3012 - R9 
- * 3014 - R10 
- * 3016 - R11	return address set by link
- * 3018 - R12	loop counter
- * 301a - R13	loop point address
- * 301c - R14	rom address for getb, getbh, getbl, getbs
- * 301e - R15	program counter 
+ * 3008 - R4   lower 16 bit result of lmult
+ * 300a - R5
+ * 300c - R6   multiplier for fmult and lmult
+ * 300e - R7   fixed point texel X position for merge
+ * 3010 - R8   fixed point texel Y position for merge
+ * 3012 - R9
+ * 3014 - R10
+ * 3016 - R11  return address set by link
+ * 3018 - R12  loop counter
+ * 301a - R13  loop point address
+ * 301c - R14  rom address for getb, getbh, getbl, getbs
+ * 301e - R15  program counter
  *
- * 3020-302f -	unused
- * 
+ * 3020-302f - unused
+ *
  * Other internal registers
- * 3030 - SFR	status flag register (16bit)
- * 3032 -	unused
+ * 3030 - SFR  status flag register (16bit)
+ * 3032 -   unused
  * 3033 - BRAMR Backup RAM register (8bit)
- * 3034 - PBR	program bank register (8bit)
- * 3035 -	unused
- * 3036 - ROMBR	rom bank register (8bit)
- * 3037 - CFGR	control flags register (8bit)
- * 3038 - SCBR	screen base register (8bit)
- * 3039 - CLSR	clock speed register (8bit)
- * 303a - SCMR	screen mode register (8bit)
- * 303b - VCR	version code register (8bit) (read only)
- * 303c - RAMBR	ram bank register (8bit)
- * 303d -	unused
- * 303e - CBR	cache base register (16bit)
+ * 3034 - PBR  program bank register (8bit)
+ * 3035 -   unused
+ * 3036 - ROMBR   rom bank register (8bit)
+ * 3037 - CFGR control flags register (8bit)
+ * 3038 - SCBR screen base register (8bit)
+ * 3039 - CLSR clock speed register (8bit)
+ * 303a - SCMR screen mode register (8bit)
+ * 303b - VCR  version code register (8bit) (read only)
+ * 303c - RAMBR   ram bank register (8bit)
+ * 303d -   unused
+ * 303e - CBR  cache base register (16bit)
  *
- * 3040-30ff -	unused
+ * 3040-30ff - unused
  *
- * 3100-32ff -	CACHERAM 512 bytes of GSU cache memory
+ * 3100-32ff - CACHERAM 512 bytes of GSU cache memory
  *
  * SFR status flag register bits:
- *  0   -	
- *  1   Z	Zero flag
- *  2   CY	Carry flag
- *  3   S	Sign flag
- *  4   OV	Overflow flag
- *  5   G	Go flag (set to 1 when the GSU is running)
- *  6   R	Set to 1 when reading ROM using R14 address
- *  7   -	
- *  8   ALT1	Mode set-up flag for the next instruction
- *  9   ALT2	Mode set-up flag for the next instruction
- * 10   IL	Immediate lower 8-bit flag
- * 11   IH	Immediate higher 8-bit flag
- * 12   B	Set to 1 when the WITH instruction is executed
- * 13   -	
- * 14   -	
- * 15   IRQ	Set to 1 when GSU caused an interrupt
+ *  0   -
+ *  1   Z   Zero flag
+ *  2   CY  Carry flag
+ *  3   S   Sign flag
+ *  4   OV  Overflow flag
+ *  5   G   Go flag (set to 1 when the GSU is running)
+ *  6   R   Set to 1 when reading ROM using R14 address
+ *  7   -
+ *  8   ALT1   Mode set-up flag for the next instruction
+ *  9   ALT2   Mode set-up flag for the next instruction
+ * 10   IL  Immediate lower 8-bit flag
+ * 11   IH  Immediate higher 8-bit flag
+ * 12   B   Set to 1 when the WITH instruction is executed
+ * 13   -
+ * 14   -
+ * 15   IRQ Set to 1 when GSU caused an interrupt
  *              Set to 0 when read by 658c16
  *
  * BRAMR = 0, BackupRAM is disabled
  * BRAMR = 1, BackupRAM is enabled
  *
  * CFGR control flags register bits:
- *  0   -	
- *  1   -	
- *  2   -	
- *  3   -	
- *  4   -	
- *  5   MS0	Multiplier speed, 0=standard, 1=high speed
- *  6   -	
- *  7   IRQ	Set to 1 when GSU interrupt request is masked
+ *  0   -
+ *  1   -
+ *  2   -
+ *  3   -
+ *  4   -
+ *  5   MS0 Multiplier speed, 0=standard, 1=high speed
+ *  6   -
+ *  7   IRQ Set to 1 when GSU interrupt request is masked
  *
  * CLSR clock speed register bits:
- *  0   CLSR	clock speed, 0 = 10.7Mhz, 1 = 21.4Mhz
+ *  0   CLSR   clock speed, 0 = 10.7Mhz, 1 = 21.4Mhz
  *
  * SCMR screen mode register bits:
- *  0	MD0	color depth mode bit 0
- *  1	MD1	color depth mode bit 1
- *  2	HT0	screen height bit 1
- *  3	RAN	RAM access control
- *  4	RON	ROM access control
- *  5	HT1	screen height bit 2
- *  6	-	
- *  7	-	
+ *  0 MD0   color depth mode bit 0
+ *  1 MD1   color depth mode bit 1
+ *  2 HT0   screen height bit 1
+ *  3 RAN   RAM access control
+ *  4 RON   ROM access control
+ *  5 HT1   screen height bit 2
+ *  6 -
+ *  7 -
  *
- * RON = 0	SNES CPU has ROM access
- * RON = 1	GSU has ROM access
+ * RON = 0  SNES CPU has ROM access
+ * RON = 1  GSU has ROM access
  *
- * RAN = 0	SNES has game pak RAM access
- * RAN = 1	GSU has game pak RAM access
+ * RAN = 0  SNES has game pak RAM access
+ * RAN = 1  GSU has game pak RAM access
  *
  * HT1  HT0  Screen height mode
  *  0    0   128 pixels high
@@ -198,8 +198,8 @@
  *  1    1   256 color mode
  *
  * CBR cache base register bits:
- * 15-4	     Specify base address for data to cache from ROM or RAM
- *  3-0	     Are 0 when address is read
+ * 15-4       Specify base address for data to cache from ROM or RAM
+ *  3-0       Are 0 when address is read
  *
  * Write access to the program counter (301e) from
  * the SNES-CPU will start the GSU, and it will not
@@ -218,69 +218,69 @@
 
 struct FxRegs_s
 {
-    /* FxChip registers */
-    uint32	avReg[16];		/* 16 Generic registers */
-    uint32	vColorReg;		/* Internal color register */
-    uint32	vPlotOptionReg;		/* Plot option register */
-    uint32	vStatusReg;		/* Status register */
-    uint32	vPrgBankReg;		/* Program bank index register */
-    uint32	vRomBankReg;		/* Rom bank index register */
-    uint32	vRamBankReg;		/* Ram bank index register */
-    uint32	vCacheBaseReg;		/* Cache base address register */
-    uint32	vCacheFlags;		/* Saying what parts of the cache was written to */
-    uint32	vLastRamAdr;		/* Last RAM address accessed */
-    uint32 *	pvDreg;			/* Pointer to current destination register */
-    uint32 *	pvSreg;			/* Pointer to current source register */
-    uint8	vRomBuffer;		/* Current byte read by R14 */
-    uint8	vPipe;			/* Instructionset pipe */
-    uint32	vPipeAdr;		/* The address of where the pipe was read from */
+   /* FxChip registers */
+   uint32  avReg[16];     /* 16 Generic registers */
+   uint32  vColorReg;     /* Internal color register */
+   uint32  vPlotOptionReg;      /* Plot option register */
+   uint32  vStatusReg;    /* Status register */
+   uint32  vPrgBankReg;      /* Program bank index register */
+   uint32  vRomBankReg;      /* Rom bank index register */
+   uint32  vRamBankReg;      /* Ram bank index register */
+   uint32  vCacheBaseReg;    /* Cache base address register */
+   uint32  vCacheFlags;      /* Saying what parts of the cache was written to */
+   uint32  vLastRamAdr;      /* Last RAM address accessed */
+   uint32*    pvDreg;        /* Pointer to current destination register */
+   uint32*    pvSreg;        /* Pointer to current source register */
+   uint8   vRomBuffer;    /* Current byte read by R14 */
+   uint8   vPipe;         /* Instructionset pipe */
+   uint32  vPipeAdr;      /* The address of where the pipe was read from */
 
-    /* status register optimization stuff */
-    uint32	vSign;			/* v & 0x8000 */
-    uint32	vZero;			/* v == 0 */
-    uint32	vCarry;			/* a value of 1 or 0 */
-    int32	vOverflow;		/* (v >= 0x8000 || v < -0x8000) */
-    
-    /* Other emulator variables */
-    
-    int32	vErrorCode;
-    uint32	vIllegalAddress;
-    
-    uint8	bBreakPoint;
-    uint32	vBreakPoint;
-    uint32	vStepPoint;
-    
-    uint8 *	pvRegisters;	/* 768 bytes located in the memory at address 0x3000 */
-    uint32	nRamBanks;	/* Number of 64kb-banks in FxRam (Don't confuse it with SNES-Ram!!!) */
-    uint8 *	pvRam;		/* Pointer to FxRam */
-    uint32	nRomBanks;	/* Number of 32kb-banks in Cart-ROM */
-    uint8 *     pvRom;		/* Pointer to Cart-ROM */
+   /* status register optimization stuff */
+   uint32  vSign;         /* v & 0x8000 */
+   uint32  vZero;         /* v == 0 */
+   uint32  vCarry;        /* a value of 1 or 0 */
+   int32   vOverflow;     /* (v >= 0x8000 || v < -0x8000) */
 
-    uint32	vMode;		/* Color depth/mode */
-    uint32	vPrevMode;	/* Previous depth */
-    uint8 *	pvScreenBase;
-    uint8 *	apvScreen[32];		/* Pointer to each of the 32 screen colums */
-    int		x[32];
-    uint32	vScreenHeight;		/* 128, 160, 192 or 256 (could be overriden by cmode) */
-    uint32	vScreenRealHeight;	/* 128, 160, 192 or 256 */
-    uint32	vPrevScreenHeight;
-    uint32	vScreenSize;
-    void	(*pfPlot)();
-    void	(*pfRpix)();
-    
-    uint8 *	pvRamBank;		/* Pointer to current RAM-bank */
-    uint8 *	pvRomBank;		/* Pointer to current ROM-bank */
-    uint8 *	pvPrgBank;		/* Pointer to current program ROM-bank */
+   /* Other emulator variables */
 
-    uint8 *	apvRamBank[FX_RAM_BANKS];/* Ram bank table (max 256kb) */
-    uint8 *	apvRomBank[256];	/* Rom bank table */
+   int32   vErrorCode;
+   uint32  vIllegalAddress;
 
-    uint8	bCacheActive;
-    uint8 *	pvCache;		/* Pointer to the GSU cache */
-    uint8 	avCacheBackup[512];	/* Backup of ROM when the cache has replaced it */
-    uint32	vCounter;
-    uint32	vInstCount;
-    uint32	vSCBRDirty;		/* if SCBR is written, our cached screen pointers need updating */
+   uint8   bBreakPoint;
+   uint32  vBreakPoint;
+   uint32  vStepPoint;
+
+   uint8*  pvRegisters;   /* 768 bytes located in the memory at address 0x3000 */
+   uint32  nRamBanks;  /* Number of 64kb-banks in FxRam (Don't confuse it with SNES-Ram!!!) */
+   uint8*  pvRam;      /* Pointer to FxRam */
+   uint32  nRomBanks;  /* Number of 32kb-banks in Cart-ROM */
+   uint8*      pvRom;     /* Pointer to Cart-ROM */
+
+   uint32  vMode;      /* Color depth/mode */
+   uint32  vPrevMode;  /* Previous depth */
+   uint8*  pvScreenBase;
+   uint8*  apvScreen[32];    /* Pointer to each of the 32 screen colums */
+   int     x[32];
+   uint32  vScreenHeight;    /* 128, 160, 192 or 256 (could be overriden by cmode) */
+   uint32  vScreenRealHeight;   /* 128, 160, 192 or 256 */
+   uint32  vPrevScreenHeight;
+   uint32  vScreenSize;
+   void (*pfPlot)();
+   void (*pfRpix)();
+
+   uint8*  pvRamBank;     /* Pointer to current RAM-bank */
+   uint8*  pvRomBank;     /* Pointer to current ROM-bank */
+   uint8*  pvPrgBank;     /* Pointer to current program ROM-bank */
+
+   uint8*  apvRamBank[FX_RAM_BANKS];/* Ram bank table (max 256kb) */
+   uint8*  apvRomBank[256];  /* Rom bank table */
+
+   uint8   bCacheActive;
+   uint8*  pvCache;    /* Pointer to the GSU cache */
+   uint8   avCacheBackup[512];  /* Backup of ROM when the cache has replaced it */
+   uint32  vCounter;
+   uint32  vInstCount;
+   uint32  vSCBRDirty;    /* if SCBR is written, our cached screen pointers need updating */
 };
 
 #define  FxRegs_s_null { \
@@ -446,24 +446,24 @@ struct FxRegs_s
 #define FX_STEP { uint32 vOpcode = (uint32)PIPE; FETCHPIPE; \
 (*fx_ppfOpcodeTable[ (GSU.vStatusReg & 0x300) | vOpcode ])(); } \
 
-#define FX_FUNCTION_RUN			0
-#define FX_FUNCTION_RUN_TO_BREAKPOINT	1
-#define FX_FUNCTION_STEP_OVER		2
+#define FX_FUNCTION_RUN       0
+#define FX_FUNCTION_RUN_TO_BREAKPOINT  1
+#define FX_FUNCTION_STEP_OVER    2
 
-extern uint32 (**fx_ppfFunctionTable)(uint32);
+extern uint32(**fx_ppfFunctionTable)(uint32);
 extern void (**fx_ppfPlotTable)();
 extern void (**fx_ppfOpcodeTable)();
 
-extern uint32 (*fx_apfFunctionTable[])(uint32);
+extern uint32(*fx_apfFunctionTable[])(uint32);
 extern void (*fx_apfOpcodeTable[])();
 extern void (*fx_apfPlotTable[])();
-extern uint32 (*fx_a_apfFunctionTable[])(uint32);
+extern uint32(*fx_a_apfFunctionTable[])(uint32);
 extern void (*fx_a_apfOpcodeTable[])();
 extern void (*fx_a_apfPlotTable[])();
-extern uint32 (*fx_r_apfFunctionTable[])(uint32);
+extern uint32(*fx_r_apfFunctionTable[])(uint32);
 extern void (*fx_r_apfOpcodeTable[])();
 extern void (*fx_r_apfPlotTable[])();
-extern uint32 (*fx_ar_apfFunctionTable[])(uint32);
+extern uint32(*fx_ar_apfFunctionTable[])(uint32);
 extern void (*fx_ar_apfOpcodeTable[])();
 extern void (*fx_ar_apfPlotTable[])();
 
