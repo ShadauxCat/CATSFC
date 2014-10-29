@@ -463,9 +463,8 @@ bool8 Init ()
     Memory.ROM += 0x8000;  // still 32-byte aligned
 	
     Memory.C4RAM    = Memory.ROM + 0x400000 + 8192 * 8;  // still 32-byte aligned
-    ROM_g    = Memory.ROM;
-    SRAM_g   = Memory.SRAM;
-    RegRAM_g = Memory.FillRAM;
+    Memory.ROM    = Memory.ROM;
+    Memory.SRAM   = Memory.SRAM;
 	
 #ifdef ZSNES_FX
     SFXPlotTable = ROM + 0x400000;
@@ -1309,7 +1308,7 @@ void InitROM (bool8 Interleaved)
     ZeroMemory (Memory.BlockIsRAM, MEMMAP_NUM_BLOCKS);
     ZeroMemory (Memory.BlockIsROM, MEMMAP_NUM_BLOCKS);
 
-    SRAM_g = Memory.SRAM;
+    Memory.SRAM = Memory.SRAM;
     memset (Memory.ROMId, 0, 5);
     memset (Memory.CompanyId, 0, 3);
 
@@ -1632,13 +1631,13 @@ bool8 LoadSRAM (const char *filename)
 		FILE *file;
 		if ((file = fopen (filename, "rb")))
 		{
-         int len = fread ((unsigned char*) SRAM_g, 1, 0x20000, file);
+         int len = fread ((unsigned char*) Memory.SRAM, 1, 0x20000, file);
 			fclose (file);
 			if (len - size == 512)
 			{
 				// S-RAM file has a header - remove it
 				// memmove required: Overlapping addresses [Neb]
-            memmove (SRAM_g, SRAM_g + 512, size);
+            memmove (Memory.SRAM, Memory.SRAM + 512, size);
 			}
 			if (len == size + SRTC_SRAM_PAD)
 			{
@@ -1693,7 +1692,7 @@ bool8 SaveSRAM (const char *filename)
 		FILE *file= fopen(filename, "w");
 		if (file)
 		{
-         fwrite((unsigned char *) SRAM_g, size, 1, file);
+         fwrite((unsigned char *) Memory.SRAM, size, 1, file);
 			fclose(file);
 			if(Settings.SPC7110RTC)
 			{
@@ -1811,10 +1810,10 @@ void MapExtraRAM ()
     // Banks 70->73, S-RAM
     for (c = 0; c < 16; c++)
     {
-      Memory.Map [c + 0x700] = SRAM_g;
-      Memory.Map [c + 0x710] = SRAM_g + 0x8000;
-      Memory.Map [c + 0x720] = SRAM_g + 0x10000;
-      Memory.Map [c + 0x730] = SRAM_g + 0x18000;
+      Memory.Map [c + 0x700] = Memory.SRAM;
+      Memory.Map [c + 0x710] = Memory.SRAM + 0x8000;
+      Memory.Map [c + 0x720] = Memory.SRAM + 0x10000;
+      Memory.Map [c + 0x730] = Memory.SRAM + 0x18000;
 		
       Memory.BlockIsRAM [c + 0x700] = TRUE;
       Memory.BlockIsROM [c + 0x700] = FALSE;
@@ -2538,8 +2537,8 @@ void SuperFXROMMap ()
       Memory.Map [c + 3] = Memory.Map [c + 0x803] = (uint8 *) MAP_PPU;
       Memory.Map [c + 4] = Memory.Map [c + 0x804] = (uint8 *) MAP_CPU;
       Memory.Map [c + 5] = Memory.Map [c + 0x805] = (uint8 *) MAP_CPU;
-      Memory.Map [0x006 + c] = Memory.Map [0x806 + c] = (uint8 *) SRAM_g - 0x6000;
-      Memory.Map [0x007 + c] = Memory.Map [0x807 + c] = (uint8 *) SRAM_g - 0x6000;
+      Memory.Map [0x006 + c] = Memory.Map [0x806 + c] = (uint8 *) Memory.SRAM - 0x6000;
+      Memory.Map [0x007 + c] = Memory.Map [0x807 + c] = (uint8 *) Memory.SRAM - 0x6000;
       Memory.BlockIsRAM [0x006 + c] = Memory.BlockIsRAM [0x007 + c] = Memory.BlockIsRAM [0x806 + c] = Memory.BlockIsRAM [0x807 + c] = TRUE;
 
 		for (i = c + 8; i < c + 16; i++)
@@ -2573,7 +2572,7 @@ void SuperFXROMMap ()
     // Banks 70->71, S-RAM
     for (c = 0; c < 32; c++)
     {
-      Memory.Map [c + 0x700] = SRAM_g + (((c >> 4) & 1) << 16);
+      Memory.Map [c + 0x700] = Memory.SRAM + (((c >> 4) & 1) << 16);
       Memory.BlockIsRAM [c + 0x700] = TRUE;
       Memory.BlockIsROM [c + 0x700] = FALSE;
     }

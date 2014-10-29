@@ -246,9 +246,6 @@ typedef struct
 void ResetSpeedMap();
 
 extern CMemory Memory;
-extern uint8 *SRAM_g;
-extern uint8 *ROM_g;
-extern uint8 *RegRAM_g;
 void S9xDeinterleaveMode2 ();
 bool8 LoadZip(const char* zipname,
 	      int32 *TotalFileSize,

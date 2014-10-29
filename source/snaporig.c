@@ -370,7 +370,7 @@ static int ReadOrigSnapshot (STREAM snap)
 	return (result);
     if ((result = ReadBlock ("RAM:", Memory.RAM, 0x20000, snap)) != SUCCESS)
 	return (result);
-    if ((result = ReadBlock ("SRA:", SRAM_g, 0x10000, snap)) != SUCCESS)
+    if ((result = ReadBlock ("SRA:", Memory.SRAM, 0x10000, snap)) != SUCCESS)
 	return (result);
     if ((result = ReadBlock ("FIL:", Memory.FillRAM, 0x8000, snap)) != SUCCESS)
 	return (result);

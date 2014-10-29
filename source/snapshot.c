@@ -660,7 +660,7 @@ void S9xFreezeToStream (STREAM stream)
 	// RAM and VRAM
     FreezeBlock (stream, "VRA", Memory.VRAM, 0x10000);
     FreezeBlock (stream, "RAM", Memory.RAM, 0x20000);
-    FreezeBlock (stream, "SRA", SRAM_g, 0x20000);
+    FreezeBlock (stream, "SRA", Memory.SRAM, 0x20000);
     FreezeBlock (stream, "FIL", Memory.FillRAM, 0x8000);
     if (Settings.APUEnabled)
     {
@@ -803,7 +803,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 		UnfreezeStructFromCopy (DMA, SnapDMA, COUNT (SnapDMA), local_dma);
 		memcpy (Memory.VRAM, local_vram, 0x10000);
 		memcpy (Memory.RAM, local_ram, 0x20000);
-      memcpy (SRAM_g, local_sram, 0x20000);
+      memcpy (Memory.SRAM, local_sram, 0x20000);
 		memcpy (Memory.FillRAM, local_fillram, 0x8000);
 		if(local_apu)
 		{
@@ -1585,7 +1585,7 @@ bool8 S9xUnfreezeZSNES (const char *filename)
 		
 		if (Settings.SuperFX)
 		{
-         fread (SRAM_g, 1, 64 * 1024, fs);
+         fread (Memory.SRAM, 1, 64 * 1024, fs);
 			fseek (fs, 64 * 1024, SEEK_CUR);
 			fread (Memory.FillRAM + 0x7000, 1, 692, fs);
 		}
@@ -1617,7 +1617,7 @@ bool8 S9xUnfreezeZSNES (const char *filename)
 			// DS2 DMA notes: This code path is not used [Neb]
 			memcpy (&Memory.FillRAM [0x3000], t + 692, 2 * 1024);
 			
-         fread (SRAM_g, 1, 64 * 1024, fs);
+         fread (Memory.SRAM, 1, 64 * 1024, fs);
 			fseek (fs, 64 * 1024, SEEK_CUR);
 			S9xFixSA1AfterSnapshotLoad ();
 		}

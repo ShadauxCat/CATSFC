@@ -127,9 +127,6 @@ SnesModel M2SNES={2,4,3};
 SnesModel* Model=&M1SNES;
 
 
-uint8 *SRAM_g = NULL;
-uint8 *ROM_g = NULL;
-uint8 *RegRAM_g = NULL;
 uint8 *C4RAM = NULL;
 
 long OpAddress = 0;
