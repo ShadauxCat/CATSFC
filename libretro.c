@@ -195,7 +195,7 @@ extern void NDSSFCDrawFrameAntialiased(void* screen_addr);
 #ifdef PSP
 #include <pspkernel.h>
 #include <pspgu.h>
-void S9xDeinitUpdate (int width, int height, bool8 /*sixteen_bit*/)
+void S9xDeinitUpdate (int width, int height)
 {
    static unsigned int __attribute__((aligned(16))) d_list[32];
    void* const texture_vram_p = (void*) (0x44200000 - (512 * 512)); // max VRAM address - frame size

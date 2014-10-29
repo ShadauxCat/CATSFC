@@ -604,7 +604,7 @@ void S9xSetC4 (uint8 byte, uint16 Address)
                 {
                     int32 tmp=0x10000;
                     if(READ_WORD(Memory.C4RAM+0x1f83)){
-                        tmp=SAR((tmp/READ_WORD(Memory.C4RAM+0x1f83))*READ_WORD(Memory.C4RAM+0x1f81), 8);
+                        tmp=SAR32((tmp/READ_WORD(Memory.C4RAM+0x1f83))*READ_WORD(Memory.C4RAM+0x1f81), 8);
                     }
                     WRITE_WORD(Memory.C4RAM+0x1f80, (uint16)tmp);
                 }
@@ -621,18 +621,18 @@ void S9xSetC4 (uint8 byte, uint16 Address)
 
               case 0x10: // Polar to rectangluar
                 {
-                    int32 tmp=SAR((int32)READ_WORD(Memory.C4RAM+0x1f83)*C4CosTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*2, 16);
+                    int32 tmp=SAR32((int32)READ_WORD(Memory.C4RAM+0x1f83)*C4CosTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*2, 16);
                     WRITE_3WORD(Memory.C4RAM+0x1f86, tmp);
-                    tmp=SAR((int32)READ_WORD(Memory.C4RAM+0x1f83)*C4SinTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*2, 16);
-                    WRITE_3WORD(Memory.C4RAM+0x1f89, (tmp-SAR(tmp, 6)));
+                    tmp=SAR32((int32)READ_WORD(Memory.C4RAM+0x1f83)*C4SinTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*2, 16);
+                    WRITE_3WORD(Memory.C4RAM+0x1f89, (tmp-SAR32(tmp, 6)));
                 }
                 break;
 
               case 0x13: // Polar to rectangluar
                 {
-                    int32 tmp=SAR((int32)READ_WORD(Memory.C4RAM+0x1f83)*C4CosTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*2, 8);
+                    int32 tmp=SAR32((int32)READ_WORD(Memory.C4RAM+0x1f83)*C4CosTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*2, 8);
                     WRITE_3WORD(Memory.C4RAM+0x1f86, tmp);
-                    tmp=SAR((int32)READ_WORD(Memory.C4RAM+0x1f83)*C4SinTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*2, 8);
+                    tmp=SAR32((int32)READ_WORD(Memory.C4RAM+0x1f83)*C4SinTable[READ_WORD(Memory.C4RAM+0x1f80)&0x1ff]*2, 8);
                     WRITE_3WORD(Memory.C4RAM+0x1f89, tmp);
                 }
                 break;
@@ -664,10 +664,10 @@ void S9xSetC4 (uint8 byte, uint16 Address)
                     {
                         if(y>=0)
                         {
-                            left = SAR((int32)tan1*y, 16) -
+                            left = SAR32((int32)tan1*y, 16) -
                                 READ_WORD(Memory.C4RAM+0x1f80) + 
                                 READ_WORD(Memory.C4RAM+0x1f86);
-                            right = SAR((int32)tan2*y, 16) -
+                            right = SAR32((int32)tan2*y, 16) -
                                 READ_WORD(Memory.C4RAM+0x1f80) + 
                                 READ_WORD(Memory.C4RAM+0x1f86) +
                                 READ_WORD(Memory.C4RAM+0x1f93);
@@ -734,7 +734,7 @@ void S9xSetC4 (uint8 byte, uint16 Address)
 
               case 0x54: // Square
                 {
-                    int64 a=SAR((int64)READ_3WORD(Memory.C4RAM+0x1f80)<<40, 40);
+                    int64 a=SAR64((int64)READ_3WORD(Memory.C4RAM+0x1f80)<<40, 40);
 				//	printf("%08X%08X\n", (uint32)(a>>32), (uint32)(a&0xFFFFFFFF));
                     a*=a;
 				//	printf("%08X%08X\n", (uint32)(a>>32), (uint32)(a&0xFFFFFFFF));

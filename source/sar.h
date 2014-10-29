@@ -101,7 +101,10 @@
 #endif
 
 #ifdef RIGHTSHIFT_IS_SAR
-#define SAR(b, n) ((b)>>(n))
+#define SAR8(b, n) ((b)>>(n))
+#define SAR16(b, n) ((b)>>(n))
+#define SAR32(b, n) ((b)>>(n))
+#define SAR64(b, n) ((b)>>(n))
 #else
 
 static inline int8 SAR8(const int8 b, const int n){
