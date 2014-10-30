@@ -559,7 +559,7 @@ size_t retro_serialize_size(void)
    s += 0x20000;
    s += 0x8000;
    s += sizeof(APU);
-   s += sizeof(IAPU.Registers);
+   s += sizeof(IAPU);
    s += 0x10000;
    s += sizeof(SA1);
    s += sizeof(s7r);
@@ -606,8 +606,8 @@ bool retro_serialize(void* data, size_t size)
    buffer += 0x8000;
    memcpy(buffer, &APU, sizeof(APU));
    buffer += sizeof(APU);
-   memcpy(buffer, &IAPU.Registers, sizeof(IAPU.Registers));
-   buffer += sizeof(IAPU.Registers);
+   memcpy(buffer, &IAPU, sizeof(IAPU));
+   buffer += sizeof(IAPU);
    memcpy(buffer, IAPU.RAM, 0x10000);
    buffer += 0x10000;
 
@@ -650,8 +650,8 @@ bool retro_unserialize(const void* data, size_t size)
    buffer += 0x8000;
    memcpy(&APU, buffer, sizeof(APU));
    buffer += sizeof(APU);
-   memcpy(&IAPU.Registers, buffer, sizeof(IAPU.Registers));
-   buffer += sizeof(IAPU.Registers);
+   memcpy(&IAPU, buffer, sizeof(IAPU));
+   buffer += sizeof(IAPU);
    memcpy(IAPU.RAM, buffer, 0x10000);
    buffer += 0x10000;
 
@@ -662,23 +662,25 @@ bool retro_unserialize(const void* data, size_t size)
    memcpy(&rtc_f9, buffer, sizeof(rtc_f9));
    buffer += sizeof(rtc_f9);
 
-   S9xFixCycles();
+//   S9xFixCycles();
 
    S9xFixSA1AfterSnapshotLoad();
-//   FixROMSpeed();
-//   IPPU.ColorsChanged = TRUE;
-//   IPPU.OBJChanged = TRUE;
-//   CPU.InDMA = FALSE;
-//   S9xFixColourBrightness();
+   FixROMSpeed();
+   IPPU.ColorsChanged = TRUE;
+   IPPU.OBJChanged = TRUE;
+   CPU.InDMA = FALSE;
+   S9xFixColourBrightness();
 //   IPPU.RenderThisFrame = FALSE;
 
-//   S9xFixSoundAfterSnapshotLoad();
-//   ICPU.ShiftedPB = ICPU.Registers.PB << 16;
-//   ICPU.ShiftedDB = ICPU.Registers.DB << 16;
-//   S9xSetPCBase(ICPU.ShiftedPB + ICPU.Registers.PC);
-//   S9xUnpackStatus();
-////   S9xFixCycles();
-//   S9xReschedule();
+   S9xAPUUnpackStatus();
+   S9xSA1UnpackStatus();
+   S9xFixSoundAfterSnapshotLoad();
+   ICPU.ShiftedPB = ICPU.Registers.PB << 16;
+   ICPU.ShiftedDB = ICPU.Registers.DB << 16;
+   S9xSetPCBase(ICPU.ShiftedPB + ICPU.Registers.PC);
+   S9xUnpackStatus();
+   S9xFixCycles();
+   S9xReschedule();
 
    return true;
 #else
