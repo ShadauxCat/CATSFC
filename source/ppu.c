@@ -202,13 +202,17 @@ void S9xFixColourBrightness()
 
 static void S9xSetSuperFX(uint8 Byte, uint16 Address)
 {
+   uint8 old_fill_ram;
    if (!Settings.SuperFX)
       return;
+
+   old_fill_ram = Memory.FillRAM[Address];
+   Memory.FillRAM[Address] = Byte; 
 
    switch (Address)
    {
       case 0x3030:
-         if ((Memory.FillRAM [0x3030] ^ Byte) & FLG_G)
+         if ((old_fill_ram ^ Byte) & FLG_G)
          {
             Memory.FillRAM [Address] = Byte;
             // Go flag has been changed
@@ -217,8 +221,6 @@ static void S9xSetSuperFX(uint8 Byte, uint16 Address)
             else
                FxFlushCache();
          }
-         else
-            Memory.FillRAM [Address] = Byte;
          break;
 
       case 0x3031:
@@ -227,35 +229,29 @@ static void S9xSetSuperFX(uint8 Byte, uint16 Address)
       case 0x3039:
       case 0x303a:
       case 0x303f:
-         Memory.FillRAM [Address] = Byte;
          break;
       case 0x3034:
       case 0x3036:
-         Memory.FillRAM [Address] = Byte & 0x7f;
+         Memory.FillRAM [Address] &= 0x7f;
          break;
       case 0x3038:
-         Memory.FillRAM [Address] = Byte;
          fx_dirtySCBR();
          break;
       case 0x303b:
          break;
       case 0x303c:
-         Memory.FillRAM [Address] = Byte;
          fx_updateRamBank(Byte);
          break;
       case 0x301f:
-         Memory.FillRAM [Address] = Byte;
          Memory.FillRAM [0x3000 + GSU_SFR] |= FLG_G;
          S9xSuperFXExec();
-         return;
+         break;
 
       default:
-         Memory.FillRAM[Address] = Byte;
          if (Address >= 0x3100)
             FxCacheWriteAccess(Address);
          break;
    }
-   return;
 }
 
 /******************************************************************************/
