@@ -101,8 +101,6 @@
 /* For note-triggered SPC dump support */
 #include "snapshot.h"
 
-const char* S9xGetFilenameInc(const char*);
-
 int spc_is_dumping = 0;
 int spc_is_dumping_temp;
 uint8 spc_dump_dsp[0x100];
@@ -228,10 +226,6 @@ void S9xSetAPUDSP(uint8 byte)
       else
       {
          S9xSetEchoWriteEnable(!(byte & APU_ECHO_DISABLED));
-         if (byte & APU_MUTE)
-            S9xSetSoundMute(TRUE);
-         else
-            S9xSetSoundMute(FALSE);
 
          SoundData.noise_hertz = NoiseFreq [byte & 0x1f];
          for (i = 0; i < 8; i++)

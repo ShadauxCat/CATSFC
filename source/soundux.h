@@ -125,9 +125,6 @@ typedef struct
    int sound_switch;
    int playback_rate;
    int buffer_size;
-   // int noise_gen;
-   // Moved to soundux.cpp's noise_gen; this doesn't need volatility! [Neb]
-   bool8 mute_sound;
    bool8 encoded;
 #ifdef __sun
    int last_eof;
@@ -215,7 +212,6 @@ void S9xSetSoundType(int channel, int type_of_sound);
 void S9xSetMasterVolume(short master_volume_left, short master_volume_right);
 void S9xSetEchoVolume(short echo_volume_left, short echo_volume_right);
 void S9xSetSoundControl(int sound_switch);
-bool8 S9xSetSoundMute(bool8 mute);
 void S9xSetEnvelopeHeight(int channel, int height);
 void S9xSetSoundADSR(int channel, int attack, int decay, int sustain,
                      int sustain_level, int release);

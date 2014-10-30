@@ -147,7 +147,6 @@ CATSFC_SOURCES := source/apu.c source/c4.c \
 	source/ppu.c \
 	source/sa1.c \
 	source/sa1cpu.c \
-	source/screenshot.c \
 	source/sdd1.c \
 	source/sdd1emu.c \
 	source/seta010.c \

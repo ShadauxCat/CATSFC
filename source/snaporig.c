@@ -201,7 +201,6 @@ static int ReadOrigSnapshot(STREAM snap)
    }
 
    S9xReset();
-   S9xSetSoundMute(TRUE);
    if ((result = ReadBlock("CPU:", &OrigCPU, sizeof(OrigCPU), snap)) != SUCCESS)
       return (result);
    OrigCPU.FastROMSpeed = OrigCPU.FastROMSpeed_old;
@@ -444,8 +443,6 @@ static int ReadOrigSnapshot(STREAM snap)
             OrigSoundData.channels [i].sample_pointer;
          SoundData.channels [i].mode = OrigSoundData.channels [i].mode;
       }
-
-      S9xSetSoundMute(FALSE);
       IAPU.PC = IAPU.RAM + IAPU.Registers.PC;
       S9xAPUUnpackStatus();
       if (APUCheckDirectPage())
@@ -459,7 +456,6 @@ static int ReadOrigSnapshot(STREAM snap)
    {
       Settings.APUEnabled = FALSE;
       IAPU.APUExecuting = FALSE;
-      S9xSetSoundMute(TRUE);
    }
    S9xFixSoundAfterSnapshotLoad();
    ICPU.ShiftedPB = ICPU.Registers.PB << 16;

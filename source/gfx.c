@@ -96,7 +96,6 @@
 #include "gfx.h"
 #include "apu.h"
 #include "cheats.h"
-#include "screenshot.h"
 
 #define M7 19
 #define M8 19

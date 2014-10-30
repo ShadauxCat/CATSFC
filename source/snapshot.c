@@ -651,7 +651,6 @@ void S9xFreezeToStream(STREAM stream)
    char buffer [1024];
    int i;
 
-   S9xSetSoundMute(TRUE);
 #ifdef ZSNES_FX
    if (Settings.SuperFX)
       S9xSuperFXPreSaveState();
@@ -707,7 +706,6 @@ void S9xFreezeToStream(STREAM stream)
    if (Settings.SPC7110RTC)
       FreezeStruct(stream, "RTC", &rtc_f9, SnapS7RTC, COUNT(SnapS7RTC));
 
-   S9xSetSoundMute(FALSE);
 #ifdef ZSNES_FX
    if (Settings.SuperFX)
       S9xSuperFXPostSaveState();
@@ -829,7 +827,6 @@ int S9xUnfreezeFromStream(STREAM stream)
       uint32 old_flags = CPU.Flags;
       uint32 sa1_old_flags = SA1.Flags;
       S9xReset();
-      S9xSetSoundMute(TRUE);
 
       UnfreezeStructFromCopy(&CPU, SnapCPU, COUNT(SnapCPU), local_cpu);
       UnfreezeStructFromCopy(&ICPU.Registers, SnapRegisters, COUNT(SnapRegisters),
@@ -872,7 +869,6 @@ int S9xUnfreezeFromStream(STREAM stream)
 
       if (local_apu)
       {
-         S9xSetSoundMute(FALSE);
          IAPU.PC = IAPU.RAM + IAPU.Registers.PC;
          S9xAPUUnpackStatus();
          if (APUCheckDirectPage())
@@ -886,7 +882,6 @@ int S9xUnfreezeFromStream(STREAM stream)
       {
          Settings.APUEnabled = FALSE;
          IAPU.APUExecuting = FALSE;
-         S9xSetSoundMute(TRUE);
       }
 
       if (local_sa1)
@@ -1315,7 +1310,6 @@ bool8 S9xSPCDump(const char* filename)
 
    FILE* fs;
 
-   S9xSetSoundMute(TRUE);
 
    if (!(fs = fopen(filename, "wb")))
       return (FALSE);
@@ -1359,10 +1353,8 @@ bool8 S9xSPCDump(const char* filename)
          fwrite(APU.ExtraRAM, 64, 1, fs) != 1 ||
          fclose(fs) < 0)
    {
-      S9xSetSoundMute(FALSE);
       return (FALSE);
    }
-   S9xSetSoundMute(FALSE);
    return (TRUE);
 #endif
 }
@@ -1379,7 +1371,6 @@ bool8 S9xUnfreezeZSNES(const char* filename)
          strncmp((char*) t, "ZSNES Save State File V0.6", 26) == 0)
    {
       S9xReset();
-      S9xSetSoundMute(TRUE);
 
       // 28 Curr cycle
       CPU.V_Counter = READ_WORD(&t [29]);
@@ -1604,7 +1595,6 @@ bool8 S9xUnfreezeZSNES(const char* filename)
          S9xSetAPUDSP(t [APU_KON]);
          IAPU.RAM [0xf2] = saved;
 
-         S9xSetSoundMute(FALSE);
          IAPU.PC = IAPU.RAM + IAPU.Registers.PC;
          S9xAPUUnpackStatus();
          if (APUCheckDirectPage())
@@ -1618,7 +1608,6 @@ bool8 S9xUnfreezeZSNES(const char* filename)
       {
          Settings.APUEnabled = FALSE;
          IAPU.APUExecuting = FALSE;
-         S9xSetSoundMute(TRUE);
       }
 
       if (Settings.SuperFX)

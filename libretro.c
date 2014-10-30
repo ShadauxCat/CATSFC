@@ -182,7 +182,6 @@ void S9xExit()
    //  if(Settings.SPC7110)
    //    (*CleanUp7110)();
 
-   //   S9xSetSoundMute (TRUE);
    //    S9xDeinitDisplay ();
    //    Memory.SaveSRAM (S9xGetFilename (".srm"));
    //    // S9xSaveCheatFile (S9xGetFilename (".chb")); // cheat binary file
@@ -210,9 +209,6 @@ bool8 S9xInitUpdate()
 
    return (TRUE);
 }
-
-
-extern void NDSSFCDrawFrameAntialiased(void* screen_addr);
 
 #ifdef PSP
 #include <pspkernel.h>
@@ -310,25 +306,10 @@ void _splitpath(const char* path, char* drive, char* dir, char* fname,
    }
 }
 
-void S9xProcessEvents(bool8 block)
-{
-
-}
-
-void OutOfMemory()
-{
-}
-
-
-const char* S9xGetROMDirectory()
-{
-   return "./";
-}
-
 
 const char* S9xGetSnapshotDirectory()
 {
-   return "./";
+   return ".";
 }
 
 const char* S9xGetFilename(const char* ex)
@@ -348,72 +329,11 @@ const char* S9xGetFilename(const char* ex)
    return (filename);
 }
 
-const char* S9xGetFilenameInc(const char* e)
-{
-   return e;
-#if 0
-   static char filename [_MAX_PATH + 1];
-   char drive [_MAX_DRIVE + 1];
-   char dir [_MAX_DIR + 1];
-   char fname [_MAX_FNAME + 1];
-   char ext [_MAX_EXT + 1];
-   char* ptr;
-   struct stat buf;
-
-   if (strlen(S9xGetSnapshotDirectory()))
-   {
-      _splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-      strcpy(filename, S9xGetSnapshotDirectory());
-      strcat(filename, "/");
-      strcat(filename, fname);
-      ptr = filename + strlen(filename);
-      strcat(filename, "00/");
-      strcat(filename, e);
-   }
-   else
-   {
-      _splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-      strcat(fname, "00/");
-      _makepath(filename, drive, dir, fname, e);
-      ptr = strstr(filename, "00/");
-   }
-
-   do
-   {
-      if (++ * (ptr + 2) > '9')
-      {
-         * (ptr + 2) = '0';
-         if (++ * (ptr + 1) > '9')
-         {
-            * (ptr + 1) = '0';
-            if (++*ptr > '9')
-               break;
-         }
-      }
-   }
-   while (stat(filename, &buf) == 0);
-
-   return (filename);
-#endif
-}
-
-void S9xInitInputDevices()
-{
-#ifdef JOYSTICK_SUPPORT
-   InitJoysticks();
-#endif
-}
-
 
 void init_sfc_setting(void)
 {
    ZeroMemory(&Settings, sizeof(Settings));
-#ifdef JOYSTICK_SUPPORT
-   Settings.JoystickEnabled = TRUE;
-#else
    Settings.JoystickEnabled = FALSE;
-#endif
-
    Settings.SoundPlaybackRate = 44100; // -> ds2sound.h for defs
    Settings.SoundBufferSize = 512;
    Settings.CyclesPercentage = 100;
@@ -514,22 +434,13 @@ void retro_init(void)
              "Frontend supports RGB565 - will use that instead of XRGB1555.\n");
 
    init_sfc_setting();
-
-   if (!Init() || !S9xInitAPU())
-      OutOfMemory();
-
+   Init();
+   S9xInitAPU();
    S9xInitDisplay();
-   if (!S9xGraphicsInit())
-      OutOfMemory();
-
+   S9xGraphicsInit();
    S9xInitSound(Settings.SoundPlaybackRate,
                 TRUE,
                 Settings.SoundBufferSize);
-
-#ifdef JOYSTICK_SUPPORT
-   uint32 JoypadSkip = 0;
-#endif
-
 
 }
 
@@ -573,7 +484,6 @@ void retro_run(void)
    poll_cb();
 
    S9xSetPlaybackRate(32040);
-   so.mute_sound = FALSE;
    SoundData.echo_enable = FALSE;
 
    S9xMainLoop();
@@ -608,10 +518,6 @@ void S9xSyncSpeed()
 {
 }
 
-bool8 S9xOpenSoundDevice(int mode, bool8 stereo, int buffer_size)
-{
-   return (TRUE);
-}
 
 void S9xGenerateSound()
 {

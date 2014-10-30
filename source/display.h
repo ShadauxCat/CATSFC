@@ -105,7 +105,6 @@ bool8 S9xReadSuperScopePosition(int* x, int* y, uint32* buttons);
 void S9xUsage();
 void S9xInitDisplay(void);
 void S9xDeinitDisplay();
-void S9xInitInputDevices();
 void S9xSetTitle(const char* title);
 void S9xPutImage(int width, int height);
 void S9xToggleSoundChannel(int channel);
@@ -123,10 +122,8 @@ const char* S9xBasename(const char* filename);
 int S9xFStrcmp(FILE*, const char*);
 const char* S9xGetHomeDirectory();
 const char* S9xGetSnapshotDirectory();
-const char* S9xGetROMDirectory();
 const char* S9xGetSRAMFilename();
 const char* S9xGetFilename(const char* extension);
-const char* S9xGetFilenameInc(const char*);
 
 #endif
 
