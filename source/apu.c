@@ -98,13 +98,6 @@
 #include "soundux.h"
 #include "cpuexec.h"
 
-/* For note-triggered SPC dump support */
-#include "snapshot.h"
-
-int spc_is_dumping = 0;
-int spc_is_dumping_temp;
-uint8 spc_dump_dsp[0x100];
-
 extern int NoiseFreq [32];
 
 bool8 S9xInitAPU()
@@ -140,7 +133,6 @@ void S9xResetAPU()
 
    Settings.APUEnabled = Settings.NextAPUEnabled;
 
-   ZeroMemory(spc_dump_dsp, 0x100);
    ZeroMemory(IAPU.RAM, 0x100);
    memset(IAPU.RAM + 0x20, 0xFF, 0x20);
    memset(IAPU.RAM + 0x60, 0xFF, 0x20);
@@ -206,8 +198,6 @@ void S9xSetAPUDSP(uint8 byte)
    static uint8 KeyOn;
    static uint8 KeyOnPrev;
    int i;
-
-   spc_dump_dsp[reg] = byte;
 
    switch (reg)
    {
@@ -320,16 +310,6 @@ void S9xSetAPUDSP(uint8 byte)
    APU.DSP [APU_KOFF] = byte;
    return;
    case APU_KON:
-      if (spc_is_dumping)
-      {
-         if (byte & ~spc_is_dumping_temp)
-         {
-            IAPU.Registers.PC = IAPU.PC - IAPU.RAM;
-            S9xAPUPackStatus();
-            S9xSPCDump(".spc");
-            spc_is_dumping = 0;
-         }
-      }
       if (byte)
       {
          int c;
@@ -353,7 +333,6 @@ void S9xSetAPUDSP(uint8 byte)
             }
          }
       }
-      spc_is_dumping_temp = byte;
       return;
 
    case APU_VOL_LEFT + 0x00:

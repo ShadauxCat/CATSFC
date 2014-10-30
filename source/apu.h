@@ -90,6 +90,7 @@
 #ifndef _apu_h_
 #define _apu_h_
 
+#include "port.h"
 #include "spc700.h"
 
 typedef struct
@@ -130,9 +131,7 @@ typedef struct
 
 SAPU APU;
 SIAPU IAPU;
-extern int spc_is_dumping;
-extern int spc_is_dumping_temp;
-extern uint8 spc_dump_dsp[0x100];
+
 STATIC inline void S9xAPUUnpackStatus()
 {
    IAPU._Zero = ((IAPU.Registers.P & Zero) == 0) | (IAPU.Registers.P & Negative);

@@ -6,11 +6,11 @@
 #include "memmap.h"
 #include "apu.h"
 #include "cheats.h"
-#include "snapshot.h"
 #include "display.h"
 #include "gfx.h"
 #include "cpuexec.h"
 #include "spc7110.h"
+#include "srtc.h"
 
 #include <libretro.h>
 
@@ -322,31 +322,6 @@ void S9xAutoSaveSRAM()
    SaveSRAM(S9xGetFilename(".srm"));
 }
 
-int game_load_state(char* file)
-{
-   int flag;
-
-   flag = 0;
-   if (S9xUnfreezeGame(file) == FALSE)
-      flag = -1;
-
-   return flag;
-}
-
-int game_save_state(char* file)
-{
-   int flag;
-
-   flag = 0;
-   if (S9xFreezeGame(file) == FALSE)
-      flag = -1;
-
-   S9xAutoSaveSRAM();
-
-   return flag;
-}
-
-
 void retro_init(void)
 {
    struct retro_log_callback log;
@@ -578,7 +553,57 @@ size_t retro_serialize_size(void)
 
 bool retro_serialize(void* data, size_t size)
 {
-   return false;
+//   S9xUpdateRTC();
+//   S9xSRTCPreSaveState();
+
+//   for (i = 0; i < 8; i++)
+//   {
+//      SoundData.channels [i].previous16 [0] = (int16)
+//                                              SoundData.channels [i].previous [0];
+//      SoundData.channels [i].previous16 [1] = (int16)
+//                                              SoundData.channels [i].previous [1];
+//   }
+//   sprintf(buffer, "%s:%04d\n", SNAPSHOT_MAGIC, SNAPSHOT_VERSION);
+//   WRITE_STREAM(buffer, strlen(buffer), stream);
+//   sprintf(buffer, "NAM:%06d:%s%c", strlen(Memory.ROMFilename) + 1,
+//           Memory.ROMFilename, 0);
+//   WRITE_STREAM(buffer, strlen(buffer) + 1, stream);
+//   FreezeStruct(stream, "CPU", &CPU, SnapCPU, COUNT(SnapCPU));
+//   FreezeStruct(stream, "REG", &ICPU.Registers, SnapRegisters,
+//                COUNT(SnapRegisters));
+//   FreezeStruct(stream, "PPU", &PPU, SnapPPU, COUNT(SnapPPU));
+//   FreezeStruct(stream, "DMA", DMA, SnapDMA, COUNT(SnapDMA));
+
+//   // RAM and VRAM
+//   FreezeBlock(stream, "VRA", Memory.VRAM, 0x10000);
+//   FreezeBlock(stream, "RAM", Memory.RAM, 0x20000);
+//   FreezeBlock(stream, "SRA", Memory.SRAM, 0x20000);
+//   FreezeBlock(stream, "FIL", Memory.FillRAM, 0x8000);
+//   if (Settings.APUEnabled)
+//   {
+//      // APU
+//      FreezeStruct(stream, "APU", &APU, SnapAPU, COUNT(SnapAPU));
+//      FreezeStruct(stream, "ARE", &IAPU.Registers, SnapAPURegisters,
+//                   COUNT(SnapAPURegisters));
+//      FreezeBlock(stream, "ARA", IAPU.RAM, 0x10000);
+//      FreezeStruct(stream, "SOU", &SoundData, SnapSoundData,
+//                   COUNT(SnapSoundData));
+//   }
+//   if (Settings.SA1)
+//   {
+//      SA1.Registers.PC = SA1.PC - SA1.PCBase;
+//      S9xSA1PackStatus();
+//      FreezeStruct(stream, "SA1", &SA1, SnapSA1, COUNT(SnapSA1));
+//      FreezeStruct(stream, "SAR", &SA1.Registers, SnapSA1Registers,
+//                   COUNT(SnapSA1Registers));
+//   }
+
+//   if (Settings.SPC7110)
+//      FreezeStruct(stream, "SP7", &s7r, SnapSPC7110, COUNT(SnapSPC7110));
+//   if (Settings.SPC7110RTC)
+//      FreezeStruct(stream, "RTC", &rtc_f9, SnapS7RTC, COUNT(SnapS7RTC));
+
+   return true;
 }
 bool retro_unserialize(const void* data, size_t size)
 {

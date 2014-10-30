@@ -153,8 +153,6 @@ CATSFC_SOURCES := source/apu.c source/c4.c \
 	source/seta011.c \
 	source/seta018.c \
 	source/seta.c \
-	source/snaporig.c \
-	source/snapshot.c \
 	source/soundux.c \
 	source/spc700.c source/spc7110.c \
 	source/srtc.c \
