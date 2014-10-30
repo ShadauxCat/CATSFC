@@ -94,7 +94,6 @@
 void S9xTextMode();
 void S9xGraphicsMode();
 char* S9xParseArgs(char** argv, int argc);
-void S9xExtraUsage();
 #ifdef ACCUMULATE_JOYPAD
 void NDSSFCAccumulateJoypad();
 #endif

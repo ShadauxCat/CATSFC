@@ -12,25 +12,6 @@
 #include "cpuexec.h"
 #include "spc7110.h"
 
-#ifdef PSP
-#include <psptypes.h>
-#else
-#ifndef PSP_LEGACY_TYPES_DEFINED
-#define PSP_LEGACY_TYPES_DEFINED
-typedef  uint8_t           u8;
-typedef uint16_t        u16;
-
-typedef uint32_t        u32;
-typedef uint64_t        u64;
-
-typedef int8_t          s8;
-typedef int16_t            s16;
-
-typedef int32_t            s32;
-typedef int64_t            s64;
-#endif
-#endif
-
 #include <libretro.h>
 
 static retro_log_printf_t log_cb = NULL;
@@ -89,25 +70,6 @@ unsigned retro_api_version()
    return RETRO_API_VERSION;
 }
 
-
-
-void S9xProcessSound(unsigned int samples);
-
-char* rom_filename = NULL;
-char* SDD1_pack = NULL;
-
-/*
- * It is only safe to manipulate saved states between frames.
- */
-static bool8 LoadStateNeeded = FALSE;
-static bool8 SaveStateNeeded = FALSE;
-
-static u8 Buf[MAX_BUFFER_SIZE];
-
-#define FIXED_POINT 0x10000
-#define FIXED_POINT_SHIFT 16
-#define FIXED_POINT_REMAINDER 0xffff
-
 void S9xMessage(int type, int number, const char* message)
 {
 #if 1
@@ -122,14 +84,6 @@ void S9xMessage(int type, int number, const char* message)
 #endif
 }
 
-void S9xExtraUsage()
-{
-   /*empty*/
-}
-
-/*
-*   Release display device
-*/
 void S9xDeinitDisplay(void)
 {
 #ifdef DS2_DMA
@@ -416,8 +370,6 @@ int load_gamepak(const char* file)
    return 0;
 }
 
-void sfc_main(void);
-
 void retro_init(void)
 {
    struct retro_log_callback log;
@@ -488,7 +440,7 @@ void retro_run(void)
 
    S9xMainLoop();
 
-   static s16 audio_buf[534 << 1];
+   static int16_t audio_buf[534 << 1];
    S9xMixSamples((uint8*)audio_buf, 534 << 1);
    audio_batch_cb(audio_buf, 534);
 
@@ -509,16 +461,6 @@ void retro_run(void)
 }
 
 
-static unsigned int sync_last = 0;
-static unsigned int sync_next = 0;
-
-static unsigned int skip_rate = 0;
-
-void S9xSyncSpeed()
-{
-}
-
-
 void S9xGenerateSound()
 {
    //   static s16 audio_buf[855 << 1];
@@ -529,93 +471,10 @@ void S9xGenerateSound()
 
 }
 
-void S9xGenerateSound0()
-{
-   int bytes_so_far = so.samples_mixed_so_far << 1;
-
-   if (bytes_so_far >= so.buffer_size)
-      return;
-
-   so.err_counter += so.err_rate;
-   if (so.err_counter >= FIXED_POINT)
-   {
-      // Write this many samples overall
-      int samples_to_write = so.err_counter >> FIXED_POINT_SHIFT;
-      samples_to_write <<= 1;
-      int byte_offset = (bytes_so_far + so.play_position) & SOUND_BUFFER_SIZE_MASK;
-
-      so.err_counter &= FIXED_POINT_REMAINDER;
-
-      do
-      {
-         int bytes_this_run = samples_to_write;
-         bytes_this_run <<= 1;
-
-         if (byte_offset + bytes_this_run > SOUND_BUFFER_SIZE)
-            bytes_this_run = SOUND_BUFFER_SIZE - byte_offset;
-
-         if (bytes_so_far + bytes_this_run > so.buffer_size)
-         {
-            bytes_this_run = so.buffer_size - bytes_so_far;
-            if (bytes_this_run == 0)
-               break;
-         }
-
-         int samples_this_run = bytes_this_run;
-         samples_this_run >>= 1;
-
-         S9xMixSamples(Buf + byte_offset, samples_this_run);
-         so.samples_mixed_so_far += samples_this_run;
-         samples_to_write -= samples_this_run;
-         bytes_so_far += samples_this_run << 1;
-         byte_offset = (byte_offset + bytes_this_run) & SOUND_BUFFER_SIZE_MASK;
-      }
-      while (samples_to_write > 0);
-   }
-}
-
 
 void S9xProcessSound(unsigned int samples)
 {
 
-}
-
-/*
-const unsigned int keymap[12] = {
-      0x80,    //KEY_A
-      0x8000,     //KEY_B
-      0x2000,     //KEY_SELECT
-      0x1000,     //KEY_START
-      0x100,      //KEY_RIGHT
-      0x200,      //KEY_LEFT
-      0x800,      //KEY_UP
-      0x400,      //KEY_DOWN
-      0x10,    //KEY_R
-      0x20,    //KEY_L
-      0x40,    //KEY_X
-      0x4000      //KEY_Y
-   };
-*/
-
-#ifdef ACCUMULATE_JOYPAD
-// These are kept as DS key bitfields until it's time to send them to Snes9x.
-static uint32 PreviousControls = 0x00000000;
-static uint32 ControlsPressed  = 0x00000000;
-static uint32 ControlsReleased = 0x00000000;
-
-void NDSSFCAccumulateJoypad()
-{
-   struct key_buf inputdata;
-   ds2_getrawInput(&inputdata);
-
-   ControlsPressed |= inputdata.key & ~PreviousControls;
-   ControlsReleased |= PreviousControls & ~inputdata.key;
-}
-#endif // ACCUMULATE_JOYPAD
-
-static int S9xCompareSDD1IndexEntries(const void* p1, const void* p2)
-{
-   return (* (uint32*) p1 - * (uint32*) p2);
 }
 
 void S9xLoadSDD1Data()
