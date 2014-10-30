@@ -286,7 +286,7 @@ const char* S9xGetFilename(const char* ex)
 
 void init_sfc_setting(void)
 {
-   ZeroMemory(&Settings, sizeof(Settings));
+   memset(&Settings, 0, sizeof(Settings));
    Settings.JoystickEnabled = FALSE;
    Settings.SoundPlaybackRate = 44100; // -> ds2sound.h for defs
    Settings.SoundBufferSize = 512;

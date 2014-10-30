@@ -149,7 +149,7 @@ void S9xResetSRTC()
 
 void S9xHardResetSRTC()
 {
-   ZeroMemory(&rtc, sizeof(rtc));
+   memset(&rtc, 0, sizeof(rtc));
    rtc.index = -1;
    rtc.mode = MODE_READ;
    rtc.count_enable = FALSE;
@@ -436,7 +436,7 @@ void S9xSetSRTC(uint8 data, uint16 Address)
          // Disable RTC counter
          rtc.count_enable = FALSE;
 
-         ZeroMemory(rtc.data, MAX_RTC_INDEX + 1);
+         memset(rtc.data, 0, MAX_RTC_INDEX + 1);
          rtc.index = -1;
          rtc.mode = MODE_COMMAND_DONE;
          break;

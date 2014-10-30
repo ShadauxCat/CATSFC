@@ -133,7 +133,7 @@ void S9xResetAPU()
 
    Settings.APUEnabled = Settings.NextAPUEnabled;
 
-   ZeroMemory(IAPU.RAM, 0x100);
+   memset(IAPU.RAM, 0, 0x100);
    memset(IAPU.RAM + 0x20, 0xFF, 0x20);
    memset(IAPU.RAM + 0x60, 0xFF, 0x20);
    memset(IAPU.RAM + 0xA0, 0xFF, 0x20);
@@ -142,7 +142,7 @@ void S9xResetAPU()
    for (i = 1; i < 256; i++)
       memcpy(IAPU.RAM + (i << 8), IAPU.RAM, 0x100);
 
-   ZeroMemory(APU.OutPorts, 4);
+   memset(APU.OutPorts, 0, 4);
    IAPU.DirectPage = IAPU.RAM;
    // memmove converted: Different mallocs [Neb]
    // DS2 DMA notes: The APU ROM is not 32-byte aligned [Neb]

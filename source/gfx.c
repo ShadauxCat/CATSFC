@@ -423,8 +423,8 @@ bool8 S9xGraphicsInit()
          }
       }
    }
-   ZeroMemory(GFX.ZERO, 0x10000 * sizeof(uint16));
-   ZeroMemory(GFX.ZERO_OR_X2, 0x10000 * sizeof(uint16));
+   memset(GFX.ZERO, 0, 0x10000 * sizeof(uint16));
+   memset(GFX.ZERO_OR_X2, 0, 0x10000 * sizeof(uint16));
    // Build a lookup table that if the top bit of the color value is zero
    // then the value is zero, otherwise multiply the value by 2. Used by
    // the color subtraction code.
@@ -3643,8 +3643,8 @@ void S9xUpdateScreen()
             uint32 y;
             for (y = starty; y <= endy; y++)
             {
-               ZeroMemory(GFX.SubZBuffer + y * GFX.ZPitch, IPPU.RenderedScreenWidth);
-               ZeroMemory(GFX.ZBuffer + y * GFX.ZPitch, IPPU.RenderedScreenWidth);
+               memset(GFX.SubZBuffer + y * GFX.ZPitch, 0, IPPU.RenderedScreenWidth);
+               memset(GFX.ZBuffer + y * GFX.ZPitch, 0, IPPU.RenderedScreenWidth);
 
                if (IPPU.Clip [0].Count [5])
                {
@@ -3685,7 +3685,7 @@ void S9xUpdateScreen()
             uint32 y;
             for (y = starty; y <= endy; y++)
             {
-               ZeroMemory(GFX.ZBuffer + y * GFX.ZPitch, IPPU.RenderedScreenWidth);
+               memset(GFX.ZBuffer + y * GFX.ZPitch, 0, IPPU.RenderedScreenWidth);
                memset(GFX.SubZBuffer + y * GFX.ZPitch, 1, IPPU.RenderedScreenWidth);
 
                if (IPPU.Clip [0].Count [5])
@@ -4018,7 +4018,7 @@ void S9xUpdateScreen()
          {
             uint32 y;
             for (y = starty; y <= endy; y++)
-               ZeroMemory(GFX.ZBuffer + y * GFX.ZPitch, IPPU.RenderedScreenWidth);
+               memset(GFX.ZBuffer + y * GFX.ZPitch, 0, IPPU.RenderedScreenWidth);
             GFX.DB = GFX.ZBuffer;
             RenderScreen(GFX.Screen, FALSE, TRUE, SUB_SCREEN_DEPTH);
          }
@@ -4032,7 +4032,7 @@ void S9xUpdateScreen()
    {
       if (PPU.BGMode != 5 && PPU.BGMode != 6 && IPPU.DoubleWidthPixels)
       {
-         // Mixure of background modes used on screen - scale width
+         // Mixture of background modes used on screen - scale width
          // of all non-mode 5 and 6 pixels.
          register uint32 y;
          for (y = starty; y <= endy; y++)
