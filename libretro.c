@@ -645,15 +645,12 @@ bool retro_unserialize(const void* data, size_t size)
    memcpy(&rtc_f9, buffer, sizeof(rtc_f9));
    buffer += sizeof(rtc_f9);
 
-   //   S9xFixCycles();
-
    S9xFixSA1AfterSnapshotLoad();
    FixROMSpeed();
    IPPU.ColorsChanged = TRUE;
    IPPU.OBJChanged = TRUE;
    CPU.InDMA = FALSE;
    S9xFixColourBrightness();
-   //   IPPU.RenderThisFrame = FALSE;
 
    S9xAPUUnpackStatus();
    S9xSA1UnpackStatus();
