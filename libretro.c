@@ -606,8 +606,12 @@ bool retro_serialize(void* data, size_t size)
    return true;
 }
 bool retro_unserialize(const void* data, size_t size)
-{
+{   
    const uint8_t* buffer = data;
+
+   if (size != retro_serialize_size())
+      return false;
+
    S9xReset();
 
    uint8* IAPU_RAM_current = IAPU.RAM;
