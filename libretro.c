@@ -548,66 +548,142 @@ void retro_reset(void)
 
 size_t retro_serialize_size(void)
 {
+#if 0
+   size_t s = 0;
+   s += sizeof(CPU);
+   s += sizeof(ICPU);
+   s += sizeof(PPU);
+   s += sizeof(DMA);
+   s += 0x10000;
+   s += 0x20000;
+   s += 0x20000;
+   s += 0x8000;
+   s += sizeof(APU);
+   s += sizeof(IAPU.Registers);
+   s += 0x10000;
+   s += sizeof(SA1);
+   s += sizeof(s7r);
+   s += sizeof(rtc_f9);
+
+   return s;
+#else
    return 0;
+#endif
 }
 
 bool retro_serialize(void* data, size_t size)
 {
-//   S9xUpdateRTC();
-//   S9xSRTCPreSaveState();
+#if 0
+   int i;
 
-//   for (i = 0; i < 8; i++)
-//   {
-//      SoundData.channels [i].previous16 [0] = (int16)
-//                                              SoundData.channels [i].previous [0];
-//      SoundData.channels [i].previous16 [1] = (int16)
-//                                              SoundData.channels [i].previous [1];
-//   }
-//   sprintf(buffer, "%s:%04d\n", SNAPSHOT_MAGIC, SNAPSHOT_VERSION);
-//   WRITE_STREAM(buffer, strlen(buffer), stream);
-//   sprintf(buffer, "NAM:%06d:%s%c", strlen(Memory.ROMFilename) + 1,
-//           Memory.ROMFilename, 0);
-//   WRITE_STREAM(buffer, strlen(buffer) + 1, stream);
-//   FreezeStruct(stream, "CPU", &CPU, SnapCPU, COUNT(SnapCPU));
-//   FreezeStruct(stream, "REG", &ICPU.Registers, SnapRegisters,
-//                COUNT(SnapRegisters));
-//   FreezeStruct(stream, "PPU", &PPU, SnapPPU, COUNT(SnapPPU));
-//   FreezeStruct(stream, "DMA", DMA, SnapDMA, COUNT(SnapDMA));
+   S9xUpdateRTC();
+   S9xSRTCPreSaveState();
 
-//   // RAM and VRAM
-//   FreezeBlock(stream, "VRA", Memory.VRAM, 0x10000);
-//   FreezeBlock(stream, "RAM", Memory.RAM, 0x20000);
-//   FreezeBlock(stream, "SRA", Memory.SRAM, 0x20000);
-//   FreezeBlock(stream, "FIL", Memory.FillRAM, 0x8000);
-//   if (Settings.APUEnabled)
-//   {
-//      // APU
-//      FreezeStruct(stream, "APU", &APU, SnapAPU, COUNT(SnapAPU));
-//      FreezeStruct(stream, "ARE", &IAPU.Registers, SnapAPURegisters,
-//                   COUNT(SnapAPURegisters));
-//      FreezeBlock(stream, "ARA", IAPU.RAM, 0x10000);
-//      FreezeStruct(stream, "SOU", &SoundData, SnapSoundData,
-//                   COUNT(SnapSoundData));
-//   }
-//   if (Settings.SA1)
-//   {
-//      SA1.Registers.PC = SA1.PC - SA1.PCBase;
-//      S9xSA1PackStatus();
-//      FreezeStruct(stream, "SA1", &SA1, SnapSA1, COUNT(SnapSA1));
-//      FreezeStruct(stream, "SAR", &SA1.Registers, SnapSA1Registers,
-//                   COUNT(SnapSA1Registers));
-//   }
+   for (i = 0; i < 8; i++)
+   {
+      SoundData.channels[i].previous16[0] = (int16)
+                                              SoundData.channels[i].previous[0];
+      SoundData.channels[i].previous16[1] = (int16)
+                                              SoundData.channels[i].previous[1];
+   }
 
-//   if (Settings.SPC7110)
-//      FreezeStruct(stream, "SP7", &s7r, SnapSPC7110, COUNT(SnapSPC7110));
-//   if (Settings.SPC7110RTC)
-//      FreezeStruct(stream, "RTC", &rtc_f9, SnapS7RTC, COUNT(SnapS7RTC));
+   uint8_t* buffer = data;
+   memcpy(buffer, &CPU, sizeof(CPU));
+   buffer += sizeof(CPU);
+   memcpy(buffer, &ICPU, sizeof(ICPU));
+   buffer += sizeof(ICPU);
+   memcpy(buffer, &PPU, sizeof(PPU));
+   buffer += sizeof(PPU);
+   memcpy(buffer, &DMA, sizeof(DMA));
+   buffer += sizeof(DMA);
+   memcpy(buffer, Memory.VRAM, 0x10000);
+   buffer += 0x10000;
+   memcpy(buffer, Memory.RAM, 0x20000);
+   buffer += 0x20000;
+   memcpy(buffer, Memory.SRAM, 0x20000);
+   buffer += 0x20000;
+   memcpy(buffer, Memory.FillRAM, 0x8000);
+   buffer += 0x8000;
+   memcpy(buffer, &APU, sizeof(APU));
+   buffer += sizeof(APU);
+   memcpy(buffer, &IAPU.Registers, sizeof(IAPU.Registers));
+   buffer += sizeof(IAPU.Registers);
+   memcpy(buffer, IAPU.RAM, 0x10000);
+   buffer += 0x10000;
+
+   SA1.Registers.PC = SA1.PC - SA1.PCBase;
+   S9xSA1PackStatus();
+
+   memcpy(buffer, &SA1, sizeof(SA1));
+   buffer += sizeof(SA1);
+   memcpy(buffer, &s7r, sizeof(s7r));
+   buffer += sizeof(s7r);
+   memcpy(buffer, &rtc_f9, sizeof(rtc_f9));
+   buffer += sizeof(rtc_f9);
 
    return true;
+#else
+   return false;
+#endif
 }
 bool retro_unserialize(const void* data, size_t size)
 {
+#if 0
+   const uint8_t* buffer = data;
+   S9xReset();
+
+   memcpy(&CPU, buffer, sizeof(CPU));
+   buffer += sizeof(CPU);
+   memcpy(&ICPU, buffer, sizeof(ICPU));
+   buffer += sizeof(ICPU);
+   memcpy(&PPU, buffer, sizeof(PPU));
+   buffer += sizeof(PPU);
+   memcpy(&DMA, buffer, sizeof(DMA));
+   buffer += sizeof(DMA);
+   memcpy(Memory.VRAM, buffer, 0x10000);
+   buffer += 0x10000;
+   memcpy(Memory.RAM, buffer, 0x20000);
+   buffer += 0x20000;
+   memcpy(Memory.SRAM, buffer, 0x20000);
+   buffer += 0x20000;
+   memcpy(Memory.FillRAM, buffer, 0x8000);
+   buffer += 0x8000;
+   memcpy(&APU, buffer, sizeof(APU));
+   buffer += sizeof(APU);
+   memcpy(&IAPU.Registers, buffer, sizeof(IAPU.Registers));
+   buffer += sizeof(IAPU.Registers);
+   memcpy(IAPU.RAM, buffer, 0x10000);
+   buffer += 0x10000;
+
+   memcpy(&SA1, buffer, sizeof(SA1));
+   buffer += sizeof(SA1);
+   memcpy(&s7r, buffer, sizeof(s7r));
+   buffer += sizeof(s7r);
+   memcpy(&rtc_f9, buffer, sizeof(rtc_f9));
+   buffer += sizeof(rtc_f9);
+
+   S9xFixCycles();
+
+   S9xFixSA1AfterSnapshotLoad();
+//   FixROMSpeed();
+//   IPPU.ColorsChanged = TRUE;
+//   IPPU.OBJChanged = TRUE;
+//   CPU.InDMA = FALSE;
+//   S9xFixColourBrightness();
+//   IPPU.RenderThisFrame = FALSE;
+
+//   S9xFixSoundAfterSnapshotLoad();
+//   ICPU.ShiftedPB = ICPU.Registers.PB << 16;
+//   ICPU.ShiftedDB = ICPU.Registers.DB << 16;
+//   S9xSetPCBase(ICPU.ShiftedPB + ICPU.Registers.PC);
+//   S9xUnpackStatus();
+////   S9xFixCycles();
+//   S9xReschedule();
+
+   return true;
+#else
    return false;
+#endif
 }
 
 void retro_cheat_reset(void)
