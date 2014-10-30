@@ -548,32 +548,14 @@ void retro_reset(void)
 
 size_t retro_serialize_size(void)
 {
-#if 0
-   size_t s = 0;
-   s += sizeof(CPU);
-   s += sizeof(ICPU);
-   s += sizeof(PPU);
-   s += sizeof(DMA);
-   s += 0x10000;
-   s += 0x20000;
-   s += 0x20000;
-   s += 0x8000;
-   s += sizeof(APU);
-   s += sizeof(IAPU);
-   s += 0x10000;
-   s += sizeof(SA1);
-   s += sizeof(s7r);
-   s += sizeof(rtc_f9);
-
-   return s;
-#else
-   return 0;
-#endif
+   return sizeof(CPU) + sizeof(ICPU) + sizeof(PPU) + sizeof(DMA) +
+          0x10000 + 0x20000 + 0x20000 + 0x8000 + sizeof(APU) +
+          sizeof(IAPU) + 0x10000 + sizeof(SA1) +
+          sizeof(s7r) + sizeof(rtc_f9);
 }
 
 bool retro_serialize(void* data, size_t size)
 {
-#if 0
    int i;
 
    S9xUpdateRTC();
@@ -582,9 +564,9 @@ bool retro_serialize(void* data, size_t size)
    for (i = 0; i < 8; i++)
    {
       SoundData.channels[i].previous16[0] = (int16)
-                                              SoundData.channels[i].previous[0];
+                                            SoundData.channels[i].previous[0];
       SoundData.channels[i].previous16[1] = (int16)
-                                              SoundData.channels[i].previous[1];
+                                            SoundData.channels[i].previous[1];
    }
 
    uint8_t* buffer = data;
@@ -622,15 +604,13 @@ bool retro_serialize(void* data, size_t size)
    buffer += sizeof(rtc_f9);
 
    return true;
-#else
-   return false;
-#endif
 }
 bool retro_unserialize(const void* data, size_t size)
 {
-#if 0
    const uint8_t* buffer = data;
    S9xReset();
+
+   uint8* IAPU_RAM_current = IAPU.RAM;
 
    memcpy(&CPU, buffer, sizeof(CPU));
    buffer += sizeof(CPU);
@@ -652,6 +632,9 @@ bool retro_unserialize(const void* data, size_t size)
    buffer += sizeof(APU);
    memcpy(&IAPU, buffer, sizeof(IAPU));
    buffer += sizeof(IAPU);
+   IAPU.PC = IAPU_RAM_current + (IAPU.PC - IAPU.RAM);
+   IAPU.DirectPage = IAPU_RAM_current + (IAPU.DirectPage - IAPU.RAM);
+   IAPU.RAM = IAPU_RAM_current;
    memcpy(IAPU.RAM, buffer, 0x10000);
    buffer += 0x10000;
 
@@ -662,7 +645,7 @@ bool retro_unserialize(const void* data, size_t size)
    memcpy(&rtc_f9, buffer, sizeof(rtc_f9));
    buffer += sizeof(rtc_f9);
 
-//   S9xFixCycles();
+   //   S9xFixCycles();
 
    S9xFixSA1AfterSnapshotLoad();
    FixROMSpeed();
@@ -670,7 +653,7 @@ bool retro_unserialize(const void* data, size_t size)
    IPPU.OBJChanged = TRUE;
    CPU.InDMA = FALSE;
    S9xFixColourBrightness();
-//   IPPU.RenderThisFrame = FALSE;
+   //   IPPU.RenderThisFrame = FALSE;
 
    S9xAPUUnpackStatus();
    S9xSA1UnpackStatus();
@@ -683,9 +666,6 @@ bool retro_unserialize(const void* data, size_t size)
    S9xReschedule();
 
    return true;
-#else
-   return false;
-#endif
 }
 
 void retro_cheat_reset(void)
