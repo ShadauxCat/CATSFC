@@ -133,29 +133,47 @@ void S9xExtraUsage()
 void S9xDeinitDisplay(void)
 {
 #ifdef DS2_DMA
-   if (GFX.Screen) AlignedFree(GFX.Screen, PtrAdj.GFXScreen);
+   if (GFX.Screen_buffer) AlignedFree(GFX.Screen, PtrAdj.GFXScreen);
 #else
-   if (GFX.Screen) free(GFX.Screen);
+   if (GFX.Screen_buffer) free(GFX.Screen_buffer);
 #endif
-   if (GFX.SubScreen) free(GFX.SubScreen);
-   if (GFX.ZBuffer) free(GFX.ZBuffer);
-   if (GFX.SubZBuffer) free(GFX.SubZBuffer);
+   if (GFX.SubScreen_buffer) free(GFX.SubScreen_buffer);
+   if (GFX.ZBuffer_buffer) free(GFX.ZBuffer_buffer);
+   if (GFX.SubZBuffer_buffer) free(GFX.SubZBuffer_buffer);
+
+   GFX.Screen = NULL;
+   GFX.Screen_buffer = NULL;
+   GFX.SubScreen = NULL;
+   GFX.SubScreen_buffer = NULL;
+   GFX.ZBuffer = NULL;
+   GFX.ZBuffer_buffer = NULL;
+   GFX.SubZBuffer = NULL;
+   GFX.SubZBuffer_buffer = NULL;
+
 }
 
 void S9xInitDisplay(void)
 {
    int h = IMAGE_HEIGHT;
+   const int safety = 32;
 
    GFX.Pitch = IMAGE_WIDTH * 2;
 #ifdef DS2_DMA
-   GFX.Screen = (unsigned char*) AlignedMalloc(GFX.Pitch * h, 32,
+   GFX.Screen_buffer = (unsigned char*) AlignedMalloc(GFX.Pitch * h + safety, 32,
                 &PtrAdj.GFXScreen);
 #else
-   GFX.Screen = (unsigned char*) malloc(GFX.Pitch * h);
+   GFX.Screen_buffer = (unsigned char*) malloc(GFX.Pitch * h + safety);
 #endif
-   GFX.SubScreen = (unsigned char*) malloc(GFX.Pitch * h);
-   GFX.ZBuffer = (unsigned char*) malloc((GFX.Pitch >> 1) * h);
-   GFX.SubZBuffer = (unsigned char*) malloc((GFX.Pitch >> 1) * h);
+   GFX.SubScreen_buffer = (unsigned char*) malloc(GFX.Pitch * h + safety);
+   GFX.ZBuffer_buffer = (unsigned char*) malloc((GFX.Pitch >> 1) * h + safety);
+   GFX.SubZBuffer_buffer = (unsigned char*) malloc((GFX.Pitch >> 1) * h + safety);
+
+   GFX.Screen = GFX.Screen_buffer + safety;
+   GFX.SubScreen = GFX.SubScreen_buffer + safety;
+   GFX.ZBuffer = GFX.ZBuffer_buffer + safety;
+   GFX.SubZBuffer = GFX.SubZBuffer_buffer + safety;
+
+
    GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
 }
 

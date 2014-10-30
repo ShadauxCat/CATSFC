@@ -114,6 +114,11 @@ void S9xSyncSpeed();
 struct SGFX
 {
    // Initialize these variables
+   uint8*  Screen_buffer;
+   uint8*  SubScreen_buffer;
+   uint8*  ZBuffer_buffer;
+   uint8*  SubZBuffer_buffer;
+
    uint8*  Screen;
    uint8*  SubScreen;
    uint8*  ZBuffer;
