@@ -200,6 +200,64 @@ void S9xFixColourBrightness()
    }
 }
 
+static void S9xSetSuperFX(uint8 Byte, uint16 Address)
+{
+   if (!Settings.SuperFX)
+      return;
+
+   switch (Address)
+   {
+      case 0x3030:
+         if ((Memory.FillRAM [0x3030] ^ Byte) & FLG_G)
+         {
+            Memory.FillRAM [Address] = Byte;
+            // Go flag has been changed
+            if (Byte & FLG_G)
+               S9xSuperFXExec();
+            else
+               FxFlushCache();
+         }
+         else
+            Memory.FillRAM [Address] = Byte;
+         break;
+
+      case 0x3031:
+      case 0x3033:
+      case 0x3037:
+      case 0x3039:
+      case 0x303a:
+      case 0x303f:
+         Memory.FillRAM [Address] = Byte;
+         break;
+      case 0x3034:
+      case 0x3036:
+         Memory.FillRAM [Address] = Byte & 0x7f;
+         break;
+      case 0x3038:
+         Memory.FillRAM [Address] = Byte;
+         fx_dirtySCBR();
+         break;
+      case 0x303b:
+         break;
+      case 0x303c:
+         Memory.FillRAM [Address] = Byte;
+         fx_updateRamBank(Byte);
+         break;
+      case 0x301f:
+         Memory.FillRAM [Address] = Byte;
+         Memory.FillRAM [0x3000 + GSU_SFR] |= FLG_G;
+         S9xSuperFXExec();
+         return;
+
+      default:
+         Memory.FillRAM[Address] = Byte;
+         if (Address >= 0x3100)
+            FxCacheWriteAccess(Address);
+         break;
+   }
+   return;
+}
+
 /******************************************************************************/
 /* S9xSetPPU()                                                                */
 /* This function sets a PPU Register to a specific byte                       */
@@ -879,60 +937,9 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
             S9xSetSRTC(Byte, Address);
          else if (Address >= 0x3000 && Address < 0x3300)
          {
-            if (!Settings.SuperFX)
-               return;
-
-            switch (Address)
-            {
-            case 0x3030:
-               if ((Memory.FillRAM [0x3030] ^ Byte) & FLG_G)
-               {
-                  Memory.FillRAM [Address] = Byte;
-                  // Go flag has been changed
-                  if (Byte & FLG_G)
-                     S9xSuperFXExec();
-                  else
-                     FxFlushCache();
-               }
-               else
-                  Memory.FillRAM [Address] = Byte;
-               break;
-
-            case 0x3031:
-            case 0x3033:
-            case 0x3037:
-            case 0x3039:
-            case 0x303a:
-            case 0x303f:
-               Memory.FillRAM [Address] = Byte;
-               break;
-            case 0x3034:
-            case 0x3036:
-               Memory.FillRAM [Address] = Byte & 0x7f;
-               break;
-            case 0x3038:
-               Memory.FillRAM [Address] = Byte;
-               fx_dirtySCBR();
-               break;
-            case 0x303b:
-               break;
-            case 0x303c:
-               Memory.FillRAM [Address] = Byte;
-               fx_updateRamBank(Byte);
-               break;
-            case 0x301f:
-               Memory.FillRAM [Address] = Byte;
-               Memory.FillRAM [0x3000 + GSU_SFR] |= FLG_G;
-               S9xSuperFXExec();
-               return;
-
-            default:
-               Memory.FillRAM[Address] = Byte;
-               if (Address >= 0x3100)
-                  FxCacheWriteAccess(Address);
-               break;
-            }
+            S9xSetSuperFX(Byte, Address);
             return;
+
          }
    }
    Memory.FillRAM[Address] = Byte;
