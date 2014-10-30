@@ -121,12 +121,8 @@
 #include <malloc.h>
 #endif
 
-#ifndef ZSNES_FX
 #include "fxemu.h"
 extern struct FxInit_s SuperFX;
-#else
-extern uint8* SFXPlotTable;
-#endif
 
 #ifndef SET_UI_COLOR
 #define SET_UI_COLOR(r,g,b) ;
@@ -469,15 +465,11 @@ bool8 Init()
    Memory.ROM    = Memory.ROM;
    Memory.SRAM   = Memory.SRAM;
 
-#ifdef ZSNES_FX
-   SFXPlotTable = ROM + 0x400000;
-#else
    SuperFX.pvRegisters = &Memory.FillRAM [0x3000];
    SuperFX.nRamBanks = 2; // Most only use 1.  1=64KB, 2=128KB=1024Mb
    SuperFX.pvRam = Memory.SRAM;
    SuperFX.nRomBanks = (2 * 1024 * 1024) / (32 * 1024);
    SuperFX.pvRom = (uint8*) Memory.ROM;
-#endif
 
    ZeroMemory(IPPU.TileCache [TILE_2BIT], MAX_2BIT_TILES * 128);
    ZeroMemory(IPPU.TileCache [TILE_4BIT], MAX_4BIT_TILES * 128);
@@ -1267,9 +1259,7 @@ uint32 caCRC32(uint8* array, uint32 size, register uint32 crc32)
 
 void InitROM(bool8 Interleaved)
 {
-#ifndef ZSNES_FX
    SuperFX.nRomBanks = Memory.CalculatedSize >> 15;
-#endif
    Settings.MultiPlayer5Master = Settings.MultiPlayer5;
    Settings.MouseMaster = Settings.Mouse;
    Settings.SuperScopeMaster = Settings.SuperScope;

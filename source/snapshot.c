@@ -116,12 +116,6 @@
 
 extern uint8* SRAM;
 
-#ifdef ZSNES_FX
-void S9xSuperFXPreSaveState();
-void S9xSuperFXPostSaveState();
-void S9xSuperFXPostLoadState();
-#endif
-
 bool8 S9xUnfreezeZSNES(const char* filename);
 
 typedef struct
@@ -651,11 +645,6 @@ void S9xFreezeToStream(STREAM stream)
    char buffer [1024];
    int i;
 
-#ifdef ZSNES_FX
-   if (Settings.SuperFX)
-      S9xSuperFXPreSaveState();
-#endif
-
    S9xUpdateRTC();
    S9xSRTCPreSaveState();
 
@@ -705,11 +694,6 @@ void S9xFreezeToStream(STREAM stream)
       FreezeStruct(stream, "SP7", &s7r, SnapSPC7110, COUNT(SnapSPC7110));
    if (Settings.SPC7110RTC)
       FreezeStruct(stream, "RTC", &rtc_f9, SnapS7RTC, COUNT(SnapS7RTC));
-
-#ifdef ZSNES_FX
-   if (Settings.SuperFX)
-      S9xSuperFXPostSaveState();
-#endif
 }
 
 int S9xUnfreezeFromStream(STREAM stream)
@@ -912,11 +896,6 @@ int S9xUnfreezeFromStream(STREAM stream)
       S9xUnpackStatus();
       S9xFixCycles();
       //    S9xReschedule ();          // <-- this causes desync when recording or playing movies
-
-#ifdef ZSNES_FX
-      if (Settings.SuperFX)
-         S9xSuperFXPostLoadState();
-#endif
 
       S9xSRTCPostLoadState();
       if (Settings.SDD1)
@@ -1805,10 +1784,6 @@ bool8 S9xUnfreezeZSNES(const char* filename)
       S9xUnpackStatus();
       S9xFixCycles();
       S9xReschedule();
-#ifdef ZSNES_FX
-      if (Settings.SuperFX)
-         S9xSuperFXPostLoadState();
-#endif
       return (TRUE);
    }
    fclose(fs);

@@ -137,11 +137,7 @@ SSNESGameFixes SNESGameFixes;
 
 uint8 OpenBus = 0;
 
-#ifndef ZSNES_FX
 struct FxInit_s SuperFX;
-#else
-uint8* SFXPlotTable = NULL;
-#endif
 
 SPPU PPU;
 InternalPPU IPPU;

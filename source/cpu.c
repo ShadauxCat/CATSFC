@@ -102,7 +102,6 @@
 #include "obc1.h"
 
 
-#ifndef ZSNES_FX
 #include "fxemu.h"
 
 extern struct FxInit_s SuperFX;
@@ -112,7 +111,6 @@ void S9xResetSuperFX()
    SuperFX.vFlags = 0; //FX_FLAG_ROM_BUFFER;// | FX_FLAG_ADDRESS_CHECKING;
    FxReset(&SuperFX);
 }
-#endif
 
 void S9xResetCPU()
 {
@@ -164,20 +162,11 @@ void S9xResetCPU()
    S9xUnpackStatus();
 }
 
-#ifdef ZSNES_FX
-void S9xResetSuperFX();
-bool8 WinterGold = 0;
-extern uint8* C4Ram;
-#endif
-
 void S9xReset(void)
 {
    if (Settings.SuperFX)
       S9xResetSuperFX();
 
-#ifdef ZSNES_FX
-   WinterGold = Settings.WinterGold;
-#endif
    ZeroMemory(Memory.FillRAM, 0x8000);
    memset(Memory.VRAM, 0x00, 0x10000);
    memset(Memory.RAM, 0x55, 0x20000);
@@ -207,9 +196,6 @@ void S9xSoftReset(void)
    if (Settings.SuperFX)
       S9xResetSuperFX();
 
-#ifdef ZSNES_FX
-   WinterGold = Settings.WinterGold;
-#endif
    ZeroMemory(Memory.FillRAM, 0x8000);
    memset(Memory.VRAM, 0x00, 0x10000);
    //   memset (Memory.RAM, 0x55, 0x20000);

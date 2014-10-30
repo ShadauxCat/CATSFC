@@ -101,14 +101,9 @@
 #include "srtc.h"
 #include "spc7110.h"
 
-#ifndef ZSNES_FX
 #include "fxemu.h"
 #include "fxinst.h"
 extern struct FxInit_s SuperFX;
-#else
-void S9xSuperFXWriteReg(uint8, uint32);
-uint8 S9xSuperFXReadReg(uint32);
-#endif
 
 uint32 justifiers = 0xFFFF00AA;
 uint8 in_bit = 0;
@@ -887,11 +882,6 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
             if (!Settings.SuperFX)
                return;
 
-#ifdef ZSNES_FX
-            Memory.FillRAM [Address] = Byte;
-            if (Address < 0x3040)
-               S9xSuperFXWriteReg(Byte, Address);
-#else
             switch (Address)
             {
             case 0x3030:
@@ -942,7 +932,6 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
                   FxCacheWriteAccess(Address);
                break;
             }
-#endif
             return;
          }
    }
@@ -1375,19 +1364,7 @@ uint8 S9xGetPPU(uint16 Address)
 
       if (!Settings.SuperFX)
          return OpenBus;
-#ifdef ZSNES_FX
-      if (Address < 0x3040)
-         byte = S9xSuperFXReadReg(Address);
-      else
-         byte = Memory.FillRAM [Address];
 
-#ifdef CPU_SHUTDOWN
-      if (Address == 0x3030)
-         CPU.WaitAddress = CPU.PCAtOpcodeStart;
-#endif
-      if (Address == 0x3031)
-         CLEAR_IRQ_SOURCE(GSU_IRQ_SOURCE);
-#else
       byte = Memory.FillRAM [Address];
 
       //if (Address != 0x3030 && Address != 0x3031)
@@ -1403,7 +1380,6 @@ uint8 S9xGetPPU(uint16 Address)
             Memory.FillRAM [0x3031] = byte & 0x7f;
          }
       return (byte);
-#endif
    }
    //    fprintf(stderr, "%03d: %02x from %04x\n", CPU.V_Counter, byte, Address);
    return (byte);
@@ -2793,7 +2769,7 @@ void S9xUpdateJoypads()
 
 }
 
-#ifndef ZSNES_FX
+
 void S9xSuperFXExec()
 {
 #if 1
@@ -2971,7 +2947,6 @@ void S9xSuperFXExec()
       S9xSetIRQ(GSU_IRQ_SOURCE);
 #endif
 }
-#endif
 
 // Register reads and writes...
 
