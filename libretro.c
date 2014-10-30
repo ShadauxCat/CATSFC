@@ -114,7 +114,7 @@ void S9xInitDisplay(void)
    GFX.Pitch = IMAGE_WIDTH * 2;
 #ifdef DS2_DMA
    GFX.Screen_buffer = (unsigned char*) AlignedMalloc(GFX.Pitch * h + safety, 32,
-                &PtrAdj.GFXScreen);
+                       &PtrAdj.GFXScreen);
 #else
    GFX.Screen_buffer = (unsigned char*) malloc(GFX.Pitch * h + safety);
 #endif
@@ -308,7 +308,7 @@ void init_sfc_setting(void)
    Settings.ControllerOption = SNES_JOYPAD;
 
    Settings.Transparency = TRUE;
-   Settings.SupportHiRes = FALSE;
+   Settings.SupportHiRes = TRUE;
    Settings.ThreadSound = FALSE;
    Settings.SoundSync = TRUE;
    Settings.ApplyCheats = TRUE;
@@ -346,29 +346,6 @@ int game_save_state(char* file)
    return flag;
 }
 
-void game_restart(void)
-{
-   CPU.Flags = 0;
-   S9xReset();
-}
-
-int load_gamepak(const char* file)
-{
-   CPU.Flags = 0;
-   // mdelay(50); // Delete this delay
-   if (!LoadROM(file))
-      return -1;
-   S9xReset();
-
-   Settings.FrameTime = (Settings.PAL ? Settings.FrameTimePAL :
-                         Settings.FrameTimeNTSC);
-
-   LoadSRAM(S9xGetFilename(".srm"));
-   S9xLoadCheatFile(
-      S9xGetFilename(".chb"));  // cheat binary file, as opposed to text
-
-   return 0;
-}
 
 void retro_init(void)
 {
@@ -396,6 +373,13 @@ void retro_init(void)
 
 }
 
+void retro_deinit(void)
+{
+   S9xGraphicsDeinit();
+   S9xDeinitDisplay();
+   S9xDeinitAPU();
+   Deinit();
+}
 
 uint32 S9xReadJoypad(int port)
 {
@@ -550,9 +534,6 @@ char* osd_GetPackDir()
    return filename;
 }
 
-void retro_deinit(void)
-{
-}
 unsigned retro_get_region(void)
 {
    return Settings.PAL ? RETRO_REGION_PAL : RETRO_REGION_NTSC;
@@ -585,7 +566,8 @@ void retro_get_system_av_info(struct retro_system_av_info* info)
 
 void retro_reset(void)
 {
-
+   CPU.Flags = 0;
+   S9xReset();
 }
 
 
@@ -615,8 +597,15 @@ void retro_cheat_set(unsigned index, bool enabled, const char* code)
 bool retro_load_game(const struct retro_game_info* game)
 
 {
-   LoadROM(game->path);
-   return true;
+   CPU.Flags = 0;
+   return LoadROM(game->path);
+
+   Settings.FrameTime = (Settings.PAL ? Settings.FrameTimePAL :
+                         Settings.FrameTimeNTSC);
+
+   LoadSRAM(S9xGetFilename(".srm"));
+
+   return 0;
 }
 
 bool retro_load_game_special(unsigned game_type,
