@@ -1275,9 +1275,10 @@ sprite_found:
       if (sprite_type == 1)
       {
          int16 plane;
-         int16 car_left, car_right, car_left_a;
-         int16 focal_back, focal_front;
-         uint8 distance, id;
+         int16 car_left, car_right;
+         // int16 car_left_a;
+         int16 focal_back;
+//         int16 focal_front;
 
          // we already have 4 bytes we want
          DSP4.in_count = 6 + 12;
@@ -1287,12 +1288,9 @@ DSP4_WAIT(3) resume3:
 
          // filter inputs
          project_y1 = DSP4_READ_WORD(0x00);
-         // 0x9000 = DSP4_READ_WORD(0x02);
-         id = DSP4.parameters[0x04];
-         distance = DSP4.parameters[0x05];
          focal_back = DSP4_READ_WORD(0x06);
-         focal_front = DSP4_READ_WORD(0x08);
-         car_left_a = DSP4_READ_WORD(0x0a);
+         // focal_front = DSP4_READ_WORD(0x08);
+         // car_left_a = DSP4_READ_WORD(0x0a);
          car_left = DSP4_READ_WORD(0x0c);
          plane = DSP4_READ_WORD(0x0e);
          car_right = DSP4_READ_WORD(0x10);
@@ -1313,20 +1311,10 @@ DSP4_WAIT(3) resume3:
 
          // debug
          ++block;
-#ifdef PRINT
-         printf("(line %d) Op09 vehicle block %d, Loop %04X\n", c, block,
-                (uint16)project_y1);
-         //printf("%04X %04X %04X %04X / ",focal_back,focal_front,car_left_a,car_left);
-         //printf("%02X %02X ", distance, id);
-#endif
 
          // make the car's x-center available
          DSP4.out_count = 2;
          DSP4_WRITE_WORD(0, project_focalx);
-
-#if 0
-         DSP4_WRITE_WORD(0, -1);
-#endif
 
          // grab a few remaining vehicle values
          DSP4.in_count = 4;
@@ -1342,10 +1330,6 @@ resume4:
 
          // vertical lift factor
          sprite_y += height;
-
-#ifdef PRINT_09
-         printf("%04X\n", sprite_offset);
-#endif
       }
       // terrain sprite
       else if (sprite_type == 2)
@@ -1379,16 +1363,11 @@ DSP4_WAIT(5) resume5:
 
          // debug
          ++block;
-#ifdef PRINT
-         printf("(line %d) Op09 terrain block %d, Loop %04X\n", c, block,
-                (uint16)project_y1);
-#endif
       }
 
       // default sprite size: 16x16
       sprite_size = 1;
 
-      ////////////////////////////////////////////////////
       // convert tile data to OAM
 
       do

@@ -3322,38 +3322,44 @@ static void Op0CM0(void)
     }
 
 #define BranchCheck1()\
-    if( CPU.BranchSkip)\
-    {\
-   CPU.BranchSkip = FALSE;\
-   if (!Settings.SoundSkipMethod) {\
-       if( CPU.PC - CPU.PCBase > OpAddress)\
-           return;\
-   } else \
-   if (Settings.SoundSkipMethod == 1)\
-       return;\
-   if (Settings.SoundSkipMethod == 3)\
-       if( CPU.PC - CPU.PCBase > OpAddress)\
-           return;\
-       else\
-      CPU.PC = CPU.PCBase + OpAddress;\
-    }
+   if( CPU.BranchSkip)\
+   {\
+      CPU.BranchSkip = FALSE;\
+      if (!Settings.SoundSkipMethod) {\
+         if( CPU.PC - CPU.PCBase > OpAddress)\
+         return;\
+      }\
+      else \
+         if (Settings.SoundSkipMethod == 1)\
+         return;\
+      if (Settings.SoundSkipMethod == 3)\
+      {\
+         if( CPU.PC - CPU.PCBase > OpAddress)\
+            return;\
+         else\
+            CPU.PC = CPU.PCBase + OpAddress;\
+      }\
+   }
 
 #define BranchCheck2()\
-    if( CPU.BranchSkip)\
-    {\
-   CPU.BranchSkip = FALSE;\
-   if (!Settings.SoundSkipMethod) {\
-       if( CPU.PC - CPU.PCBase > OpAddress)\
-           return;\
-   } else \
-   if (Settings.SoundSkipMethod == 1)\
-       CPU.PC = CPU.PCBase + OpAddress;\
-   if (Settings.SoundSkipMethod == 3)\
-       if (CPU.PC - CPU.PCBase > OpAddress)\
-           return;\
-       else\
-      CPU.PC = CPU.PCBase + OpAddress;\
-    }
+   if( CPU.BranchSkip)\
+   {\
+      CPU.BranchSkip = FALSE;\
+      if (!Settings.SoundSkipMethod) {\
+          if( CPU.PC - CPU.PCBase > OpAddress)\
+              return;\
+      }\
+      else \
+         if (Settings.SoundSkipMethod == 1)\
+             CPU.PC = CPU.PCBase + OpAddress;\
+      if (Settings.SoundSkipMethod == 3)\
+      {\
+          if (CPU.PC - CPU.PCBase > OpAddress)\
+              return;\
+          else\
+         CPU.PC = CPU.PCBase + OpAddress;\
+      }\
+   }
 #else
 #define BranchCheck0()
 #define BranchCheck1()

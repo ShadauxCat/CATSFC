@@ -1924,17 +1924,17 @@ static void DrawBackgroundMode5(uint32 bg, uint8 Z1, uint8 Z2)
 
 
    int Lines;
-   int VOffsetMask;
+//   int VOffsetMask;
    int VOffsetShift;
 
    if (BG.TileSize == 16)
    {
-      VOffsetMask = 0x3ff;
+//      VOffsetMask = 0x3ff;
       VOffsetShift = 4;
    }
    else
    {
-      VOffsetMask = 0x1ff;
+//      VOffsetMask = 0x1ff;
       VOffsetShift = 3;
    }
    int endy = IPPU.Interlace ? 1 + (GFX.EndY << 1) : GFX.EndY;

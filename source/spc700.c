@@ -231,7 +231,7 @@ APUSetZN8 ((uint8) Int16);
 #else
 #define PushW(w)\
     *(IAPU.RAM + 0xff + IAPU.Registers.S) = w;\
-    *(IAPU.RAM + 0x100 + IAPU.Registers.S) = (w >> 8);\
+    *(IAPU.RAM + 0x100 + IAPU.Registers.S) = ((w) >> 8);\
     IAPU.Registers.S -= 2;
 #define PopW(w)\
     IAPU.Registers.S += 2; \

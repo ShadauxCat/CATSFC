@@ -649,11 +649,7 @@ again:
       S9xMessage(S9X_ERROR, S9X_ROM_CONFUSING_FORMAT_INFO, "Warning! Hacked Dump!");
    }
 
-   int orig_hi_score, orig_lo_score;
    int hi_score, lo_score;
-
-   orig_hi_score = hi_score = ScoreHiROM(FALSE, 0);
-   orig_lo_score = lo_score = ScoreLoROM(FALSE, 0);
 
    if (Memory.HeaderCount == 0 && !Settings.ForceNoHeader &&
          ((hi_score > lo_score && ScoreHiROM(TRUE, 0) > hi_score) ||
@@ -679,8 +675,8 @@ again:
       S9xMessage(S9X_INFO, S9X_HEADER_WARNING,
                  "Try specifying the -nhd command line option if the game doesn't work\n");
       //modifying ROM, so we need to rescore
-      orig_hi_score = hi_score = ScoreHiROM(FALSE, 0);
-      orig_lo_score = lo_score = ScoreLoROM(FALSE, 0);
+      hi_score = ScoreHiROM(FALSE, 0);
+      lo_score = ScoreLoROM(FALSE, 0);
    }
 
    Memory.CalculatedSize = TotalFileSize & ~0x1FFF; // round down to lower 0x2000
@@ -713,8 +709,8 @@ again:
    }
 
    //CalculatedSize is now set, so rescore
-   orig_hi_score = hi_score = ScoreHiROM(FALSE, 0);
-   orig_lo_score = lo_score = ScoreLoROM(FALSE, 0);
+   hi_score = ScoreHiROM(FALSE, 0);
+   lo_score = ScoreLoROM(FALSE, 0);
 
    if (Memory.ExtendedFormat != NOPE)
    {
@@ -3380,13 +3376,13 @@ void JumboLoROMMap(bool8 Interleaved)
    int i;
 
    uint32 OFFSET0 = 0x400000;
-   uint32 OFFSET1 = 0x400000;
+//   uint32 OFFSET1 = 0x400000;
    uint32 OFFSET2 = 0x000000;
 
    if (Interleaved)
    {
       OFFSET0 = 0x000000;
-      OFFSET1 = 0x000000;
+//      OFFSET1 = 0x000000;
       OFFSET2 = Memory.CalculatedSize -
                 0x400000; //changed to work with interleaved DKJM2.
    }

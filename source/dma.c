@@ -261,11 +261,11 @@ void S9xDoDMA(uint8 Channel)
                for (i = 0; i < Memory.SDD1LoggedDataCount; i++, p += 8)
                {
                   if (*p == d->ABank ||
-                        (*(p + 1) == (d->AAddress >> 8)) &&
+                       ((*(p + 1) == (d->AAddress >> 8)) &&
                         (*(p + 2) == (d->AAddress & 0xff)) &&
                         (*(p + 3) == (count >> 8)) &&
                         (*(p + 4) == (count & 0xff)) &&
-                        (*(p + 7) == SDD1Bank))
+                        (*(p + 7) == SDD1Bank)))
                   {
                      found = TRUE;
                      break;
