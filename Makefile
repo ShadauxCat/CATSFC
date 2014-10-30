@@ -1,123 +1,221 @@
-TARGET_NAME   := catsfc
+DEBUG = 0
 
-INCLUDE     := -Isource -Isource/unzip -Isource/nds
-INCLUDE     += -I.
-
+ifeq ($(platform),)
 platform = unix
+ifeq ($(shell uname -a),)
+   platform = win
+else ifneq ($(findstring Darwin,$(shell uname -a)),)
+   platform = osx
+	arch = intel
+ifeq ($(shell uname -p),powerpc)
+	arch = ppc
+endif
+else ifneq ($(findstring MINGW,$(shell uname -a)),)
+   platform = win
+endif
+endif
+
+# system platform
+system_platform = unix
+ifeq ($(shell uname -a),)
+EXE_EXT = .exe
+   system_platform = win
+else ifneq ($(findstring Darwin,$(shell uname -a)),)
+   system_platform = osx
+	arch = intel
+ifeq ($(shell uname -p),powerpc)
+	arch = ppc
+endif
+else ifneq ($(findstring MINGW,$(shell uname -a)),)
+   system_platform = win
+endif
+
+TARGET_NAME := catsfc
+DEFS        :=
+CFLAGS      :=
 
 ifeq ($(platform), unix)
    TARGET := $(TARGET_NAME)_libretro.so
-   fpic   := -fPIC
-   SHARED := -shared -Wl,--version-script=link.T
-   CROSS  :=
+   fpic := -fPIC
+   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
 
-   CFLAGS := -fno-builtin \
+   CFLAGS += -fno-builtin \
             -fno-exceptions -ffunction-sections \
              -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
              -fweb -fpeel-loops
-#             -Wall -Wno-unused-function -Wno-unused-variable
+else ifeq ($(platform), osx)
+   TARGET := $(TARGET_NAME)_libretro.dylib
+   fpic := -fPIC
+   SHARED := -dynamiclib
 
-   DEFS   :=
-else
-   TARGET := $(TARGET_NAME)_libretro_psp1.a
-   CROSS  := psp-
-   CFLAGS := -G0 -march=allegrex -mno-abicalls -fno-pic -fno-builtin \
-            -fno-exceptions -ffunction-sections -mno-long-calls \
-             -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
-             -fweb -fpeel-loops
-#             -Wall -Wno-unused-function -Wno-unused-variable
+ifeq ($(arch),ppc)
+	FLAGS += -DMSB_FIRST
+	OLD_GCC = 1
+endif
+   OSXVER = `sw_vers -productVersion | cut -d. -f 2`
+   OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
+ifeq ($(OSX_LT_MAVERICKS),"YES")
+   fpic += -mmacosx-version-min=10.5
+endif
+else ifeq ($(platform), ios)
+   TARGET := $(TARGET_NAME)_libretro_ios.dylib
+   fpic := -fPIC
+   SHARED := -dynamiclib
 
-#   CFLAGS   += -march=allegrex -mfp32 -mgp32 -mlong32 -mabi=eabi
-#   CFLAGS   += -fomit-frame-pointer -fstrict-aliasing
-#   CFLAGS   += -falign-functions=32 -falign-loops -falign-labels -falign-jumps
-#   CFLAGS   += -Wall -Wundef -Wpointer-arith -Wbad-function-cast -Wwrite-strings -Wsign-compare
-
-   DEFS   :=  -DPSP -D_PSP_FW_VERSION=371
-
-   INCLUDE     += -I$(shell psp-config --pspsdk-path)/include
-#   INCLUDE     += -I$(shell psp-config --psp-prefix)/include
-   STATIC_LINKING := 1
+ifeq ($(IOSSDK),)
+   IOSSDK := $(shell xcrun -sdk iphoneos -show-sdk-path)
 endif
 
-# - - - Tools - - -
-CC           = $(CROSS)gcc
-AR           = $(CROSS)ar
-LD           = $(CROSS)ld
-OBJCOPY      = $(CROSS)objcopy
-NM           = $(CROSS)nm
-OBJDUMP      = $(CROSS)objdump
-
-#C_SOURCES   = libretro.c
-C_SOURCES = source/apu.c source/c4.c \
-              source/c4emu.c source/cheats2.c source/cheats.c \
-              source/clip.c source/cpu.c source/cpuexec.c \
-              source/cpuops.c source/data.c\
-              source/dma.c source/dsp1.c \
-              source/fxdbg.c source/fxemu.c source/fxinst.c \
-              source/gfx.c source/globals.c \
-              source/memmap.c \
-              source/obc1.c source/ppu.c \
-              source/sa1.c source/sa1cpu.c source/screenshot.c \
-              source/sdd1.c source/sdd1emu.c \
-              source/seta010.c source/seta011.c source/seta018.c \
-              source/seta.c source/snaporig.c source/snapshot.c \
-              source/soundux.c \
-              source/spc700.c source/spc7110.c \
-              source/srtc.c \
-              source/tile.c \
-              libretro.c
-
-CPP_SOURCES =
-
-SOURCES      = $(C_SOURCES) $(CPP_SOURCES)
-C_OBJECTS    = $(C_SOURCES:.c=.o)
-CPP_OBJECTS  = $(CPP_SOURCES:.cpp=.o)
-OBJECTS      = $(C_OBJECTS) $(CPP_OBJECTS)
-
-# - - - Compilation flags - - -
+   CC = clang -arch armv7 -isysroot $(IOSSDK)
+   CXX = clang++ -arch armv7 -isysroot $(IOSSDK)
+   OSXVER = `sw_vers -productVersion | cut -d. -f 2`
+   OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
+ifeq ($(OSX_LT_MAVERICKS),"YES")
+   SHARED += -miphoneos-version-min=5.0
+   CC +=  -miphoneos-version-min=5.0
+   CXX +=  -miphoneos-version-min=5.0
+endif
+else ifeq ($(platform), qnx)
+   TARGET := $(TARGET_NAME)_libretro_qnx.so
+   fpic := -fPIC
+   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+	CC = qcc -Vgcc_ntoarmv7le
+	CXX = QCC -Vgcc_ntoarmv7le_cpp
+else ifeq ($(platform), ps3)
+   TARGET := $(TARGET_NAME)_libretro_ps3.a
+   CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
+   CXX = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-g++.exe
+   AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
+   STATIC_LINKING = 1
+	FLAGS += -DMSB_FIRST
+	OLD_GCC = 1
+else ifeq ($(platform), sncps3)
+   TARGET := $(TARGET_NAME)_libretro_ps3.a
+   CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
+   CXX = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
+   AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
+   STATIC_LINKING = 1
+	FLAGS += -DMSB_FIRST
+	NO_GCC = 1
+else ifeq ($(platform), psp1)
+   TARGET := $(TARGET_NAME)_libretro_psp1.a
+	CC = psp-gcc$(EXE_EXT)
+	CXX = psp-g++$(EXE_EXT)
+	AR = psp-ar$(EXE_EXT)
+   STATIC_LINKING = 1
+	FLAGS += -G0 -DLSB_FIRST
+   CFLAGS += -march=allegrex -mno-abicalls -fno-pic -fno-builtin \
+		-fno-exceptions -ffunction-sections -mno-long-calls \
+		-fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
+		-fweb -fpeel-loops
+	DEFS   +=  -DPSP -D_PSP_FW_VERSION=371
+   INCLUDE     += -I$(shell psp-config --pspsdk-path)/include
+   STATIC_LINKING := 1
+else
+   TARGET := $(TARGET_NAME)_libretro.dll
+   CC = gcc
+   CXX = g++
+   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+   LDFLAGS += -static-libgcc -static-libstdc++ -lwinmm
+endif
 
 DEFS   += -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
           -DVAR_CYCLES -DCPU_SHUTDOWN -DSPC700_SHUTDOWN \
           -DNO_INLINE_SET_GET -DNOASM -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t'
 
-ifeq ($(DEBUG), 1)
-OPTIMIZE	      := -O0 -g
-OPTIMIZE_SAFE  := -O0 -g
-else
-OPTIMIZE	      := -O3
-OPTIMIZE_SAFE  := -O2
-endif
-
-
 DEFS  += -D__LIBRETRO__
 
-CFLAGS += $(fpic)
+CATSFC_DIR := libfreedo
+
+CATSFC_SOURCES := source/apu.c source/c4.c \
+	source/c4emu.c \
+	source/cheats2.c \
+	source/cheats.c \
+	source/clip.c \
+	source/cpu.c \
+	source/cpuexec.c \
+	source/cpuops.c \
+	source/data.c\
+	source/dma.c \
+	source/dsp1.c \
+	source/fxdbg.c \
+	source/fxemu.c \
+	source/fxinst.c \
+	source/gfx.c source/globals.c \
+	source/memmap.c \
+	source/obc1.c \
+	source/ppu.c \
+	source/sa1.c \
+	source/sa1cpu.c \
+	source/screenshot.c \
+	source/sdd1.c \
+	source/sdd1emu.c \
+	source/seta010.c \
+	source/seta011.c \
+	source/seta018.c \
+	source/seta.c \
+	source/snaporig.c \
+	source/snapshot.c \
+	source/soundux.c \
+	source/spc700.c source/spc7110.c \
+	source/srtc.c \
+	source/tile.c
+
+
+LIBRETRO_SOURCES := libretro.c
+
+SOURCES_C := $(LIBRETRO_SOURCES) $(CATSFC_SOURCES)
+
+SOURCES_CPP := 
+OBJECTS := $(SOURCES_C:.c=.o)
+#OBJECTS += $(SOURCES_CPP:.cpp=.o)
 
 all: $(TARGET)
+
+ifeq ($(DEBUG),1)
+FLAGS += -O0 -g
+else
+FLAGS += -O3 -DNDEBUG
+endif
+
+LDFLAGS += $(fpic) -lz $(SHARED)
+FLAGS += $(fpic) 
+FLAGS += -Isource -I. 
+
+ifeq ($(OLD_GCC), 1)
+WARNINGS := -Wall
+else ifeq ($(NO_GCC), 1)
+WARNINGS :=
+else
+WARNINGS := -Wall \
+	-Wno-sign-compare \
+	-Wno-unused-variable \
+	-Wno-unused-function \
+	-Wno-uninitialized \
+	-Wno-strict-aliasing \
+	-Wno-overflow \
+	-fno-strict-overflow
+endif
+
+FLAGS += -D__LIBRETRO__ $(WARNINGS)
+
+CXXFLAGS += $(FLAGS)
+CFLAGS += $(FLAGS)
 
 $(TARGET): $(OBJECTS)
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
-	$(CC) $(fpic) $(SHARED) $(INCLUDES) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBM)
+	$(CXX) -o $@ $^ $(LDFLAGS)
 endif
 
+%.o: %.cpp
+	$(CXX) -c -o $@ $< $(CXXFLAGS)
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS)
+
 clean:
-	rm -f $(OBJECTS)
-	rm -f depend
-	rm -f $(TARGET)
-
-.c.o:
-	$(CC) $(OPTIMIZE) $(CFLAGS) $(INCLUDE) $(DEFS) -o $@ -c $<
-.cpp.o:
-	$(CC) $(OPTIMIZE) $(CFLAGS) $(INCLUDE) $(DEFS) -fno-rtti -o $@ -c $<
-
-Makefile: depend
-
-depend: $(SOURCES)
-	$(CC) -MM $(CFLAGS) $(INCLUDE) $(DEFS) $(SOURCES) > $@
-	touch Makefile
+	rm -f $(TARGET) $(OBJECTS)
 
 .PHONY: clean
-
--include depend

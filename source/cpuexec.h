@@ -89,6 +89,16 @@
 
 #ifndef _CPUEXEC_H_
 #define _CPUEXEC_H_
+
+typedef struct
+{
+#ifdef __WIN32__
+   void (__cdecl* S9xOpcode)(void);
+#else
+   void (*S9xOpcode)(void);
+#endif
+} SOpcodes;
+
 #include "ppu.h"
 #include "memmap.h"
 #include "65c816.h"
@@ -101,14 +111,6 @@
     if (CPU.Cycles >= CPU.NextEvent) \
    S9xDoHBlankProcessing_NoSFX ();
 
-typedef struct
-{
-#ifdef __WIN32__
-   void (__cdecl* S9xOpcode)(void);
-#else
-   void (*S9xOpcode)(void);
-#endif
-} SOpcodes;
 
 typedef struct
 {

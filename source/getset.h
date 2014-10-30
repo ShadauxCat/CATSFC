@@ -100,7 +100,7 @@
 
 extern uint8 OpenBus;
 
-uint8 S9xGetByte(uint32 Address)
+static inline uint8 S9xGetByte(uint32 Address)
 {
    int block;
    uint8* GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) &
@@ -183,7 +183,7 @@ uint8 S9xGetByte(uint32 Address)
    }
 }
 
-uint16 S9xGetWord(uint32 Address)
+static inline uint16 S9xGetWord(uint32 Address)
 {
    if ((Address & 0x0fff) == 0x0fff)
    {
@@ -296,7 +296,7 @@ uint16 S9xGetWord(uint32 Address)
    }
 }
 
-void S9xSetByte(uint8 Byte, uint32 Address)
+static inline void S9xSetByte(uint8 Byte, uint32 Address)
 {
 #if defined(CPU_SHUTDOWN)
    CPU.WaitAddress = NULL;
@@ -405,7 +405,7 @@ void S9xSetByte(uint8 Byte, uint32 Address)
    }
 }
 
-void S9xSetWord(uint16 Word, uint32 Address)
+static inline void S9xSetWord(uint16 Word, uint32 Address)
 {
    if ((Address & 0x0FFF) == 0x0FFF)
    {
@@ -557,7 +557,7 @@ void S9xSetWord(uint16 Word, uint32 Address)
    }
 }
 
-uint8* GetBasePointer(uint32 Address)
+static inline uint8* GetBasePointer(uint32 Address)
 {
    uint8* GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
    if (GetAddress >= (uint8*) MAP_LAST)
@@ -609,7 +609,7 @@ uint8* GetBasePointer(uint32 Address)
    }
 }
 
-uint8* S9xGetMemPointer(uint32 Address)
+static inline uint8* S9xGetMemPointer(uint32 Address)
 {
    uint8* GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
    if (GetAddress >= (uint8*) MAP_LAST)
@@ -654,7 +654,7 @@ uint8* S9xGetMemPointer(uint32 Address)
    }
 }
 
-void S9xSetPCBase(uint32 Address)
+static inline void S9xSetPCBase(uint32 Address)
 {
    int block;
    uint8* GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) &
@@ -716,5 +716,5 @@ void S9xSetPCBase(uint32 Address)
       return;
    }
 }
-#endif
 
+#endif
