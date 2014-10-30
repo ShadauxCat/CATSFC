@@ -467,6 +467,9 @@ static void WRITE_4PIXELS16_ADD(int32 Offset, uint8* Pixels,
                                 uint16* ScreenColors)
 {
    uint8  Pixel, N;
+   if (Offset < 0)
+      Offset = 0;
+
    uint16* Screen = (uint16*) GFX.S + Offset;
    uint8*  Depth = GFX.ZBuffer + Offset;
    uint8*  SubDepth = GFX.SubZBuffer + Offset;
@@ -496,6 +499,9 @@ static void WRITE_4PIXELS16_FLIPPED_ADD(int32 Offset, uint8* Pixels,
                                         uint16* ScreenColors)
 {
    uint8  Pixel, N;
+   if (Offset < 0)
+      Offset = 0;
+
    uint16* Screen = (uint16*) GFX.S + Offset;
    uint8*  Depth = GFX.ZBuffer + Offset;
    uint8*  SubDepth = GFX.SubZBuffer + Offset;
