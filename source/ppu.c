@@ -2299,7 +2299,7 @@ static void CommonPPUReset()
    PPU.OBJAddition = FALSE;
    PPU.OAMReadFlip = 0;
    PPU.BGnxOFSbyte = 0;
-   ZeroMemory(PPU.OAMData, 512 + 32);
+   memset(PPU.OAMData, 0, 512 + 32);
 
    PPU.VTimerEnabled = FALSE;
    PPU.HTimerEnabled = FALSE;
@@ -2332,9 +2332,9 @@ static void CommonPPUReset()
    IPPU.DisplayedRenderedFrameCount = 0;
    IPPU.SkippedFrames = 0;
    IPPU.FrameSkip = 0;
-   ZeroMemory(IPPU.TileCached [TILE_2BIT], MAX_2BIT_TILES);
-   ZeroMemory(IPPU.TileCached [TILE_4BIT], MAX_4BIT_TILES);
-   ZeroMemory(IPPU.TileCached [TILE_8BIT], MAX_8BIT_TILES);
+   memset(IPPU.TileCached [TILE_2BIT], 0, MAX_2BIT_TILES);
+   memset(IPPU.TileCached [TILE_4BIT], 0, MAX_4BIT_TILES);
+   memset(IPPU.TileCached [TILE_8BIT], 0, MAX_8BIT_TILES);
 #ifdef CORRECT_VRAM_READS
    IPPU.VRAMReadBuffer = 0; // XXX: FIXME: anything better?
 #else
@@ -2397,11 +2397,11 @@ void S9xResetPPU()
       }
    }
 
-   ZeroMemory(&Memory.FillRAM [0x2100], 0x100);
-   ZeroMemory(&Memory.FillRAM [0x4200], 0x100);
-   ZeroMemory(&Memory.FillRAM [0x4000], 0x100);
+   memset(&Memory.FillRAM [0x2100], 0, 0x100);
+   memset(&Memory.FillRAM [0x4200], 0, 0x100);
+   memset(&Memory.FillRAM [0x4000], 0, 0x100);
    // For BS Suttehakkun 2...
-   ZeroMemory(&Memory.FillRAM [0x1000], 0x1000);
+   memset(&Memory.FillRAM [0x1000], 0, 0x1000);
 
    Memory.FillRAM[0x4201] = Memory.FillRAM[0x4213] = 0xFF;
 }
@@ -2424,11 +2424,11 @@ void S9xSoftResetPPU()
    for (c = 0; c < 0x8000; c += 0x100)
       memset(&Memory.FillRAM [c], c >> 8, 0x100);
 
-   ZeroMemory(&Memory.FillRAM [0x2100], 0x100);
-   ZeroMemory(&Memory.FillRAM [0x4200], 0x100);
-   ZeroMemory(&Memory.FillRAM [0x4000], 0x100);
+   memset(&Memory.FillRAM [0x2100], 0, 0x100);
+   memset(&Memory.FillRAM [0x4200], 0, 0x100);
+   memset(&Memory.FillRAM [0x4000], 0, 0x100);
    // For BS Suttehakkun 2...
-   ZeroMemory(&Memory.FillRAM [0x1000], 0x1000);
+   memset(&Memory.FillRAM [0x1000], 0, 0x1000);
 
    Memory.FillRAM[0x4201] = Memory.FillRAM[0x4213] = 0xFF;
 }

@@ -167,7 +167,7 @@ void S9xReset(void)
    if (Settings.SuperFX)
       S9xResetSuperFX();
 
-   ZeroMemory(Memory.FillRAM, 0x8000);
+   memset(Memory.FillRAM, 0, 0x8000);
    memset(Memory.VRAM, 0x00, 0x10000);
    memset(Memory.RAM, 0x55, 0x20000);
 
@@ -196,7 +196,7 @@ void S9xSoftReset(void)
    if (Settings.SuperFX)
       S9xResetSuperFX();
 
-   ZeroMemory(Memory.FillRAM, 0x8000);
+   memset(Memory.FillRAM, 0, 0x8000);
    memset(Memory.VRAM, 0x00, 0x10000);
    //   memset (Memory.RAM, 0x55, 0x20000);
 
