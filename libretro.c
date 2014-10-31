@@ -682,14 +682,14 @@ bool retro_load_game(const struct retro_game_info* game)
 
 {
    CPU.Flags = 0;
-   return LoadROM(game->path);
+
+   if (!LoadROM(game->path))
+      return false;
 
    Settings.FrameTime = (Settings.PAL ? Settings.FrameTimePAL :
                          Settings.FrameTimeNTSC);
 
-   LoadSRAM(S9xGetFilename(".srm"));
-
-   return 0;
+   return LoadSRAM(S9xGetFilename(".srm"));
 }
 
 bool retro_load_game_special(unsigned game_type,
