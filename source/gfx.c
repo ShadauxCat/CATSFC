@@ -2579,7 +2579,7 @@ static void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 }
 
 #define RENDER_BACKGROUND_MODE7(TYPE,FUNC) \
-    uint16 *ScreenColors; \
+    uint16 *ScreenColors = IPPU.ScreenColors; \
     CHECK_SOUND(); \
 \
     uint8 *VRAM1 = Memory.VRAM + 1; \
@@ -2589,8 +2589,6 @@ static void DrawBackground(uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
        S9xBuildDirectColourMaps (); \
    ScreenColors = DirectColourMaps [0]; \
     } \
-    else \
-   ScreenColors = IPPU.ScreenColors; \
 \
     int aa, cc; \
     int dir; \
