@@ -710,7 +710,6 @@ void S9xEndScreenRefresh()
 
       GFX.Pitch = GFX.Pitch2 = GFX.RealPitch;
       GFX.PPL = GFX.PPLx2 >> 1;
-      S9xDeinitUpdate(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
    }
 
    S9xApplyCheats();

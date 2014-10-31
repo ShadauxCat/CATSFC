@@ -12,7 +12,13 @@
 #include "spc7110.h"
 #include "srtc.h"
 
+#ifdef PSP
+#include <pspkernel.h>
+#include <pspgu.h>
+#endif
+
 #include <libretro.h>
+
 
 static retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t video_cb = NULL;
@@ -178,43 +184,6 @@ bool8 S9xInitUpdate()
 
    return (TRUE);
 }
-
-#ifdef PSP
-#include <pspkernel.h>
-#include <pspgu.h>
-void S9xDeinitUpdate(int width, int height)
-{
-   static unsigned int __attribute__((aligned(16))) d_list[32];
-   void* const texture_vram_p = (void*)(0x44200000 - (512 *
-                                        512)); // max VRAM address - frame size
-
-   sceKernelDcacheWritebackRange(GFX.Screen, GFX.Pitch * height);
-
-   sceGuStart(GU_DIRECT, d_list);
-
-   sceGuCopyImage(GU_PSM_4444, 0, 0, width, height, GFX.Pitch >> 1, GFX.Screen, 0,
-                  0,
-                  512, texture_vram_p);
-
-   sceGuTexSync();
-   sceGuTexImage(0, 512, 512, 512, texture_vram_p);
-   sceGuTexMode(GU_PSM_5551, 0, 0, GU_FALSE);
-   sceGuTexFunc(GU_TFX_REPLACE, GU_TCC_RGB);
-   sceGuDisable(GU_BLEND);
-
-   sceGuFinish();
-
-
-   video_cb(texture_vram_p, width, height, GFX.Pitch);
-}
-
-#else
-void S9xDeinitUpdate(int width, int height)
-{
-   video_cb(GFX.Screen, width, height, GFX.Pitch);
-}
-
-#endif
 
 void _makepath(char* path, const char* drive, const char* dir,
                const char* fname, const char* ext)
@@ -425,6 +394,32 @@ void retro_run(void)
    S9xMixSamples((uint8*)audio_buf, 534 << 1);
    audio_batch_cb(audio_buf, 534);
 
+#ifdef PSP
+   static unsigned int __attribute__((aligned(16))) d_list[32];
+   void* const texture_vram_p = (void*)(0x44200000 - (512 *
+                                        512)); // max VRAM address - frame size
+
+   sceKernelDcacheWritebackRange(GFX.Screen, GFX.Pitch * IPPU.RenderedScreenHeight);
+
+   sceGuStart(GU_DIRECT, d_list);
+
+   sceGuCopyImage(GU_PSM_4444, 0, 0, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX.Pitch >> 1, GFX.Screen, 0,
+                  0,
+                  512, texture_vram_p);
+
+   sceGuTexSync();
+   sceGuTexImage(0, 512, 512, 512, texture_vram_p);
+   sceGuTexMode(GU_PSM_5551, 0, 0, GU_FALSE);
+   sceGuTexFunc(GU_TFX_REPLACE, GU_TCC_RGB);
+   sceGuDisable(GU_BLEND);
+
+   sceGuFinish();
+
+
+   video_cb(texture_vram_p, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX.Pitch);
+#else
+   video_cb(GFX.Screen, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX.Pitch);
+#endif
 
 #ifdef FRAMESKIP
    if (IPPU.RenderThisFrame)

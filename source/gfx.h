@@ -108,7 +108,6 @@ extern struct SGFX GFX;
 bool8 S9xGraphicsInit();
 void S9xGraphicsDeinit();
 bool8 S9xInitUpdate(void);
-void S9xDeinitUpdate(int width, int height);
 #if 0
 void S9xSyncSpeed();
 #else
