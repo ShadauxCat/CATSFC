@@ -706,7 +706,9 @@ bool retro_load_game(const struct retro_game_info* game)
    Settings.FrameTime = (Settings.PAL ? Settings.FrameTimePAL :
                          Settings.FrameTimeNTSC);
 
-   return LoadSRAM(S9xGetFilename(".srm"));
+   LoadSRAM(S9xGetFilename(".srm"));
+
+   return true;
 }
 
 bool retro_load_game_special(unsigned game_type,
