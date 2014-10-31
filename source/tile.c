@@ -910,10 +910,9 @@ static void WRITE_4PIXELS16_ADDF1_2(int32 Offset, uint8* Pixels,
    {
       if (GFX.Z1 > Depth [N] && (Pixel = Pixels[N]))
       {
+         Screen [N] = ScreenColors [Pixel];
          if (SubDepth [N] == 1)
             Screen [N] = (uint16)(COLOR_ADD1_2(ScreenColors [Pixel], GFX.FixedColour));
-         else
-            Screen [N] = ScreenColors [Pixel];
          Depth [N] = GFX.Z2;
       }
    }
@@ -931,10 +930,9 @@ static void WRITE_4PIXELS16_FLIPPED_ADDF1_2(int32 Offset, uint8* Pixels,
    {
       if (GFX.Z1 > Depth [N] && (Pixel = Pixels[3 - N]))
       {
+         Screen [N] = ScreenColors [Pixel];
          if (SubDepth [N] == 1)
             Screen [N] = (uint16)(COLOR_ADD1_2(ScreenColors [Pixel], GFX.FixedColour));
-         else
-            Screen [N] = ScreenColors [Pixel];
          Depth [N] = GFX.Z2;
       }
    }
@@ -952,10 +950,9 @@ static void WRITE_4PIXELS16_SUBF1_2(int32 Offset, uint8* Pixels,
    {
       if (GFX.Z1 > Depth [N] && (Pixel = Pixels[N]))
       {
+         Screen [N] = ScreenColors [Pixel];
          if (SubDepth [N] == 1)
             Screen [N] = (uint16) COLOR_SUB1_2(ScreenColors [Pixel], GFX.FixedColour);
-         else
-            Screen [N] = ScreenColors [Pixel];
          Depth [N] = GFX.Z2;
       }
    }
@@ -973,10 +970,9 @@ static void WRITE_4PIXELS16_FLIPPED_SUBF1_2(int32 Offset, uint8* Pixels,
    {
       if (GFX.Z1 > Depth [N] && (Pixel = Pixels[3 - N]))
       {
+         Screen [N] = ScreenColors [Pixel];
          if (SubDepth [N] == 1)
             Screen [N] = (uint16) COLOR_SUB1_2(ScreenColors [Pixel], GFX.FixedColour);
-         else
-            Screen [N] = ScreenColors [Pixel];
          Depth [N] = GFX.Z2;
       }
    }
