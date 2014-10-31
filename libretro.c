@@ -20,9 +20,24 @@ static retro_input_poll_t poll_cb = NULL;
 static retro_input_state_t input_cb = NULL;
 static retro_audio_sample_batch_t audio_batch_cb = NULL;
 static retro_environment_t environ_cb = NULL;
-
-
 struct retro_perf_callback perf_cb;
+
+#ifdef PERF_TEST
+#define RETRO_PERFORMANCE_INIT(name) \
+   retro_perf_tick_t current_ticks;\
+   static struct retro_perf_counter name = {#name};\
+   if (!name.registered) perf_cb.perf_register(&(name));\
+   current_ticks = name.total
+
+#define RETRO_PERFORMANCE_START(name) perf_cb.perf_start(&(name))
+#define RETRO_PERFORMANCE_STOP(name) \
+   perf_cb.perf_stop(&(name));\
+   current_ticks = name.total - current_ticks;
+#else
+#define RETRO_PERFORMANCE_INIT(name)
+#define RETRO_PERFORMANCE_START(name)
+#define RETRO_PERFORMANCE_STOP(name)
+#endif
 
 void retro_set_environment(retro_environment_t cb)
 {
@@ -354,6 +369,10 @@ void retro_deinit(void)
    S9xDeinitDisplay();
    S9xDeinitAPU();
    Deinit();
+
+#ifdef PERF_TEST
+   perf_cb.perf_log();
+#endif
 }
 
 uint32 S9xReadJoypad(int port)
@@ -397,7 +416,10 @@ void retro_run(void)
    S9xSetPlaybackRate(32040);
    SoundData.echo_enable = FALSE;
 
+   RETRO_PERFORMANCE_INIT(S9xMainLoop_func);
+   RETRO_PERFORMANCE_START(S9xMainLoop_func);
    S9xMainLoop();
+   RETRO_PERFORMANCE_STOP(S9xMainLoop_func);
 
    static int16_t audio_buf[534 << 1];
    S9xMixSamples((uint8*)audio_buf, 534 << 1);

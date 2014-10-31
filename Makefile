@@ -1,4 +1,5 @@
-DEBUG = 0
+DEBUG     = 0
+PERF_TEST = 1
 
 ifeq ($(platform),)
 platform = unix
@@ -173,6 +174,10 @@ ifeq ($(DEBUG),1)
 FLAGS += -O0 -g
 else
 FLAGS += -O3 -DNDEBUG
+endif
+
+ifeq ($(PERF_TEST),1)
+FLAGS += -DPERF_TEST
 endif
 
 LDFLAGS += $(fpic) -lz $(SHARED)
