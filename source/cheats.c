@@ -213,7 +213,7 @@ void S9xStartCheatSearch(SCheatData* d)
 #define TEST_BIT(a,v) \
 ((a)[(v) >> 5] & (1 << ((v) & 31)))
 
-#define _C(c,a,b) \
+#define CHEATS_C(c,a,b) \
 ((c) == S9X_LESS_THAN ? (a) < (b) : \
  (c) == S9X_GREATER_THAN ? (a) > (b) : \
  (c) == S9X_LESS_THAN_OR_EQUAL ? (a) <= (b) : \
@@ -261,7 +261,7 @@ void S9xSearchForChange(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x20000 - l; i++)
       {
          if (TEST_BIT(d->WRAM_BITS, i) &&
-               _C(cmp, _DS(size, d->RAM, i), _DS(size, d->CWRAM, i)))
+               CHEATS_C(cmp, _DS(size, d->RAM, i), _DS(size, d->CWRAM, i)))
          {
             if (update)
                d->CWRAM [i] = d->RAM [i];
@@ -273,7 +273,7 @@ void S9xSearchForChange(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x10000 - l; i++)
       {
          if (TEST_BIT(d->SRAM_BITS, i) &&
-               _C(cmp, _DS(size, d->SRAM, i), _DS(size, d->CSRAM, i)))
+               CHEATS_C(cmp, _DS(size, d->SRAM, i), _DS(size, d->CSRAM, i)))
          {
             if (update)
                d->CSRAM [i] = d->SRAM [i];
@@ -285,7 +285,7 @@ void S9xSearchForChange(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x2000 - l; i++)
       {
          if (TEST_BIT(d->IRAM_BITS, i) &&
-               _C(cmp, _DS(size, d->FillRAM + 0x3000, i), _DS(size, d->CIRAM, i)))
+               CHEATS_C(cmp, _DS(size, d->FillRAM + 0x3000, i), _DS(size, d->CIRAM, i)))
          {
             if (update)
                d->CIRAM [i] = d->FillRAM [i + 0x3000];
@@ -299,7 +299,7 @@ void S9xSearchForChange(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x20000 - l; i++)
       {
          if (TEST_BIT(d->WRAM_BITS, i) &&
-               _C(cmp, _D(size, d->RAM, i), _D(size, d->CWRAM, i)))
+               CHEATS_C(cmp, _D(size, d->RAM, i), _D(size, d->CWRAM, i)))
          {
             if (update)
                d->CWRAM [i] = d->RAM [i];
@@ -311,7 +311,7 @@ void S9xSearchForChange(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x10000 - l; i++)
       {
          if (TEST_BIT(d->SRAM_BITS, i) &&
-               _C(cmp, _D(size, d->SRAM, i), _D(size, d->CSRAM, i)))
+               CHEATS_C(cmp, _D(size, d->SRAM, i), _D(size, d->CSRAM, i)))
          {
             if (update)
                d->CSRAM [i] = d->SRAM [i];
@@ -323,7 +323,7 @@ void S9xSearchForChange(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x2000 - l; i++)
       {
          if (TEST_BIT(d->IRAM_BITS, i) &&
-               _C(cmp, _D(size, d->FillRAM + 0x3000, i), _D(size, d->CIRAM, i)))
+               CHEATS_C(cmp, _D(size, d->FillRAM + 0x3000, i), _D(size, d->CIRAM, i)))
          {
             if (update)
                d->CIRAM [i] = d->FillRAM [i + 0x3000];
@@ -364,7 +364,7 @@ void S9xSearchForValue(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x20000 - l; i++)
       {
          if (TEST_BIT(d->WRAM_BITS, i) &&
-               _C(cmp, _DS(size, d->RAM, i), (int32) value))
+               CHEATS_C(cmp, _DS(size, d->RAM, i), (int32) value))
          {
             if (update)
                d->CWRAM [i] = d->RAM [i];
@@ -376,7 +376,7 @@ void S9xSearchForValue(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x10000 - l; i++)
       {
          if (TEST_BIT(d->SRAM_BITS, i) &&
-               _C(cmp, _DS(size, d->SRAM, i), (int32) value))
+               CHEATS_C(cmp, _DS(size, d->SRAM, i), (int32) value))
          {
             if (update)
                d->CSRAM [i] = d->SRAM [i];
@@ -388,7 +388,7 @@ void S9xSearchForValue(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x2000 - l; i++)
       {
          if (TEST_BIT(d->IRAM_BITS, i) &&
-               _C(cmp, _DS(size, d->FillRAM + 0x3000, i), (int32) value))
+               CHEATS_C(cmp, _DS(size, d->FillRAM + 0x3000, i), (int32) value))
          {
             if (update)
                d->CIRAM [i] = d->FillRAM [i + 0x3000];
@@ -402,7 +402,7 @@ void S9xSearchForValue(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x20000 - l; i++)
       {
          if (TEST_BIT(d->WRAM_BITS, i) &&
-               _C(cmp, _D(size, d->RAM, i), value))
+               CHEATS_C(cmp, _D(size, d->RAM, i), value))
          {
             if (update)
                d->CWRAM [i] = d->RAM [i];
@@ -414,7 +414,7 @@ void S9xSearchForValue(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x10000 - l; i++)
       {
          if (TEST_BIT(d->SRAM_BITS, i) &&
-               _C(cmp, _D(size, d->SRAM, i), value))
+               CHEATS_C(cmp, _D(size, d->SRAM, i), value))
          {
             if (update)
                d->CSRAM [i] = d->SRAM [i];
@@ -426,7 +426,7 @@ void S9xSearchForValue(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x2000 - l; i++)
       {
          if (TEST_BIT(d->IRAM_BITS, i) &&
-               _C(cmp, _D(size, d->FillRAM + 0x3000, i), value))
+               CHEATS_C(cmp, _D(size, d->FillRAM + 0x3000, i), value))
          {
             if (update)
                d->CIRAM [i] = d->FillRAM [i + 0x3000];

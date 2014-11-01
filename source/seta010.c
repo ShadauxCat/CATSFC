@@ -442,9 +442,10 @@ void S9xSetST010(uint32 Address, uint8 Byte)
       //
       case 0x02:
       {
-#ifdef FAST_LSB_WORD_ACCESS
-         ST010_SortDrivers(*(short*)&SRAM[0x0024], (uint16*)(SRAM + 0x0040),
-                           (uint16*)(SRAM + 0x0080));
+#if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
+         /* TODO - FIXME */
+         ST010_SortDrivers(*(short*)&Memory.SRAM[0x0024], (uint16*)(Memory.SRAM + 0x0040),
+                           (uint16*)(Memory.SRAM + 0x0080));
 #else
          uint16 Places[32];
          uint16 Positions = ST010_WORD(0x0024);
@@ -485,10 +486,11 @@ void S9xSetST010(uint32 Address, uint8 Byte)
       //
       case 0x03:
       {
-#ifdef FAST_LSB_WORD_ACCESS
+#if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
+         /* TODO - FIXME */
          ST010_Scale(*(short*)&Memory.SRAM[0x0004], *(short*)&Memory.SRAM[0x0000],
                      *(short*)&Memory.SRAM[0x0002],
-                     (int &) Memory.SRAM[0x0010], (int &) Memory.SRAM[0x0014]);
+                     (int &)Memory.SRAM[0x0010], (int&)Memory.SRAM[0x0014]);
 #else
          int x1, y1;
 
@@ -517,7 +519,8 @@ void S9xSetST010(uint32 Address, uint8 Byte)
       //
       case 0x06:
       {
-#ifdef FAST_LSB_WORD_ACCESS
+#if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
+         /* TODO - FIXME */
          ST010_Multiply(*(short*)&Memory.SRAM[0x0000], *(short*)&Memory.SRAM[0x0002],
                         (int &) Memory.SRAM[0x0010]);
 #else
@@ -593,7 +596,8 @@ void S9xSetST010(uint32 Address, uint8 Byte)
       //
       case 0x08:
       {
-#ifdef FAST_LSB_WORD_ACCESS
+#if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
+         /* TODO - FIXME */
          ST010_Rotate(*(short*)&Memory.SRAM[0x0004], *(short*)&Memory.SRAM[0x0000],
                       *(short*)&Memory.SRAM[0x0002],
                       (short &) Memory.SRAM[0x0010], (short &) Memory.SRAM[0x0012]);
@@ -622,7 +626,8 @@ void S9xSetST010(uint32 Address, uint8 Byte)
          Memory.SRAM[0x0006] = Memory.SRAM[0x0002];
          Memory.SRAM[0x0007] = Memory.SRAM[0x0003];
 
-#ifdef FAST_LSB_WORD_ACCESS
+#if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
+         /* TODO - FIXME */
          ST010_OP01(*(short*)&Memory.SRAM[0x0000], *(short*)&Memory.SRAM[0x0002],
                     (short*) &Memory.SRAM[0x0000], (short*) &Memory.SRAM[0x0002],
                     (short*) &Memory.SRAM[0x0004], (short*) &Memory.SRAM[0x0010]);
@@ -647,7 +652,8 @@ void S9xSetST010(uint32 Address, uint8 Byte)
       case 0x04:
       {
          int16 square, x, y;
-#ifdef FAST_LSB_WORD_ACCESS
+#if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
+         /* TODO - FIXME */
          x = *((int16*)Memory.SRAM);
          y = *((int16*)&Memory.SRAM[2]);
 #else
@@ -657,7 +663,8 @@ void S9xSetST010(uint32 Address, uint8 Byte)
          square = (int16)sqrt((double)(y * y + x * x));
          //SETA_Distance( x,y,square );
 
-#ifdef FAST_LSB_WORD_ACCESS
+#if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
+         /* TODO - FIXME */
          *((int16*)&Memory.SRAM[0x10]) = square;
 #else
          Memory.SRAM[0x10] = (uint8)(square);

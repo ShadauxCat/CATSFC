@@ -127,53 +127,13 @@ DEFS   += -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
 
 DEFS  += -D__LIBRETRO__
 
-CATSFC_DIR := libfreedo
+CORE_DIR     := ./source
+LIBRETRO_DIR := .
 
-ifeq ($(HAVE_GRIFFIN), 1)
-CATSFC_SOURCES := source/catsfc_griffin.c
-CATSFC_SOURCES += source/sa1.c source/sa1cpu.c
-LIBRETRO_SOURCES := 
-else
-CATSFC_SOURCES := source/apu.c source/c4.c \
-	source/c4emu.c \
-	source/cheats2.c \
-	source/cheats.c \
-	source/clip.c \
-	source/cpu.c \
-	source/cpuexec.c \
-	source/cpuops.c \
-	source/data.c\
-	source/dma.c \
-	source/dsp1.c \
-	source/fxdbg.c \
-	source/fxemu.c \
-	source/fxinst.c \
-	source/gfx.c source/globals.c \
-	source/memmap.c \
-	source/obc1.c \
-	source/ppu.c \
-	source/sa1.c \
-	source/sa1cpu.c \
-	source/sdd1.c \
-	source/sdd1emu.c \
-	source/seta010.c \
-	source/seta011.c \
-	source/seta018.c \
-	source/seta.c \
-	source/soundux.c \
-	source/spc700.c source/spc7110.c \
-	source/srtc.c \
-	source/tile.c
-LIBRETRO_SOURCES := libretro.c
-endif
+include Makefile.common
 
 
-
-SOURCES_C := $(LIBRETRO_SOURCES) $(CATSFC_SOURCES)
-
-SOURCES_CPP := 
 OBJECTS := $(SOURCES_C:.c=.o)
-#OBJECTS += $(SOURCES_CPP:.cpp=.o)
 
 all: $(TARGET)
 
@@ -189,7 +149,8 @@ endif
 
 LDFLAGS += $(fpic) -lz $(SHARED)
 FLAGS += $(fpic) 
-FLAGS += -Isource -I. 
+FLAGS += $(INCFLAGS)
+
 
 ifeq ($(OLD_GCC), 1)
 WARNINGS := -Wall

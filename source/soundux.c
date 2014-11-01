@@ -510,7 +510,7 @@ void AltDecodeBlock(Channel* ch)
    if ((ch->last_block = filter & 1))
       ch->loop = (filter & 2) != 0;
 
-#if (defined (USE_X86_ASM) && (defined (__i386__) || defined (__i486__) ||\
+#if !defined(ANDROID) && (defined (USE_X86_ASM) && (defined (__i386__) || defined (__i486__) ||\
                defined (__i586__) || defined (__WIN32__) || defined (__DJGPP)))
    int16* raw = ch->block = ch->decoded;
 
