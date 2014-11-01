@@ -103,7 +103,7 @@ void S9xAPUSetByte(uint8, uint32 address);
 
 #else
 #undef INLINE
-#define INLINE inline
+#define INLINE static inline
 #include "apumem.h"
 #endif
 

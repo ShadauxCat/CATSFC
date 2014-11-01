@@ -11,6 +11,7 @@
 #include "cpuexec.h"
 #include "spc7110.h"
 #include "srtc.h"
+#include "sa1.h"
 
 #ifdef PSP
 #include <pspkernel.h>
@@ -382,6 +383,9 @@ void retro_run(void)
 {
    int i, port;
 
+//   video_cb(NULL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX.Pitch);
+//   IPPU.RenderThisFrame = false;
+
    poll_cb();
 
    RETRO_PERFORMANCE_INIT(S9xMainLoop_func);
@@ -399,6 +403,8 @@ void retro_run(void)
       audio_batch_cb(audio_buf, (int)samples_to_play);
       samples_to_play -= (int)samples_to_play;
    }
+
+//   return;
 
 #ifdef FRAMESKIP
    if (IPPU.RenderThisFrame)

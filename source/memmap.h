@@ -268,7 +268,7 @@ uint8* GetBasePointer(uint32 Address);
 extern uint8 OpenBus;
 
 #else
-#define INLINE inline
+#define INLINE static inline
 #include "getset.h"
 #endif // NO_INLINE_SET_GET
 
