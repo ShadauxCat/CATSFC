@@ -377,14 +377,18 @@ uint32 S9xReadJoypad(int port)
    return joypad;
 }
 
+
 //#define FRAMESKIP
+//#define NO_VIDEO_OUTPUT
 static float samples_to_play = 0.0;
 void retro_run(void)
 {
    int i, port;
 
-//   video_cb(NULL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX.Pitch);
-//   IPPU.RenderThisFrame = false;
+#ifdef NO_VIDEO_OUTPUT
+   video_cb(NULL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX.Pitch);
+   IPPU.RenderThisFrame = false;
+#endif
 
    poll_cb();
 
@@ -404,7 +408,9 @@ void retro_run(void)
       samples_to_play -= (int)samples_to_play;
    }
 
-//   return;
+#ifdef  NO_VIDEO_OUTPUT
+   return;
+#endif
 
 #ifdef FRAMESKIP
    if (IPPU.RenderThisFrame)
@@ -416,11 +422,13 @@ void retro_run(void)
       void* const texture_vram_p = (void*)(0x44200000 - (512 *
                                            512)); // max VRAM address - frame size
 
-      sceKernelDcacheWritebackRange(GFX.Screen, GFX.Pitch * IPPU.RenderedScreenHeight);
+      sceKernelDcacheWritebackRange(GFX.Screen,
+                                    GFX.Pitch * IPPU.RenderedScreenHeight);
 
       sceGuStart(GU_DIRECT, d_list);
 
-      sceGuCopyImage(GU_PSM_4444, 0, 0, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX.Pitch >> 1, GFX.Screen, 0,
+      sceGuCopyImage(GU_PSM_4444, 0, 0, IPPU.RenderedScreenWidth,
+                     IPPU.RenderedScreenHeight, GFX.Pitch >> 1, GFX.Screen, 0,
                      0,
                      512, texture_vram_p);
 
@@ -433,9 +441,11 @@ void retro_run(void)
       sceGuFinish();
 
 
-      video_cb(texture_vram_p, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX.Pitch);
+      video_cb(texture_vram_p, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight,
+               GFX.Pitch);
 #else
-      video_cb(GFX.Screen, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX.Pitch);
+      video_cb(GFX.Screen, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight,
+               GFX.Pitch);
 #endif
 
 #ifdef FRAMESKIP
@@ -447,7 +457,6 @@ void retro_run(void)
       IPPU.RenderThisFrame = true;
    }
 #endif
-
 
    //   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
    //      check_variables();
@@ -560,9 +569,11 @@ void retro_get_system_av_info(struct retro_system_av_info* info)
    info->geometry.aspect_ratio = 4.0 / 3.0;
 
    if (!Settings.PAL)
-      info->timing.fps = (SNES_CLOCK_SPEED * 6.0 / (SNES_CYCLES_PER_SCANLINE * SNES_MAX_NTSC_VCOUNTER));
+      info->timing.fps = (SNES_CLOCK_SPEED * 6.0 / (SNES_CYCLES_PER_SCANLINE *
+                          SNES_MAX_NTSC_VCOUNTER));
    else
-      info->timing.fps = (SNES_CLOCK_SPEED * 6.0 / (SNES_CYCLES_PER_SCANLINE * SNES_MAX_PAL_VCOUNTER));
+      info->timing.fps = (SNES_CLOCK_SPEED * 6.0 / (SNES_CYCLES_PER_SCANLINE *
+                          SNES_MAX_PAL_VCOUNTER));
 
    info->timing.sample_rate = (((SNES_CLOCK_SPEED * 6) / (32 * ONE_APU_CYCLE)));
 
@@ -640,7 +651,7 @@ bool retro_serialize(void* data, size_t size)
    return true;
 }
 bool retro_unserialize(const void* data, size_t size)
-{   
+{
    const uint8_t* buffer = data;
 
    if (size != retro_serialize_size())
