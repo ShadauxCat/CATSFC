@@ -167,7 +167,7 @@ WARNINGS := -Wall \
 	-fno-strict-overflow
 endif
 
-FLAGS += -D__LIBRETRO__ $(WARNINGS) $(INCLUDE)
+FLAGS += -D__LIBRETRO__ $(WARNINGS) $(INCLUDE) $(DEFS)
 
 CXXFLAGS += $(FLAGS)
 CFLAGS += $(FLAGS)
