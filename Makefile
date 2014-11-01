@@ -1,5 +1,6 @@
 DEBUG     = 0
 PERF_TEST = 1
+HAVE_GRIFFIN = 1
 
 ifeq ($(platform),)
 platform = unix
@@ -128,6 +129,11 @@ DEFS  += -D__LIBRETRO__
 
 CATSFC_DIR := libfreedo
 
+ifeq ($(HAVE_GRIFFIN), 1)
+CATSFC_SOURCES := source/catsfc_griffin.c
+CATSFC_SOURCES += source/sa1.c source/sa1cpu.c
+LIBRETRO_SOURCES := 
+else
 CATSFC_SOURCES := source/apu.c source/c4.c \
 	source/c4emu.c \
 	source/cheats2.c \
@@ -158,9 +164,10 @@ CATSFC_SOURCES := source/apu.c source/c4.c \
 	source/spc700.c source/spc7110.c \
 	source/srtc.c \
 	source/tile.c
-
-
 LIBRETRO_SOURCES := libretro.c
+endif
+
+
 
 SOURCES_C := $(LIBRETRO_SOURCES) $(CATSFC_SOURCES)
 

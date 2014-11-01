@@ -154,7 +154,7 @@ void STOP(char* s)
 
 #define TCALL(n)\
 {\
-    PushW (IAPU.PC - IAPU.RAM + 1); \
+    SPC700_PushW (IAPU.PC - IAPU.RAM + 1); \
     IAPU.PC = IAPU.RAM + (APU.ExtraRAM [((15 - n) << 1)] + \
         (APU.ExtraRAM [((15 - n) << 1) + 1] << 8)); \
 }
@@ -222,14 +222,14 @@ APUSetZN8 ((uint8) Int16);
     (b) = *(IAPU.RAM + 0x100 + IAPU.Registers.S);
 
 #ifdef FAST_LSB_WORD_ACCESS
-#define PushW(w)\
+#define SPC700_PushW(w)\
     *(uint16 *) (IAPU.RAM + 0xff + IAPU.Registers.S) = w;\
     IAPU.Registers.S -= 2;
 #define PopW(w)\
     IAPU.Registers.S += 2;\
     w = *(uint16 *) (IAPU.RAM + 0xff + IAPU.Registers.S);
 #else
-#define PushW(w)\
+#define SPC700_PushW(w)\
     *(IAPU.RAM + 0xff + IAPU.Registers.S) = w;\
     *(IAPU.RAM + 0x100 + IAPU.Registers.S) = ((w) >> 8);\
     IAPU.Registers.S -= 2;
@@ -380,14 +380,14 @@ void Apu3F()  // CALL absolute
 {
    Absolute();
    // 0xB6f for Star Fox 2
-   PushW(IAPU.PC + 3 - IAPU.RAM);
+   SPC700_PushW(IAPU.PC + 3 - IAPU.RAM);
    IAPU.PC = IAPU.RAM + IAPU.Address;
 }
 
 void Apu4F()  // PCALL $XX
 {
    uint8 Work8 = OP1;
-   PushW(IAPU.PC + 2 - IAPU.RAM);
+   SPC700_PushW(IAPU.PC + 2 - IAPU.RAM);
    IAPU.PC = IAPU.RAM + 0xff00 + Work8;
 }
 
@@ -909,7 +909,7 @@ void Apu0F()
 #if 0
    STOP("BRK");
 #else
-   PushW(IAPU.PC + 1 - IAPU.RAM);
+   SPC700_PushW(IAPU.PC + 1 - IAPU.RAM);
    S9xAPUPackStatus();
    Push(IAPU.Registers.P);
    APUSetBreak();
