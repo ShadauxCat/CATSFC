@@ -28,6 +28,9 @@ static retro_audio_sample_batch_t audio_batch_cb = NULL;
 static retro_environment_t environ_cb = NULL;
 struct retro_perf_callback perf_cb;
 
+static float samples_per_frame = 0.0;
+
+
 #ifdef PERF_TEST
 #define RETRO_PERFORMANCE_INIT(name) \
    retro_perf_tick_t current_ticks;\
@@ -275,10 +278,10 @@ void init_sfc_setting(void)
    Settings.SoundPlaybackRate = 44100; // -> ds2sound.h for defs
    Settings.SoundBufferSize = 512;
    Settings.CyclesPercentage = 100;
+
    Settings.DisableSoundEcho = FALSE;
-   //sound settings
+   Settings.InterpolatedSound = TRUE;
    Settings.APUEnabled = Settings.NextAPUEnabled = TRUE;
-   // Settings.FixFrequency = 1;
 
    Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
    Settings.SkipFrames = AUTO_FRAMERATE;
@@ -299,6 +302,7 @@ void init_sfc_setting(void)
    Settings.StretchScreenshots = 1;
 
    Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
+
 }
 
 void S9xAutoSaveSRAM()
@@ -373,26 +377,31 @@ uint32 S9xReadJoypad(int port)
 }
 
 //#define FRAMESKIP
+static float samples_to_play = 0.0;
 void retro_run(void)
 {
    int i, port;
 
-   //   IPPU.RenderThisFrame = FALSE;
-   //   video_cb(GFX.Screen, 256, 224, 512);
-
    poll_cb();
-
-   S9xSetPlaybackRate(32040);
-   SoundData.echo_enable = FALSE;
 
    RETRO_PERFORMANCE_INIT(S9xMainLoop_func);
    RETRO_PERFORMANCE_START(S9xMainLoop_func);
    S9xMainLoop();
    RETRO_PERFORMANCE_STOP(S9xMainLoop_func);
 
-   static int16_t audio_buf[534 << 1];
-   S9xMixSamples((uint8*)audio_buf, 534 << 1);
-   audio_batch_cb(audio_buf, 534);
+   static int16_t audio_buf[2048];
+
+   samples_to_play += samples_per_frame;
+
+   if (samples_to_play > 512)
+   {
+      S9xMixSamples((uint8*)audio_buf, ((int)samples_to_play) * 2);
+      audio_batch_cb(audio_buf, (int)samples_to_play);
+      samples_to_play -= (int)samples_to_play;
+   }
+
+
+//   samples_to_play = 0;
 
 #ifdef PSP
    static unsigned int __attribute__((aligned(16))) d_list[32];
@@ -436,14 +445,8 @@ void retro_run(void)
 
 }
 
-
 void S9xGenerateSound()
 {
-   //   static s16 audio_buf[855 << 1];
-   //   S9xMixSamples ((uint8*)audio_buf, 855 << 1);
-   //   audio_batch_cb(audio_buf, 855);
-
-
 
 }
 
@@ -538,6 +541,7 @@ void retro_get_system_info(struct retro_system_info* info)
    info->library_name = "SNES9x(CATSFC)";
    info->block_extract = false;
 }
+
 void retro_get_system_av_info(struct retro_system_av_info* info)
 {
    info->geometry.base_width = 256;
@@ -545,15 +549,19 @@ void retro_get_system_av_info(struct retro_system_av_info* info)
    info->geometry.max_width = 512;
    info->geometry.max_height = 512;
    info->geometry.aspect_ratio = 4.0 / 3.0;
-   //   if (!Settings.PAL)
-   //      info->timing.fps = 21477272.0 / 357366.0;
-   //   else
-   //      info->timing.fps = 21281370.0 / 425568.0;
-   //   info->timing.sample_rate = 32040.5;
 
+   if (!Settings.PAL)
+      info->timing.fps = (SNES_CLOCK_SPEED * 6.0 / (SNES_CYCLES_PER_SCANLINE * SNES_MAX_NTSC_VCOUNTER));
+   else
+      info->timing.fps = (SNES_CLOCK_SPEED * 6.0 / (SNES_CYCLES_PER_SCANLINE * SNES_MAX_PAL_VCOUNTER));
 
-   info->timing.fps = 60.0;
-   info->timing.sample_rate = 32040.0;
+   info->timing.sample_rate = (((SNES_CLOCK_SPEED * 6) / (32 * ONE_APU_CYCLE)));
+
+   // small hack to improve av sync
+   // since S9xSetPlaybackRate only accepts integral numbers.
+
+   info->timing.fps = info->timing.fps * 32000 / info->timing.sample_rate;
+   info->timing.sample_rate = 32000;
 }
 
 void retro_reset(void)
@@ -707,6 +715,13 @@ bool retro_load_game(const struct retro_game_info* game)
                          Settings.FrameTimeNTSC);
 
    LoadSRAM(S9xGetFilename(".srm"));
+
+   struct retro_system_av_info av_info;
+   retro_get_system_av_info(&av_info);
+
+   samples_per_frame = av_info.timing.sample_rate / av_info.timing.fps;
+
+   S9xSetPlaybackRate(av_info.timing.sample_rate);
 
    return true;
 }
