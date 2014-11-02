@@ -334,7 +334,6 @@ typedef struct
    bool8  ThreadSound;
    bool8  Mute;
    bool8  NextAPUEnabled;
-   bool8  FixFrequency;
 
    /* Graphics options */
    bool8  Transparency;

@@ -475,11 +475,6 @@ void S9xSetSoundFrequency(int channel, int hertz)
          hertz = NoiseFreq [APU.DSP [APU_FLG] & 0x1f];
       SoundData.channels[channel].frequency = (int)
                                               (((int64) hertz * FIXED_POINT) / so.playback_rate);
-      if (Settings.FixFrequency)
-      {
-         SoundData.channels[channel].frequency =
-            (unsigned long)(SoundData.channels[channel].frequency * 49 / 50);
-      }
    }
 }
 
@@ -799,9 +794,6 @@ static inline void MixStereo(int sample_count)
 
       int32 VL, VR;
       unsigned long freq0 = ch->frequency;
-
-      //    freq0 = (unsigned long) ((double) freq0 * 0.985);//uncommented by jonathan gevaryahu, as it is necessary for most cards in linux
-      freq0 = freq0 * 985 / 1000;
 
       bool8 mod = pitch_mod & (1 << J);
 
