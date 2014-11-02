@@ -248,12 +248,6 @@ void _splitpath(const char* path, char* drive, char* dir, char* fname,
    }
 }
 
-
-const char* S9xGetSnapshotDirectory()
-{
-   return ".";
-}
-
 const char* S9xGetFilename(const char* ex)
 {
    static char filename [PATH_MAX + 1];
@@ -261,12 +255,8 @@ const char* S9xGetFilename(const char* ex)
    char dir [_MAX_DIR + 1];
    char fname [_MAX_FNAME + 1];
    char ext [_MAX_EXT + 1];
-
    _splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-   strcpy(filename, S9xGetSnapshotDirectory());
-   strcat(filename, SLASH_STR);
-   strcat(filename, fname);
-   strcat(filename, ex);
+   _makepath(filename, drive, dir, fname, ex);
 
    return (filename);
 }
@@ -503,17 +493,13 @@ char* osd_GetPackDir()
    static char filename[_MAX_PATH];
    memset(filename, 0, _MAX_PATH);
 
-   if (strlen(S9xGetSnapshotDirectory()) != 0)
-      strcpy(filename, S9xGetSnapshotDirectory());
-   else
-   {
-      char dir [_MAX_DIR + 1];
-      char drive [_MAX_DRIVE + 1];
-      char name [_MAX_FNAME + 1];
-      char ext [_MAX_EXT + 1];
-      _splitpath(Memory.ROMFilename, drive, dir, name, ext);
-      _makepath(filename, drive, dir, NULL, NULL);
-   }
+   char dir [_MAX_DIR + 1];
+   char drive [_MAX_DRIVE + 1];
+   char name [_MAX_FNAME + 1];
+   char ext [_MAX_EXT + 1];
+   _splitpath(Memory.ROMFilename, drive, dir, name, ext);
+   _makepath(filename, drive, dir, NULL, NULL);
+
 
    if (!strncmp((char*)&Memory.ROM [0xffc0], "SUPER POWER LEAG 4   ", 21))
    {
@@ -559,8 +545,8 @@ void retro_get_system_info(struct retro_system_info* info)
    info->need_fullpath = true;
 #endif
    info->valid_extensions = "smc|fig|sfc|gd3|gd7|dx2|bsx|swc";
-   info->library_version = "v1.4";
-   info->library_name = "SNES9x(CATSFC)";
+   info->library_version = "v1.43";
+   info->library_name = "CATSFC(SNES9x)";
    info->block_extract = false;
 }
 

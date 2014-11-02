@@ -1,7 +1,7 @@
 DEBUG     = 0
 PERF_TEST = 1
-HAVE_GRIFFIN = 1
-LOAD_FROM_MEMORY_TEST = 1
+HAVE_GRIFFIN = 0
+LOAD_FROM_MEMORY_TEST = 0
 
 ifeq ($(platform),)
 platform = unix
