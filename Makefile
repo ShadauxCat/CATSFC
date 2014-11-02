@@ -1,6 +1,7 @@
 DEBUG     = 0
 PERF_TEST = 1
 HAVE_GRIFFIN = 1
+LOAD_FROM_MEMORY_TEST = 1
 
 ifeq ($(platform),)
 platform = unix
@@ -145,6 +146,11 @@ endif
 
 ifeq ($(PERF_TEST),1)
 FLAGS += -DPERF_TEST
+endif
+
+
+ifeq ($(LOAD_FROM_MEMORY_TEST),1)
+FLAGS += -DLOAD_FROM_MEMORY_TEST
 endif
 
 LDFLAGS += $(fpic) -lz $(SHARED)

@@ -95,8 +95,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-//#include "fs_api.h"
-//#include "ds2_malloc.h"
+#include <libretro.h>
 
 extern int cprintf(const char* fmt, ...);
 

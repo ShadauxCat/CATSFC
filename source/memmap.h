@@ -137,8 +137,12 @@
 #define BIGFIRST 2
 #define SMALLFIRST 3
 
+#ifdef LOAD_FROM_MEMORY_TEST
+bool LoadROM(const struct retro_game_info* game);
+#else
 bool8 LoadROM(const char*);
 uint32 FileLoader(uint8* buffer, const char* filename, int32 maxsize);
+#endif
 void  InitROM(bool8);
 bool8 LoadSRAM(const char*);
 bool8 SaveSRAM(const char*);

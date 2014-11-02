@@ -553,7 +553,11 @@ unsigned retro_get_region(void)
 }
 void retro_get_system_info(struct retro_system_info* info)
 {
+#ifdef LOAD_FROM_MEMORY_TEST
+   info->need_fullpath = false;
+#else
    info->need_fullpath = true;
+#endif
    info->valid_extensions = "smc|fig|sfc|gd3|gd7|dx2|bsx|swc";
    info->library_version = "v1.4";
    info->library_name = "SNES9x(CATSFC)";
@@ -728,7 +732,11 @@ bool retro_load_game(const struct retro_game_info* game)
 {
    CPU.Flags = 0;
 
+#ifdef LOAD_FROM_MEMORY_TEST
+   if (!LoadROM(game))
+#else
    if (!LoadROM(game->path))
+#endif
       return false;
 
    Settings.FrameTime = (Settings.PAL ? Settings.FrameTimePAL :

@@ -578,7 +578,11 @@ void FreeSDD1Data()
 /* This function loads a Snes-Backup image                                                    */
 /**********************************************************************************************/
 
+#ifdef LOAD_FROM_MEMORY_TEST
+bool LoadROM(const struct retro_game_info* game)
+#else
 bool8 LoadROM(const char* filename)
+#endif
 {
    int32 TotalFileSize = 0;
    bool8 Interleaved = FALSE;
@@ -605,13 +609,41 @@ again:
    Settings.DisplayColor = 0xffff;
    SET_UI_COLOR(255, 255, 255);
 
+#ifdef LOAD_FROM_MEMORY_TEST
+   strncpy(Memory.ROMFilename, game->path, sizeof(Memory.ROMFilename));
+
+   Memory.HeaderCount = 0;
+   TotalFileSize = game->size;
+   const uint8_t* src = game->data;
+   Memory.HeaderCount = 0;
+
+   if ((((game->size & 0x1FFF) == 0x200) && !Settings.ForceNoHeader)
+         || Settings.ForceHeader)
+   {
+      S9xMessage(S9X_INFO, S9X_HEADERS_INFO,
+                 "Found ROM file header (and ignored it).");
+      TotalFileSize -= 0x200;
+      src      += 0x200;
+      Memory.HeaderCount = 1;
+
+   }
+   else
+   {
+      S9xMessage(S9X_INFO, S9X_HEADERS_INFO, "No ROM file header found.");
+   }
+   if (TotalFileSize > MAX_ROM_SIZE)
+      return false;
+
+   memcpy(Memory.ROM, src, TotalFileSize);
+
+#else
    TotalFileSize = FileLoader(Memory.ROM, filename, MAX_ROM_SIZE);
 
    if (!TotalFileSize)
       return FALSE;     // it ends here
    else if (!Settings.NoPatch)
       CheckForIPSPatch(filename, Memory.HeaderCount != 0, &TotalFileSize);
-
+#endif
    //fix hacked games here.
    if ((strncmp("HONKAKUHA IGO GOSEI", (char*)&Memory.ROM[0x7FC0], 19) == 0)
          && (Memory.ROM[0x7FD5] != 0x31))
@@ -641,7 +673,8 @@ again:
       S9xMessage(S9X_ERROR, S9X_ROM_CONFUSING_FORMAT_INFO, "Warning! Hacked Dump!");
    }
 
-   int hi_score, lo_score;
+   int hi_score=ScoreHiROM(TRUE, 0);
+   int lo_score=ScoreLoROM(TRUE, 0);
 
    if (Memory.HeaderCount == 0 && !Settings.ForceNoHeader &&
          ((hi_score > lo_score && ScoreHiROM(TRUE, 0) > hi_score) ||
@@ -886,6 +919,7 @@ again:
    return (TRUE);
 }
 
+#ifndef LOAD_FROM_MEMORY_TEST
 uint32 FileLoader(uint8* buffer, const char* filename, int32 maxsize)
 {
 
@@ -1005,151 +1039,6 @@ uint32 FileLoader(uint8* buffer, const char* filename, int32 maxsize)
    return TotalFileSize;
 
 }
-
-#if 0
-/**********************************************************************************************/
-/* LoadMulti()                                                                                */
-/* This function loads a Slotted SNES-Backup image and fills the slot.                        */
-/**********************************************************************************************/
-
-bool8 LoadMulti(const char* basename, const char* slot1name,
-                const char* slot2name)
-{
-   unsigned long FileSize = 0;
-
-   if (*basename == '\0')
-      return FALSE;
-
-   SufamiTurbo = TRUE;
-
-   int32 offset;
-
-   memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
-   SNESGameFixes.SRAMInitialValue = 0x60;
-
-   memset(bytes0x2000, 0, 0x2000);
-
-   CalculatedSize = 0;
-
-   Settings.DisplayColor = 0xffff;
-   SET_UI_COLOR(255, 255, 255);
-
-   int32 TotalFileSize = FileLoader(ROM, basename, MAX_ROM_SIZE);
-
-   if (0 == TotalFileSize)
-      return FALSE;
-   else CheckForIPSPatch(basename, HeaderCount != 0, TotalFileSize);
-
-   CalculatedSize = TotalFileSize;
-
-   for (offset = 0; offset < TotalFileSize; offset += 0x100000);
-
-   //insert base type test here.
-
-   if (slot1name[0] != '\0')
-   {
-
-      TotalFileSize = FileLoader(ROM + offset, slot1name, MAX_ROM_SIZE);
-
-      if (0 == TotalFileSize)
-         return FALSE;
-      else CheckForIPSPatch(slot1name, HeaderCount != 0, TotalFileSize);
-      ROMOffset1 = &ROM[offset];
-      Slot1Size = TotalFileSize;
-   }
-   int32 temp = offset;
-   for (; offset < temp + TotalFileSize; offset += 0x100000);
-
-   if (slot2name[0] != '\0')
-   {
-      TotalFileSize = FileLoader(ROM + offset, slot2name, MAX_ROM_SIZE);
-
-      if (0 == TotalFileSize)
-         return FALSE;
-      else CheckForIPSPatch(slot2name, HeaderCount != 0, TotalFileSize);
-      ROMOffset2 = &ROM[offset];
-      Slot2Size = TotalFileSize;
-   }
-
-   InitROM(FALSE);
-   S9xLoadCheatFile(S9xGetFilename(".cht"));
-   S9xInitCheatData();
-   S9xApplyCheats();
-
-   S9xReset();
-
-   return (TRUE);
-}
-
-bool8 SufamiTurboBIOSSig(uint8* file, int32 size)
-{
-   if (!strcmp((char*)file, "BANDAI SFC-ADX")
-         && !strcmp((char*)(file + 0x10), "SFC-ADX BACKUP"))
-   {
-      //possible match.
-      //check size
-      if (size != 0x40000)
-         return FALSE;
-      //and CRC32
-      if (0x9B4CA911 == caCRC32(file, size, 0xFFFFFFFF))
-         return TRUE;
-
-   }
-   return FALSE;
-}
-
-bool8 SufamiTurboCartSig(uint8* file, int32 size)
-{
-   //test not a BIOS
-   if (!strcmp((char*)file, "BANDAI SFC-ADX")
-         && strcmp((char*)(file + 0x10), "SFC-ADX BACKUP"))
-   {
-      //possible match.
-      //check size
-      if (size > 0x100000 || size < 0x80000)
-         return FALSE;
-      //probably a minicart
-      return TRUE;
-   }
-   return FALSE;
-}
-
-bool8 SameGameSig(uint8* file, int32 size)
-{
-   //preheader sig
-   if (strcmp((char*)(file + 0xFFA0), "1995/12/16 10:2018ZS5J"))
-      return FALSE;
-   if (size != 0x100000)
-      return FALSE;
-   if (0x133E1C5B == caCRC32(file, size, 0xFFFFFFFF))
-      return TRUE;
-   return FALSE;
-}
-bool8 GNextSig(uint8* file, int32 size)
-{
-   //preheader sig
-   if (strcmp((char*)(file + 0xFFAA), "GNEXT B2ZX3J"))
-      return FALSE;
-   if (size != 0x180000)
-      return FALSE;
-   if (0x845E420D == caCRC32(file, size, 0xFFFFFFFF))
-      return TRUE;
-   return FALSE;
-}
-int MultiType(uint8* file, int32 size)
-{
-   //check for ST signiture
-   if (SufamiTurboBIOSSig(file, size))
-      return 1;
-   //check for Same Game signiture
-   if (SameGameSig(file, size))
-      return 2;
-   //check for G-Next signiture
-   if (GNextSig(file, size))
-      return 3;
-   return 0;
-}
-
 #endif
 
 //compatibility wrapper
