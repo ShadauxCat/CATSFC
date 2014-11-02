@@ -86,6 +86,8 @@
   Super NES and Super Nintendo Entertainment System are trademarks of
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
+#ifndef USE_BLARGG_APU
+
 #ifdef __DJGPP__
 #include <allegro.h>
 #undef TRUE
@@ -1430,3 +1432,4 @@ void S9xPlaySample(int channel)
 }
 
 
+#endif

@@ -1,7 +1,8 @@
 DEBUG     = 0
 PERF_TEST = 1
-HAVE_GRIFFIN = 1
+HAVE_GRIFFIN = 0
 LOAD_FROM_MEMORY_TEST = 0
+USE_BLARGG_APU = 0
 
 ifeq ($(platform),)
 platform = unix
@@ -148,6 +149,9 @@ ifeq ($(PERF_TEST),1)
 FLAGS += -DPERF_TEST
 endif
 
+ifeq ($(USE_BLARGG_APU),1)
+FLAGS += -DUSE_BLARGG_APU
+endif
 
 ifeq ($(LOAD_FROM_MEMORY_TEST),1)
 FLAGS += -DLOAD_FROM_MEMORY_TEST

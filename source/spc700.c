@@ -86,6 +86,9 @@
   Super NES and Super Nintendo Entertainment System are trademarks of
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
+
+#ifndef USE_BLARGG_APU
+
 #include "snes9x.h"
 #include "spc700.h"
 #include "memmap.h"
@@ -2573,3 +2576,4 @@ void (*S9xApuOpcodes[256])(void) =
    ApuF8, ApuF9, ApuFA, ApuFB, ApuFC, ApuFD, ApuFE, ApuFF
 };
 
+#endif

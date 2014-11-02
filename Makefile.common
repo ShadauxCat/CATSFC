@@ -3,7 +3,8 @@ INCFLAGS := -I$(CORE_DIR) -I$(LIBRETRO_DIR)
 ifeq ($(HAVE_GRIFFIN), 1)
 SOURCES_C := $(CORE_DIR)/catsfc_griffin.c
 SOURCES_C += $(CORE_DIR)/sa1.c \
-				 $(CORE_DIR)/sa1cpu.c
+				 $(CORE_DIR)/sa1cpu.c \
+				 $(CORE_DIR)/apu_blargg.c
 else
 SOURCES_C := \
 	$(CORE_DIR)/apu.c \
@@ -38,6 +39,8 @@ SOURCES_C := \
 	$(CORE_DIR)/spc700.c \
 	$(CORE_DIR)/spc7110.c \
 	$(CORE_DIR)/srtc.c \
-	$(CORE_DIR)/tile.c
+	$(CORE_DIR)/tile.c \
+	$(CORE_DIR)/apu_blargg.c
+
 SOURCES_C += $(LIBRETRO_DIR)/libretro.c
 endif

@@ -87,6 +87,8 @@
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
 
+#ifndef USE_BLARGG_APU
+
 #ifdef __DJGPP
 #include <allegro.h>
 #undef TRUE
@@ -742,3 +744,4 @@ uint8 S9xGetAPUDSP()
    return (byte);
 }
 
+#endif

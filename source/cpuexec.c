@@ -203,8 +203,10 @@ void S9xMainLoop_SA1_SFX(void)
 
    ICPU.Registers.PC = CPU.PC - CPU.PCBase;
    S9xPackStatus();
+#ifndef USE_BLARGG_APU
    IAPU.Registers.PC = IAPU.PC - IAPU.RAM;
    S9xAPUPackStatus();
+#endif
    if (CPU.Flags & SCAN_KEYS_FLAG)
    {
       S9xSyncSpeed();
@@ -287,8 +289,10 @@ void S9xMainLoop_SA1_NoSFX(void)
 
    ICPU.Registers.PC = CPU.PC - CPU.PCBase;
    S9xPackStatus();
+#ifndef USE_BLARGG_APU
    IAPU.Registers.PC = IAPU.PC - IAPU.RAM;
    S9xAPUPackStatus();
+#endif
    if (CPU.Flags & SCAN_KEYS_FLAG)
    {
       S9xSyncSpeed();
@@ -360,8 +364,10 @@ void S9xMainLoop_NoSA1_SFX(void)
 
    ICPU.Registers.PC = CPU.PC - CPU.PCBase;
    S9xPackStatus();
+#ifndef USE_BLARGG_APU
    IAPU.Registers.PC = IAPU.PC - IAPU.RAM;
    S9xAPUPackStatus();
+#endif
    if (CPU.Flags & SCAN_KEYS_FLAG)
    {
       S9xSyncSpeed();
@@ -442,8 +448,10 @@ void S9xMainLoop_NoSA1_NoSFX(void)
 
    ICPU.Registers.PC = CPU.PC - CPU.PCBase;
    S9xPackStatus();
+#ifndef USE_BLARGG_APU
    IAPU.Registers.PC = IAPU.PC - IAPU.RAM;
    S9xAPUPackStatus();
+#endif
    if (CPU.Flags & SCAN_KEYS_FLAG)
    {
       S9xSyncSpeed();
@@ -504,6 +512,7 @@ void S9xDoHBlankProcessing_SFX()
    case HBLANK_END_EVENT:
       S9xSuperFXExec();
 
+#ifndef USE_BLARGG_APU
 #ifndef STORM
       if (Settings.SoundSync)
          S9xGenerateSound();
@@ -519,7 +528,11 @@ void S9xDoHBlankProcessing_SFX()
       }
       else
          APU.Cycles = 0;
-
+#else
+      S9xAPUExecute();
+      CPU.Cycles -= Settings.H_Max;
+      S9xAPUSetReferenceTime(CPU.Cycles);
+#endif
       CPU.NextEvent = -1;
       ICPU.Scanline++;
 

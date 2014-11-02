@@ -87,6 +87,8 @@
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
 
+#ifndef USE_BLARGG_APU
+
 #ifndef _apu_h_
 #define _apu_h_
 
@@ -206,5 +208,7 @@ extern void (*S9xApuOpcodes [256])(void);
 #define APU_ECHO_DISABLED 0x20
 
 #define FREQUENCY_MASK 0x3fff
+#endif
+
 #endif
 
