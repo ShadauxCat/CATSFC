@@ -360,9 +360,11 @@ uint32 S9xReadJoypad(int port)
    return joypad;
 }
 
+#ifdef PSP
+#define FRAMESKIP
+#endif
 
-//#define FRAMESKIP
-//#define NO_VIDEO_OUTPUT
+#define NO_VIDEO_OUTPUT
 static float samples_to_play = 0.0;
 void retro_run(void)
 {
