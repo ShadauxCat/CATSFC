@@ -364,7 +364,7 @@ uint32 S9xReadJoypad(int port)
 #define FRAMESKIP
 #endif
 
-#define NO_VIDEO_OUTPUT
+//#define NO_VIDEO_OUTPUT
 static float samples_to_play = 0.0;
 void retro_run(void)
 {
