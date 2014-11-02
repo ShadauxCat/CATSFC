@@ -146,8 +146,8 @@ uint32 FileLoader(uint8* buffer, const char* filename, int32 maxsize);
 void  InitROM(bool8);
 bool8 LoadSRAM(const char*);
 bool8 SaveSRAM(const char*);
-bool8 Init();
-void  Deinit();
+bool8 S9xInitMemory();
+void  S9xDeinitMemory();
 void  FreeSDD1Data();
 
 void WriteProtectROM();

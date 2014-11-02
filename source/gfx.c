@@ -254,7 +254,7 @@ void DrawLargePixel16Sub1_2(uint32 Tile, int32 Offset,
                             uint32 StartPixel, uint32 Pixels,
                             uint32 StartLine, uint32 LineCount);
 
-bool8 S9xGraphicsInit()
+bool8 S9xInitGFX()
 {
    register uint32 PixelOdd = 1;
    register uint32 PixelEven = 2;
@@ -532,9 +532,9 @@ bool8 S9xGraphicsInit()
    return (TRUE);
 }
 
-void S9xGraphicsDeinit(void)
+void S9xDeinitGFX(void)
 {
-   // Free any memory allocated in S9xGraphicsInit
+   // Free any memory allocated in S9xInitGFX
    if (GFX.X2)
    {
       free((char*) GFX.X2);

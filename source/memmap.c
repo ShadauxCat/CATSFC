@@ -406,10 +406,10 @@ char* Safe(const char* s)
 }
 
 /**********************************************************************************************/
-/* Init()                                                                                     */
+/* S9xInitMemory()                                                                                     */
 /* This function allocates and zeroes all the memory needed by the emulator                   */
 /**********************************************************************************************/
-bool8 Init()
+bool8 S9xInitMemory()
 {
    // DS2 DMA notes: These would do well to be allocated with 32 extra bytes
    // so they can be 32-byte aligned. [Neb]
@@ -448,7 +448,7 @@ bool8 Init()
          !IPPU.TileCache [TILE_8BIT] || !IPPU.TileCached [TILE_2BIT] ||
          !IPPU.TileCached [TILE_4BIT] ||  !IPPU.TileCached [TILE_8BIT])
    {
-      Deinit();
+      S9xDeinitMemory();
       return (FALSE);
    }
 
@@ -485,7 +485,7 @@ bool8 Init()
    return (TRUE);
 }
 
-void Deinit()
+void S9xDeinitMemory()
 {
 #ifdef __W32_HEAP
    if (_HEAPOK != _heapchk())
@@ -910,7 +910,7 @@ again:
 
    FreeSDD1Data();
    InitROM(Tales);
-   S9xLoadCheatFile(S9xGetFilename(".cht"));
+   S9xLoadCheatFile(S9xGetFilename("cht"));
    S9xInitCheatData();
    S9xApplyCheats();
 
@@ -4146,7 +4146,7 @@ void CheckForIPSPatch(const char* rom_filename, bool8 header,
 
    if (!(patch_file = fopen(fname, "rb")))
    {
-      if (!(patch_file = fopen(S9xGetFilename(".ips"), "rb")))
+      if (!(patch_file = fopen(S9xGetFilename("ips"), "rb")))
          return;
    }
 

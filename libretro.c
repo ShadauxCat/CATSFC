@@ -156,21 +156,6 @@ void S9xInitDisplay(void)
    GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
 }
 
-void S9xExit()
-{
-   //  if(Settings.SPC7110)
-   //    (*CleanUp7110)();
-
-   //    S9xDeinitDisplay ();
-   //    Memory.SaveSRAM (S9xGetFilename (".srm"));
-   //    // S9xSaveCheatFile (S9xGetFilename (".chb")); // cheat binary file
-   //   // Do this when loading a cheat file!
-   //    Memory.Deinit ();
-   //    S9xDeinitAPU ();
-
-   //   exit(0);
-}
-
 const char* S9xBasename(const char* f)
 {
    const char* p;
@@ -298,7 +283,7 @@ void init_sfc_setting(void)
 
 void S9xAutoSaveSRAM()
 {
-   SaveSRAM(S9xGetFilename(".srm"));
+   SaveSRAM(S9xGetFilename("srm"));
 }
 
 void retro_init(void)
@@ -317,10 +302,10 @@ void retro_init(void)
              "Frontend supports RGB565 - will use that instead of XRGB1555.\n");
 
    init_sfc_setting();
-   Init();
+   S9xInitMemory();
    S9xInitAPU();
    S9xInitDisplay();
-   S9xGraphicsInit();
+   S9xInitGFX();
    S9xInitSound(Settings.SoundPlaybackRate,
                 TRUE,
                 Settings.SoundBufferSize);
@@ -329,14 +314,22 @@ void retro_init(void)
 
 void retro_deinit(void)
 {
-   S9xGraphicsDeinit();
+
+   if(Settings.SPC7110)
+      (*CleanUp7110)();
+
+   SaveSRAM (S9xGetFilename ("srm"));
+
+   S9xDeinitGFX();
    S9xDeinitDisplay();
    S9xDeinitAPU();
-   Deinit();
+   S9xDeinitMemory();
 
 #ifdef PERF_TEST
    perf_cb.perf_log();
 #endif
+
+
 }
 
 uint32 S9xReadJoypad(int port)
@@ -728,7 +721,7 @@ bool retro_load_game(const struct retro_game_info* game)
    Settings.FrameTime = (Settings.PAL ? Settings.FrameTimePAL :
                          Settings.FrameTimeNTSC);
 
-   LoadSRAM(S9xGetFilename(".srm"));
+   LoadSRAM(S9xGetFilename("srm"));
 
    struct retro_system_av_info av_info;
    retro_get_system_av_info(&av_info);

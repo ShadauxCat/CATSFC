@@ -149,7 +149,7 @@ void S9xSDD1SaveLoggedData()
       qsort(Memory.SDD1LoggedData, Memory.SDD1LoggedDataCount, 8,
             S9xCompareSDD1LoggedDataEntries);
 
-      FILE* fs = fopen(S9xGetFilename(".dat"), "wb");
+      FILE* fs = fopen(S9xGetFilename("dat"), "wb");
 
       if (fs)
       {
@@ -157,7 +157,7 @@ void S9xSDD1SaveLoggedData()
                 Memory.SDD1LoggedDataCount, fs);
          fclose(fs);
 #if defined(__linux)
-         chown(S9xGetFilename(".dat"), getuid(), getgid());
+         chown(S9xGetFilename("dat"), getuid(), getgid());
 #endif
       }
       Memory.SDD1LoggedDataCountPrev = Memory.SDD1LoggedDataCount;
@@ -166,7 +166,7 @@ void S9xSDD1SaveLoggedData()
 
 void S9xSDD1LoadLoggedData()
 {
-   FILE* fs = fopen(S9xGetFilename(".dat"), "rb");
+   FILE* fs = fopen(S9xGetFilename("dat"), "rb");
 
    Memory.SDD1LoggedDataCount = Memory.SDD1LoggedDataCountPrev = 0;
 

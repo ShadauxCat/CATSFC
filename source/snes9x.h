@@ -393,7 +393,6 @@ extern SCPUState CPU;
 extern SSNESGameFixes SNESGameFixes;
 extern char String [513];
 
-void S9xExit();
 void S9xMessage(int type, int number, const char* message);
 void S9xLoadSDD1Data();
 

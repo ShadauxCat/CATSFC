@@ -137,21 +137,6 @@ void S9xAPUSetByte(uint8, uint32 address);
 #define APUSetZN16(w)\
     IAPU._Zero = ((w) != 0) | ((w) >> 8);
 
-void STOP(char* s)
-{
-   char buffer[100];
-
-   buffer[0] = '\0';
-
-   sprintf(String, "Sound CPU in unknown state executing %s at %04X\n%s\n", s,
-           IAPU.PC - IAPU.RAM, buffer);
-   S9xMessage(S9X_ERROR, S9X_APU_STOPPED, String);
-   APU.TimerEnabled[0] = APU.TimerEnabled[1] = APU.TimerEnabled[2] = FALSE;
-   IAPU.APUExecuting = FALSE;
-
-   S9xExit();
-}
-
 #define TCALL(n)\
 {\
     SPC700_PushW (IAPU.PC - IAPU.RAM + 1); \
@@ -906,9 +891,6 @@ void Apu0F()
 {
    // BRK
 
-#if 0
-   STOP("BRK");
-#else
    SPC700_PushW(IAPU.PC + 1 - IAPU.RAM);
    S9xAPUPackStatus();
    Push(IAPU.Registers.P);
@@ -916,14 +898,12 @@ void Apu0F()
    APUClearInterrupt();
    // XXX:Where is the BRK vector ???
    IAPU.PC = IAPU.RAM + APU.ExtraRAM[0x20] + (APU.ExtraRAM[0x21] << 8);
-#endif
 }
 
 void ApuEF()
 {
    // SLEEP
    // XXX: sleep
-   // STOP ("SLEEP");
    IAPU.APUExecuting = FALSE;
    IAPU.PC++;
 }
@@ -931,7 +911,6 @@ void ApuEF()
 void ApuFF()
 {
    // STOP
-   // STOP ("STOP");
    IAPU.APUExecuting = FALSE;
    IAPU.PC++;
 }
@@ -1964,7 +1943,6 @@ void Apu6F()
 void Apu7F()
 {
    // RETI
-   // STOP ("RETI");
    Pop(IAPU.Registers.P);
    S9xAPUUnpackStatus();
    PopW(IAPU.Registers.PC);

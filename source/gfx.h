@@ -105,8 +105,8 @@ void S9xBuildDirectColourMaps();
 // port.
 extern struct SGFX GFX;
 
-bool8 S9xGraphicsInit();
-void S9xGraphicsDeinit();
+bool8 S9xInitGFX();
+void S9xDeinitGFX();
 bool8 S9xInitUpdate(void);
 #if 0
 void S9xSyncSpeed();
@@ -129,7 +129,7 @@ struct SGFX
    uint8*  SubZBuffer;
    uint32 Pitch;
 
-   // Setup in call to S9xGraphicsInit()
+   // Setup in call to S9xInitGFX()
    int   Delta;
    uint16* X2;
    uint16* ZERO_OR_X2;
