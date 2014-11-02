@@ -712,7 +712,9 @@ void S9xEndScreenRefresh()
       GFX.PPL = GFX.PPLx2 >> 1;
    }
 
+#ifdef WANT_CHEATS
    S9xApplyCheats();
+#endif
 
    if (CPU.SRAMModified)
    {

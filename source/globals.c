@@ -165,7 +165,9 @@ uint32 odd_low[4][16];
 uint32 even_high[4][16];
 uint32 even_low[4][16];
 
+#ifdef WANT_CHEATS
 SCheatData Cheat;
+#endif
 
 SoundStatus so;
 

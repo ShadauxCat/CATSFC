@@ -86,6 +86,9 @@
   Super NES and Super Nintendo Entertainment System are trademarks of
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
+
+#ifdef WANT_CHEATS
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
@@ -459,3 +462,4 @@ void S9xOutputCheatSearchResults(SCheatData* d)
    }
 }
 
+#endif

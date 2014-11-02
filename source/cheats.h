@@ -89,6 +89,8 @@
 #ifndef _CHEATS_H_
 #define _CHEATS_H_
 
+#ifdef WANT_CHEATS
+
 #define MAX_SFCCHEAT_NAME 48
 #define MAX_CHEATS_T 800
 
@@ -156,6 +158,8 @@ void S9xSearchForValue (SCheatData *cheats, S9xCheatComparisonType cmp,
                         S9xCheatDataSize size, uint32 value,
                         bool8 is_signed, bool8 update);
 void S9xOutputCheatSearchResults (SCheatData *cheats);
+
+#endif
 
 #endif
 

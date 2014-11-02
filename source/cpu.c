@@ -185,11 +185,13 @@ void S9xReset(void)
    S9xSA1Init();
    if (Settings.C4)
       S9xInitC4();
+
+#ifdef WANT_CHEATS
    S9xInitCheatData();
+#endif
+
    if (Settings.OBC1)
       ResetOBC1();
-
-   //    Settings.Paused = FALSE;
 }
 void S9xSoftReset(void)
 {
@@ -216,8 +218,10 @@ void S9xSoftReset(void)
    S9xSA1Init();
    if (Settings.C4)
       S9xInitC4();
-   S9xInitCheatData();
 
-   //    Settings.Paused = FALSE;
+#ifdef WANT_CHEATS
+   S9xInitCheatData();
+#endif
+
 }
 

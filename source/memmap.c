@@ -910,9 +910,11 @@ again:
 
    FreeSDD1Data();
    InitROM(Tales);
+#ifdef WANT_CHEATS
    S9xLoadCheatFile(S9xGetFilename("cht"));
    S9xInitCheatData();
    S9xApplyCheats();
+#endif
 
    S9xReset();
 
