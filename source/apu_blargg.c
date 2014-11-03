@@ -182,11 +182,15 @@
 #include <limits.h>
 
 #include "blargg_endian.h"
-#include "apu.h"
+#include "apu_blargg.h"
 
 #include "snes9x.h"
-#include "snapshot.h"
+//#include "snapshot.h"
 #include "display.h"
+
+#ifndef INLINE
+#define INLINE inline
+#endif
 
 /***********************************************************************************
    SPC DSP

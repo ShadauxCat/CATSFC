@@ -3383,6 +3383,7 @@ static inline void CPUShutdown()
          CPU.WaitAddress = NULL;
          if (Settings.SA1)
             S9xSA1ExecuteDuringSleep();
+#ifndef USE_BLARGG_APU
          CPU.Cycles = CPU.NextEvent;
          if (IAPU.APUExecuting)
          {
@@ -3394,6 +3395,7 @@ static inline void CPUShutdown()
             while (APU.Cycles < CPU.NextEvent);
             ICPU.CPUExecuting = TRUE;
          }
+#endif
       }
       else if (CPU.WaitCounter >= 2)
          CPU.WaitCounter = 1;
@@ -4980,6 +4982,7 @@ static void OpCB(void)
       if (Settings.Shutdown)
       {
          CPU.Cycles = CPU.NextEvent;
+#ifndef USE_BLARGG_APU
          if (IAPU.APUExecuting)
          {
             ICPU.CPUExecuting = FALSE;
@@ -4990,6 +4993,7 @@ static void OpCB(void)
             while (APU.Cycles < CPU.NextEvent);
             ICPU.CPUExecuting = TRUE;
          }
+#endif
       }
       else
       {

@@ -1455,7 +1455,9 @@ void InitROM(bool8 Interleaved)
       }
    }
 
+#ifndef USE_BLARGG_APU
    IAPU.OneCycle = ONE_APU_CYCLE;
+#endif
    Settings.Shutdown = Settings.ShutdownMaster;
 
    SetDSP = &DSP1SetByte;
@@ -3714,12 +3716,14 @@ void ApplyROMFixes()
 
    //APU timing hacks
 
+#ifndef USE_BLARGG_APU
    // Stunt Racer FX
    if (strcmp(Memory.ROMId, "CQ  ") == 0 ||
          // Illusion of Gaia
          strncmp(Memory.ROMId, "JG", 2) == 0 ||
          strcmp(Memory.ROMName, "GAIA GENSOUKI 1 JPN") == 0)
       IAPU.OneCycle = 13;
+
 
    // RENDERING RANGER R2
    if (strcmp(Memory.ROMId, "AVCJ") == 0 ||
@@ -3768,7 +3772,7 @@ void ApplyROMFixes()
          ||  //Kamen Rider
          strncmp(Memory.ROMName, "LETs PACHINKO(", 14) == 0)  //A set of BS games
       IAPU.OneCycle = 15;
-
+#endif
 
    //Specific game fixes
 

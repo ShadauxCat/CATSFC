@@ -251,7 +251,7 @@ void init_sfc_setting(void)
 {
    memset(&Settings, 0, sizeof(Settings));
    Settings.JoystickEnabled = FALSE;
-   Settings.SoundPlaybackRate = 44100; // -> ds2sound.h for defs
+   Settings.SoundPlaybackRate = 32000; // -> ds2sound.h for defs
    Settings.SoundBufferSize = 512;
    Settings.CyclesPercentage = 100;
 
@@ -306,19 +306,23 @@ void retro_init(void)
    S9xInitAPU();
    S9xInitDisplay();
    S9xInitGFX();
+#ifdef USE_BLARGG_APU
+   S9xInitSound(16, 0);
+#else
    S9xInitSound(Settings.SoundPlaybackRate,
                 TRUE,
                 Settings.SoundBufferSize);
+#endif
 
 }
 
 void retro_deinit(void)
 {
 
-   if(Settings.SPC7110)
+   if (Settings.SPC7110)
       (*CleanUp7110)();
 
-   SaveSRAM (S9xGetFilename ("srm"));
+   SaveSRAM(S9xGetFilename("srm"));
 
    S9xDeinitGFX();
    S9xDeinitDisplay();
@@ -388,7 +392,7 @@ void retro_run(void)
 
    if (samples_to_play > 512)
    {
-      S9xMixSamples((uint8*)audio_buf, ((int)samples_to_play) * 2);
+      S9xMixSamples((void*)audio_buf, ((int)samples_to_play) * 2);
       audio_batch_cb(audio_buf, (int)samples_to_play);
       samples_to_play -= (int)samples_to_play;
    }
@@ -579,8 +583,11 @@ void retro_reset(void)
 size_t retro_serialize_size(void)
 {
    return sizeof(CPU) + sizeof(ICPU) + sizeof(PPU) + sizeof(DMA) +
-          0x10000 + 0x20000 + 0x20000 + 0x8000 + sizeof(APU) +
-          sizeof(IAPU) + 0x10000 + sizeof(SA1) +
+          0x10000 + 0x20000 + 0x20000 + 0x8000 +
+#ifndef USE_BLARGG_APU
+          sizeof(APU) + sizeof(IAPU)
+#endif
+          + 0x10000 + sizeof(SA1) +
           sizeof(s7r) + sizeof(rtc_f9);
 }
 
@@ -590,7 +597,7 @@ bool retro_serialize(void* data, size_t size)
 
    S9xUpdateRTC();
    S9xSRTCPreSaveState();
-
+#ifndef USE_BLARGG_APU
    for (i = 0; i < 8; i++)
    {
       SoundData.channels[i].previous16[0] = (int16)
@@ -598,7 +605,7 @@ bool retro_serialize(void* data, size_t size)
       SoundData.channels[i].previous16[1] = (int16)
                                             SoundData.channels[i].previous[1];
    }
-
+#endif
    uint8_t* buffer = data;
    memcpy(buffer, &CPU, sizeof(CPU));
    buffer += sizeof(CPU);
@@ -616,12 +623,14 @@ bool retro_serialize(void* data, size_t size)
    buffer += 0x20000;
    memcpy(buffer, Memory.FillRAM, 0x8000);
    buffer += 0x8000;
+#ifndef USE_BLARGG_APU
    memcpy(buffer, &APU, sizeof(APU));
    buffer += sizeof(APU);
    memcpy(buffer, &IAPU, sizeof(IAPU));
    buffer += sizeof(IAPU);
    memcpy(buffer, IAPU.RAM, 0x10000);
    buffer += 0x10000;
+#endif
 
    SA1.Registers.PC = SA1.PC - SA1.PCBase;
    S9xSA1PackStatus();
@@ -643,9 +652,9 @@ bool retro_unserialize(const void* data, size_t size)
       return false;
 
    S9xReset();
-
+#ifndef USE_BLARGG_APU
    uint8* IAPU_RAM_current = IAPU.RAM;
-
+#endif
    memcpy(&CPU, buffer, sizeof(CPU));
    buffer += sizeof(CPU);
    memcpy(&ICPU, buffer, sizeof(ICPU));
@@ -662,6 +671,7 @@ bool retro_unserialize(const void* data, size_t size)
    buffer += 0x20000;
    memcpy(Memory.FillRAM, buffer, 0x8000);
    buffer += 0x8000;
+#ifndef USE_BLARGG_APU
    memcpy(&APU, buffer, sizeof(APU));
    buffer += sizeof(APU);
    memcpy(&IAPU, buffer, sizeof(IAPU));
@@ -671,6 +681,7 @@ bool retro_unserialize(const void* data, size_t size)
    IAPU.RAM = IAPU_RAM_current;
    memcpy(IAPU.RAM, buffer, 0x10000);
    buffer += 0x10000;
+#endif
 
    memcpy(&SA1, buffer, sizeof(SA1));
    buffer += sizeof(SA1);
@@ -686,9 +697,11 @@ bool retro_unserialize(const void* data, size_t size)
    CPU.InDMA = FALSE;
    S9xFixColourBrightness();
 
-   S9xAPUUnpackStatus();
    S9xSA1UnpackStatus();
+#ifndef USE_BLARGG_APU
+   S9xAPUUnpackStatus();
    S9xFixSoundAfterSnapshotLoad();
+#endif
    ICPU.ShiftedPB = ICPU.Registers.PB << 16;
    ICPU.ShiftedDB = ICPU.Registers.DB << 16;
    S9xSetPCBase(ICPU.ShiftedPB + ICPU.Registers.PC);
@@ -730,7 +743,11 @@ bool retro_load_game(const struct retro_game_info* game)
 
    samples_per_frame = av_info.timing.sample_rate / av_info.timing.fps;
 
+#ifdef USE_BLARGG_APU
+   Settings.SoundPlaybackRate = av_info.timing.sample_rate;
+#else
    S9xSetPlaybackRate(av_info.timing.sample_rate);
+#endif
 
    return true;
 }

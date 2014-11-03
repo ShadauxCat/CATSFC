@@ -886,6 +886,7 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
       case 0x217d:
       case 0x217e:
       case 0x217f:
+#ifndef USE_BLARGG_APU
 #ifdef SPCTOOL
          _SPCInPB(Address & 3, Byte);
 #else
@@ -897,6 +898,7 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
          IAPU.WaitCounter++;
 #endif
 #endif // SPCTOOL
+#endif // #ifndef USE_BLARGG_APU
          break;
       case 0x2180:
          REGISTER_2180(Byte);
@@ -1269,6 +1271,7 @@ uint8 S9xGetPPU(uint16 Address)
       case 0x217d:
       case 0x217e:
       case 0x217f:
+#ifndef USE_BLARGG_APU
 #ifdef SPCTOOL
          return ((uint8) _SPCOutP [Address & 3]);
 #else
@@ -1291,7 +1294,7 @@ uint8 S9xGetPPU(uint16 Address)
 
             return (APU.OutPorts [Address & 3]);
          }
-
+#endif
          switch (Settings.SoundSkipMethod)
          {
          case 0:

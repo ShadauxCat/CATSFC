@@ -110,9 +110,11 @@ SICPU ICPU;
 
 SCPUState CPU;
 
+#ifndef USE_BLARGG_APU
 SAPU APU;
-
 SIAPU IAPU;
+SSoundData SoundData;
+#endif
 
 SSettings Settings;
 
@@ -120,7 +122,7 @@ SDSP1 DSP1;
 
 SSA1 SA1;
 
-SSoundData SoundData;
+
 
 SnesModel M1SNES = {1, 3, 2};
 SnesModel M2SNES = {2, 4, 3};
@@ -169,6 +171,7 @@ uint32 even_low[4][16];
 SCheatData Cheat;
 #endif
 
+#ifndef USE_BLARGG_APU
 SoundStatus so;
 
 int Echo [24000];
@@ -178,7 +181,7 @@ int EchoBuffer [SOUND_BUFFER_SIZE];
 int FilterTaps [8];
 unsigned long Z = 0;
 int Loop [16];
-
+#endif
 uint16 SignExtend [2] =
 {
    0x00, 0xff00

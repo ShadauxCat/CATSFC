@@ -612,6 +612,8 @@ void S9xDoHBlankProcessing_SFX()
       if (CPU.V_Counter >= FIRST_VISIBLE_LINE &&
             CPU.V_Counter < PPU.ScreenHeight + FIRST_VISIBLE_LINE)
          RenderLine(CPU.V_Counter - FIRST_VISIBLE_LINE);
+
+#ifndef USE_BLARGG_APU
       // Use TimerErrorCounter to skip update of SPC700 timers once
       // every 128 updates. Needed because this section of code is called
       // once every emulated 63.5 microseconds, which coresponds to
@@ -665,6 +667,7 @@ void S9xDoHBlankProcessing_SFX()
             }
          }
       }
+#endif // #ifndef USE_BLARGG_APU
       break;
 
    case HTIMER_BEFORE_EVENT:
@@ -700,6 +703,7 @@ void S9xDoHBlankProcessing_NoSFX()
 
    case HBLANK_END_EVENT:
 
+#ifndef USE_BLARGG_APU
 #ifndef STORM
       if (Settings.SoundSync)
          S9xGenerateSound();
@@ -715,6 +719,11 @@ void S9xDoHBlankProcessing_NoSFX()
       }
       else
          APU.Cycles = 0;
+#else
+      S9xAPUExecute();
+      CPU.Cycles -= Settings.H_Max;
+      S9xAPUSetReferenceTime(CPU.Cycles);
+#endif
 
       CPU.NextEvent = -1;
       ICPU.Scanline++;
@@ -804,6 +813,7 @@ void S9xDoHBlankProcessing_NoSFX()
       // if (IAPU.TimerErrorCounter >= )
       //     IAPU.TimerErrorCounter = 0;
       // else
+#ifndef USE_BLARGG_APU
       {
          if (APU.TimerEnabled [2])
          {
@@ -848,6 +858,7 @@ void S9xDoHBlankProcessing_NoSFX()
             }
          }
       }
+#endif
       break;
 
    case HTIMER_BEFORE_EVENT:

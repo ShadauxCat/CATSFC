@@ -210,5 +210,50 @@ extern void (*S9xApuOpcodes [256])(void);
 #define FREQUENCY_MASK 0x3fff
 #endif
 
+#else
+#include "apu_blargg.h"
+#define ONE_APU_CYCLE 21
+#define APU_EXECUTE1() do{}while(0)
+#define APU_EXECUTE()  do{}while(0)
+
+//typedef struct
+//{
+//   uint8*  PC;
+//   SAPURegisters Registers;
+//   uint8*  RAM;
+//   uint8*  DirectPage;
+//   bool8  APUExecuting;
+//   uint8  Bit;
+//   uint32 Address;
+//   uint8*  WaitAddress1;
+//   uint8*  WaitAddress2;
+//   uint32 WaitCounter;
+//   uint8  _Carry;
+//   uint8  _Zero;
+//   uint8  _Overflow;
+//   uint32 TimerErrorCounter;
+//   uint32 Scanline;
+//   int32  OneCycle;
+//   int32  TwoCycles;
+//} SIAPU;
+
+//typedef struct
+//{
+//   int32  Cycles;
+//   bool8  ShowROM;
+//   uint8  Flags;
+//   uint8  KeyedChannels;
+//   uint8  OutPorts [4];
+//   uint8  DSP [0x80];
+//   uint8  ExtraRAM [64];
+//   uint16 Timer [3];
+//   uint16 TimerTarget [3];
+//   bool8  TimerEnabled [3];
+//   bool8  TimerValueWritten [3];
+//} SAPU;
+
+//SAPU APU;
+//SIAPU IAPU;
+
 #endif
 

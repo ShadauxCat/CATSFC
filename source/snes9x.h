@@ -322,6 +322,9 @@ typedef struct
    bool8  OBC1;
    /* Sound options */
    uint32 SoundPlaybackRate;
+#ifdef USE_BLARGG_APU
+   uint32 SoundInputRate;
+#endif
    bool8  TraceSoundDSP;
    bool8  EightBitConsoleSound;  // due to caching, this needs S9xSetEightBitConsoleSound()
    int    SoundBufferSize;

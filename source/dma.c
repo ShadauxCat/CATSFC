@@ -811,10 +811,11 @@ void S9xDoDMA(uint8 Channel)
       }
       while (count);
    }
-
+#ifndef USE_BLARGG_APU
 #ifdef SPC700_C
    IAPU.APUExecuting = Settings.APUEnabled;
    APU_EXECUTE();
+#endif
 #endif
    if (Settings.SuperFX)
       while (CPU.Cycles > CPU.NextEvent)
