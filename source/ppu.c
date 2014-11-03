@@ -1326,9 +1326,9 @@ uint8 S9xGetPPU(uint16 Address)
          }
          return (Memory.FillRAM[Address]);
 
-#else
+#else // SPCTOOL
          return (S9xAPUReadPort(Address & 3));
-#endif // SPCTOOL
+#endif //#ifndef USE_BLARGG_APU
 
       case 0x2180:
          // Read WRAM
