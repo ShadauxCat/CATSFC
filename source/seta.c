@@ -88,15 +88,15 @@
 *******************************************************************************/
 #include "seta.h"
 
-void (*SetSETA)(uint32, uint8) = &S9xSetST010;
-uint8(*GetSETA)(uint32) = &S9xGetST010;
+void (*SetSETA)(uint32_t, uint8_t) = &S9xSetST010;
+uint8_t(*GetSETA)(uint32_t) = &S9xGetST010;
 
-uint8 S9xGetSetaDSP(uint32 Address)
+uint8_t S9xGetSetaDSP(uint32_t Address)
 {
    return GetSETA(Address);
 }
 
-void S9xSetSetaDSP(uint8 Byte, uint32 Address)
+void S9xSetSetaDSP(uint8_t Byte, uint32_t Address)
 {
    SetSETA(Address, Byte);
 }

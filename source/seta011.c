@@ -93,15 +93,15 @@
 ST011_Regs ST011;
 
 // shougi playboard
-uint8 board[9][9];
+uint8_t board[9][9];
 
 // debug
 static int line = 0;
 
-uint8 S9xGetST011(uint32 Address)
+uint8_t S9xGetST011(uint32_t Address)
 {
-   uint8 t;
-   uint16 address = (uint16) Address & 0xFFFF;
+   uint8_t t;
+   uint16_t address = (uint16_t) Address & 0xFFFF;
 
    // line counter
    line++;
@@ -120,9 +120,9 @@ uint8 S9xGetST011(uint32 Address)
    return t;
 }
 
-void S9xSetST011(uint32 Address, uint8 Byte)
+void S9xSetST011(uint32_t Address, uint8_t Byte)
 {
-   uint16 address = (uint16) Address & 0xFFFF;
+   uint16_t address = (uint16_t) Address & 0xFFFF;
    static bool reset = false;
 
    // debug

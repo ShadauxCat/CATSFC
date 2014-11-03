@@ -97,7 +97,7 @@
 #include <unistd.h>
 #endif
 
-void S9xSetSDD1MemoryMap(uint32 bank, uint32 value)
+void S9xSetSDD1MemoryMap(uint32_t bank, uint32_t value)
 {
    bank = 0xc00 + bank * 0x100;
    value = value * 1024 * 1024;
@@ -106,7 +106,7 @@ void S9xSetSDD1MemoryMap(uint32 bank, uint32 value)
 
    for (c = 0; c < 0x100; c += 16)
    {
-      uint8* block = &Memory.ROM [value + (c << 12)];
+      uint8_t* block = &Memory.ROM [value + (c << 12)];
       int i;
 
       for (i = c; i < c + 16; i++)
@@ -134,10 +134,10 @@ void S9xSDD1PostLoadState()
 
 static int S9xCompareSDD1LoggedDataEntries(const void* p1, const void* p2)
 {
-   uint8* b1 = (uint8*) p1;
-   uint8* b2 = (uint8*) p2;
-   uint32 a1 = (*b1 << 16) + (*(b1 + 1) << 8) + *(b1 + 2);
-   uint32 a2 = (*b2 << 16) + (*(b2 + 1) << 8) + *(b2 + 2);
+   uint8_t* b1 = (uint8_t*) p1;
+   uint8_t* b2 = (uint8_t*) p2;
+   uint32_t a1 = (*b1 << 16) + (*(b1 + 1) << 8) + *(b1 + 2);
+   uint32_t a2 = (*b2 << 16) + (*(b2 + 1) << 8) + *(b2 + 2);
 
    return (a1 - a2);
 }

@@ -114,19 +114,19 @@ typedef struct
 
 typedef struct
 {
-   uint8*  Speed;
+   uint8_t*  Speed;
    SOpcodes* S9xOpcodes;
    SRegisters Registers;
-   uint8  _Carry;
-   uint8  _Zero;
-   uint8  _Negative;
-   uint8  _Overflow;
-   bool8  CPUExecuting;
-   uint32 ShiftedPB;
-   uint32 ShiftedDB;
-   uint32 Frame;
-   uint32 Scanline;
-   uint32 FrameAdvanceCount;
+   uint8_t  _Carry;
+   uint8_t  _Zero;
+   uint8_t  _Negative;
+   uint8_t  _Overflow;
+   bool  CPUExecuting;
+   uint32_t ShiftedPB;
+   uint32_t ShiftedDB;
+   uint32_t Frame;
+   uint32_t Scanline;
+   uint32_t FrameAdvanceCount;
 } SICPU;
 
 void S9xMainLoop(void);
@@ -134,8 +134,8 @@ void S9xReset(void);
 void S9xSoftReset(void);
 void S9xDoHBlankProcessing_SFX();
 void S9xDoHBlankProcessing_NoSFX();
-void S9xClearIRQ(uint32);
-void S9xSetIRQ(uint32);
+void S9xClearIRQ(uint32_t);
+void S9xSetIRQ(uint32_t);
 
 extern SOpcodes S9xOpcodesE1 [256];
 extern SOpcodes S9xOpcodesM1X1 [256];
@@ -160,7 +160,7 @@ STATIC inline void S9xPackStatus()
                         (ICPU._Negative & 0x80) | (ICPU._Overflow << 6);
 }
 
-STATIC inline void CLEAR_IRQ_SOURCE(uint32 M)
+STATIC inline void CLEAR_IRQ_SOURCE(uint32_t M)
 {
    CPU.IRQActive &= ~M;
    if (!CPU.IRQActive)
@@ -189,7 +189,7 @@ STATIC inline void S9xFixCycles()
 
 STATIC inline void S9xReschedule()
 {
-   uint8 which;
+   uint8_t which;
    long max;
 
    if (CPU.WhichEvent == HBLANK_START_EVENT ||

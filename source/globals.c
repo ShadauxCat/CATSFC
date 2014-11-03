@@ -129,7 +129,7 @@ SnesModel M2SNES = {2, 4, 3};
 SnesModel* Model = &M1SNES;
 
 
-uint8* C4RAM = NULL;
+uint8_t* C4RAM = NULL;
 
 long OpAddress = 0;
 
@@ -137,7 +137,7 @@ CMemory Memory;
 
 SSNESGameFixes SNESGameFixes;
 
-uint8 OpenBus = 0;
+uint8_t OpenBus = 0;
 
 struct FxInit_s SuperFX;
 
@@ -146,8 +146,8 @@ InternalPPU IPPU;
 
 SDMA DMA[8];
 
-uint8* HDMAMemPointers [8];
-uint8* HDMABasePointers [8];
+uint8_t* HDMAMemPointers [8];
+uint8_t* HDMABasePointers [8];
 
 SBG BG;
 
@@ -155,17 +155,17 @@ struct SGFX GFX;
 struct SLineData LineData[240];
 struct SLineMatrixData LineMatrixData [240];
 
-uint8 Mode7Depths [2];
+uint8_t Mode7Depths [2];
 NormalTileRenderer DrawTilePtr = NULL;
 ClippedTileRenderer DrawClippedTilePtr = NULL;
 NormalTileRenderer DrawHiResTilePtr = NULL;
 ClippedTileRenderer DrawHiResClippedTilePtr = NULL;
 LargePixelRenderer DrawLargePixelPtr = NULL;
 
-uint32 odd_high[4][16];
-uint32 odd_low[4][16];
-uint32 even_high[4][16];
-uint32 even_low[4][16];
+uint32_t odd_high[4][16];
+uint32_t odd_low[4][16];
+uint32_t even_high[4][16];
+uint32_t even_low[4][16];
 
 #ifdef WANT_CHEATS
 SCheatData Cheat;
@@ -182,7 +182,7 @@ int FilterTaps [8];
 unsigned long Z = 0;
 int Loop [16];
 #endif
-uint16 SignExtend [2] =
+uint16_t SignExtend [2] =
 {
    0x00, 0xff00
 };
@@ -193,7 +193,7 @@ int HDMA_ModeByteCounts [8] =
    1, 2, 2, 4, 4, 4, 2, 4
 };
 
-uint8 BitShifts[8][4] =
+uint8_t BitShifts[8][4] =
 {
    {2, 2, 2, 2}, // 0
    {4, 4, 2, 0}, // 1
@@ -204,7 +204,7 @@ uint8 BitShifts[8][4] =
    {4, 0, 0, 0}, // 6
    {8, 0, 0, 0}  // 7
 };
-uint8 TileShifts[8][4] =
+uint8_t TileShifts[8][4] =
 {
    {4, 4, 4, 4}, // 0
    {5, 5, 4, 0}, // 1
@@ -215,7 +215,7 @@ uint8 TileShifts[8][4] =
    {5, 0, 0, 0}, // 6
    {6, 0, 0, 0}  // 7
 };
-uint8 PaletteShifts[8][4] =
+uint8_t PaletteShifts[8][4] =
 {
    {2, 2, 2, 2}, // 0
    {4, 4, 2, 0}, // 1
@@ -226,7 +226,7 @@ uint8 PaletteShifts[8][4] =
    {4, 0, 0, 0}, // 6
    {0, 0, 0, 0}  // 7
 };
-uint8 PaletteMasks[8][4] =
+uint8_t PaletteMasks[8][4] =
 {
    {7, 7, 7, 7}, // 0
    {7, 7, 7, 0}, // 1
@@ -237,7 +237,7 @@ uint8 PaletteMasks[8][4] =
    {7, 0, 0, 0}, // 6
    {0, 0, 0, 0}  // 7
 };
-uint8 Depths[8][4] =
+uint8_t Depths[8][4] =
 {
    {TILE_2BIT, TILE_2BIT, TILE_2BIT, TILE_2BIT}, // 0
    {TILE_4BIT, TILE_4BIT, TILE_2BIT, 0},         // 1
@@ -248,11 +248,11 @@ uint8 Depths[8][4] =
    {TILE_4BIT, 0, 0, 0},                         // 6
    {0, 0, 0, 0}                                  // 7
 };
-uint8 BGSizes [2] =
+uint8_t BGSizes [2] =
 {
    8, 16
 };
-uint16 DirectColourMaps [8][256];
+uint16_t DirectColourMaps [8][256];
 
 long FilterValues[4][2] =
 {
@@ -269,7 +269,7 @@ int NoiseFreq [32] =
    5300, 6400, 8000, 10700, 16000, 32000
 };
 
-uint32 HeadMask [4] =
+uint32_t HeadMask [4] =
 {
 #ifdef LSB_FIRST
    0xffffffff, 0xffffff00, 0xffff0000, 0xff000000
@@ -278,7 +278,7 @@ uint32 HeadMask [4] =
 #endif
 };
 
-uint32 TailMask [5] =
+uint32_t TailMask [5] =
 {
 #ifdef LSB_FIRST
    0x00000000, 0x000000ff, 0x0000ffff, 0x00ffffff, 0xffffffff
@@ -287,7 +287,7 @@ uint32 TailMask [5] =
 #endif
 };
 
-uint8 APUROM [64] =
+uint8_t APUROM [64] =
 {
    0xCD, 0xEF, 0xBD, 0xE8, 0x00, 0xC6, 0x1D, 0xD0, 0xFC, 0x8F, 0xAA, 0xF4, 0x8F,
    0xBB, 0xF5, 0x78, 0xCC, 0xF4, 0xD0, 0xFB, 0x2F, 0x19, 0xEB, 0xF4, 0xD0, 0xFC,
@@ -298,7 +298,7 @@ uint8 APUROM [64] =
 
 
 // Raw SPC700 instruction cycle lengths
-uint16 S9xAPUCycleLengths [256] =
+uint16_t S9xAPUCycleLengths [256] =
 {
    /*        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f, */
    /* 00 */  2, 8, 4, 5, 3, 4, 3, 6, 2, 6, 5, 4, 5, 4, 6, 8,
@@ -321,7 +321,7 @@ uint16 S9xAPUCycleLengths [256] =
 
 // Actual data used by CPU emulation, will be scaled by APUReset routine
 // to be relative to the 65c816 instruction lengths.
-uint16 S9xAPUCycles [256] =
+uint16_t S9xAPUCycles [256] =
 {
    /*        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f, */
    /* 00 */  2, 8, 4, 5, 3, 4, 3, 6, 2, 6, 5, 4, 5, 4, 6, 8,

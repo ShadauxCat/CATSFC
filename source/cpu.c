@@ -130,11 +130,11 @@ void S9xResetCPU()
    ClearFlags(Decimal);
 
    CPU.Flags = CPU.Flags & (DEBUG_MODE_FLAG | TRACE_FLAG);
-   CPU.BranchSkip = FALSE;
-   CPU.NMIActive = FALSE;
-   CPU.IRQActive = FALSE;
-   CPU.WaitingForInterrupt = FALSE;
-   CPU.InDMA = FALSE;
+   CPU.BranchSkip = false;
+   CPU.NMIActive = false;
+   CPU.IRQActive = false;
+   CPU.WaitingForInterrupt = false;
+   CPU.InDMA = false;
    CPU.WhichEvent = HBLANK_START_EVENT;
    CPU.PC = NULL;
    CPU.PCBase = NULL;
@@ -148,16 +148,16 @@ void S9xResetCPU()
    CPU.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
    CPU.FastROMSpeed = SLOW_ONE_CYCLE;
    CPU.AutoSaveTimer = 0;
-   CPU.SRAMModified = FALSE;
+   CPU.SRAMModified = false;
    // CPU.NMITriggerPoint = 4; // Set when ROM image loaded
-   CPU.BRKTriggered = FALSE;
-   //CPU.TriedInterleavedMode2 = FALSE; // Reset when ROM image loaded
+   CPU.BRKTriggered = false;
+   //CPU.TriedInterleavedMode2 = false; // Reset when ROM image loaded
    CPU.NMICycleCount = 0;
    CPU.IRQCycleCount = 0;
    S9xSetPCBase(ICPU.Registers.PC);
 
    ICPU.S9xOpcodes = S9xOpcodesE1;
-   ICPU.CPUExecuting = TRUE;
+   ICPU.CPUExecuting = true;
 
    S9xUnpackStatus();
 }

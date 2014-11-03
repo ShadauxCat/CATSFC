@@ -97,38 +97,38 @@
 
 typedef struct
 {
-   uint8*  PC;
+   uint8_t*  PC;
    SAPURegisters Registers;
-   uint8*  RAM;
-   uint8*  DirectPage;
-   bool8  APUExecuting;
-   uint8  Bit;
-   uint32 Address;
-   uint8*  WaitAddress1;
-   uint8*  WaitAddress2;
-   uint32 WaitCounter;
-   uint8  _Carry;
-   uint8  _Zero;
-   uint8  _Overflow;
-   uint32 TimerErrorCounter;
-   uint32 Scanline;
-   int32  OneCycle;
-   int32  TwoCycles;
+   uint8_t*  RAM;
+   uint8_t*  DirectPage;
+   bool  APUExecuting;
+   uint8_t  Bit;
+   uint32_t Address;
+   uint8_t*  WaitAddress1;
+   uint8_t*  WaitAddress2;
+   uint32_t WaitCounter;
+   uint8_t  _Carry;
+   uint8_t  _Zero;
+   uint8_t  _Overflow;
+   uint32_t TimerErrorCounter;
+   uint32_t Scanline;
+   int32_t  OneCycle;
+   int32_t  TwoCycles;
 } SIAPU;
 
 typedef struct
 {
-   int32  Cycles;
-   bool8  ShowROM;
-   uint8  Flags;
-   uint8  KeyedChannels;
-   uint8  OutPorts [4];
-   uint8  DSP [0x80];
-   uint8  ExtraRAM [64];
-   uint16 Timer [3];
-   uint16 TimerTarget [3];
-   bool8  TimerEnabled [3];
-   bool8  TimerValueWritten [3];
+   int32_t  Cycles;
+   bool  ShowROM;
+   uint8_t  Flags;
+   uint8_t  KeyedChannels;
+   uint8_t  OutPorts [4];
+   uint8_t  DSP [0x80];
+   uint8_t  ExtraRAM [64];
+   uint16_t Timer [3];
+   uint16_t TimerTarget [3];
+   bool  TimerEnabled [3];
+   bool  TimerValueWritten [3];
 } SAPU;
 
 SAPU APU;
@@ -149,20 +149,20 @@ STATIC inline void S9xAPUPackStatus()
 }
 
 void S9xResetAPU(void);
-bool8 S9xInitAPU();
+bool S9xInitAPU();
 void S9xDeinitAPU();
 void S9xDecacheSamples();
 int S9xTraceAPU();
-int S9xAPUOPrint(char* buffer, uint16 Address);
-void S9xSetAPUControl(uint8 byte);
-void S9xSetAPUDSP(uint8 byte);
-uint8 S9xGetAPUDSP();
-void S9xSetAPUTimer(uint16 Address, uint8 byte);
-bool8 S9xInitSound(int quality, bool8 stereo, int buffer_size);
-void S9xOpenCloseSoundTracingFile(bool8);
+int S9xAPUOPrint(char* buffer, uint16_t Address);
+void S9xSetAPUControl(uint8_t byte);
+void S9xSetAPUDSP(uint8_t byte);
+uint8_t S9xGetAPUDSP();
+void S9xSetAPUTimer(uint16_t Address, uint8_t byte);
+bool S9xInitSound(int quality, bool stereo, int buffer_size);
+void S9xOpenCloseSoundTracingFile(bool);
 void S9xPrintAPUState();
-extern uint16 S9xAPUCycles [256];   // Scaled cycle lengths
-extern uint16 S9xAPUCycleLengths [256];   // Raw data.
+extern uint16_t S9xAPUCycles [256];   // Scaled cycle lengths
+extern uint16_t S9xAPUCycleLengths [256];   // Raw data.
 extern void (*S9xApuOpcodes [256])(void);
 
 
@@ -218,38 +218,38 @@ extern void (*S9xApuOpcodes [256])(void);
 
 //typedef struct
 //{
-//   uint8*  PC;
+//   uint8_t*  PC;
 //   SAPURegisters Registers;
-//   uint8*  RAM;
-//   uint8*  DirectPage;
-//   bool8  APUExecuting;
-//   uint8  Bit;
-//   uint32 Address;
-//   uint8*  WaitAddress1;
-//   uint8*  WaitAddress2;
-//   uint32 WaitCounter;
-//   uint8  _Carry;
-//   uint8  _Zero;
-//   uint8  _Overflow;
-//   uint32 TimerErrorCounter;
-//   uint32 Scanline;
-//   int32  OneCycle;
-//   int32  TwoCycles;
+//   uint8_t*  RAM;
+//   uint8_t*  DirectPage;
+//   bool  APUExecuting;
+//   uint8_t  Bit;
+//   uint32_t Address;
+//   uint8_t*  WaitAddress1;
+//   uint8_t*  WaitAddress2;
+//   uint32_t WaitCounter;
+//   uint8_t  _Carry;
+//   uint8_t  _Zero;
+//   uint8_t  _Overflow;
+//   uint32_t TimerErrorCounter;
+//   uint32_t Scanline;
+//   int32_t  OneCycle;
+//   int32_t  TwoCycles;
 //} SIAPU;
 
 //typedef struct
 //{
-//   int32  Cycles;
-//   bool8  ShowROM;
-//   uint8  Flags;
-//   uint8  KeyedChannels;
-//   uint8  OutPorts [4];
-//   uint8  DSP [0x80];
-//   uint8  ExtraRAM [64];
-//   uint16 Timer [3];
-//   uint16 TimerTarget [3];
-//   bool8  TimerEnabled [3];
-//   bool8  TimerValueWritten [3];
+//   int32_t  Cycles;
+//   bool  ShowROM;
+//   uint8_t  Flags;
+//   uint8_t  KeyedChannels;
+//   uint8_t  OutPorts [4];
+//   uint8_t  DSP [0x80];
+//   uint8_t  ExtraRAM [64];
+//   uint16_t Timer [3];
+//   uint16_t TimerTarget [3];
+//   bool  TimerEnabled [3];
+//   bool  TimerValueWritten [3];
 //} SAPU;
 
 //SAPU APU;

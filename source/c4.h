@@ -91,30 +91,30 @@
 
 #include "port.h"
 
-extern int16 C4WFXVal;
-extern int16 C4WFYVal;
-extern int16 C4WFZVal;
-extern int16 C4WFX2Val;
-extern int16 C4WFY2Val;
-extern int16 C4WFDist;
-extern int16 C4WFScale;
+extern int16_t C4WFXVal;
+extern int16_t C4WFYVal;
+extern int16_t C4WFZVal;
+extern int16_t C4WFX2Val;
+extern int16_t C4WFY2Val;
+extern int16_t C4WFDist;
+extern int16_t C4WFScale;
 
 void C4TransfWireFrame();
 void C4TransfWireFrame2();
 void C4CalcWireFrame();
 
-extern int16 C41FXVal;
-extern int16 C41FYVal;
-extern int16 C41FAngleRes;
-extern int16 C41FDist;
-extern int16 C41FDistVal;
+extern int16_t C41FXVal;
+extern int16_t C41FYVal;
+extern int16_t C41FAngleRes;
+extern int16_t C41FDist;
+extern int16_t C41FDistVal;
 
 void C4Op1F();
 void C4Op15();
 void C4Op0D();
 
-extern int16 C4CosTable[];
-extern int16 C4SinTable[];
+extern int16_t C4CosTable[];
+extern int16_t C4SinTable[];
 
 #endif
 

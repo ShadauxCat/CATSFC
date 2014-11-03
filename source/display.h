@@ -97,9 +97,9 @@ char* S9xParseArgs(char** argv, int argc);
 #ifdef ACCUMULATE_JOYPAD
 void NDSSFCAccumulateJoypad();
 #endif
-uint32 S9xReadJoypad(int port);
-bool8 S9xReadMousePosition(int which1_0_to_1, int* x, int* y, uint32* buttons);
-bool8 S9xReadSuperScopePosition(int* x, int* y, uint32* buttons);
+uint32_t S9xReadJoypad(int port);
+bool S9xReadMousePosition(int which1_0_to_1, int* x, int* y, uint32_t* buttons);
+bool S9xReadSuperScopePosition(int* x, int* y, uint32_t* buttons);
 
 void S9xUsage();
 void S9xInitDisplay(void);
@@ -110,11 +110,11 @@ void S9xToggleSoundChannel(int channel);
 void S9xSetInfoString(const char* string);
 int S9xMinCommandLineArgs();
 void S9xNextController();
-bool8 S9xLoadROMImage(const char* string);
+bool S9xLoadROMImage(const char* string);
 const char* S9xSelectFilename(const char* def, const char* dir,
                               const char* ext, const char* title);
 
-const char* S9xChooseFilename(bool8 read_only);
+const char* S9xChooseFilename(bool read_only);
 
 const char* S9xBasename(const char* filename);
 

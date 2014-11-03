@@ -90,7 +90,7 @@
 
 #ifdef __DJGPP__
 #include <allegro.h>
-#undef TRUE
+#undef true
 #endif
 
 #include <stdlib.h>
@@ -133,20 +133,20 @@
 #include "memmap.h"
 #include "cpuexec.h"
 
-extern int32 Echo [24000];
-extern int32 DummyEchoBuffer [SOUND_BUFFER_SIZE];
-extern int32 MixBuffer [SOUND_BUFFER_SIZE];
-extern int32 EchoBuffer [SOUND_BUFFER_SIZE];
-extern int32 FilterTaps [8];
-static uint8 FilterTapDefinitionBitfield;
+extern int32_t Echo [24000];
+extern int32_t DummyEchoBuffer [SOUND_BUFFER_SIZE];
+extern int32_t MixBuffer [SOUND_BUFFER_SIZE];
+extern int32_t EchoBuffer [SOUND_BUFFER_SIZE];
+extern int32_t FilterTaps [8];
+static uint8_t FilterTapDefinitionBitfield;
 // In the above, bit I is set if FilterTaps[I] is non-zero.
 extern unsigned long Z;
-extern int32 Loop [16];
+extern int32_t Loop [16];
 
 extern long FilterValues[4][2];
-extern int32 NoiseFreq [32];
+extern int32_t NoiseFreq [32];
 
-static int32 noise_gen;
+static int32_t noise_gen;
 
 #undef ABS
 #define ABS(a) ((a) < 0 ? -(a) : (a))
@@ -159,8 +159,8 @@ static int32 noise_gen;
 #define VOL_DIV16 0x0080
 #define ENVX_SHIFT 24
 
-void DecodeBlockAsm(int8*, int16*, int32*, int32*);
-void DecodeBlockAsm2(int8*, int16*, int32*, int32*);
+void DecodeBlockAsm(int8_t*, int16_t*, int32_t*, int32_t*);
+void DecodeBlockAsm2(int8_t*, int16_t*, int32_t*, int32_t*);
 
 // F is channel's current frequency and M is the 16-bit modulation waveform
 // from the previous channel multiplied by the current envelope volume level.
@@ -170,20 +170,20 @@ void DecodeBlockAsm2(int8*, int16*, int32*, int32*);
 #define LAST_SAMPLE 0xffffff
 #define JUST_PLAYED_LAST_SAMPLE(c) ((c)->sample_pointer >= LAST_SAMPLE)
 
-void S9xSetEightBitConsoleSound(bool8 Enabled)
+void S9xSetEightBitConsoleSound(bool Enabled)
 {
    if (Settings.EightBitConsoleSound != Enabled)
    {
       Settings.EightBitConsoleSound = Enabled;
       int i;
       for (i = 0; i < 8; i++)
-         SoundData.channels[i].needs_decode = TRUE;
+         SoundData.channels[i].needs_decode = true;
    }
 }
 
-STATIC inline uint8* S9xGetSampleAddress(int sample_number)
+STATIC inline uint8_t* S9xGetSampleAddress(int sample_number)
 {
-   uint32 addr = (((APU.DSP[APU_DIR] << 8) + (sample_number << 2)) & 0xffff);
+   uint32_t addr = (((APU.DSP[APU_DIR] << 8) + (sample_number << 2)) & 0xffff);
    return (IAPU.RAM + addr);
 }
 
@@ -220,19 +220,19 @@ void S9xSetEnvRate(Channel* ch, unsigned long rate, int direction, int target)
    else
       ch->direction = direction;
 
-   static int64 steps [] =
+   static int64_t steps [] =
    {
       // 0, 64, 1238, 1238, 256, 1, 64, 109, 64, 1238
       0,
-      (int64) FIXED_POINT * 1000 * 64,
-      (int64) FIXED_POINT * 1000 * 619,
-      (int64) FIXED_POINT * 1000 * 619,
-      (int64) FIXED_POINT * 1000 * 128,
-      (int64) FIXED_POINT * 1000 * 1,
-      (int64) FIXED_POINT * 1000 * 64,
-      (int64) FIXED_POINT * 1000 * 55,
-      (int64) FIXED_POINT * 1000 * 64,
-      (int64) FIXED_POINT * 1000 * 619
+      (int64_t) FIXED_POINT * 1000 * 64,
+      (int64_t) FIXED_POINT * 1000 * 619,
+      (int64_t) FIXED_POINT * 1000 * 619,
+      (int64_t) FIXED_POINT * 1000 * 128,
+      (int64_t) FIXED_POINT * 1000 * 1,
+      (int64_t) FIXED_POINT * 1000 * 64,
+      (int64_t) FIXED_POINT * 1000 * 55,
+      (int64_t) FIXED_POINT * 1000 * 64,
+      (int64_t) FIXED_POINT * 1000 * 619
    };
 
    if (rate == 0 || so.playback_rate == 0)
@@ -284,7 +284,7 @@ void S9xSetEchoVolume(short volume_left, short volume_right)
    SoundData.echo_volume [1] = volume_right;
 }
 
-void S9xSetEchoEnable(uint8 byte)
+void S9xSetEchoEnable(uint8_t byte)
 {
    SoundData.echo_channel_enable = byte;
    if (!SoundData.echo_write_enabled || Settings.DisableSoundEcho)
@@ -323,13 +323,13 @@ void S9xSetEchoDelay(int delay)
    S9xSetEchoEnable(APU.DSP [APU_EON]);
 }
 
-void S9xSetEchoWriteEnable(uint8 byte)
+void S9xSetEchoWriteEnable(uint8_t byte)
 {
    SoundData.echo_write_enabled = byte;
    S9xSetEchoDelay(APU.DSP [APU_EDL] & 15);
 }
 
-void S9xSetFrequencyModulationEnable(uint8 byte)
+void S9xSetFrequencyModulationEnable(uint8_t byte)
 {
    SoundData.pitch_mod = byte & ~1;
 }
@@ -364,14 +364,14 @@ void S9xFixSoundAfterSnapshotLoad()
    int i;
    for (i = 0; i < 8; i++)
    {
-      SoundData.channels[i].needs_decode = TRUE;
+      SoundData.channels[i].needs_decode = true;
       S9xSetSoundFrequency(i, SoundData.channels[i].hertz);
       SoundData.channels [i].envxx = SoundData.channels [i].envx << ENVX_SHIFT;
       SoundData.channels [i].next_sample = 0;
       SoundData.channels [i].interpolate = 0;
-      SoundData.channels [i].previous [0] = (int32)
+      SoundData.channels [i].previous [0] = (int32_t)
                                             SoundData.channels [i].previous16 [0];
-      SoundData.channels [i].previous [1] = (int32)
+      SoundData.channels [i].previous [1] = (int32_t)
                                             SoundData.channels [i].previous16 [1];
    }
    IAPU.Scanline = 0;
@@ -443,11 +443,11 @@ int S9xGetEnvelopeHeight(int channel)
 }
 
 #if 1
-void S9xSetSoundSample(int channel, uint16 sample_number)
+void S9xSetSoundSample(int channel, uint16_t sample_number)
 {
 }
 #else
-void S9xSetSoundSample(int channel, uint16 sample_number)
+void S9xSetSoundSample(int channel, uint16_t sample_number)
 {
    register Channel* ch = &SoundData.channels[channel];
 
@@ -457,11 +457,11 @@ void S9xSetSoundSample(int channel, uint16 sample_number)
       int keep = ch->state;
       ch->state = SOUND_SILENT;
       ch->sample_number = sample_number;
-      ch->loop = FALSE;
-      ch->needs_decode = TRUE;
-      ch->last_block = FALSE;
+      ch->loop = false;
+      ch->needs_decode = true;
+      ch->last_block = false;
       ch->previous [0] = ch->previous[1] = 0;
-      uint8* dir = S9xGetSampleAddress(sample_number);
+      uint8_t* dir = S9xGetSampleAddress(sample_number);
       ch->block_pointer = READ_WORD(dir);
       ch->sample_pointer = 0;
       ch->state = keep;
@@ -476,7 +476,7 @@ void S9xSetSoundFrequency(int channel, int hertz)
       if (SoundData.channels[channel].type == SOUND_NOISE)
          hertz = NoiseFreq [APU.DSP [APU_FLG] & 0x1f];
       SoundData.channels[channel].frequency = (int)
-                                              (((int64) hertz * FIXED_POINT) / so.playback_rate);
+                                              (((int64_t) hertz * FIXED_POINT) / so.playback_rate);
    }
 }
 
@@ -493,7 +493,7 @@ void S9xSetSoundType(int channel, int type_of_sound)
 
 void DecodeBlock(Channel* ch)
 {
-   int32 out;
+   int32_t out;
    unsigned char filter;
    unsigned char shift;
    signed char sample1, sample2;
@@ -502,8 +502,8 @@ void DecodeBlock(Channel* ch)
 
    if (ch->block_pointer > 0x10000 - 9)
    {
-      ch->last_block = TRUE;
-      ch->loop = FALSE;
+      ch->last_block = true;
+      ch->loop = false;
       ch->block = ch->decoded;
       return;
    }
@@ -516,8 +516,8 @@ void DecodeBlock(Channel* ch)
       if ((ch->last_block = filter & 1))
          ch->loop = (filter & 2) != 0;
 
-      int16 interim[16];
-      uint8 interim_byte = 0;
+      int16_t interim[16];
+      uint8_t interim_byte = 0;
 
       compressed++;
       signed short* raw = ch->block = ch->decoded;
@@ -532,10 +532,10 @@ void DecodeBlock(Channel* ch)
 
       filter = filter & 0x0c;
 
-      int32 prev0 = ch->previous [0];
-      int32 prev1 = ch->previous [1];
+      int32_t prev0 = ch->previous [0];
+      int32_t prev1 = ch->previous [1];
 
-      int16 amplitude = 0;
+      int16_t amplitude = 0;
 
       for (i = 8; i != 0; i--)
       {
@@ -581,7 +581,7 @@ void DecodeBlock(Channel* ch)
 
             }
             CLIP16(out);
-            int16 result = (signed short)(out << 1);
+            int16_t result = (signed short)(out << 1);
             if (abs(result) > amplitude)
                amplitude = abs(result);
             interim[interim_byte++] = out;
@@ -592,10 +592,10 @@ void DecodeBlock(Channel* ch)
       ch->previous [0] = prev0;
       ch->previous [1] = prev1;
 
-      int32 total_deviation_from_previous = 0;
+      int32_t total_deviation_from_previous = 0;
       for (i = 1; i < 16; i++)
          total_deviation_from_previous += abs(interim[i] - interim[i - 1]);
-      if (total_deviation_from_previous >= (int32) amplitude * 4)
+      if (total_deviation_from_previous >= (int32_t) amplitude * 4)
       {
          /* Looks like noise. Generate noise. */
          for (i = 0; i < 16; i++)
@@ -722,8 +722,8 @@ void DecodeBlock(Channel* ch)
 
       filter = filter & 0x0c;
 
-      int32 prev0 = ch->previous [0];
-      int32 prev1 = ch->previous [1];
+      int32_t prev0 = ch->previous [0];
+      int32_t prev1 = ch->previous [1];
 
       for (i = 8; i != 0; i--)
       {
@@ -782,11 +782,11 @@ void DecodeBlock(Channel* ch)
 
 static inline void MixStereo(int sample_count)
 {
-   static int32 wave[SOUND_BUFFER_SIZE];
+   static int32_t wave[SOUND_BUFFER_SIZE];
 
    int pitch_mod = SoundData.pitch_mod & ~APU.DSP[APU_NON];
 
-   uint32 J;
+   uint32_t J;
    for (J = 0; J < NUM_CHANNELS; J++)
    {
       Channel* ch = &SoundData.channels[J];
@@ -794,15 +794,15 @@ static inline void MixStereo(int sample_count)
       if (ch->state == SOUND_SILENT || !(so.sound_switch & (1 << J)))
          continue;
 
-      int32 VL, VR;
+      int32_t VL, VR;
       unsigned long freq0 = ch->frequency;
 
-      bool8 mod = pitch_mod & (1 << J);
+      bool mod = pitch_mod & (1 << J);
 
       if (ch->needs_decode)
       {
          DecodeBlock(ch);
-         ch->needs_decode = FALSE;
+         ch->needs_decode = false;
          ch->sample = ch->block[0];
          ch->sample_pointer = freq0 >> FIXED_POINT_SHIFT;
          if (ch->sample_pointer == 0)
@@ -820,8 +820,8 @@ static inline void MixStereo(int sample_count)
       VL = (ch->sample * ch-> left_vol_level) / 128;
       VR = (ch->sample * ch->right_vol_level) / 128;
 
-      uint32 I;
-      for (I = 0; I < (uint32) sample_count; I += 2)
+      uint32_t I;
+      for (I = 0; I < (uint32_t) sample_count; I += 2)
       {
          unsigned long freq = freq0;
 
@@ -831,7 +831,7 @@ static inline void MixStereo(int sample_count)
          ch->env_error += ch->erate;
          if (ch->env_error >= FIXED_POINT)
          {
-            uint32 step = ch->env_error >> FIXED_POINT_SHIFT;
+            uint32_t step = ch->env_error >> FIXED_POINT_SHIFT;
 
             switch (ch->state)
             {
@@ -1010,8 +1010,8 @@ static inline void MixStereo(int sample_count)
                      else
                      {
                         S9xAPUSetEndX(J);
-                        ch->last_block = FALSE;
-                        uint8* dir = S9xGetSampleAddress(ch->sample_number);
+                        ch->last_block = false;
+                        uint8_t* dir = S9xGetSampleAddress(ch->sample_number);
                         ch->block_pointer = READ_WORD(dir + 2);
                      }
                   }
@@ -1030,7 +1030,7 @@ static inline void MixStereo(int sample_count)
                {
                   ch->interpolate = ((ch->next_sample - ch->sample) *
                                      (long) freq) / (long) FIXED_POINT;
-                  ch->sample = (int16)(ch->sample + (((ch->next_sample - ch->sample) *
+                  ch->sample = (int16_t)(ch->sample + (((ch->next_sample - ch->sample) *
                                                       (long)(ch->count)) / (long) FIXED_POINT));
                }
                else
@@ -1052,10 +1052,10 @@ static inline void MixStereo(int sample_count)
          {
             if (ch->interpolate)
             {
-               int32 s = (int32) ch->sample + ch->interpolate;
+               int32_t s = (int32_t) ch->sample + ch->interpolate;
 
                CLIP16(s);
-               ch->sample = (int16) s;
+               ch->sample = (int16_t) s;
                VL = (ch->sample * ch-> left_vol_level) / 128;
                VR = (ch->sample * ch->right_vol_level) / 128;
             }
@@ -1079,11 +1079,11 @@ END_OF_FUNCTION(MixStereo);
 #endif
 
 #ifdef __sun
-extern uint8 int2ulaw(int);
+extern uint8_t int2ulaw(int);
 #endif
 
 // For backwards compatibility with older port specific code
-void S9xMixSamplesO(uint8* buffer, int sample_count, int byte_offset)
+void S9xMixSamplesO(uint8_t* buffer, int sample_count, int byte_offset)
 {
    S9xMixSamples(buffer + byte_offset, sample_count);
 }
@@ -1091,7 +1091,7 @@ void S9xMixSamplesO(uint8* buffer, int sample_count, int byte_offset)
 END_OF_FUNCTION(S9xMixSamplesO);
 #endif
 
-void S9xMixSamples(uint8* buffer, int sample_count)
+void S9xMixSamples(uint8_t* buffer, int sample_count)
 {
    int J;
    int I;
@@ -1188,7 +1188,7 @@ void S9xMixSamples(uint8* buffer, int sample_count)
 END_OF_FUNCTION(S9xMixSamples);
 #endif
 
-void S9xResetSound(bool8 full)
+void S9xResetSound(bool full)
 {
    int i;
    for (i = 0; i < 8; i++)
@@ -1200,7 +1200,7 @@ void S9xResetSound(bool8 full)
       SoundData.channels[i].volume_right = 0;
       SoundData.channels[i].hertz = 0;
       SoundData.channels[i].count = 0;
-      SoundData.channels[i].loop = FALSE;
+      SoundData.channels[i].loop = false;
       SoundData.channels[i].envx_target = 0;
       SoundData.channels[i].env_error = 0;
       SoundData.channels[i].erate = 0;
@@ -1251,16 +1251,16 @@ void S9xResetSound(bool8 full)
 
    SoundData.master_volume [0] = SoundData.master_volume [1] = 127;
    if (so.playback_rate)
-      so.err_rate = (uint32)(FIXED_POINT * SNES_SCANLINE_TIME /
+      so.err_rate = (uint32_t)(FIXED_POINT * SNES_SCANLINE_TIME /
                              (1.0 / so.playback_rate));
    else
       so.err_rate = 0;
 }
 
-void S9xSetPlaybackRate(uint32 playback_rate)
+void S9xSetPlaybackRate(uint32_t playback_rate)
 {
    so.playback_rate = playback_rate;
-   so.err_rate = (uint32)(SNES_SCANLINE_TIME * FIXED_POINT / (1.0 /
+   so.err_rate = (uint32_t)(SNES_SCANLINE_TIME * FIXED_POINT / (1.0 /
                           (double) so.playback_rate));
    S9xSetEchoDelay(APU.DSP [APU_EDL] & 0xf);
    int i;
@@ -1268,14 +1268,14 @@ void S9xSetPlaybackRate(uint32 playback_rate)
       S9xSetSoundFrequency(i, SoundData.channels [i].hertz);
 }
 
-bool8 S9xInitSound(int mode, bool8 stereo, int buffer_size)
+bool S9xInitSound(int mode, bool stereo, int buffer_size)
 {
    so.sound_fd = -1;
    so.sound_switch = 255;
 
    so.playback_rate = 0;
    so.buffer_size = 0;
-   so.encoded = FALSE;
+   so.encoded = false;
 
    if (!(mode & 7))
       return (1);
@@ -1283,7 +1283,7 @@ bool8 S9xInitSound(int mode, bool8 stereo, int buffer_size)
    return (1);
 }
 
-bool8 S9xSetSoundMode(int channel, int mode)
+bool S9xSetSoundMode(int channel, int mode)
 {
    Channel* ch = &SoundData.channels[channel];
 
@@ -1293,7 +1293,7 @@ bool8 S9xSetSoundMode(int channel, int mode)
       if (ch->mode != MODE_NONE)
       {
          ch->mode = MODE_RELEASE;
-         return (TRUE);
+         return (true);
       }
       break;
 
@@ -1306,7 +1306,7 @@ bool8 S9xSetSoundMode(int channel, int mode)
          if (ch->state != SOUND_SILENT)
             ch->state = mode;
 
-         return (TRUE);
+         return (true);
       }
       break;
 
@@ -1318,7 +1318,7 @@ bool8 S9xSetSoundMode(int channel, int mode)
          if (ch->state != SOUND_SILENT)
             ch->state = mode;
 
-         return (TRUE);
+         return (true);
       }
       break;
 
@@ -1326,11 +1326,11 @@ bool8 S9xSetSoundMode(int channel, int mode)
       if (ch->mode == MODE_NONE || ch->mode == MODE_ADSR)
       {
          ch->mode = mode;
-         return (TRUE);
+         return (true);
       }
    }
 
-   return (FALSE);
+   return (false);
 }
 
 void S9xSetSoundControl(int sound_switch)
@@ -1359,11 +1359,11 @@ void S9xPlaySample(int channel)
       ch->type = SOUND_SAMPLE;
 
    S9xSetSoundFrequency(channel, ch->hertz);
-   ch->loop = FALSE;
-   ch->needs_decode = TRUE;
-   ch->last_block = FALSE;
+   ch->loop = false;
+   ch->needs_decode = true;
+   ch->last_block = false;
    ch->previous [0] = ch->previous[1] = 0;
-   uint8* dir = S9xGetSampleAddress(ch->sample_number);
+   uint8_t* dir = S9xGetSampleAddress(ch->sample_number);
    ch->block_pointer = READ_WORD(dir);
    ch->sample_pointer = 0;
    ch->env_error = 0;

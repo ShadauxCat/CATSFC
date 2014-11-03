@@ -98,18 +98,18 @@
 #include "obc1.h"
 #include "seta.h"
 
-extern uint8 OpenBus;
+extern uint8_t OpenBus;
 
-INLINE uint8 S9xGetByte(uint32 Address)
+INLINE uint8_t S9xGetByte(uint32_t Address)
 {
    int block;
-   uint8* GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) &
+   uint8_t* GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) &
                                            MEMMAP_MASK];
 
    if (!CPU.InDMA)
       CPU.Cycles += Memory.MemorySpeed [block];
 
-   if (GetAddress >= (uint8*) MAP_LAST)
+   if (GetAddress >= (uint8_t*) MAP_LAST)
    {
 #ifdef CPU_SHUTDOWN
       if (Memory.BlockIsRAM [block])
@@ -183,7 +183,7 @@ INLINE uint8 S9xGetByte(uint32 Address)
    }
 }
 
-INLINE uint16 S9xGetWord(uint32 Address)
+INLINE uint16_t S9xGetWord(uint32_t Address)
 {
    if ((Address & 0x0fff) == 0x0fff)
    {
@@ -191,21 +191,21 @@ INLINE uint16 S9xGetWord(uint32 Address)
       return (OpenBus | (S9xGetByte(Address + 1) << 8));
    }
    int block;
-   uint8* GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) &
+   uint8_t* GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) &
                                            MEMMAP_MASK];
 
    if (!CPU.InDMA)
       CPU.Cycles += (Memory.MemorySpeed [block] << 1);
 
 
-   if (GetAddress >= (uint8*) MAP_LAST)
+   if (GetAddress >= (uint8_t*) MAP_LAST)
    {
 #ifdef CPU_SHUTDOWN
       if (Memory.BlockIsRAM [block])
          CPU.WaitAddress = CPU.PCAtOpcodeStart;
 #endif
 #ifdef FAST_LSB_WORD_ACCESS
-      return (*(uint16*)(GetAddress + (Address & 0xffff)));
+      return (*(uint16_t*)(GetAddress + (Address & 0xffff)));
 #else
       return (*(GetAddress + (Address & 0xffff)) |
               (*(GetAddress + (Address & 0xffff) + 1) << 8));
@@ -240,7 +240,7 @@ INLINE uint16 S9xGetWord(uint32 Address)
          ((*(Memory.SRAM + (((((Address + 1) & 0xFF0000) >> 1) | ((
                                 Address + 1) & 0x7FFF)) &Memory.SRAMMask))) << 8);
 
-   //return (*(uint16*)(Memory.SRAM + ((((Address&0xFF0000)>>1)|(Address&0x7FFF)) & Memory.SRAMMask));// |
+   //return (*(uint16_t*)(Memory.SRAM + ((((Address&0xFF0000)>>1)|(Address&0x7FFF)) & Memory.SRAMMask));// |
    //    (*(Memory.SRAM + ((Address + 1) & Memory.SRAMMask)) << 8));
 
    case MAP_RONLY_SRAM:
@@ -256,7 +256,7 @@ INLINE uint16 S9xGetWord(uint32 Address)
 
    case MAP_BWRAM:
 #ifdef FAST_LSB_WORD_ACCESS
-      return (*(uint16*)(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)));
+      return (*(uint16_t*)(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)));
 #else
       return (*(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)) |
               (*(Memory.BWRAM + (((Address + 1) & 0x7fff) - 0x6000)) << 8));
@@ -296,20 +296,20 @@ INLINE uint16 S9xGetWord(uint32 Address)
    }
 }
 
-INLINE void S9xSetByte(uint8 Byte, uint32 Address)
+INLINE void S9xSetByte(uint8_t Byte, uint32_t Address)
 {
 #if defined(CPU_SHUTDOWN)
    CPU.WaitAddress = NULL;
 #endif
    int block;
-   uint8* SetAddress = Memory.WriteMap [block = ((Address >> MEMMAP_SHIFT) &
+   uint8_t* SetAddress = Memory.WriteMap [block = ((Address >> MEMMAP_SHIFT) &
                                         MEMMAP_MASK)];
 
    if (!CPU.InDMA)
       CPU.Cycles += Memory.MemorySpeed [block];
 
 
-   if (SetAddress >= (uint8*) MAP_LAST)
+   if (SetAddress >= (uint8_t*) MAP_LAST)
    {
 #ifdef CPU_SHUTDOWN
       SetAddress += Address & 0xffff;
@@ -349,7 +349,7 @@ INLINE void S9xSetByte(uint8 Byte, uint32 Address)
          *(Memory.SRAM + ((((Address & 0xFF0000) >> 1) | (Address & 0x7FFF))&
                           Memory.SRAMMask)) = Byte;
          //       *(Memory.SRAM + (Address & Memory.SRAMMask)) = Byte;
-         CPU.SRAMModified = TRUE;
+         CPU.SRAMModified = true;
       }
       return;
 
@@ -358,13 +358,13 @@ INLINE void S9xSetByte(uint8 Byte, uint32 Address)
       {
          *(Memory.SRAM + (((Address & 0x7fff) - 0x6000 +
                            ((Address & 0xf0000) >> 3)) & Memory.SRAMMask)) = Byte;
-         CPU.SRAMModified = TRUE;
+         CPU.SRAMModified = true;
       }
       return;
 
    case MAP_BWRAM:
       *(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)) = Byte;
-      CPU.SRAMModified = TRUE;
+      CPU.SRAMModified = true;
       return;
 
    case MAP_DEBUG:
@@ -379,7 +379,7 @@ INLINE void S9xSetByte(uint8 Byte, uint32 Address)
       return;
 
    case MAP_SPC7110_DRAM:
-      s7r.bank50[(Address & 0xffff)] = (uint8) Byte;
+      s7r.bank50[(Address & 0xffff)] = (uint8_t) Byte;
       break;
 
    case MAP_OBC_RAM:
@@ -405,7 +405,7 @@ INLINE void S9xSetByte(uint8 Byte, uint32 Address)
    }
 }
 
-INLINE void S9xSetWord(uint16 Word, uint32 Address)
+INLINE void S9xSetWord(uint16_t Word, uint32_t Address)
 {
    if ((Address & 0x0FFF) == 0x0FFF)
    {
@@ -418,14 +418,14 @@ INLINE void S9xSetWord(uint16 Word, uint32 Address)
    CPU.WaitAddress = NULL;
 #endif
    int block;
-   uint8* SetAddress = Memory.WriteMap [block = ((Address >> MEMMAP_SHIFT) &
+   uint8_t* SetAddress = Memory.WriteMap [block = ((Address >> MEMMAP_SHIFT) &
                                         MEMMAP_MASK)];
 
    if (!CPU.InDMA)
       CPU.Cycles += Memory.MemorySpeed [block] << 1;
 
 
-   if (SetAddress >= (uint8*) MAP_LAST)
+   if (SetAddress >= (uint8_t*) MAP_LAST)
    {
 #ifdef CPU_SHUTDOWN
       SetAddress += Address & 0xffff;
@@ -436,16 +436,16 @@ INLINE void S9xSetWord(uint16 Word, uint32 Address)
          SA1.WaitCounter = 0;
       }
 #ifdef FAST_LSB_WORD_ACCESS
-      *(uint16*) SetAddress = Word;
+      *(uint16_t*) SetAddress = Word;
 #else
-      *SetAddress = (uint8) Word;
+      *SetAddress = (uint8_t) Word;
       *(SetAddress + 1) = Word >> 8;
 #endif
 #else
 #ifdef FAST_LSB_WORD_ACCESS
-      *(uint16*)(SetAddress + (Address & 0xffff)) = Word;
+      *(uint16_t*)(SetAddress + (Address & 0xffff)) = Word;
 #else
-      *(SetAddress + (Address & 0xffff)) = (uint8) Word;
+      *(SetAddress + (Address & 0xffff)) = (uint8_t) Word;
       *(SetAddress + ((Address + 1) & 0xffff)) = Word >> 8;
 #endif
 #endif
@@ -455,12 +455,12 @@ INLINE void S9xSetWord(uint16 Word, uint32 Address)
    switch ((intptr_t) SetAddress)
    {
    case MAP_PPU:
-      S9xSetPPU((uint8) Word, Address & 0xffff);
+      S9xSetPPU((uint8_t) Word, Address & 0xffff);
       S9xSetPPU(Word >> 8, (Address & 0xffff) + 1);
       return;
 
    case MAP_CPU:
-      S9xSetCPU((uint8) Word, (Address & 0xffff));
+      S9xSetCPU((uint8_t) Word, (Address & 0xffff));
       S9xSetCPU(Word >> 8, (Address & 0xffff) + 1);
       return;
 
@@ -468,7 +468,7 @@ INLINE void S9xSetWord(uint16 Word, uint32 Address)
 #ifdef DSP_DUMMY_LOOPS
       printf("DSP Word: %04X to %06X\n", Word, Address);
 #endif
-      S9xSetDSP((uint8) Word, (Address & 0xffff));
+      S9xSetDSP((uint8_t) Word, (Address & 0xffff));
       S9xSetDSP(Word >> 8, (Address & 0xffff) + 1);
       return;
 
@@ -478,13 +478,13 @@ INLINE void S9xSetWord(uint16 Word, uint32 Address)
          /* BJ: no FAST_LSB_WORD_ACCESS here, since if Memory.SRAMMask=0x7ff
           * then the high byte doesn't follow the low byte. */
          *(Memory.SRAM + ((((Address & 0xFF0000) >> 1) | (Address & 0x7FFF))&
-                          Memory.SRAMMask)) = (uint8) Word;
+                          Memory.SRAMMask)) = (uint8_t) Word;
          *(Memory.SRAM + (((((Address + 1) & 0xFF0000) >> 1) | ((
                               Address + 1) & 0x7FFF))& Memory.SRAMMask)) = Word >> 8;
 
-         //       *(Memory.SRAM + (Address & Memory.SRAMMask)) = (uint8) Word;
+         //       *(Memory.SRAM + (Address & Memory.SRAMMask)) = (uint8_t) Word;
          //       *(Memory.SRAM + ((Address + 1) & Memory.SRAMMask)) = Word >> 8;
-         CPU.SRAMModified = TRUE;
+         CPU.SRAMModified = true;
       }
       return;
 
@@ -495,54 +495,54 @@ INLINE void S9xSetWord(uint16 Word, uint32 Address)
           * then the high byte doesn't follow the low byte. */
          *(Memory.SRAM +
            (((((Address & 0x7fff) - 0x6000) +
-             ((Address & 0xf0000) >> 3)) & Memory.SRAMMask))) = (uint8) Word;
+             ((Address & 0xf0000) >> 3)) & Memory.SRAMMask))) = (uint8_t) Word;
          *(Memory.SRAM +
            ((((((Address + 1) & 0x7fff) - 0x6000) +
-             (((Address + 1) & 0xf0000) >> 3)) & Memory.SRAMMask))) = (uint8)(Word >> 8);
-         CPU.SRAMModified = TRUE;
+             (((Address + 1) & 0xf0000) >> 3)) & Memory.SRAMMask))) = (uint8_t)(Word >> 8);
+         CPU.SRAMModified = true;
       }
       return;
 
    case MAP_BWRAM:
 #ifdef FAST_LSB_WORD_ACCESS
-      *(uint16*)(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)) = Word;
+      *(uint16_t*)(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)) = Word;
 #else
-      *(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)) = (uint8) Word;
-      *(Memory.BWRAM + (((Address + 1) & 0x7fff) - 0x6000)) = (uint8)(Word >> 8);
+      *(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)) = (uint8_t) Word;
+      *(Memory.BWRAM + (((Address + 1) & 0x7fff) - 0x6000)) = (uint8_t)(Word >> 8);
 #endif
-      CPU.SRAMModified = TRUE;
+      CPU.SRAMModified = true;
       return;
 
    case MAP_DEBUG:
 
    case MAP_SPC7110_DRAM:
-      s7r.bank50[(Address & 0xffff)] = (uint8) Word;
-      s7r.bank50[((Address + 1) & 0xffff)] = (uint8) Word;
+      s7r.bank50[(Address & 0xffff)] = (uint8_t) Word;
+      s7r.bank50[((Address + 1) & 0xffff)] = (uint8_t) Word;
       break;
    case MAP_SA1RAM:
-      *(Memory.SRAM + (Address & 0xffff)) = (uint8) Word;
-      *(Memory.SRAM + ((Address + 1) & 0xffff)) = (uint8)(Word >> 8);
+      *(Memory.SRAM + (Address & 0xffff)) = (uint8_t) Word;
+      *(Memory.SRAM + ((Address + 1) & 0xffff)) = (uint8_t)(Word >> 8);
       SA1.Executing = !SA1.Waiting;
       break;
 
    case MAP_C4:
       S9xSetC4(Word & 0xff, Address & 0xffff);
-      S9xSetC4((uint8)(Word >> 8), (Address + 1) & 0xffff);
+      S9xSetC4((uint8_t)(Word >> 8), (Address + 1) & 0xffff);
       return;
 
    case MAP_OBC_RAM:
       SetOBC1(Word & 0xff, Address & 0xFFFF);
-      SetOBC1((uint8)(Word >> 8), (Address + 1) & 0xffff);
+      SetOBC1((uint8_t)(Word >> 8), (Address + 1) & 0xffff);
       return;
 
    case MAP_SETA_DSP:
       S9xSetSetaDSP(Word & 0xff, Address);
-      S9xSetSetaDSP((uint8)(Word >> 8), (Address + 1));
+      S9xSetSetaDSP((uint8_t)(Word >> 8), (Address + 1));
       return;
 
    case MAP_SETA_RISC:
       S9xSetST018(Word & 0xff, Address);
-      S9xSetST018((uint8)(Word >> 8), (Address + 1));
+      S9xSetST018((uint8_t)(Word >> 8), (Address + 1));
       return;
 
    default:
@@ -557,10 +557,10 @@ INLINE void S9xSetWord(uint16 Word, uint32 Address)
    }
 }
 
-INLINE uint8* GetBasePointer(uint32 Address)
+INLINE uint8_t* GetBasePointer(uint32_t Address)
 {
-   uint8* GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-   if (GetAddress >= (uint8*) MAP_LAST)
+   uint8_t* GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
+   if (GetAddress >= (uint8_t*) MAP_LAST)
       return (GetAddress);
    if (Settings.SPC7110 && ((Address & 0x7FFFFF) == 0x4800))
       return s7r.bank50;
@@ -609,10 +609,10 @@ INLINE uint8* GetBasePointer(uint32 Address)
    }
 }
 
-INLINE uint8* S9xGetMemPointer(uint32 Address)
+INLINE uint8_t* S9xGetMemPointer(uint32_t Address)
 {
-   uint8* GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-   if (GetAddress >= (uint8*) MAP_LAST)
+   uint8_t* GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
+   if (GetAddress >= (uint8_t*) MAP_LAST)
       return (GetAddress + (Address & 0xffff));
 
    if (Settings.SPC7110 && ((Address & 0x7FFFFF) == 0x4800))
@@ -654,16 +654,16 @@ INLINE uint8* S9xGetMemPointer(uint32 Address)
    }
 }
 
-INLINE void S9xSetPCBase(uint32 Address)
+INLINE void S9xSetPCBase(uint32_t Address)
 {
    int block;
-   uint8* GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) &
+   uint8_t* GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) &
                                            MEMMAP_MASK];
 
    CPU.MemSpeed = Memory.MemorySpeed [block];
    CPU.MemSpeedx2 = CPU.MemSpeed << 1;
 
-   if (GetAddress >= (uint8*) MAP_LAST)
+   if (GetAddress >= (uint8_t*) MAP_LAST)
    {
       CPU.PCBase = GetAddress;
       CPU.PC = GetAddress + (Address & 0xffff);

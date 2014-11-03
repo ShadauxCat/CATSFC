@@ -165,13 +165,13 @@ const char* S9xBasename(const char* f)
    return (f);
 }
 
-bool8 S9xInitUpdate()
+bool S9xInitUpdate()
 {
    //   IPPU.RenderThisFrame = 0;
    //   video_cb(dummy_frame,256,224,512);
-   //   return (FALSE);
+   //   return (false);
 
-   return (TRUE);
+   return (true);
 }
 
 void _makepath(char* path, const char* drive, const char* dir,
@@ -250,33 +250,33 @@ const char* S9xGetFilename(const char* ex)
 void init_sfc_setting(void)
 {
    memset(&Settings, 0, sizeof(Settings));
-   Settings.JoystickEnabled = FALSE;
+   Settings.JoystickEnabled = false;
    Settings.SoundPlaybackRate = 32000; // -> ds2sound.h for defs
    Settings.SoundBufferSize = 512;
    Settings.CyclesPercentage = 100;
 
-   Settings.DisableSoundEcho = FALSE;
-   Settings.InterpolatedSound = TRUE;
-   Settings.APUEnabled = Settings.NextAPUEnabled = TRUE;
+   Settings.DisableSoundEcho = false;
+   Settings.InterpolatedSound = true;
+   Settings.APUEnabled = Settings.NextAPUEnabled = true;
 
    Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
    Settings.SkipFrames = AUTO_FRAMERATE;
-   Settings.ShutdownMaster = TRUE;
+   Settings.ShutdownMaster = true;
    Settings.FrameTimePAL = 20000;
    Settings.FrameTimeNTSC = 16667;
-   Settings.DisableMasterVolume = FALSE;
-   Settings.Mouse = TRUE;
-   Settings.SuperScope = TRUE;
-   Settings.MultiPlayer5 = TRUE;
+   Settings.DisableMasterVolume = false;
+   Settings.Mouse = true;
+   Settings.SuperScope = true;
+   Settings.MultiPlayer5 = true;
    Settings.ControllerOption = SNES_JOYPAD;
 
-   Settings.Transparency = TRUE;
-   Settings.SupportHiRes = TRUE;
-   Settings.ThreadSound = FALSE;
+   Settings.Transparency = true;
+   Settings.SupportHiRes = true;
+   Settings.ThreadSound = false;
 #ifdef USE_BLARGG_APU
-   Settings.SoundSync = FALSE;
+   Settings.SoundSync = false;
 #else
-   Settings.ApplyCheats = TRUE;
+   Settings.ApplyCheats = true;
 #endif
    Settings.StretchScreenshots = 1;
 
@@ -328,7 +328,7 @@ void retro_init(void)
    S9xSetSamplesAvailableCallback(S9xAudioCallback);
 #else
    S9xInitSound(Settings.SoundPlaybackRate,
-                TRUE,
+                true,
                 Settings.SoundBufferSize);
 #endif
 
@@ -354,9 +354,9 @@ void retro_deinit(void)
 
 }
 
-uint32 S9xReadJoypad(int port)
+uint32_t S9xReadJoypad(int port)
 {
-   static const uint32 snes_lut[] =
+   static const uint32_t snes_lut[] =
    {
       SNES_B_MASK,
       SNES_Y_MASK,
@@ -373,7 +373,7 @@ uint32 S9xReadJoypad(int port)
    };
 
    int i;
-   uint32 joypad = 0;
+   uint32_t joypad = 0;
 
    for (i = RETRO_DEVICE_ID_JOYPAD_B; i <= RETRO_DEVICE_ID_JOYPAD_R; i++)
       if (input_cb(port, RETRO_DEVICE_JOYPAD, 0, i))
@@ -488,22 +488,22 @@ void S9xLoadSDD1Data()
 
 }
 
-bool8 S9xReadMousePosition(int which1, int* x, int* y, uint32* buttons)
+bool S9xReadMousePosition(int which1, int* x, int* y, uint32_t* buttons)
 {
-   return (FALSE);
+   return (false);
 }
 
-bool8 S9xReadSuperScopePosition(int* x, int* y, uint32* buttons)
+bool S9xReadSuperScopePosition(int* x, int* y, uint32_t* buttons)
 {
-   return (TRUE);
+   return (true);
 }
 
 bool JustifierOffscreen()
 {
-   return (FALSE);
+   return (false);
 }
 
-void JustifierButtons(uint32* justifiers)
+void JustifierButtons(uint32_t* justifiers)
 {
 }
 
@@ -620,9 +620,9 @@ bool retro_serialize(void* data, size_t size)
 #ifndef USE_BLARGG_APU
    for (i = 0; i < 8; i++)
    {
-      SoundData.channels[i].previous16[0] = (int16)
+      SoundData.channels[i].previous16[0] = (int16_t)
                                             SoundData.channels[i].previous[0];
-      SoundData.channels[i].previous16[1] = (int16)
+      SoundData.channels[i].previous16[1] = (int16_t)
                                             SoundData.channels[i].previous[1];
    }
 #endif
@@ -673,7 +673,7 @@ bool retro_unserialize(const void* data, size_t size)
 
    S9xReset();
 #ifndef USE_BLARGG_APU
-   uint8* IAPU_RAM_current = IAPU.RAM;
+   uint8_t* IAPU_RAM_current = IAPU.RAM;
 #endif
    memcpy(&CPU, buffer, sizeof(CPU));
    buffer += sizeof(CPU);
@@ -712,9 +712,9 @@ bool retro_unserialize(const void* data, size_t size)
 
    S9xFixSA1AfterSnapshotLoad();
    FixROMSpeed();
-   IPPU.ColorsChanged = TRUE;
-   IPPU.OBJChanged = TRUE;
-   CPU.InDMA = FALSE;
+   IPPU.ColorsChanged = true;
+   IPPU.OBJChanged = true;
+   CPU.InDMA = false;
    S9xFixColourBrightness();
 
    S9xSA1UnpackStatus();

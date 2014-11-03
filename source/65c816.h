@@ -149,28 +149,28 @@ typedef union
 #ifdef LSB_FIRST
    struct
    {
-      uint8 l, h;
+      uint8_t l, h;
    } B;
 #else
    struct
    {
-      uint8 h, l;
+      uint8_t h, l;
    } B;
 #endif
-   uint16 W;
+   uint16_t W;
 } pair;
 
 typedef struct
 {
-   uint8  PB;
-   uint8  DB;
+   uint8_t  PB;
+   uint8_t  DB;
    pair   P;
    pair   A;
    pair   D;
    pair   S;
    pair   X;
    pair   Y;
-   uint16 PC;
+   uint16_t PC;
 } SRegisters;
 
 #endif

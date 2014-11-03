@@ -123,10 +123,10 @@ extern struct FxRegs_s GSU;
 void FxPipeString(char* pvString)
 {
    char* p;
-   uint32 vOpcode = (GSU.vStatusReg & 0x300) | ((uint32)PIPE);
+   uint32_t vOpcode = (GSU.vStatusReg & 0x300) | ((uint32_t)PIPE);
    const char* m = fx_apvMnemonicTable[vOpcode];
-   uint8 vPipe1, vPipe2, vByte1, vByte2;
-   uint8 vPipeBank = GSU.vPipeAdr >> 16;
+   uint8_t vPipe1, vPipe2, vByte1, vByte2;
+   uint8_t vPipeBank = GSU.vPipeAdr >> 16;
 
    /* The next two bytes after the pipe's address */
    vPipe1 = GSU.apvRomBank[vPipeBank][USEX16(GSU.vPipeAdr + 1)];

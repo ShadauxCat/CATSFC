@@ -90,15 +90,15 @@
 #define _TILE_H_
 
 #define TILE_PREAMBLE \
-    uint8 *pCache; \
+    uint8_t *pCache; \
 \
-    uint32 TileAddr = BG.TileAddress + ((Tile & 0x3ff) << BG.TileShift); \
+    uint32_t TileAddr = BG.TileAddress + ((Tile & 0x3ff) << BG.TileShift); \
     if ((Tile & 0x1ff) >= 256) \
    TileAddr += BG.NameSelect; \
 \
     TileAddr &= 0xffff; \
 \
-    uint32 TileNumber; \
+    uint32_t TileNumber; \
     pCache = &BG.Buffer[(TileNumber = (TileAddr >> BG.TileShift)) << 6]; \
 \
     if (!BG.Buffered [TileNumber]) \
@@ -107,8 +107,8 @@
     if (BG.Buffered [TileNumber] == BLANK_TILE) \
    return; \
 \
-    register uint32 l; \
-    uint16 *ScreenColors; \
+    register uint32_t l; \
+    uint16_t *ScreenColors; \
     if (BG.DirectColourMode) \
     { \
    if (IPPU.DirectColourMapsNeedRebuild) \
@@ -125,9 +125,9 @@
    bp = pCache + StartLine; \
    for (l = LineCount; l != 0; l--, bp += 8, Offset += GFX.PPL) \
    { \
-       if (*(uint32 *) bp) \
+       if (*(uint32_t *) bp) \
       NORMAL (Offset, bp, ScreenColors); \
-       if (*(uint32 *) (bp + 4)) \
+       if (*(uint32_t *) (bp + 4)) \
       NORMAL (Offset + N, bp + 4, ScreenColors); \
    } \
         break; \
@@ -135,9 +135,9 @@
    bp = pCache + StartLine; \
    for (l = LineCount; l != 0; l--, bp += 8, Offset += GFX.PPL) \
    { \
-       if (*(uint32 *) (bp + 4)) \
+       if (*(uint32_t *) (bp + 4)) \
       FLIPPED (Offset, bp + 4, ScreenColors); \
-       if (*(uint32 *) bp) \
+       if (*(uint32_t *) bp) \
       FLIPPED (Offset + N, bp, ScreenColors); \
    } \
         break; \
@@ -145,9 +145,9 @@
    bp = pCache + 56 - StartLine; \
    for (l = LineCount; l != 0; l--, bp -= 8, Offset += GFX.PPL) \
    { \
-       if (*(uint32 *) (bp + 4)) \
+       if (*(uint32_t *) (bp + 4)) \
       FLIPPED (Offset, bp + 4, ScreenColors); \
-       if (*(uint32 *) bp) \
+       if (*(uint32_t *) bp) \
       FLIPPED (Offset + N, bp, ScreenColors); \
    } \
         break; \
@@ -155,9 +155,9 @@
    bp = pCache + 56 - StartLine; \
    for (l = LineCount; l != 0; l--, bp -= 8, Offset += GFX.PPL) \
    { \
-       if (*(uint32 *) bp) \
+       if (*(uint32_t *) bp) \
       NORMAL (Offset, bp, ScreenColors); \
-       if (*(uint32 *) (bp + 4)) \
+       if (*(uint32_t *) (bp + 4)) \
       NORMAL (Offset + N, bp + 4, ScreenColors); \
    } \
         break; \
@@ -166,8 +166,8 @@
     }
 
 #define TILE_CLIP_PREAMBLE \
-    uint32 d1; \
-    uint32 d2; \
+    uint32_t d1; \
+    uint32_t d2; \
 \
     if (StartPixel < 4) \
     { \
@@ -191,7 +191,7 @@
    d2 = 0;
 
 #define RENDER_CLIPPED_TILE(NORMAL, FLIPPED, N) \
-    uint32 dd; \
+    uint32_t dd; \
     switch (Tile & (V_FLIP | H_FLIP)) \
     { \
     case 0: \
@@ -202,10 +202,10 @@
              * cached in leftmost-endian order (when not horiz flipped) by \
              * the ConvertTile function. \
              */ \
-       if ((dd = (*(uint32 *) bp) & d1)) \
-      NORMAL (Offset, (uint8 *) &dd, ScreenColors); \
-       if ((dd = (*(uint32 *) (bp + 4)) & d2)) \
-      NORMAL (Offset + N, (uint8 *) &dd, ScreenColors); \
+       if ((dd = (*(uint32_t *) bp) & d1)) \
+      NORMAL (Offset, (uint8_t *) &dd, ScreenColors); \
+       if ((dd = (*(uint32_t *) (bp + 4)) & d2)) \
+      NORMAL (Offset + N, (uint8_t *) &dd, ScreenColors); \
    } \
         break; \
     case H_FLIP: \
@@ -214,10 +214,10 @@
    SWAP_DWORD (d2); \
    for (l = LineCount; l != 0; l--, bp += 8, Offset += GFX.PPL) \
    { \
-       if ((dd = *(uint32 *) (bp + 4) & d1)) \
-      FLIPPED (Offset, (uint8 *) &dd, ScreenColors); \
-       if ((dd = *(uint32 *) bp & d2)) \
-      FLIPPED (Offset + N, (uint8 *) &dd, ScreenColors); \
+       if ((dd = *(uint32_t *) (bp + 4) & d1)) \
+      FLIPPED (Offset, (uint8_t *) &dd, ScreenColors); \
+       if ((dd = *(uint32_t *) bp & d2)) \
+      FLIPPED (Offset + N, (uint8_t *) &dd, ScreenColors); \
    } \
         break; \
     case H_FLIP | V_FLIP: \
@@ -226,20 +226,20 @@
    SWAP_DWORD (d2); \
    for (l = LineCount; l != 0; l--, bp -= 8, Offset += GFX.PPL) \
    { \
-       if ((dd = *(uint32 *) (bp + 4) & d1)) \
-      FLIPPED (Offset, (uint8 *) &dd, ScreenColors); \
-       if ((dd = *(uint32 *) bp & d2)) \
-      FLIPPED (Offset + N, (uint8 *) &dd, ScreenColors); \
+       if ((dd = *(uint32_t *) (bp + 4) & d1)) \
+      FLIPPED (Offset, (uint8_t *) &dd, ScreenColors); \
+       if ((dd = *(uint32_t *) bp & d2)) \
+      FLIPPED (Offset + N, (uint8_t *) &dd, ScreenColors); \
    } \
         break; \
     case V_FLIP: \
    bp = pCache + 56 - StartLine; \
    for (l = LineCount; l != 0; l--, bp -= 8, Offset += GFX.PPL) \
    { \
-       if ((dd = (*(uint32 *) bp) & d1)) \
-      NORMAL (Offset, (uint8 *) &dd, ScreenColors); \
-       if ((dd = (*(uint32 *) (bp + 4)) & d2)) \
-      NORMAL (Offset + N, (uint8 *) &dd, ScreenColors); \
+       if ((dd = (*(uint32_t *) bp) & d1)) \
+      NORMAL (Offset, (uint8_t *) &dd, ScreenColors); \
+       if ((dd = (*(uint32_t *) (bp + 4)) & d2)) \
+      NORMAL (Offset + N, (uint8_t *) &dd, ScreenColors); \
    } \
         break; \
     default: \

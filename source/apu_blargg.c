@@ -1351,7 +1351,7 @@ static void dsp_copy_state( unsigned char** io, dsp_copy_func_t copy )
 
 static spc_state_t m;
 static signed char reg_times [256];
-static bool8 allow_time_overflow;
+static bool allow_time_overflow;
 
 /* Copyright (C) 2004-2007 Shay Green. This module is free software; you
 can redistribute it and/or modify it under the terms of the GNU Lesser
@@ -3067,7 +3067,7 @@ void spc_copy_state( unsigned char** io, dsp_copy_func_t copy )
 
 static apu_callback	sa_callback     = NULL;
 
-static bool8		sound_in_sync   = TRUE;
+static bool		sound_in_sync   = true;
 
 static int		buffer_size;
 static int		lag_master      = 0;
@@ -3075,16 +3075,16 @@ static int		lag             = 0;
 
 static short		*landing_buffer = NULL;
 
-static bool8		resampler      = FALSE;
+static bool		resampler      = false;
 
-static int32		reference_time;
-static uint32		spc_remainder;
+static int32_t		reference_time;
+static uint32_t		spc_remainder;
 
 static int		timing_hack_denominator = TEMPO_UNIT;
 /* Set these to NTSC for now. Will change to PAL in S9xAPUTimingSetSpeedup
    if necessary on game load. */
-static uint32		ratio_numerator = APU_NUMERATOR_NTSC;
-static uint32		ratio_denominator = APU_DENOMINATOR_NTSC;
+static uint32_t		ratio_numerator = APU_NUMERATOR_NTSC;
+static uint32_t		ratio_denominator = APU_DENOMINATOR_NTSC;
 
 /***********************************************************************************
    RESAMPLER
@@ -3212,14 +3212,14 @@ static void resampler_new(int num_samples)
    resampler_clear();
 }
 
-static INLINE bool8 resampler_push(short *src, int num_samples)
+static INLINE bool resampler_push(short *src, int num_samples)
 {
    int bytes, end, first_write_size;
    unsigned char *src_ring;
 
    bytes = num_samples << 1;
    if (MAX_WRITE() < num_samples || SPACE_EMPTY() < bytes)
-      return FALSE;
+      return false;
 
    /* Ring buffer push */
    src_ring = (unsigned char*)src;
@@ -3233,7 +3233,7 @@ static INLINE bool8 resampler_push(short *src, int num_samples)
 
    rb_size += bytes;
 
-   return TRUE;
+   return true;
 }
 
 static INLINE void resampler_resize (int num_samples)
@@ -3253,7 +3253,7 @@ static INLINE void resampler_resize (int num_samples)
    APU
  ***********************************************************************************/
 
-bool8 S9xMixSamples (short *buffer, unsigned sample_count)
+bool S9xMixSamples (short *buffer, unsigned sample_count)
 {
    if (AVAIL() >= (sample_count + lag))
    {
@@ -3267,10 +3267,10 @@ bool8 S9xMixSamples (short *buffer, unsigned sample_count)
       if (lag == 0)
          lag = lag_master;
 
-      return (FALSE);
+      return (false);
    }
 
-   return (TRUE);
+   return (true);
 }
 
 int S9xGetSampleCount (void)
@@ -3310,17 +3310,17 @@ static void spc_set_output( short* out, int size )
 
 void S9xFinalizeSamples (void)
 {
-   bool8 ret;
+   bool ret;
 
    ret = resampler_push(landing_buffer, SPC_SAMPLE_COUNT());
-   sound_in_sync = FALSE;
+   sound_in_sync = false;
 
    /* We weren't able to process the entire buffer. Potential overrun. */
    if (!ret && Settings.SoundSync)
       return;
 
    if (!Settings.SoundSync || (SPACE_EMPTY() >= SPACE_FILLED()))
-      sound_in_sync = TRUE;
+      sound_in_sync = true;
 
    m.extra_clocks &= CLOCKS_PER_SAMPLE - 1;
    spc_set_output(landing_buffer, buffer_size);
@@ -3332,10 +3332,10 @@ void S9xClearSamples (void)
    lag = lag_master;
 }
 
-bool8 S9xSyncSound (void)
+bool S9xSyncSound (void)
 {
    if (!Settings.SoundSync || sound_in_sync)
-      return TRUE;
+      return true;
 
    sa_callback();
 
@@ -3357,7 +3357,7 @@ static void UpdatePlaybackRate (void)
    resampler_time_ratio(time_ratio);
 }
 
-bool8 S9xInitSound (int buffer_ms, int lag_ms)
+bool S9xInitSound (int buffer_ms, int lag_ms)
 {
    /*	buffer_ms : buffer size given in millisecond
       lag_ms    : allowable time-lag given in millisecond */
@@ -3385,7 +3385,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
       free(landing_buffer);
    landing_buffer = (short*)malloc(buffer_size * 2);
    if (!landing_buffer)
-      return (FALSE);
+      return (false);
 
    /* The resampler and spc unit use samples (16-bit short) as
       arguments. Use 2x in the resampler for buffer leveling with SoundSync */
@@ -3393,7 +3393,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
    if (!resampler)
    {
       resampler_new(buffer_size >> (Settings.SoundSync ? 0 : 1));
-      resampler = TRUE;
+      resampler = true;
    }
    else
       resampler_resize(buffer_size >> (Settings.SoundSync ? 0 : 1));
@@ -3403,7 +3403,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 
    UpdatePlaybackRate();
 
-   return TRUE;
+   return true;
 }
 
 /* Must be called once before using */
@@ -3448,7 +3448,7 @@ static signed char const reg_times_ [256] =
    29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29,
 };
 
-bool8 S9xInitAPU (void)
+bool S9xInitAPU (void)
 {
    int i;
 
@@ -3485,7 +3485,7 @@ bool8 S9xInitAPU (void)
       m.cycle_table [i * 2 + 1] = n & 0x0F;
    }
 
-   allow_time_overflow = FALSE;
+   allow_time_overflow = false;
 
    dsp_m.rom = m.rom;
    dsp_m.hi_ram = m.hi_ram;
@@ -3500,7 +3500,7 @@ bool8 S9xInitAPU (void)
 
    landing_buffer = NULL;
 
-   return TRUE;
+   return true;
 }
 
 void S9xDeinitAPU (void)
@@ -3508,7 +3508,7 @@ void S9xDeinitAPU (void)
    if (resampler)
    {
       free(rb_buffer);
-      resampler = FALSE;
+      resampler = false;
    }
 
    if (landing_buffer)
@@ -3523,17 +3523,17 @@ void S9xDeinitAPU (void)
 
 /* Emulated port read at specified time */
 
-uint8 S9xAPUReadPort (int port)	{ return ((uint8) spc_run_until_(S9X_APU_GET_CLOCK(CPU.Cycles))[port]); }
+uint8_t S9xAPUReadPort (int port)	{ return ((uint8_t) spc_run_until_(S9X_APU_GET_CLOCK(CPU.Cycles))[port]); }
 
 /* Emulated port write at specified time */
 
-void S9xAPUWritePort (int port, uint8 byte)
+void S9xAPUWritePort (int port, uint8_t byte)
 {
    spc_run_until_( S9X_APU_GET_CLOCK(CPU.Cycles) ) [0x10 + port] = byte;
    m.ram.ram [0xF4 + port] = byte;
 }
 
-void S9xAPUSetReferenceTime (int32 cpucycles)
+void S9xAPUSetReferenceTime (int32_t cpucycles)
 {
    reference_time = cpucycles;
 }
@@ -3565,7 +3565,7 @@ void S9xAPUTimingSetSpeedup (int ticks)
    UpdatePlaybackRate();
 }
 
-void S9xAPUAllowTimeOverflow (bool8 allow)
+void S9xAPUAllowTimeOverflow (bool allow)
 {
    allow_time_overflow = allow;
 }
@@ -3595,13 +3595,13 @@ void S9xSoftResetAPU (void)
    resampler_clear();
 }
 
-static void from_apu_to_state (uint8 **buf, void *var, size_t size)
+static void from_apu_to_state (uint8_t **buf, void *var, size_t size)
 {
    memcpy(*buf, var, size);
    *buf += size;
 }
 
-static void to_apu_from_state (uint8 **buf, void *var, size_t size)
+static void to_apu_from_state (uint8_t **buf, void *var, size_t size)
 {
    memcpy(var, *buf, size);
    *buf += size;
@@ -3610,29 +3610,29 @@ static void to_apu_from_state (uint8 **buf, void *var, size_t size)
 // work around optimization bug in android GCC
 // similar to this: http://jeffq.com/blog/over-aggressive-gcc-optimization-can-cause-sigbus-crash-when-using-memcpy-with-the-android-ndk/
 #if defined(ANDROID) || defined(__QNX__)
-void __attribute__((optimize(0))) S9xAPUSaveState (uint8 *block)
+void __attribute__((optimize(0))) S9xAPUSaveState (uint8_t *block)
 #else
-void S9xAPUSaveState (uint8 *block)
+void S9xAPUSaveState (uint8_t *block)
 #endif
 {
-   uint8 *ptr;
+   uint8_t *ptr;
 
    ptr = block;
 
    spc_copy_state(&ptr, from_apu_to_state);
 
    SET_LE32(ptr, reference_time);
-   ptr += sizeof(int32);
+   ptr += sizeof(int32_t);
    SET_LE32(ptr, spc_remainder);
 }
 
 #if defined(ANDROID) || defined(__QNX__)
-void __attribute__((optimize(0))) S9xAPULoadState (uint8 *block)
+void __attribute__((optimize(0))) S9xAPULoadState (uint8_t *block)
 #else
-void S9xAPULoadState (uint8 *block)
+void S9xAPULoadState (uint8_t *block)
 #endif
 {
-   uint8 *ptr;
+   uint8_t *ptr;
 
    ptr = block;
 
@@ -3641,7 +3641,7 @@ void S9xAPULoadState (uint8 *block)
    spc_copy_state(&ptr, to_apu_from_state);
 
    reference_time = GET_LE32(ptr);
-   ptr += sizeof(int32);
+   ptr += sizeof(int32_t);
    spc_remainder = GET_LE32(ptr);
 }
 

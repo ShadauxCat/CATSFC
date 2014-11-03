@@ -117,7 +117,7 @@ short DSP4_UnknownOP11(short A, short B, short C, short D)
 //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
 
-void DSP4_Op06(bool8 size, bool8 msb)
+void DSP4_Op06(bool size, bool msb)
 {
    // save post-oam table data for future retrieval
    op06_OAM[op06_index] |= (msb << (op06_offset + 0));
@@ -138,9 +138,9 @@ void DSP4_Op06(bool8 size, bool8 msb)
 
 void DSP4_Op01()
 {
-   uint16 command;
+   uint16_t command;
 
-   DSP4.waiting4command = FALSE;
+   DSP4.waiting4command = false;
 
    // op flow control
    switch (DSP4_Logic)
@@ -217,11 +217,11 @@ DSP4_WAIT(1) resume1:
       // process one iteration of projection
 
       // inspect inputs
-      int16 plane;
+      int16_t plane;
 
-      int16 index, lcv;
-      int16 py_dy, px_dx;
-      int16 y_out, x_out;
+      int16_t index, lcv;
+      int16_t py_dy, px_dx;
+      int16_t y_out, x_out;
 
 resume2:
       plane = DSP4_READ_WORD(0);
@@ -229,7 +229,7 @@ resume2:
       px_dx = 0;
 
       // ignore invalid data
-      if ((uint16) plane == 0x8001) continue;
+      if ((uint16_t) plane == 0x8001) continue;
 
       // one-time init
       if (far_plane)
@@ -275,7 +275,7 @@ resume2:
       ++block;
 #ifdef PRINT
       printf("(line %d) Op01 check %02X, plane %04X, focal_y %04X, y2 %04X\n", c,
-             (uint16)segments, (uint16)(plane), (uint16)project_focaly, (uint16)project_y2);
+             (uint16_t)segments, (uint16_t)(plane), (uint16_t)project_focaly, (uint16_t)project_y2);
 #endif
 
       // prepare output
@@ -338,8 +338,8 @@ resume2:
       }
 
       // update projection points
-      project_pitchy += (int8)DSP4.parameters[3];
-      project_pitchx += (int8)DSP4.parameters[5];
+      project_pitchy += (int8_t)DSP4.parameters[3];
+      project_pitchx += (int8_t)DSP4.parameters[5];
 
       project_focaly += project_pitchy;
       project_focalx += project_pitchx;
@@ -347,7 +347,7 @@ resume2:
    while (1);
 
    // terminate op
-   DSP4.waiting4command = TRUE;
+   DSP4.waiting4command = true;
    DSP4.out_count = 0;
 }
 
@@ -359,9 +359,9 @@ resume2:
 
 void DSP4_Op07()
 {
-   uint16 command;
+   uint16_t command;
 
-   DSP4.waiting4command = FALSE;
+   DSP4.waiting4command = false;
 
    // op flow control
    switch (DSP4_Logic)
@@ -404,7 +404,7 @@ void DSP4_Op07()
    block = 0;
 
 #ifdef PRINT
-   printf("(line %d) Op07 data %04X\n", c, (uint16)project_y1);
+   printf("(line %d) Op07 data %04X\n", c, (uint16_t)project_y1);
 #endif
 
    ////////////////////////////////////////////////////
@@ -432,10 +432,10 @@ DSP4_WAIT(1) resume1:
       ////////////////////////////////////////////////////
       // process one loop of projection
 
-      int16 plane;
-      int16 index, lcv;
-      int16 y_out, x_out;
-      int16 py_dy, px_dx;
+      int16_t plane;
+      int16_t index, lcv;
+      int16_t y_out, x_out;
+      int16_t py_dy, px_dx;
 
 resume2:
       py_dy = 0;
@@ -451,7 +451,7 @@ resume2:
       project_x2 = DSP4_READ_WORD(6);
 
       // ignore invalid data
-      if ((uint16) plane == 0x8001) continue;
+      if ((uint16_t) plane == 0x8001) continue;
 
       // multi-op storage
       project_focaly = multi_focaly[multi_index2];
@@ -483,7 +483,7 @@ resume2:
 
 #ifdef PRINT
       printf("(line %d) Op07 block %d, loc %04X, out %02X, project_x2 %04X\n", c,
-             block, plane, segments, (uint16)project_x2);
+             block, plane, segments, (uint16_t)project_x2);
 #endif
 
       // prepare pre-output
@@ -538,7 +538,7 @@ resume2:
    }
    while (1);
 
-   DSP4.waiting4command = TRUE;
+   DSP4.waiting4command = true;
    DSP4.out_count = 0;
 }
 
@@ -550,9 +550,9 @@ resume2:
 
 void DSP4_Op08()
 {
-   uint16 command;
+   uint16_t command;
 
-   DSP4.waiting4command = FALSE;
+   DSP4.waiting4command = false;
 
    // op flow control
    switch (DSP4_Logic)
@@ -642,22 +642,22 @@ DSP4_WAIT(2) resume2:
       ++block;
 
       // used in envelope shaping
-      int16 x1_final;
-      int16 x2_final;
+      int16_t x1_final;
+      int16_t x2_final;
 
       // look at guidelines
-      int16 plane = DSP4_READ_WORD(0x00);
-      int16 x_left = DSP4_READ_WORD(0x02);
-      int16 y_left = DSP4_READ_WORD(0x04);
-      int16 x_right = DSP4_READ_WORD(0x06);
-      int16 y_right = DSP4_READ_WORD(0x08);
+      int16_t plane = DSP4_READ_WORD(0x00);
+      int16_t x_left = DSP4_READ_WORD(0x02);
+      int16_t y_left = DSP4_READ_WORD(0x04);
+      int16_t x_right = DSP4_READ_WORD(0x06);
+      int16_t y_right = DSP4_READ_WORD(0x08);
 
       // envelope guidelines (one frame only)
-      int16 envelope1 = DSP4_READ_WORD(0x0a);
-      int16 envelope2 = DSP4_READ_WORD(0x0c);
+      int16_t envelope1 = DSP4_READ_WORD(0x0a);
+      int16_t envelope2 = DSP4_READ_WORD(0x0c);
 
       // ignore invalid data
-      if ((uint16) plane == 0x8001) continue;
+      if ((uint16_t) plane == 0x8001) continue;
 
       // first init
       if (plane == 0x7fff)
@@ -700,15 +700,15 @@ DSP4_WAIT(2) resume2:
          DSP4.output[1] = pos2 & 0xFF;
 
 #ifdef PRINT
-         printf("(line %d) Op08 x_left %04X\n", c, (uint16)x_left);
+         printf("(line %d) Op08 x_left %04X\n", c, (uint16_t)x_left);
 #endif
       }
       // proceed with projection
       else
       {
-         int16 index = 0, lcv;
-         int16 left_inc = 0, right_inc = 0;
-         int16 dx1 = 0, dx2 = 0, dx3, dx4;
+         int16_t index = 0, lcv;
+         int16_t left_inc = 0, right_inc = 0;
+         int16_t dx1 = 0, dx2 = 0, dx3, dx4;
 
          // # segments to traverse
          segments = abs(y_left - path_y[0]);
@@ -750,7 +750,7 @@ DSP4_WAIT(2) resume2:
 
 #ifdef PRINT
          printf("(line %d) Op08 block %d, out %02X, raster %02X\n", c, block, segments,
-                (uint16)y_left);
+                (uint16_t)y_left);
 #endif
 
          // zone 1
@@ -760,7 +760,7 @@ DSP4_WAIT(2) resume2:
 
          for (lcv = 1; lcv <= segments; lcv++)
          {
-            int16 pos1, pos2;
+            int16_t pos1, pos2;
 
             // pre-compute
             pos1 = path_pos[0] + ((left_inc * lcv) >> 8) + dx1;
@@ -795,7 +795,7 @@ DSP4_WAIT(2) resume2:
          if (segments > 0)
          {
             // project points w/out the envelopes
-            int16 inc = ((path_x[0] - x_left) << 8) / segments;
+            int16_t inc = ((path_x[0] - x_left) << 8) / segments;
 
             // post-store
             path_pos[0] += ((inc * lcv) >> 8);
@@ -851,7 +851,7 @@ DSP4_WAIT(2) resume2:
 
          for (lcv = 1; lcv <= segments; lcv++)
          {
-            int16 pos1, pos2;
+            int16_t pos1, pos2;
 
             // pre-compute
             pos1 = path_pos[2] + ((left_inc * lcv) >> 8) + dx1;
@@ -886,7 +886,7 @@ DSP4_WAIT(2) resume2:
          if (segments > 0)
          {
             // project points w/out the envelopes
-            int16 inc = ((path_x[1] - x_right) << 8) / segments;
+            int16_t inc = ((path_x[1] - x_right) << 8) / segments;
 
             // post-store
             path_pos[2] += ((inc * lcv) >> 8);
@@ -899,7 +899,7 @@ DSP4_WAIT(2) resume2:
    }
    while (1);
 
-   DSP4.waiting4command = TRUE;
+   DSP4.waiting4command = true;
    DSP4.out_count = 2;
    DSP4_WRITE_WORD(0, 0);
 }
@@ -912,9 +912,9 @@ DSP4_WAIT(2) resume2:
 
 void DSP4_Op0D()
 {
-   uint16 command;
+   uint16_t command;
 
-   DSP4.waiting4command = FALSE;
+   DSP4.waiting4command = false;
 
    // op flow control
    switch (DSP4_Logic)
@@ -1011,10 +1011,10 @@ DSP4_WAIT(1) resume1:
       // project section of the track
 
       // inspect inputs
-      int16 plane;
-      int16 index, lcv;
-      int16 py_dy, px_dx;
-      int16 y_out, x_out;
+      int16_t plane;
+      int16_t index, lcv;
+      int16_t py_dy, px_dx;
+      int16_t y_out, x_out;
 
 resume2:
 
@@ -1024,7 +1024,7 @@ resume2:
 
 
       // ignore invalid data
-      if ((uint16) plane == 0x8001) continue;
+      if ((uint16_t) plane == 0x8001) continue;
 
       // one-time init
       if (far_plane)
@@ -1070,8 +1070,8 @@ resume2:
       ++block;
 
 #ifdef PRINT
-      printf("(line %d) Op0D check %02X, plane %04X\n", c, (uint16)segments,
-             (uint16)(plane));
+      printf("(line %d) Op0D check %02X, plane %04X\n", c, (uint16_t)segments,
+             (uint16_t)(plane));
 #endif
 
       // prepare output
@@ -1130,15 +1130,15 @@ resume2:
       }
 
       // update focal projection points
-      project_pitchy += (int8)DSP4.parameters[3];
-      project_pitchx += (int8)DSP4.parameters[5];
+      project_pitchy += (int8_t)DSP4.parameters[3];
+      project_pitchx += (int8_t)DSP4.parameters[5];
 
       project_focaly += project_pitchy;
       project_focalx += project_pitchx;
    }
    while (1);
 
-   DSP4.waiting4command = TRUE;
+   DSP4.waiting4command = true;
    DSP4.out_count = 0;
 }
 
@@ -1154,9 +1154,9 @@ resume2:
 
 void DSP4_Op09()
 {
-   uint16 command;
+   uint16_t command;
 
-   DSP4.waiting4command = FALSE;
+   DSP4.waiting4command = false;
 
    // op flow control
    switch (DSP4_Logic)
@@ -1228,7 +1228,7 @@ void DSP4_Op09()
 
       do
       {
-         uint16 second;
+         uint16_t second;
 
          DSP4.in_count = 4;
          DSP4.in_index = 2;
@@ -1274,11 +1274,11 @@ sprite_found:
       // vehicle sprite
       if (sprite_type == 1)
       {
-         int16 plane;
-         int16 car_left, car_right;
-         // int16 car_left_a;
-         int16 focal_back;
-//         int16 focal_front;
+         int16_t plane;
+         int16_t car_left, car_right;
+         // int16_t car_left_a;
+         int16_t focal_back;
+//         int16_t focal_front;
 
          // we already have 4 bytes we want
          DSP4.in_count = 6 + 12;
@@ -1334,7 +1334,7 @@ resume4:
       // terrain sprite
       else if (sprite_type == 2)
       {
-         int16 plane;
+         int16_t plane;
 
          // we already have 4 bytes we want
          DSP4.in_count = 6 + 6 + 2;
@@ -1386,7 +1386,7 @@ DSP4_WAIT(6) resume6:
          {
             sprite_size = !sprite_size;
 #ifdef PRINT
-            printf("TOGGLE=%02X\n", (uint8)sprite_size);
+            printf("TOGGLE=%02X\n", (uint8_t)sprite_size);
 #endif
             continue;
          }
@@ -1406,9 +1406,9 @@ DSP4_WAIT(6) resume6:
          /////////////////////////////////////
          // process tile data
 
-         bool8 clip;
-         int16 sp_x, sp_y, sp_oam, sp_msb;
-         int16 sp_dx, sp_dy;
+         bool clip;
+         int16_t sp_x, sp_y, sp_oam, sp_msb;
+         int16_t sp_dx, sp_dy;
 
 resume7:
 
@@ -1421,26 +1421,26 @@ resume7:
          sp_x = sprite_x + sp_dx;
 
          // reject points outside the clipping window
-         clip = FALSE;
-         if (sp_x < viewport_left || sp_x > viewport_right) clip = TRUE;
-         if (sp_y < viewport_top || sp_y > viewport_bottom) clip = TRUE;
+         clip = false;
+         if (sp_x < viewport_left || sp_x > viewport_right) clip = true;
+         if (sp_y < viewport_top || sp_y > viewport_bottom) clip = true;
 
          // track depth sorting
          if (far_plane <= multi_farplane[multi_index1] &&
-               sp_y >= project_y2) clip = TRUE;
+               sp_y >= project_y2) clip = true;
 
 #ifdef PRINT2
          printf("(line %d) %04X, %04X, %04X / %04X %04X\n", line,
-                (uint16)sp_x, (uint16)sp_y, (uint16)far_plane,
-                (uint16)multi_farplane[multi_index1], (uint16)project_y2);
+                (uint16_t)sp_x, (uint16_t)sp_y, (uint16_t)far_plane,
+                (uint16_t)multi_farplane[multi_index1], (uint16_t)project_y2);
 #endif
 
          // don't draw offscreen coordinates
          DSP4.out_count = 0;
          if (!clip)
          {
-            int16 out_index = 0;
-            int16 offset = DSP4_READ_WORD(0);
+            int16_t out_index = 0;
+            int16_t offset = DSP4_READ_WORD(0);
 
             // update sprite nametable/attribute information
             sp_oam = sprite_offset + offset;
@@ -1448,8 +1448,8 @@ resume7:
 
 #ifdef PRINT
             printf("(line %d) %04X, %04X, %04X, %04X, %04X\n", line,
-                   (uint16)sp_oam, (uint16)sprite_offset, (uint16)offset,
-                   (uint16)sp_x, (uint16)sp_y);
+                   (uint16_t)sp_oam, (uint16_t)sprite_offset, (uint16_t)offset,
+                   (uint16_t)sp_x, (uint16_t)sp_y);
 #endif
 
             // emit transparency information
@@ -1545,7 +1545,7 @@ resume7:
    while (1);
 
 terminate:
-   DSP4.waiting4command = TRUE;
+   DSP4.waiting4command = true;
    DSP4.out_count = 0;
 }
 

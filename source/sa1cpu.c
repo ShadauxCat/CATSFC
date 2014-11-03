@@ -212,7 +212,7 @@ void S9xSA1MainLoop()
       SA1.Flags &= ~NMI_FLAG;
       if (SA1.WaitingForInterrupt)
       {
-         SA1.WaitingForInterrupt = FALSE;
+         SA1.WaitingForInterrupt = false;
          SA1.PC++;
       }
       S9xSA1Opcode_NMI();
@@ -224,7 +224,7 @@ void S9xSA1MainLoop()
       {
          if (SA1.WaitingForInterrupt)
          {
-            SA1.WaitingForInterrupt = FALSE;
+            SA1.WaitingForInterrupt = false;
             SA1.PC++;
          }
          if (!SA1CheckFlag(IRQ))

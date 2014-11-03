@@ -94,8 +94,8 @@
 
 struct Band
 {
-   uint32 Left;
-   uint32 Right;
+   uint32_t Left;
+   uint32_t Right;
 };
 
 #undef MIN
@@ -115,9 +115,9 @@ struct Band
 
 static int IntCompare(const void* d1, const void* d2)
 {
-   if (*(uint32*) d1 > *(uint32*) d2)
+   if (*(uint32_t*) d1 > *(uint32_t*) d2)
       return (1);
-   else if (*(uint32*) d1 < * (uint32*) d2)
+   else if (*(uint32_t*) d1 < * (uint32_t*) d2)
       return (-1);
    return (0);
 }
@@ -192,9 +192,9 @@ void ComputeClipWindows()
             {
                struct Band Win1[3];
                struct Band Win2[3];
-               uint32 Window1Enabled = 0;
-               uint32 Window2Enabled = 0;
-               bool8 invert = (w == 5 &&
+               uint32_t Window1Enabled = 0;
+               uint32_t Window2Enabled = 0;
+               bool invert = (w == 5 &&
                                ((c == 1 && (Memory.FillRAM [0x2130] & 0x30) == 0x10) ||
                                 (c == 0 && (Memory.FillRAM [0x2130] & 0xc0) == 0x40)));
 
@@ -477,9 +477,9 @@ void ComputeClipWindows()
                      }
                      else
                      {
-                        uint32 p = 0;
-                        uint32 points [10];
-                        uint32 i;
+                        uint32_t p = 0;
+                        uint32_t points [10];
+                        uint32_t i;
 
                         invert = !invert;
                         // Build an array of points (window edges)
@@ -653,7 +653,7 @@ void ComputeClipWindows()
                      }
                      else
                      {
-                        uint32 j;
+                        uint32_t j;
                         for (j = 0; j < Window1Enabled; j++)
                         {
                            pClip->Left [j][w] = Win1[j].Left;
@@ -702,7 +702,7 @@ void ComputeClipWindows()
                      }
                      else
                      {
-                        uint32 j;
+                        uint32_t j;
                         for (j = 0; j < Window2Enabled; j++)
                         {
                            pClip->Left [j][w] = Win2[j].Left;
@@ -720,7 +720,7 @@ void ComputeClipWindows()
                   // the same as the colour window.
                   if (pClip->Count [w] == 0)
                   {
-                     uint32 i;
+                     uint32_t i;
                      pClip->Count [w] = pClip->Count [5];
                      for (i = 0; i < pClip->Count [w]; i++)
                      {
@@ -732,10 +732,10 @@ void ComputeClipWindows()
                   {
                      // Intersect the colour window with the bg's
                      // own clip window.
-                     uint32 i;
+                     uint32_t i;
                      for (i = 0; i < pClip->Count [w]; i++)
                      {
-                        uint32 j;
+                        uint32_t j;
                         for (j = 0; j < pClip->Count [5]; j++)
                         {
                            if ((pClip->Left[i][w] >= pClip->Left[j][5]

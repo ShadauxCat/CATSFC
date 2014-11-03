@@ -152,7 +152,7 @@ void S9xMainLoop_SA1_SFX(void)
                CPU.Flags &= ~NMI_FLAG;
                if (CPU.WaitingForInterrupt)
                {
-                  CPU.WaitingForInterrupt = FALSE;
+                  CPU.WaitingForInterrupt = false;
                   CPU.PC++;
                }
                S9xOpcode_NMI();
@@ -167,7 +167,7 @@ void S9xMainLoop_SA1_SFX(void)
             {
                if (CPU.WaitingForInterrupt)
                {
-                  CPU.WaitingForInterrupt = FALSE;
+                  CPU.WaitingForInterrupt = false;
                   CPU.PC++;
                }
                if (CPU.IRQActive && !Settings.DisableIRQ)
@@ -216,8 +216,8 @@ void S9xMainLoop_SA1_SFX(void)
 #ifdef DETECT_NASTY_FX_INTERLEAVE
    if (CPU.BRKTriggered && Settings.SuperFX && !CPU.TriedInterleavedMode2)
    {
-      CPU.TriedInterleavedMode2 = TRUE;
-      CPU.BRKTriggered = FALSE;
+      CPU.TriedInterleavedMode2 = true;
+      CPU.BRKTriggered = false;
       S9xDeinterleaveMode2();
    }
 #endif
@@ -238,7 +238,7 @@ void S9xMainLoop_SA1_NoSFX(void)
                CPU.Flags &= ~NMI_FLAG;
                if (CPU.WaitingForInterrupt)
                {
-                  CPU.WaitingForInterrupt = FALSE;
+                  CPU.WaitingForInterrupt = false;
                   CPU.PC++;
                }
                S9xOpcode_NMI();
@@ -253,7 +253,7 @@ void S9xMainLoop_SA1_NoSFX(void)
             {
                if (CPU.WaitingForInterrupt)
                {
-                  CPU.WaitingForInterrupt = FALSE;
+                  CPU.WaitingForInterrupt = false;
                   CPU.PC++;
                }
                if (CPU.IRQActive && !Settings.DisableIRQ)
@@ -315,7 +315,7 @@ void S9xMainLoop_NoSA1_SFX(void)
                CPU.Flags &= ~NMI_FLAG;
                if (CPU.WaitingForInterrupt)
                {
-                  CPU.WaitingForInterrupt = FALSE;
+                  CPU.WaitingForInterrupt = false;
                   CPU.PC++;
                }
                S9xOpcode_NMI();
@@ -330,7 +330,7 @@ void S9xMainLoop_NoSA1_SFX(void)
             {
                if (CPU.WaitingForInterrupt)
                {
-                  CPU.WaitingForInterrupt = FALSE;
+                  CPU.WaitingForInterrupt = false;
                   CPU.PC++;
                }
                if (CPU.IRQActive && !Settings.DisableIRQ)
@@ -377,8 +377,8 @@ void S9xMainLoop_NoSA1_SFX(void)
 #ifdef DETECT_NASTY_FX_INTERLEAVE
    if (CPU.BRKTriggered && Settings.SuperFX && !CPU.TriedInterleavedMode2)
    {
-      CPU.TriedInterleavedMode2 = TRUE;
-      CPU.BRKTriggered = FALSE;
+      CPU.TriedInterleavedMode2 = true;
+      CPU.BRKTriggered = false;
       S9xDeinterleaveMode2();
    }
 #endif
@@ -399,7 +399,7 @@ void S9xMainLoop_NoSA1_NoSFX(void)
                CPU.Flags &= ~NMI_FLAG;
                if (CPU.WaitingForInterrupt)
                {
-                  CPU.WaitingForInterrupt = FALSE;
+                  CPU.WaitingForInterrupt = false;
                   CPU.PC++;
                }
                S9xOpcode_NMI();
@@ -414,7 +414,7 @@ void S9xMainLoop_NoSA1_NoSFX(void)
             {
                if (CPU.WaitingForInterrupt)
                {
-                  CPU.WaitingForInterrupt = FALSE;
+                  CPU.WaitingForInterrupt = false;
                   CPU.PC++;
                }
                if (CPU.IRQActive && !Settings.DisableIRQ)
@@ -459,7 +459,7 @@ void S9xMainLoop_NoSA1_NoSFX(void)
    }
 }
 
-void S9xSetIRQ(uint32 source)
+void S9xSetIRQ(uint32_t source)
 {
    CPU.IRQActive |= source;
    CPU.Flags |= IRQ_PENDING_FLAG;
@@ -469,12 +469,12 @@ void S9xSetIRQ(uint32 source)
       // Force IRQ to trigger immediately after WAI -
       // Final Fantasy Mystic Quest crashes without this.
       CPU.IRQCycleCount = 0;
-      CPU.WaitingForInterrupt = FALSE;
+      CPU.WaitingForInterrupt = false;
       CPU.PC++;
    }
 }
 
-void S9xClearIRQ(uint32 source)
+void S9xClearIRQ(uint32_t source)
 {
    CLEAR_IRQ_SOURCE(source);
 }
@@ -542,7 +542,7 @@ void S9xDoHBlankProcessing_SFX()
          CPU.V_Counter = 0;
          Memory.FillRAM[0x213F] ^= 0x80;
          PPU.RangeTimeOver = 0;
-         CPU.NMIActive = FALSE;
+         CPU.NMIActive = false;
          ICPU.Frame++;
          PPU.HVBeamCounterLatched = 0;
          CPU.Flags |= SCAN_KEYS_FLAG;
@@ -568,13 +568,13 @@ void S9xDoHBlankProcessing_SFX()
          {
             PPU.OAMAddr = PPU.SavedOAMAddr;
 
-            uint8 tmp = 0;
+            uint8_t tmp = 0;
             if (PPU.OAMPriorityRotation)
                tmp = (PPU.OAMAddr & 0xFE) >> 1;
             if ((PPU.OAMFlip & 1) || PPU.FirstSprite != tmp)
             {
                PPU.FirstSprite = tmp;
-               IPPU.OBJChanged = TRUE;
+               IPPU.OBJChanged = true;
             }
 
             PPU.OAMFlip = 0;
@@ -583,7 +583,7 @@ void S9xDoHBlankProcessing_SFX()
          Memory.FillRAM[0x4210] = 0x80 | Model->_5A22;
          if (Memory.FillRAM[0x4200] & 0x80)
          {
-            CPU.NMIActive = TRUE;
+            CPU.NMIActive = true;
             CPU.Flags |= NMI_FLAG;
             CPU.NMICycleCount = CPU.NMITriggerPoint;
          }
@@ -633,7 +633,7 @@ void S9xDoHBlankProcessing_SFX()
                APU.Timer [2] -= APU.TimerTarget [2];
 #ifdef SPC700_SHUTDOWN
                IAPU.WaitCounter++;
-               IAPU.APUExecuting = TRUE;
+               IAPU.APUExecuting = true;
 #endif
             }
          }
@@ -648,7 +648,7 @@ void S9xDoHBlankProcessing_SFX()
                   APU.Timer [0] = 0;
 #ifdef SPC700_SHUTDOWN
                   IAPU.WaitCounter++;
-                  IAPU.APUExecuting = TRUE;
+                  IAPU.APUExecuting = true;
 #endif
                }
             }
@@ -661,7 +661,7 @@ void S9xDoHBlankProcessing_SFX()
                   APU.Timer [1] = 0;
 #ifdef SPC700_SHUTDOWN
                   IAPU.WaitCounter++;
-                  IAPU.APUExecuting = TRUE;
+                  IAPU.APUExecuting = true;
 #endif
                }
             }
@@ -734,7 +734,7 @@ void S9xDoHBlankProcessing_NoSFX()
          CPU.V_Counter = 0;
          Memory.FillRAM[0x213F] ^= 0x80;
          PPU.RangeTimeOver = 0;
-         CPU.NMIActive = FALSE;
+         CPU.NMIActive = false;
          ICPU.Frame++;
          PPU.HVBeamCounterLatched = 0;
          CPU.Flags |= SCAN_KEYS_FLAG;
@@ -760,13 +760,13 @@ void S9xDoHBlankProcessing_NoSFX()
          {
             PPU.OAMAddr = PPU.SavedOAMAddr;
 
-            uint8 tmp = 0;
+            uint8_t tmp = 0;
             if (PPU.OAMPriorityRotation)
                tmp = (PPU.OAMAddr & 0xFE) >> 1;
             if ((PPU.OAMFlip & 1) || PPU.FirstSprite != tmp)
             {
                PPU.FirstSprite = tmp;
-               IPPU.OBJChanged = TRUE;
+               IPPU.OBJChanged = true;
             }
 
             PPU.OAMFlip = 0;
@@ -775,7 +775,7 @@ void S9xDoHBlankProcessing_NoSFX()
          Memory.FillRAM[0x4210] = 0x80 | Model->_5A22;
          if (Memory.FillRAM[0x4200] & 0x80)
          {
-            CPU.NMIActive = TRUE;
+            CPU.NMIActive = true;
             CPU.Flags |= NMI_FLAG;
             CPU.NMICycleCount = CPU.NMITriggerPoint;
          }
@@ -824,7 +824,7 @@ void S9xDoHBlankProcessing_NoSFX()
                APU.Timer [2] -= APU.TimerTarget [2];
 #ifdef SPC700_SHUTDOWN
                IAPU.WaitCounter++;
-               IAPU.APUExecuting = TRUE;
+               IAPU.APUExecuting = true;
 #endif
             }
          }
@@ -839,7 +839,7 @@ void S9xDoHBlankProcessing_NoSFX()
                   APU.Timer [0] = 0;
 #ifdef SPC700_SHUTDOWN
                   IAPU.WaitCounter++;
-                  IAPU.APUExecuting = TRUE;
+                  IAPU.APUExecuting = true;
 #endif
                }
             }
@@ -852,7 +852,7 @@ void S9xDoHBlankProcessing_NoSFX()
                   APU.Timer [1] = 0;
 #ifdef SPC700_SHUTDOWN
                   IAPU.WaitCounter++;
-                  IAPU.APUExecuting = TRUE;
+                  IAPU.APUExecuting = true;
 #endif
                }
             }

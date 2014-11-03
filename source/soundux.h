@@ -128,17 +128,17 @@ typedef struct
    int sound_switch;
    int playback_rate;
    int buffer_size;
-   bool8 encoded;
+   bool encoded;
 #ifdef __sun
    int last_eof;
 #endif
 #ifdef __sgi
    ALport al_port;
 #endif /* __sgi */
-   int32  samples_mixed_so_far;
-   int32  play_position;
-   uint32 err_counter;
-   uint32 err_rate;
+   int32_t  samples_mixed_so_far;
+   int32_t  play_position;
+   uint32_t err_counter;
+   uint32_t err_rate;
 } SoundStatus;
 
 SoundStatus so;
@@ -150,10 +150,10 @@ typedef struct
    int type;
    short volume_left;
    short volume_right;
-   uint32 hertz;
-   uint32 frequency;
-   uint32 count;
-   bool8 loop;
+   uint32_t hertz;
+   uint32_t frequency;
+   uint32_t count;
+   bool loop;
    int envx;
    short left_vol_level;
    short right_vol_level;
@@ -170,19 +170,19 @@ typedef struct
    signed short decoded [16];
    signed short previous16 [2];
    signed short* block;
-   uint16 sample_number;
-   bool8 last_block;
-   bool8 needs_decode;
-   uint32 block_pointer;
-   uint32 sample_pointer;
+   uint16_t sample_number;
+   bool last_block;
+   bool needs_decode;
+   uint32_t block_pointer;
+   uint32_t sample_pointer;
    int* echo_buf_ptr;
    int mode;
-   int32 envxx;
+   int32_t envxx;
    signed short next_sample;
-   int32 interpolate;
-   int32 previous [2];
+   int32_t interpolate;
+   int32_t previous [2];
    // Just incase they are needed in the future, for snapshot compatibility.
-   uint32 dummy [8];
+   uint32_t dummy [8];
    // unsigned short last_valid_header;
 } Channel;
 
@@ -196,9 +196,9 @@ typedef struct
    int echo_channel_enable;
    int pitch_mod;
    // Just incase they are needed in the future, for snapshot compatibility.
-   uint32 dummy [3];
+   uint32_t dummy [3];
    Channel channels [NUM_CHANNELS];
-   // bool8 no_filter;
+   // bool no_filter;
    short master_volume [2]; /* range is -128 .. 127 */
    short echo_volume [2]; /* range is -128 .. 127 */
    int noise_hertz;
@@ -206,7 +206,7 @@ typedef struct
 
 SSoundData SoundData;
 
-void S9xSetEightBitConsoleSound(bool8 Enabled);
+void S9xSetEightBitConsoleSound(bool Enabled);
 
 void S9xSetSoundVolume(int channel, short volume_left, short volume_right);
 void S9xSetSoundFrequency(int channel, int hertz);
@@ -222,28 +222,28 @@ void S9xSetSoundKeyOff(int channel);
 void S9xSetSoundDecayMode(int channel);
 void S9xSetSoundAttachMode(int channel);
 void S9xSoundStartEnvelope(Channel*);
-void S9xSetSoundSample(int channel, uint16 sample_number);
+void S9xSetSoundSample(int channel, uint16_t sample_number);
 void S9xSetEchoFeedback(int echo_feedback);
-void S9xSetEchoEnable(uint8 byte);
+void S9xSetEchoEnable(uint8_t byte);
 void S9xSetEchoDelay(int byte);
-void S9xSetEchoWriteEnable(uint8 byte);
+void S9xSetEchoWriteEnable(uint8_t byte);
 void S9xSetFilterCoefficient(int tap, int value);
-void S9xSetFrequencyModulationEnable(uint8 byte);
+void S9xSetFrequencyModulationEnable(uint8_t byte);
 void S9xSetEnvelopeRate(int channel, unsigned long rate, int direction,
                         int target);
-bool8 S9xSetSoundMode(int channel, int mode);
+bool S9xSetSoundMode(int channel, int mode);
 int S9xGetEnvelopeHeight(int channel);
-void S9xResetSound(bool8 full);
+void S9xResetSound(bool full);
 void S9xFixSoundAfterSnapshotLoad();
 void S9xPlaybackSoundSetting(int channel);
 void S9xPlaySample(int channel);
-void S9xFixEnvelope(int channel, uint8 gain, uint8 adsr1, uint8 adsr2);
+void S9xFixEnvelope(int channel, uint8_t gain, uint8_t adsr1, uint8_t adsr2);
 void S9xStartSample(int channel);
 
-void S9xMixSamples(uint8* buffer, int sample_count);
-void S9xMixSamplesO(uint8* buffer, int sample_count, int byte_offset);
-bool8 S9xOpenSoundDevice(int, bool8, int);
-void S9xSetPlaybackRate(uint32 rate);
+void S9xMixSamples(uint8_t* buffer, int sample_count);
+void S9xMixSamplesO(uint8_t* buffer, int sample_count, int byte_offset);
+bool S9xOpenSoundDevice(int, bool, int);
+void S9xSetPlaybackRate(uint32_t rate);
 #endif
 
 #endif

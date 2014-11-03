@@ -91,9 +91,9 @@
 #define _DMA_H_
 
 void S9xResetDMA(void);
-uint8 S9xDoHDMA(uint8);
+uint8_t S9xDoHDMA(uint8_t);
 void S9xStartHDMA();
-void S9xDoDMA(uint8);
+void S9xDoDMA(uint8_t);
 
 #endif
 

@@ -152,8 +152,8 @@ void S9xHardResetSRTC()
    memset(&rtc, 0, sizeof(rtc));
    rtc.index = -1;
    rtc.mode = MODE_READ;
-   rtc.count_enable = FALSE;
-   rtc.needs_init = TRUE;
+   rtc.count_enable = false;
+   rtc.needs_init = true;
 
    // Get system timestamp
    rtc.system_timestamp = time(NULL);
@@ -370,7 +370,7 @@ void  S9xUpdateSrtcTime()
 /* S9xSetSRTC()                                                                               */
 /* This function sends data to the S-RTC used in Dai Kaijyu Monogatari II                     */
 /**********************************************************************************************/
-void S9xSetSRTC(uint8 data, uint16 Address)
+void S9xSetSRTC(uint8_t data, uint16_t Address)
 {
 
    data &= 0x0F; // Data is only 4-bits, mask out unused bits.
@@ -416,8 +416,8 @@ void S9xSetSRTC(uint8 data, uint16 Address)
             rtc.data[rtc.index++] = S9xSRTCComputeDayOfWeek();
 
             // Start RTC counting again
-            rtc.count_enable = TRUE;
-            rtc.needs_init = FALSE;
+            rtc.count_enable = true;
+            rtc.needs_init = false;
          }
 
          return;
@@ -434,7 +434,7 @@ void S9xSetSRTC(uint8 data, uint16 Address)
       {
       case COMMAND_CLEAR_RTC:
          // Disable RTC counter
-         rtc.count_enable = FALSE;
+         rtc.count_enable = false;
 
          memset(rtc.data, 0, MAX_RTC_INDEX + 1);
          rtc.index = -1;
@@ -443,7 +443,7 @@ void S9xSetSRTC(uint8 data, uint16 Address)
 
       case COMMAND_LOAD_RTC:
          // Disable RTC counter
-         rtc.count_enable = FALSE;
+         rtc.count_enable = false;
 
          rtc.index = 0;  // Setup for writing
          rtc.mode = MODE_LOAD_RTC;
@@ -475,7 +475,7 @@ void S9xSetSRTC(uint8 data, uint16 Address)
 /* S9xGetSRTC()                                                                               */
 /* This function retrieves data from the S-RTC                                                */
 /**********************************************************************************************/
-uint8 S9xGetSRTC(uint16 Address)
+uint8_t S9xGetSRTC(uint16_t Address)
 {
    if (rtc.mode == MODE_READ)
    {
@@ -522,14 +522,14 @@ void S9xSRTCPreSaveState()
       // memmove converted: Different mallocs [Neb]
       memcpy(&Memory.SRAM [s + 5 + MAX_RTC_INDEX], &rtc.system_timestamp, 8);
 #else
-      SRAM [s + 5  + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >>  0);
-      SRAM [s + 6  + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >>  8);
-      SRAM [s + 7  + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >> 16);
-      SRAM [s + 8  + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >> 24);
-      SRAM [s + 9  + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >> 32);
-      SRAM [s + 10 + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >> 40);
-      SRAM [s + 11 + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >> 48);
-      SRAM [s + 12 + MAX_RTC_INDEX] = (uint8)(rtc.system_timestamp >> 56);
+      SRAM [s + 5  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >>  0);
+      SRAM [s + 6  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >>  8);
+      SRAM [s + 7  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 16);
+      SRAM [s + 8  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 24);
+      SRAM [s + 9  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 32);
+      SRAM [s + 10 + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 40);
+      SRAM [s + 11 + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 48);
+      SRAM [s + 12 + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 56);
 #endif
    }
 }

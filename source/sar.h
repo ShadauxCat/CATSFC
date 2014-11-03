@@ -96,10 +96,6 @@
 
 #include "port.h"
 
-#ifndef snes9x_types_defined
-#include "9xtypes.h"
-#endif
-
 #ifdef RIGHTSHIFT_IS_SAR
 #define SAR8(b, n) ((b)>>(n))
 #define SAR16(b, n) ((b)>>(n))
@@ -107,7 +103,7 @@
 #define SAR64(b, n) ((b)>>(n))
 #else
 
-static inline int8 SAR8(const int8 b, const int n)
+static inline int8_t SAR8(const int8_t b, const int n)
 {
 #ifndef RIGHTSHIFT_INT8_IS_SAR
    if (b < 0) return (b >> n) | (-1 << (8 - n));
@@ -115,7 +111,7 @@ static inline int8 SAR8(const int8 b, const int n)
    return b >> n;
 }
 
-static inline int16 SAR16(const int16 b, const int n)
+static inline int16_t SAR16(const int16_t b, const int n)
 {
 #ifndef RIGHTSHIFT_INT16_IS_SAR
    if (b < 0) return (b >> n) | (-1 << (16 - n));
@@ -123,7 +119,7 @@ static inline int16 SAR16(const int16 b, const int n)
    return b >> n;
 }
 
-static inline int32 SAR32(const int32 b, const int n)
+static inline int32_t SAR32(const int32_t b, const int n)
 {
 #ifndef RIGHTSHIFT_INT32_IS_SAR
    if (b < 0) return (b >> n) | (-1 << (32 - n));
@@ -131,7 +127,7 @@ static inline int32 SAR32(const int32 b, const int n)
    return b >> n;
 }
 
-static inline int64 SAR64(const int64 b, const int n)
+static inline int64_t SAR64(const int64_t b, const int n)
 {
 #ifndef RIGHTSHIFT_INT64_IS_SAR
    if (b < 0) return (b >> n) | (-1 << (64 - n));

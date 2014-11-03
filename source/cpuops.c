@@ -371,7 +371,7 @@ static void Op29M1(void)
 static void Op29M0(void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-   ICPU.Registers.A.W &= *(uint16*) CPU.PC;
+   ICPU.Registers.A.W &= *(uint16_t*) CPU.PC;
 #else
    ICPU.Registers.A.W &= *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
@@ -703,7 +703,7 @@ static void Op89M1(void)
 static void Op89M0(void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-   ICPU._Zero = (ICPU.Registers.A.W & *(uint16*) CPU.PC) != 0;
+   ICPU._Zero = (ICPU.Registers.A.W & *(uint16_t*) CPU.PC) != 0;
 #else
    ICPU._Zero = (ICPU.Registers.A.W & (*CPU.PC + (*(CPU.PC + 1) << 8))) != 0;
 #endif
@@ -789,9 +789,9 @@ static void Op3CM0(void)
 /* CMP *************************************************************************************** */
 static void OpC9M1(void)
 {
-   int32 Int32 = (int) ICPU.Registers.AL - (intptr_t) * CPU.PC++;
+   int32_t Int32 = (int) ICPU.Registers.AL - (intptr_t) * CPU.PC++;
    ICPU._Carry = Int32 >= 0;
-   SetZN8((uint8) Int32);
+   SetZN8((uint8_t) Int32);
 #ifndef SA1_OPCODES
    CPU.Cycles += CPU.MemSpeed;
 #endif
@@ -799,15 +799,15 @@ static void OpC9M1(void)
 
 static void OpC9M0(void)
 {
-   int32 Int32;
+   int32_t Int32;
 #ifdef FAST_LSB_WORD_ACCESS
-   Int32 = (long) ICPU.Registers.A.W - (long) * (uint16*) CPU.PC;
+   Int32 = (long) ICPU.Registers.A.W - (long) * (uint16_t*) CPU.PC;
 #else
    Int32 = (long) ICPU.Registers.A.W -
            (long)(*CPU.PC + (*(CPU.PC + 1) << 8));
 #endif
    ICPU._Carry = Int32 >= 0;
-   SetZN16((uint16) Int32);
+   SetZN16((uint16_t) Int32);
    CPU.PC += 2;
 #ifndef SA1_OPCODES
    CPU.Cycles += CPU.MemSpeedx2;
@@ -1051,9 +1051,9 @@ static void OpD3M0(void)
 /* CMX *************************************************************************************** */
 static void OpE0X1(void)
 {
-   int32 Int32 = (int) ICPU.Registers.XL - (intptr_t) * CPU.PC++;
+   int32_t Int32 = (int) ICPU.Registers.XL - (intptr_t) * CPU.PC++;
    ICPU._Carry = Int32 >= 0;
-   SetZN8((uint8) Int32);
+   SetZN8((uint8_t) Int32);
 #ifndef SA1_OPCODES
    CPU.Cycles += CPU.MemSpeed;
 #endif
@@ -1061,15 +1061,15 @@ static void OpE0X1(void)
 
 static void OpE0X0(void)
 {
-   int32 Int32;
+   int32_t Int32;
 #ifdef FAST_LSB_WORD_ACCESS
-   Int32 = (long) ICPU.Registers.X.W - (long) * (uint16*) CPU.PC;
+   Int32 = (long) ICPU.Registers.X.W - (long) * (uint16_t*) CPU.PC;
 #else
    Int32 = (long) ICPU.Registers.X.W -
            (long)(*CPU.PC + (*(CPU.PC + 1) << 8));
 #endif
    ICPU._Carry = Int32 >= 0;
-   SetZN16((uint16) Int32);
+   SetZN16((uint16_t) Int32);
    CPU.PC += 2;
 #ifndef SA1_OPCODES
    CPU.Cycles += CPU.MemSpeedx2;
@@ -1113,9 +1113,9 @@ static void OpECX0(void)
 /* CMY *************************************************************************************** */
 static void OpC0X1(void)
 {
-   int32 Int32 = (int) ICPU.Registers.YL - (intptr_t) * CPU.PC++;
+   int32_t Int32 = (int) ICPU.Registers.YL - (intptr_t) * CPU.PC++;
    ICPU._Carry = Int32 >= 0;
-   SetZN8((uint8) Int32);
+   SetZN8((uint8_t) Int32);
 #ifndef SA1_OPCODES
    CPU.Cycles += CPU.MemSpeed;
 #endif
@@ -1123,15 +1123,15 @@ static void OpC0X1(void)
 
 static void OpC0X0(void)
 {
-   int32 Int32;
+   int32_t Int32;
 #ifdef FAST_LSB_WORD_ACCESS
-   Int32 = (long) ICPU.Registers.Y.W - (long) * (uint16*) CPU.PC;
+   Int32 = (long) ICPU.Registers.Y.W - (long) * (uint16_t*) CPU.PC;
 #else
    Int32 = (long) ICPU.Registers.Y.W -
            (long)(*CPU.PC + (*(CPU.PC + 1) << 8));
 #endif
    ICPU._Carry = Int32 >= 0;
-   SetZN16((uint16) Int32);
+   SetZN16((uint16_t) Int32);
    CPU.PC += 2;
 #ifndef SA1_OPCODES
    CPU.Cycles += CPU.MemSpeedx2;
@@ -1270,7 +1270,7 @@ static void Op49M1(void)
 static void Op49M0(void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-   ICPU.Registers.A.W ^= *(uint16*) CPU.PC;
+   ICPU.Registers.A.W ^= *(uint16_t*) CPU.PC;
 #else
    ICPU.Registers.A.W ^= *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
@@ -1612,7 +1612,7 @@ static void OpA9M1(void)
 static void OpA9M0(void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-   ICPU.Registers.A.W = *(uint16*) CPU.PC;
+   ICPU.Registers.A.W = *(uint16_t*) CPU.PC;
 #else
    ICPU.Registers.A.W = *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
@@ -1871,7 +1871,7 @@ static void OpA2X1(void)
 static void OpA2X0(void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-   ICPU.Registers.X.W = *(uint16*) CPU.PC;
+   ICPU.Registers.X.W = *(uint16_t*) CPU.PC;
 #else
    ICPU.Registers.X.W = *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
@@ -1968,7 +1968,7 @@ static void OpA0X1(void)
 static void OpA0X0(void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-   ICPU.Registers.Y.W = *(uint16*) CPU.PC;
+   ICPU.Registers.Y.W = *(uint16_t*) CPU.PC;
 #else
    ICPU.Registers.Y.W = *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
@@ -2151,7 +2151,7 @@ static void Op09M1(void)
 static void Op09M0(void)
 {
 #ifdef FAST_LSB_WORD_ACCESS
-   ICPU.Registers.A.W |= *(uint16*) CPU.PC;
+   ICPU.Registers.A.W |= *(uint16_t*) CPU.PC;
 #else
    ICPU.Registers.A.W |= *CPU.PC + (*(CPU.PC + 1) << 8);
 #endif
@@ -3315,7 +3315,7 @@ static void Op0CM0(void)
 #define BranchCheck0()\
     if( CPU.BranchSkip)\
     {\
-   CPU.BranchSkip = FALSE;\
+   CPU.BranchSkip = false;\
    if (!Settings.SoundSkipMethod)\
        if( CPU.PC - CPU.PCBase > OpAddress)\
            return;\
@@ -3324,7 +3324,7 @@ static void Op0CM0(void)
 #define BranchCheck1()\
    if( CPU.BranchSkip)\
    {\
-      CPU.BranchSkip = FALSE;\
+      CPU.BranchSkip = false;\
       if (!Settings.SoundSkipMethod) {\
          if( CPU.PC - CPU.PCBase > OpAddress)\
          return;\
@@ -3344,7 +3344,7 @@ static void Op0CM0(void)
 #define BranchCheck2()\
    if( CPU.BranchSkip)\
    {\
-      CPU.BranchSkip = FALSE;\
+      CPU.BranchSkip = false;\
       if (!Settings.SoundSkipMethod) {\
           if( CPU.PC - CPU.PCBase > OpAddress)\
               return;\
@@ -3387,13 +3387,13 @@ static inline void CPUShutdown()
          CPU.Cycles = CPU.NextEvent;
          if (IAPU.APUExecuting)
          {
-            ICPU.CPUExecuting = FALSE;
+            ICPU.CPUExecuting = false;
             do
             {
                APU_EXECUTE1();
             }
             while (APU.Cycles < CPU.NextEvent);
-            ICPU.CPUExecuting = TRUE;
+            ICPU.CPUExecuting = true;
          }
 #endif
       }
@@ -3410,8 +3410,8 @@ inline void CPUShutdown()
    {
       if (CPU.WaitCounter >= 1)
       {
-         SA1.Executing = FALSE;
-         SA1.CPUExecuting = FALSE;
+         SA1.Executing = false;
+         SA1.CPUExecuting = false;
       }
       else
          CPU.WaitCounter++;
@@ -4384,8 +4384,8 @@ static void OpFB(void)
    CPU.Cycles += ONE_CYCLE;
 #endif
 
-   uint8 A1 = ICPU._Carry;
-   uint8 A2 = ICPU.Registers.PH;
+   uint8_t A1 = ICPU._Carry;
+   uint8_t A2 = ICPU.Registers.PH;
    ICPU._Carry = A2 & 1;
    ICPU.Registers.PH = A1;
 
@@ -4408,7 +4408,7 @@ static void OpFB(void)
 static void Op00(void)
 {
 #ifndef SA1_OPCODES
-   CPU.BRKTriggered = TRUE;
+   CPU.BRKTriggered = true;
 #endif
 
    if (!CheckEmulation())
@@ -4611,7 +4611,7 @@ static void OpDC(void)
 #ifndef SA1_OPCODES
    CPU.Cycles += CPU.MemSpeedx2 + TWO_CYCLES;
 #endif
-   ICPU.Registers.PB = (uint8)(OpAddress >> 16);
+   ICPU.Registers.PB = (uint8_t)(OpAddress >> 16);
    ICPU.ShiftedPB = OpAddress & 0xff0000;
    S9xSetPCBase(OpAddress);
 }
@@ -4622,7 +4622,7 @@ static void Op5C(void)
 #ifndef SA1_OPCODES
    CPU.Cycles += CPU.MemSpeedx2 + CPU.MemSpeed;
 #endif
-   ICPU.Registers.PB = (uint8)(OpAddress >> 16);
+   ICPU.Registers.PB = (uint8_t)(OpAddress >> 16);
    ICPU.ShiftedPB = OpAddress & 0xff0000;
    S9xSetPCBase(OpAddress);
 }
@@ -4669,7 +4669,7 @@ static void Op22E1(void)
 #endif
    PushB(ICPU.Registers.PB);
    PushWENew(CPU.PC - CPU.PCBase - 1);
-   ICPU.Registers.PB = (uint8)(OpAddress >> 16);
+   ICPU.Registers.PB = (uint8_t)(OpAddress >> 16);
    ICPU.ShiftedPB = OpAddress & 0xff0000;
    S9xSetPCBase(OpAddress);
 }
@@ -4682,7 +4682,7 @@ static void Op22(void)
 #endif
    PushB(ICPU.Registers.PB);
    PushW(CPU.PC - CPU.PCBase - 1);
-   ICPU.Registers.PB = (uint8)(OpAddress >> 16);
+   ICPU.Registers.PB = (uint8_t)(OpAddress >> 16);
    ICPU.ShiftedPB = OpAddress & 0xff0000;
    S9xSetPCBase(OpAddress);
 }
@@ -4756,7 +4756,7 @@ static void Op60(void)
 /* MVN/MVP *********************************************************************************** */
 static void Op54X1(void)
 {
-   uint32 SrcBank;
+   uint32_t SrcBank;
 
 #ifndef SA1_OPCODES
    CPU.Cycles += CPU.MemSpeedx2 + TWO_CYCLES;
@@ -4778,7 +4778,7 @@ static void Op54X1(void)
 
 static void Op54X0(void)
 {
-   uint32 SrcBank;
+   uint32_t SrcBank;
 
 #ifndef SA1_OPCODES
    CPU.Cycles += CPU.MemSpeedx2 + TWO_CYCLES;
@@ -4800,7 +4800,7 @@ static void Op54X0(void)
 
 static void Op44X1(void)
 {
-   uint32 SrcBank;
+   uint32_t SrcBank;
 
 #ifndef SA1_OPCODES
    CPU.Cycles += CPU.MemSpeedx2 + TWO_CYCLES;
@@ -4820,7 +4820,7 @@ static void Op44X1(void)
 
 static void Op44X0(void)
 {
-   uint32 SrcBank;
+   uint32_t SrcBank;
 
 #ifndef SA1_OPCODES
    CPU.Cycles += CPU.MemSpeedx2 + TWO_CYCLES;
@@ -4843,7 +4843,7 @@ static void Op44X0(void)
 /* REP/SEP *********************************************************************************** */
 static void OpC2(void)
 {
-   uint8 Work8 = ~*CPU.PC++;
+   uint8_t Work8 = ~*CPU.PC++;
    ICPU.Registers.PL &= Work8;
    ICPU._Carry &= Work8;
    ICPU._Overflow &= (Work8 >> 6);
@@ -4869,7 +4869,7 @@ static void OpC2(void)
 
 static void OpE2(void)
 {
-   uint8 Work8 = *CPU.PC++;
+   uint8_t Work8 = *CPU.PC++;
    ICPU.Registers.PL |= Work8;
    ICPU._Carry |= Work8 & 1;
    ICPU._Overflow |= (Work8 >> 6) & 1;
@@ -4896,7 +4896,7 @@ static void OpE2(void)
 /* XBA *************************************************************************************** */
 static void OpEB(void)
 {
-   uint8 Work8 = ICPU.Registers.AL;
+   uint8_t Work8 = ICPU.Registers.AL;
    ICPU.Registers.AL = ICPU.Registers.AH;
    ICPU.Registers.AH = Work8;
 
@@ -4945,7 +4945,7 @@ static void OpCB(void)
 
    // Ok, let's just C-ify the ASM versions separately.
 #ifdef SA1_OPCODES
-   SA1.WaitingForInterrupt = TRUE;
+   SA1.WaitingForInterrupt = true;
    SA1.PC--;
 #if 0
    // XXX: FIXME
@@ -4954,12 +4954,12 @@ static void OpCB(void)
       SA1.Cycles = SA1.NextEvent;
       if (IAPU.APUExecuting)
       {
-         SA1.Executing = FALSE;
+         SA1.Executing = false;
          do
          {
             APU_EXECUTE1(,
          }
-         while (APU.Cycles < SA1.NextEvent,         SA1.Executing = TRUE;
+         while (APU.Cycles < SA1.NextEvent,         SA1.Executing = true;
       }
 }
 #endif
@@ -4976,7 +4976,7 @@ static void OpCB(void)
    else
 #endif
    {
-      CPU.WaitingForInterrupt = TRUE;
+      CPU.WaitingForInterrupt = true;
       CPU.PC--;
 #ifdef CPU_SHUTDOWN
       if (Settings.Shutdown)
@@ -4985,13 +4985,13 @@ static void OpCB(void)
 #ifndef USE_BLARGG_APU
          if (IAPU.APUExecuting)
          {
-            ICPU.CPUExecuting = FALSE;
+            ICPU.CPUExecuting = false;
             do
             {
                APU_EXECUTE1();
             }
             while (APU.Cycles < CPU.NextEvent);
-            ICPU.CPUExecuting = TRUE;
+            ICPU.CPUExecuting = true;
          }
 #endif
       }

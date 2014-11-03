@@ -91,7 +91,7 @@
 
 #ifdef __DJGPP
 #include <allegro.h>
-#undef TRUE
+#undef true
 #endif
 
 #include "snes9x.h"
@@ -102,19 +102,19 @@
 
 extern int NoiseFreq [32];
 
-bool8 S9xInitAPU()
+bool S9xInitAPU()
 {
-   IAPU.RAM = (uint8*) malloc(0x10000);
+   IAPU.RAM = (uint8_t*) malloc(0x10000);
 
    if (!IAPU.RAM)
    {
       S9xDeinitAPU();
-      return (FALSE);
+      return (false);
    }
 
    memset(IAPU.RAM, 0, 0x10000);
 
-   return (TRUE);
+   return (true);
 }
 
 void S9xDeinitAPU()
@@ -126,7 +126,7 @@ void S9xDeinitAPU()
    }
 }
 
-uint8 APUROM [64];
+uint8_t APUROM [64];
 
 void S9xResetAPU()
 {
@@ -166,12 +166,12 @@ void S9xResetAPU()
    IAPU.WaitAddress2 = NULL;
    IAPU.WaitCounter = 0;
 #endif
-   APU.ShowROM = TRUE;
+   APU.ShowROM = true;
    IAPU.RAM [0xf1] = 0x80;
 
    for (i = 0; i < 3; i++)
    {
-      APU.TimerEnabled [i] = FALSE;
+      APU.TimerEnabled [i] = false;
       APU.TimerValueWritten [i] = 0;
       APU.TimerTarget [i] = 0;
       APU.Timer [i] = 0;
@@ -190,15 +190,15 @@ void S9xResetAPU()
    APU.DSP [APU_FLG] = APU_MUTE | APU_ECHO_DISABLED;
    APU.KeyedChannels = 0;
 
-   S9xResetSound(TRUE);
+   S9xResetSound(true);
    S9xSetEchoEnable(0);
 }
 
-void S9xSetAPUDSP(uint8 byte)
+void S9xSetAPUDSP(uint8_t byte)
 {
-   uint8 reg = IAPU.RAM [0xf2];
-   static uint8 KeyOn;
-   static uint8 KeyOnPrev;
+   uint8_t reg = IAPU.RAM [0xf2];
+   static uint8_t KeyOn;
+   static uint8_t KeyOnPrev;
    int i;
 
    switch (reg)
@@ -210,10 +210,10 @@ void S9xSetAPUDSP(uint8 byte)
          APU.DSP [APU_ENDX] = 0;
          APU.DSP [APU_KOFF] = 0;
          APU.DSP [APU_KON] = 0;
-         S9xSetEchoWriteEnable(FALSE);
+         S9xSetEchoWriteEnable(false);
 
          // Kill sound
-         S9xResetSound(FALSE);
+         S9xResetSound(false);
       }
       else
       {
@@ -231,7 +231,7 @@ void S9xSetAPUDSP(uint8 byte)
       if (byte != APU.DSP [APU_NON])
       {
          int c;
-         uint8 mask = 1;
+         uint8_t mask = 1;
          for (c = 0; c < 8; c++, mask <<= 1)
          {
             int type;
@@ -281,7 +281,7 @@ void S9xSetAPUDSP(uint8 byte)
       //    if (byte)
    {
       int c;
-      uint8 mask = 1;
+      uint8_t mask = 1;
       for (c = 0; c < 8; c++, mask <<= 1)
       {
          if ((byte & mask) != 0)
@@ -315,7 +315,7 @@ void S9xSetAPUDSP(uint8 byte)
       if (byte)
       {
          int c;
-         uint8 mask = 1;
+         uint8_t mask = 1;
          for (c = 0; c < 8; c++, mask <<= 1)
          {
             if ((byte & mask) != 0)
@@ -522,7 +522,7 @@ void S9xSetAPUDSP(uint8 byte)
       APU.DSP [reg] = byte;
 }
 
-void S9xFixEnvelope(int channel, uint8 gain, uint8 adsr1, uint8 adsr2)
+void S9xFixEnvelope(int channel, uint8_t gain, uint8_t adsr1, uint8_t adsr2)
 {
    if (adsr1 & 0x80)
    {
@@ -606,7 +606,7 @@ void S9xFixEnvelope(int channel, uint8 gain, uint8 adsr1, uint8 adsr2)
          }
          else
          {
-            uint32 rate = (gain & 0x20) ? DecreaseRateExp [gain & 0x1f] / 2 :
+            uint32_t rate = (gain & 0x20) ? DecreaseRateExp [gain & 0x1f] / 2 :
                           IncreaseRate [gain & 0x1f];
             int mode = (gain & 0x20) ? MODE_DECREASE_EXPONENTIAL
                        : MODE_DECREASE_LINEAR;
@@ -618,7 +618,7 @@ void S9xFixEnvelope(int channel, uint8 gain, uint8 adsr1, uint8 adsr2)
    }
 }
 
-void S9xSetAPUControl(uint8 byte)
+void S9xSetAPUControl(uint8_t byte)
 {
    //if (byte & 0x40)
    //printf ("*** Special SPC700 timing enabled\n");
@@ -660,14 +660,14 @@ void S9xSetAPUControl(uint8 byte)
          // memmove converted: Different mallocs [Neb]
          // DS2 DMA notes: The APU ROM is not 32-byte aligned [Neb]
          memcpy(&IAPU.RAM [0xffc0], APUROM, sizeof(APUROM));
-         APU.ShowROM = TRUE;
+         APU.ShowROM = true;
       }
    }
    else
    {
       if (APU.ShowROM)
       {
-         APU.ShowROM = FALSE;
+         APU.ShowROM = false;
          // memmove converted: Different mallocs [Neb]
          // DS2 DMA notes: The APU ROM is not 32-byte aligned [Neb]
          memcpy(&IAPU.RAM [0xffc0], APU.ExtraRAM, sizeof(APUROM));
@@ -676,7 +676,7 @@ void S9xSetAPUControl(uint8 byte)
    IAPU.RAM [0xf1] = byte;
 }
 
-void S9xSetAPUTimer(uint16 Address, uint8 byte)
+void S9xSetAPUTimer(uint16_t Address, uint8_t byte)
 {
    IAPU.RAM [Address] = byte;
 
@@ -685,25 +685,25 @@ void S9xSetAPUTimer(uint16 Address, uint8 byte)
    case 0xfa:
       if ((APU.TimerTarget [0] = IAPU.RAM [0xfa]) == 0)
          APU.TimerTarget [0] = 0x100;
-      APU.TimerValueWritten [0] = TRUE;
+      APU.TimerValueWritten [0] = true;
       break;
    case 0xfb:
       if ((APU.TimerTarget [1] = IAPU.RAM [0xfb]) == 0)
          APU.TimerTarget [1] = 0x100;
-      APU.TimerValueWritten [1] = TRUE;
+      APU.TimerValueWritten [1] = true;
       break;
    case 0xfc:
       if ((APU.TimerTarget [2] = IAPU.RAM [0xfc]) == 0)
          APU.TimerTarget [2] = 0x100;
-      APU.TimerValueWritten [2] = TRUE;
+      APU.TimerValueWritten [2] = true;
       break;
    }
 }
 
-uint8 S9xGetAPUDSP()
+uint8_t S9xGetAPUDSP()
 {
-   uint8 reg = IAPU.RAM [0xf2] & 0x7f;
-   uint8 byte = APU.DSP [reg];
+   uint8_t reg = IAPU.RAM [0xf2] & 0x7f;
+   uint8_t byte = APU.DSP [reg];
 
    switch (reg)
    {
@@ -732,7 +732,7 @@ uint8 S9xGetAPUDSP()
    case APU_ENVX + 0x50:
    case APU_ENVX + 0x60:
    case APU_ENVX + 0x70:
-      return ((uint8) S9xGetEnvelopeHeight(reg >> 4));
+      return ((uint8_t) S9xGetEnvelopeHeight(reg >> 4));
 
    case APU_ENDX:
       // To fix speech in Magical Drop 2 6/11/00

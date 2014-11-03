@@ -107,23 +107,23 @@
 #endif
 
 #ifdef SDD1_DECOMP
-uint8 buffer[0x10000];
+uint8_t buffer[0x10000];
 #endif
 
 extern int HDMA_ModeByteCounts [8];
-extern uint8* HDMAMemPointers [8];
-extern uint8* HDMABasePointers [8];
+extern uint8_t* HDMAMemPointers [8];
+extern uint8_t* HDMABasePointers [8];
 
 // #define SETA010_HDMA_FROM_CART
 
 #ifdef SETA010_HDMA_FROM_CART
-uint32 HDMARawPointers[8]; // Cart address space pointer
+uint32_t HDMARawPointers[8]; // Cart address space pointer
 #endif
 
 #if defined(__linux__) || defined(__WIN32__)
 static int S9xCompareSDD1IndexEntries(const void* p1, const void* p2)
 {
-   return (*(uint32*) p1 - * (uint32*) p2);
+   return (*(uint32_t*) p1 - * (uint32_t*) p2);
 }
 #endif
 
@@ -132,17 +132,17 @@ static int S9xCompareSDD1IndexEntries(const void* p1, const void* p2)
 /* This function preforms the general dma transfer                                            */
 /**********************************************************************************************/
 
-void S9xDoDMA(uint8 Channel)
+void S9xDoDMA(uint8_t Channel)
 {
-   uint8 Work;
+   uint8_t Work;
 
    if (Channel > 7 || CPU.InDMA)
       return;
 
-   CPU.InDMA = TRUE;
-   bool8 in_sa1_dma = FALSE;
-   uint8* in_sdd1_dma = NULL;
-   uint8* spc7110_dma = NULL;
+   CPU.InDMA = true;
+   bool in_sa1_dma = false;
+   uint8_t* in_sdd1_dma = NULL;
+   uint8_t* spc7110_dma = NULL;
    bool s7_wrap = false;
    SDMA* d = &DMA[Channel];
 
@@ -177,14 +177,14 @@ void S9xDoDMA(uint8 Channel)
       {
          // Hacky support for pre-decompressed S-DD1 data
          inc = !d->AAddressDecrement ? 1 : -1;
-         uint32 address = (((d->ABank << 16) | d->AAddress) & 0xfffff) << 4;
+         uint32_t address = (((d->ABank << 16) | d->AAddress) & 0xfffff) << 4;
 
          address |= Memory.FillRAM [0x4804 + ((d->ABank - 0xc0) >> 4)];
 
 #ifdef SDD1_DECOMP
          if (Settings.SDD1Pack)
          {
-            uint8* in_ptr = GetBasePointer(((d->ABank << 16) | d->AAddress));
+            uint8_t* in_ptr = GetBasePointer(((d->ABank << 16) | d->AAddress));
             in_ptr += d->AAddress;
 
             SDD1_decompress(buffer, in_ptr, d->TransferBytes);
@@ -194,11 +194,11 @@ void S9xDoDMA(uint8 Channel)
                                 Memory.SDD1Entries, 12, S9xCompareSDD1IndexEntries);
             if (memcmp(buffer, ptr, d->TransferBytes))
             {
-               uint8* p = Memory.SDD1LoggedData;
-               bool8 found = FALSE;
-               uint8 SDD1Bank = Memory.FillRAM [0x4804 + ((d->ABank - 0xc0) >> 4)] | 0xf0;
+               uint8_t* p = Memory.SDD1LoggedData;
+               bool found = false;
+               uint8_t SDD1Bank = Memory.FillRAM [0x4804 + ((d->ABank - 0xc0) >> 4)] | 0xf0;
 
-               for (uint32 i = 0; i < Memory.SDD1LoggedDataCount; i++, p += 8)
+               for (uint32_t i = 0; i < Memory.SDD1LoggedDataCount; i++, p += 8)
                {
                   if (*p == d->ABank ||
                         *(p + 1) == (d->AAddress >> 8) &&
@@ -206,7 +206,7 @@ void S9xDoDMA(uint8 Channel)
                         *(p + 3) == (count >> 8) &&
                         *(p + 4) == (count & 0xff) &&
                         *(p + 7) == SDD1Bank)
-                     found = TRUE;
+                     found = true;
                }
                if (!found && Memory.SDD1LoggedDataCount < MEMMAP_MAX_SDD1_LOGGED_ENTRIES)
                {
@@ -233,16 +233,16 @@ void S9xDoDMA(uint8 Channel)
             void* ptr = bsearch(&address, Memory.SDD1Index,
                                 Memory.SDD1Entries, 12, S9xCompareSDD1IndexEntries);
             if (ptr)
-               in_sdd1_dma = *(uint32*)((uint8*) ptr + 4) + Memory.SDD1Data;
+               in_sdd1_dma = *(uint32_t*)((uint8_t*) ptr + 4) + Memory.SDD1Data;
 #else
-            uint8* ptr = Memory.SDD1Index;
+            uint8_t* ptr = Memory.SDD1Index;
 
-            uint32 e;
+            uint32_t e;
             for (e = 0; e < Memory.SDD1Entries; e++, ptr += 12)
             {
-               if (address == *(uint32*) ptr)
+               if (address == *(uint32_t*) ptr)
                {
-                  in_sdd1_dma = *(uint32*)(ptr + 4) + Memory.SDD1Data;
+                  in_sdd1_dma = *(uint32_t*)(ptr + 4) + Memory.SDD1Data;
                   break;
                }
             }
@@ -253,11 +253,11 @@ void S9xDoDMA(uint8 Channel)
                // No matching decompressed data found. Must be some new
                // graphics not encountered before. Log it if it hasn't been
                // already.
-               uint8* p = Memory.SDD1LoggedData;
-               bool8 found = FALSE;
-               uint8 SDD1Bank = Memory.FillRAM [0x4804 + ((d->ABank - 0xc0) >> 4)] | 0xf0;
+               uint8_t* p = Memory.SDD1LoggedData;
+               bool found = false;
+               uint8_t SDD1Bank = Memory.FillRAM [0x4804 + ((d->ABank - 0xc0) >> 4)] | 0xf0;
 
-               uint32 i;
+               uint32_t i;
                for (i = 0; i < Memory.SDD1LoggedDataCount; i++, p += 8)
                {
                   if (*p == d->ABank ||
@@ -267,7 +267,7 @@ void S9xDoDMA(uint8 Channel)
                         (*(p + 4) == (count & 0xff)) &&
                         (*(p + 7) == SDD1Bank)))
                   {
-                     found = TRUE;
+                     found = true;
                      break;
                   }
                }
@@ -291,7 +291,7 @@ void S9xDoDMA(uint8 Channel)
    }
    if (Settings.SPC7110 && (d->AAddress == 0x4800 || d->ABank == 0x50))
    {
-      uint32 i, j;
+      uint32_t i, j;
       i = (s7r.reg4805 | (s7r.reg4806 << 8));
       i *= s7r.AlignBy;
       i += s7r.bank50Internal;
@@ -301,7 +301,7 @@ void S9xDoDMA(uint8 Channel)
          spc7110_dma = &s7r.bank50[i];
       else
       {
-         spc7110_dma = (uint8*)malloc(d->TransferBytes);
+         spc7110_dma = (uint8_t*)malloc(d->TransferBytes);
          j = DECOMP_BUFFER_SIZE - i;
          memcpy(spc7110_dma, &s7r.bank50[i], j);
          memcpy(&spc7110_dma[j], s7r.bank50, d->TransferBytes - j);
@@ -328,14 +328,14 @@ void S9xDoDMA(uint8 Channel)
       int bytes_per_char = 8 * depth;
       int bytes_per_line = depth * num_chars;
       int char_line_bytes = bytes_per_char * num_chars;
-      uint32 addr = (d->AAddress / char_line_bytes) * char_line_bytes;
-      uint8* base = GetBasePointer((d->ABank << 16) + addr) + addr;
-      uint8* buffer = &Memory.ROM [MAX_ROM_SIZE - 0x10000];
-      uint8* p = buffer;
-      uint32 inc = char_line_bytes - (d->AAddress % char_line_bytes);
-      uint32 char_count = inc / bytes_per_char;
+      uint32_t addr = (d->AAddress / char_line_bytes) * char_line_bytes;
+      uint8_t* base = GetBasePointer((d->ABank << 16) + addr) + addr;
+      uint8_t* buffer = &Memory.ROM [MAX_ROM_SIZE - 0x10000];
+      uint8_t* p = buffer;
+      uint32_t inc = char_line_bytes - (d->AAddress % char_line_bytes);
+      uint32_t char_count = inc / bytes_per_char;
 
-      in_sa1_dma = TRUE;
+      in_sa1_dma = true;
 
       //printf ("%08x,", base); fflush (stdout);
       //printf ("depth = %d, count = %d, bytes_per_char = %d, bytes_per_line = %d, num_chars = %d, char_line_bytes = %d\n",
@@ -348,18 +348,18 @@ void S9xDoDMA(uint8 Channel)
          for (i = 0; i < count; i += inc, base += char_line_bytes,
                inc = char_line_bytes, char_count = num_chars)
          {
-            uint32 j;
-            uint8* line = base + (num_chars - char_count) * 2;
+            uint32_t j;
+            uint8_t* line = base + (num_chars - char_count) * 2;
             for (j = 0; j < char_count && p - buffer < count;
                   j++, line += 2)
             {
                int b, l;
-               uint8* q = line;
+               uint8_t* q = line;
                for (l = 0; l < 8; l++, q += bytes_per_line)
                {
                   for (b = 0; b < 2; b++)
                   {
-                     uint8 r = *(q + b);
+                     uint8_t r = *(q + b);
                      *(p + 0) = (*(p + 0) << 1) | ((r >> 0) & 1);
                      *(p + 1) = (*(p + 1) << 1) | ((r >> 1) & 1);
                      *(p + 0) = (*(p + 0) << 1) | ((r >> 2) & 1);
@@ -378,18 +378,18 @@ void S9xDoDMA(uint8 Channel)
          for (i = 0; i < count; i += inc, base += char_line_bytes,
                inc = char_line_bytes, char_count = num_chars)
          {
-            uint32 j;
-            uint8* line = base + (num_chars - char_count) * 4;
+            uint32_t j;
+            uint8_t* line = base + (num_chars - char_count) * 4;
             for (j = 0; j < char_count && p - buffer < count;
                   j++, line += 4)
             {
-               uint8* q = line;
+               uint8_t* q = line;
                int b, l;
                for (l = 0; l < 8; l++, q += bytes_per_line)
                {
                   for (b = 0; b < 4; b++)
                   {
-                     uint8 r = *(q + b);
+                     uint8_t r = *(q + b);
                      *(p +  0) = (*(p +  0) << 1) | ((r >> 0) & 1);
                      *(p +  1) = (*(p +  1) << 1) | ((r >> 1) & 1);
                      *(p + 16) = (*(p + 16) << 1) | ((r >> 2) & 1);
@@ -409,18 +409,18 @@ void S9xDoDMA(uint8 Channel)
          for (i = 0; i < count; i += inc, base += char_line_bytes,
                inc = char_line_bytes, char_count = num_chars)
          {
-            uint8* line = base + (num_chars - char_count) * 8;
-            uint32 j;
+            uint8_t* line = base + (num_chars - char_count) * 8;
+            uint32_t j;
             for (j = 0; j < char_count && p - buffer < count;
                   j++, line += 8)
             {
-               uint8* q = line;
+               uint8_t* q = line;
                int b, l;
                for (l = 0; l < 8; l++, q += bytes_per_line)
                {
                   for (b = 0; b < 8; b++)
                   {
-                     uint8 r = *(q + b);
+                     uint8_t r = *(q + b);
                      *(p +  0) = (*(p +  0) << 1) | ((r >> 0) & 1);
                      *(p +  1) = (*(p +  1) << 1) | ((r >> 1) & 1);
                      *(p + 16) = (*(p + 16) << 1) | ((r >> 2) & 1);
@@ -456,8 +456,8 @@ void S9xDoDMA(uint8 Channel)
       //reflects extra cycle used by DMA
       CPU.Cycles += SLOW_ONE_CYCLE * (count + 1);
 
-      uint8* base = GetBasePointer((d->ABank << 16) + d->AAddress);
-      uint16 p = d->AAddress;
+      uint8_t* base = GetBasePointer((d->ABank << 16) + d->AAddress);
+      uint16_t p = d->AAddress;
 
       if (!base)
          base = Memory.ROM;
@@ -499,7 +499,7 @@ void S9xDoDMA(uint8 Channel)
             break;
          case 0x18:
 #ifndef CORRECT_VRAM_READS
-            IPPU.FirstVRAMRead = TRUE;
+            IPPU.FirstVRAMRead = true;
 #endif
             if (!PPU.VMA.FullGraphicCount)
             {
@@ -526,7 +526,7 @@ void S9xDoDMA(uint8 Channel)
             break;
          case 0x19:
 #ifndef CORRECT_VRAM_READS
-            IPPU.FirstVRAMRead = TRUE;
+            IPPU.FirstVRAMRead = true;
 #endif
             if (!PPU.VMA.FullGraphicCount)
             {
@@ -589,7 +589,7 @@ void S9xDoDMA(uint8 Channel)
          {
             // Write to V-RAM
 #ifndef CORRECT_VRAM_READS
-            IPPU.FirstVRAMRead = TRUE;
+            IPPU.FirstVRAMRead = true;
 #endif
             if (!PPU.VMA.FullGraphicCount)
             {
@@ -833,7 +833,7 @@ void S9xDoDMA(uint8 Channel)
 update_address:
    // Super Punch-Out requires that the A-BUS address be updated after the
    // DMA transfer.
-   Memory.FillRAM[0x4302 + (Channel << 4)] = (uint8) d->AAddress;
+   Memory.FillRAM[0x4302 + (Channel << 4)] = (uint8_t) d->AAddress;
    Memory.FillRAM[0x4303 + (Channel << 4)] = d->AAddress >> 8;
 
    // Secret of the Mana requires that the DMA bytes transfer count be set to
@@ -844,7 +844,7 @@ update_address:
    DMA[Channel].IndirectAddress = 0;
    d->TransferBytes = 0;
 
-   CPU.InDMA = FALSE;
+   CPU.InDMA = false;
 
 
 }
@@ -860,16 +860,16 @@ void S9xStartHDMA()
    if (IPPU.HDMA != 0)
       CPU.Cycles += ONE_CYCLE * 3;
 
-   IPPU.HDMAStarted = TRUE;
+   IPPU.HDMAStarted = true;
 
-   uint8 i;
+   uint8_t i;
    for (i = 0; i < 8; i++)
    {
       if (IPPU.HDMA & (1 << i))
       {
          CPU.Cycles += SLOW_ONE_CYCLE ;
          DMA [i].LineCount = 0;
-         DMA [i].FirstLine = TRUE;
+         DMA [i].FirstLine = true;
          DMA [i].Address = DMA [i].AAddress;
          if (DMA[i].HDMAIndirectAddressing)
             CPU.Cycles += (SLOW_ONE_CYCLE << 2);
@@ -881,15 +881,15 @@ void S9xStartHDMA()
    }
 }
 
-uint8 S9xDoHDMA(uint8 byte)
+uint8_t S9xDoHDMA(uint8_t byte)
 {
    SDMA* p = &DMA [0];
 
    int d = 0;
 
-   CPU.InDMA = TRUE;
+   CPU.InDMA = true;
    CPU.Cycles += ONE_CYCLE * 3;
-   uint8 mask;
+   uint8_t mask;
    for (mask = 1; mask; mask <<= 1, p++, d++)
    {
       if (byte & mask)
@@ -899,10 +899,10 @@ uint8 S9xDoHDMA(uint8 byte)
             //remember, InDMA is set.
             //Get/Set incur no charges!
             CPU.Cycles += SLOW_ONE_CYCLE;
-            uint8 line = S9xGetByte((p->ABank << 16) + p->Address);
+            uint8_t line = S9xGetByte((p->ABank << 16) + p->Address);
             if (line == 0x80)
             {
-               p->Repeat = TRUE;
+               p->Repeat = true;
                p->LineCount = 128;
             }
             else
@@ -923,7 +923,7 @@ uint8 S9xDoHDMA(uint8 byte)
             {
                byte &= ~mask;
                p->IndirectAddress += HDMAMemPointers [d] - HDMABasePointers [d];
-               Memory.FillRAM [0x4305 + (d << 4)] = (uint8) p->IndirectAddress;
+               Memory.FillRAM [0x4305 + (d << 4)] = (uint8_t) p->IndirectAddress;
                Memory.FillRAM [0x4306 + (d << 4)] = p->IndirectAddress >> 8;
                continue;
             }
@@ -975,7 +975,7 @@ uint8 S9xDoHDMA(uint8 byte)
             }
             // Uncommenting the following line breaks Punchout - it starts
             // H-DMA during the frame.
-            //p->FirstLine = TRUE;
+            //p->FirstLine = true;
          }
          if (p->Repeat && !p->FirstLine)
          {
@@ -1080,11 +1080,11 @@ uint8 S9xDoHDMA(uint8 byte)
          /* XXX: Check for p->IndirectAddress crossing a mapping boundry,
           * XXX: and invalidate HDMAMemPointers[d]
           */
-         p->FirstLine = FALSE;
+         p->FirstLine = false;
          p->LineCount--;
       }
    }
-   CPU.InDMA = FALSE;
+   CPU.InDMA = false;
    return (byte);
 }
 
@@ -1093,10 +1093,10 @@ void S9xResetDMA()
    int c, d;
    for (d = 0; d < 8; d++)
    {
-      DMA [d].TransferDirection = FALSE;
-      DMA [d].HDMAIndirectAddressing = FALSE;
-      DMA [d].AAddressFixed = TRUE;
-      DMA [d].AAddressDecrement = FALSE;
+      DMA [d].TransferDirection = false;
+      DMA [d].HDMAIndirectAddressing = false;
+      DMA [d].AAddressFixed = true;
+      DMA [d].AAddressDecrement = false;
       DMA [d].TransferMode = 0xff;
       DMA [d].ABank = 0xff;
       DMA [d].AAddress = 0xffff;

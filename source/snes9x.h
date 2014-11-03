@@ -164,7 +164,7 @@ extern int cprintf(const char* fmt, ...);
 
 #define SNES_CLOCK_LEN (1.0 / SNES_CLOCK_SPEED)
 
-#define SNES_CYCLES_PER_SCANLINE ((uint32) ((SNES_SCANLINE_TIME / SNES_CLOCK_LEN) * 6 + 0.5))
+#define SNES_CYCLES_PER_SCANLINE ((uint32_t) ((SNES_SCANLINE_TIME / SNES_CLOCK_LEN) * 6 + 0.5))
 
 #define ONE_CYCLE 6
 #define SLOW_ONE_CYCLE 8
@@ -211,31 +211,31 @@ enum
 
 typedef struct
 {
-   uint32  Flags;
-   bool8   BranchSkip;
-   bool8   NMIActive;
-   bool8   IRQActive;
-   bool8   WaitingForInterrupt;
-   bool8   InDMA;
-   uint8   WhichEvent;
-   uint8*   PC;
-   uint8*   PCBase;
-   uint8*   PCAtOpcodeStart;
-   uint8*   WaitAddress;
-   uint32  WaitCounter;
+   uint32_t  Flags;
+   bool   BranchSkip;
+   bool   NMIActive;
+   bool   IRQActive;
+   bool   WaitingForInterrupt;
+   bool   InDMA;
+   uint8_t   WhichEvent;
+   uint8_t*   PC;
+   uint8_t*   PCBase;
+   uint8_t*   PCAtOpcodeStart;
+   uint8_t*   WaitAddress;
+   uint32_t  WaitCounter;
    long   Cycles;
    long   NextEvent;
    long   V_Counter;
    long   MemSpeed;
    long   MemSpeedx2;
    long   FastROMSpeed;
-   uint32 AutoSaveTimer;
-   bool8  SRAMModified;
-   uint32 NMITriggerPoint;
-   bool8  BRKTriggered;
-   bool8  TriedInterleavedMode2;
-   uint32 NMICycleCount;
-   uint32 IRQCycleCount;
+   uint32_t AutoSaveTimer;
+   bool  SRAMModified;
+   uint32_t NMITriggerPoint;
+   bool  BRKTriggered;
+   bool  TriedInterleavedMode2;
+   uint32_t NMICycleCount;
+   uint32_t IRQCycleCount;
 #ifdef DEBUG_MAXCOUNT
    unsigned long GlobalLoopCount;
 #endif
@@ -250,130 +250,130 @@ typedef struct
 typedef struct
 {
    /* CPU options */
-   bool8  APUEnabled;
-   bool8  Shutdown;
-   uint8  SoundSkipMethod;
+   bool  APUEnabled;
+   bool  Shutdown;
+   uint8_t  SoundSkipMethod;
    long   H_Max;
    long   HBlankStart;
    long   CyclesPercentage;
-   bool8  DisableIRQ;
-   bool8  Paused;
-   bool8  ForcedPause;
-   bool8  StopEmulation;
-   bool8  FrameAdvance;
+   bool  DisableIRQ;
+   bool  Paused;
+   bool  ForcedPause;
+   bool  StopEmulation;
+   bool  FrameAdvance;
 
    /* Tracing options */
-   bool8  TraceDMA;
-   bool8  TraceHDMA;
-   bool8  TraceVRAM;
-   bool8  TraceUnknownRegisters;
-   bool8  TraceDSP;
+   bool  TraceDMA;
+   bool  TraceHDMA;
+   bool  TraceVRAM;
+   bool  TraceUnknownRegisters;
+   bool  TraceDSP;
 
    /* Joystick options */
-   bool8  SwapJoypads;
-   bool8  JoystickEnabled;
+   bool  SwapJoypads;
+   bool  JoystickEnabled;
 
    /* ROM timing options (see also H_Max above) */
-   bool8  ForcePAL;
-   bool8  ForceNTSC;
-   bool8  PAL;
-   uint32 FrameTimePAL;
-   uint32 FrameTimeNTSC;
-   uint32 FrameTime;
-   uint32 SkipFrames;
+   bool  ForcePAL;
+   bool  ForceNTSC;
+   bool  PAL;
+   uint32_t FrameTimePAL;
+   uint32_t FrameTimeNTSC;
+   uint32_t FrameTime;
+   uint32_t SkipFrames;
 
    /* ROM image options */
-   bool8  ForceLoROM;
-   bool8  ForceHiROM;
-   bool8  ForceHeader;
-   bool8  ForceNoHeader;
-   bool8  ForceInterleaved;
-   bool8  ForceInterleaved2;
-   bool8  ForceNotInterleaved;
+   bool  ForceLoROM;
+   bool  ForceHiROM;
+   bool  ForceHeader;
+   bool  ForceNoHeader;
+   bool  ForceInterleaved;
+   bool  ForceInterleaved2;
+   bool  ForceNotInterleaved;
 
    /* Peripherial options */
-   bool8  ForceSuperFX;
-   bool8  ForceNoSuperFX;
-   bool8  ForceDSP1;
-   bool8  ForceNoDSP1;
-   bool8  ForceSA1;
-   bool8  ForceNoSA1;
-   bool8  ForceC4;
-   bool8  ForceNoC4;
-   bool8  ForceSDD1;
-   bool8  ForceNoSDD1;
-   bool8  MultiPlayer5;
-   bool8  Mouse;
-   bool8  SuperScope;
-   bool8  SRTC;
-   uint32 ControllerOption;
+   bool  ForceSuperFX;
+   bool  ForceNoSuperFX;
+   bool  ForceDSP1;
+   bool  ForceNoDSP1;
+   bool  ForceSA1;
+   bool  ForceNoSA1;
+   bool  ForceC4;
+   bool  ForceNoC4;
+   bool  ForceSDD1;
+   bool  ForceNoSDD1;
+   bool  MultiPlayer5;
+   bool  Mouse;
+   bool  SuperScope;
+   bool  SRTC;
+   uint32_t ControllerOption;
 
-   bool8  ShutdownMaster;
-   bool8  MultiPlayer5Master;
-   bool8  SuperScopeMaster;
-   bool8  MouseMaster;
-   bool8  SuperFX;
-   bool8  DSP1Master;
-   bool8  SA1;
-   bool8  C4;
-   bool8  SDD1;
-   bool8  SPC7110;
-   bool8  SPC7110RTC;
-   bool8  OBC1;
+   bool  ShutdownMaster;
+   bool  MultiPlayer5Master;
+   bool  SuperScopeMaster;
+   bool  MouseMaster;
+   bool  SuperFX;
+   bool  DSP1Master;
+   bool  SA1;
+   bool  C4;
+   bool  SDD1;
+   bool  SPC7110;
+   bool  SPC7110RTC;
+   bool  OBC1;
    /* Sound options */
-   uint32 SoundPlaybackRate;
+   uint32_t SoundPlaybackRate;
 #ifdef USE_BLARGG_APU
-   uint32 SoundInputRate;
+   uint32_t SoundInputRate;
 #endif
-   bool8  TraceSoundDSP;
-   bool8  EightBitConsoleSound;  // due to caching, this needs S9xSetEightBitConsoleSound()
+   bool  TraceSoundDSP;
+   bool  EightBitConsoleSound;  // due to caching, this needs S9xSetEightBitConsoleSound()
    int    SoundBufferSize;
    int    SoundMixInterval;
-   bool8  SoundEnvelopeHeightReading;
-   bool8  DisableSoundEcho;
-   bool8  DisableMasterVolume;
-   bool8  SoundSync;
-   bool8  InterpolatedSound;
-   bool8  ThreadSound;
-   bool8  Mute;
-   bool8  NextAPUEnabled;
+   bool  SoundEnvelopeHeightReading;
+   bool  DisableSoundEcho;
+   bool  DisableMasterVolume;
+   bool  SoundSync;
+   bool  InterpolatedSound;
+   bool  ThreadSound;
+   bool  Mute;
+   bool  NextAPUEnabled;
 
    /* Graphics options */
-   bool8  Transparency;
-   bool8  SupportHiRes;
-   bool8  Mode7Interpolate;
+   bool  Transparency;
+   bool  SupportHiRes;
+   bool  Mode7Interpolate;
 
    /* SNES graphics options */
-   bool8  BGLayering;
-   bool8  DisableGraphicWindows;
-   bool8  ForceTransparency;
-   bool8  ForceNoTransparency;
-   bool8  DisableHDMA;
-   bool8  DisplayFrameRate;
-   bool8  DisableRangeTimeOver; /* XXX: unused */
+   bool  BGLayering;
+   bool  DisableGraphicWindows;
+   bool  ForceTransparency;
+   bool  ForceNoTransparency;
+   bool  DisableHDMA;
+   bool  DisplayFrameRate;
+   bool  DisableRangeTimeOver; /* XXX: unused */
 
    /* Others */
-   bool8  ApplyCheats;
+   bool  ApplyCheats;
 
    /* Fixes for individual games */
-   bool8  StarfoxHack;
-   bool8  WinterGold;
-   bool8  BS; /* Japanese Satellite System games. */
-   bool8  DaffyDuck;
-   uint8  APURAMInitialValue;
-   bool8  SampleCatchup;
-   bool8  JustifierMaster;
-   bool8  Justifier;
-   bool8  SecondJustifier;
-   int8   SETA;
-   bool8  TakeScreenshot;
-   int8   StretchScreenshots;
-   uint16 DisplayColor;
+   bool  StarfoxHack;
+   bool  WinterGold;
+   bool  BS; /* Japanese Satellite System games. */
+   bool  DaffyDuck;
+   uint8_t  APURAMInitialValue;
+   bool  SampleCatchup;
+   bool  JustifierMaster;
+   bool  Justifier;
+   bool  SecondJustifier;
+   int8_t   SETA;
+   bool  TakeScreenshot;
+   int8_t   StretchScreenshots;
+   uint16_t DisplayColor;
    int    SoundDriver;
    int    AIDOShmId;
-   bool8  SDD1Pack;
-   bool8  NoPatch;
-   bool8  ForceInterleaveGD24;
+   bool  SDD1Pack;
+   bool  NoPatch;
+   bool  ForceInterleaveGD24;
 #ifdef DEBUG_MAXCOUNT
    unsigned int MaxCount;
 #endif
@@ -381,12 +381,12 @@ typedef struct
 
 typedef struct
 {
-   uint8 alienVSpredetorFix;
-   uint8 APU_OutPorts_ReturnValueFix;
-   uint8 SoundEnvelopeHeightReading2;
-   uint8 SRAMInitialValue;
-   uint8 Uniracers;
-   bool8 EchoOnlyOutput;
+   uint8_t alienVSpredetorFix;
+   uint8_t APU_OutPorts_ReturnValueFix;
+   uint8_t SoundEnvelopeHeightReading2;
+   uint8_t SRAMInitialValue;
+   uint8_t Uniracers;
+   bool EchoOnlyOutput;
 } SSNESGameFixes;
 
 extern SSettings Settings;
@@ -397,8 +397,8 @@ extern char String [513];
 void S9xMessage(int type, int number, const char* message);
 void S9xLoadSDD1Data();
 
-void S9xSetPause(uint32 mask);
-void S9xClearPause(uint32 mask);
+void S9xSetPause(uint32_t mask);
+void S9xClearPause(uint32_t mask);
 
 #endif
 

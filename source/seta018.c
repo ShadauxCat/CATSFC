@@ -93,10 +93,10 @@ ST018_Regs ST018;
 
 static int line;  // line counter
 
-uint8 S9xGetST018(uint32 Address)
+uint8_t S9xGetST018(uint32_t Address)
 {
-   uint8 t = 0; // Initialise to some value for the compiler
-   uint16 address = (uint16) Address & 0xFFFF;
+   uint8_t t = 0; // Initialise to some value for the compiler
+   uint16_t address = (uint16_t) Address & 0xFFFF;
 
    line++;
 
@@ -106,7 +106,7 @@ uint8 S9xGetST018(uint32 Address)
    {
       if (ST018.out_count)
       {
-         t = (uint8) ST018.output [ST018.out_index];
+         t = (uint8_t) ST018.output [ST018.out_index];
          ST018.out_index++;
          if (ST018.out_count == ST018.out_index)
             ST018.out_count = 0;
@@ -123,9 +123,9 @@ uint8 S9xGetST018(uint32 Address)
    return t;
 }
 
-void S9xSetST018(uint8 Byte, uint32 Address)
+void S9xSetST018(uint8_t Byte, uint32_t Address)
 {
-   uint16 address = (uint16) Address & 0xFFFF;
+   uint16_t address = (uint16_t) Address & 0xFFFF;
    static bool reset = false;
 
    printf("ST018 W: %06X %02X\n", Address, Byte);

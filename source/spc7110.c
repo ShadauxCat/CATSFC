@@ -117,7 +117,7 @@ char* osd_GetPackDir();
 #define MAX_TABLES 48
 
 //default to using 5 megs of RAM for method 3 caching.
-uint16 cacheMegs = 5;
+uint16_t cacheMegs = 5;
 
 //using function pointers to initialize cache management
 void (*CleanUp7110)(void) = NULL;
@@ -128,10 +128,10 @@ void (*Copy7110)(void) = NULL;
 //offset and size of reads from pack
 typedef struct SPC7110DecompressionLocationStruct
 {
-   uint32 offset;
-   uint32 size;
-   uint16 used_offset;
-   uint16 used_len;
+   uint32_t offset;
+   uint32_t size;
+   uint16_t used_offset;
+   uint16_t used_len;
 } Data7110;
 
 //this maps an index.bin table to the decompression pack
@@ -145,12 +145,12 @@ typedef struct SPC7110DecompressionIndexStruct
 //this contains all the data for the decompression pack.
 typedef struct SPC7110DecompressionPackStructure
 {
-   uint8* binfiles[MAX_TABLES];
+   uint8_t* binfiles[MAX_TABLES];
    Index7110 tableEnts[MAX_TABLES];
    int last_table;
    int idx;
-   uint8 last_idx;
-   uint16 last_offset;
+   uint8_t last_idx;
+   uint16_t last_offset;
 } Pack7110;
 
 
@@ -407,7 +407,7 @@ void ReadPackData()
          sprintf(bfname, "%06X.bin", table);
          strcat(name, "/");
          strcat(name, bfname);
-         decompack->binfiles[i] = (uint8*)fopen(name, "rb");
+         decompack->binfiles[i] = (uint8_t*)fopen(name, "rb");
       }
       else
       {
@@ -527,7 +527,7 @@ void GetPackData()
 }
 
 //reads SPC7110 and RTC registers.
-uint8 S9xGetSPC7110(uint16 Address)
+uint8_t S9xGetSPC7110(uint16_t Address)
 {
    switch (Address)
    {
@@ -540,7 +540,7 @@ uint8 S9xGetSPC7110(uint16 Address)
    case 0x4800:
    {
       unsigned short count = s7r.reg4809 | (s7r.reg480A << 8);
-      uint32 i, j;
+      uint32_t i, j;
       j = (s7r.reg4805 | (s7r.reg4806 << 8));
       j *= s7r.AlignBy;
       i = j;
@@ -609,7 +609,7 @@ uint8 S9xGetSPC7110(uint16 Address)
          return 0;
       if ((s7r.written & 0x07) == 0x07)
       {
-         uint32 i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
+         uint32_t i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
          i %= s7r.DataRomSize;
          if (s7r.reg4818 & 0x02)
          {
@@ -619,8 +619,8 @@ uint8 S9xGetSPC7110(uint16 Address)
                r4814 = (s7r.reg4815 << 8) | s7r.reg4814;
                i += r4814;
                r4814++;
-               s7r.reg4815 = (uint8)(r4814 >> 8);
-               s7r.reg4814 = (uint8)(r4814 & 0x00FF);
+               s7r.reg4815 = (uint8_t)(r4814 >> 8);
+               s7r.reg4814 = (uint8_t)(r4814 & 0x00FF);
             }
             else
             {
@@ -630,13 +630,13 @@ uint8 S9xGetSPC7110(uint16 Address)
                if (r4814 != 0xFFFF)
                   r4814++;
                else r4814 = 0;
-               s7r.reg4815 = (uint8)(r4814 >> 8);
-               s7r.reg4814 = (uint8)(r4814 & 0x00FF);
+               s7r.reg4815 = (uint8_t)(r4814 >> 8);
+               s7r.reg4814 = (uint8_t)(r4814 & 0x00FF);
 
             }
          }
          i += s7r.DataRomOffset;
-         uint8 tmp = Memory.ROM[i];
+         uint8_t tmp = Memory.ROM[i];
          i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
 
          if (s7r.reg4818 & 0x02)
@@ -675,7 +675,7 @@ uint8 S9xGetSPC7110(uint16 Address)
             }
             else
             {
-               uint16 inc;
+               uint16_t inc;
                inc = (s7r.reg4817 << 8) | s7r.reg4816;
                if (!(s7r.reg4818 & 0x10))
                   i += inc;
@@ -766,7 +766,7 @@ uint8 S9xGetSPC7110(uint16 Address)
    case 0x481A:
       if (s7r.written == 0x1F)
       {
-         uint32 i = ((s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811);
+         uint32_t i = ((s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811);
          if (s7r.reg4818 & 0x08)
          {
             short adj;
@@ -775,14 +775,14 @@ uint8 S9xGetSPC7110(uint16 Address)
          }
          else
          {
-            uint16 adj;
+            uint16_t adj;
             adj = (s7r.reg4815 << 8) | s7r.reg4814;
             i += adj;
          }
 
          i %= s7r.DataRomSize;
          i += s7r.DataRomOffset;
-         uint8 tmp = Memory.ROM[i];
+         uint8_t tmp = Memory.ROM[i];
          i = ((s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811);
          if (0x60 == (s7r.reg4818 & 0x60))
          {
@@ -798,7 +798,7 @@ uint8 S9xGetSPC7110(uint16 Address)
                }
                else
                {
-                  uint16 adj;
+                  uint16_t adj;
                   adj = (s7r.reg4815 << 8) | s7r.reg4814;
                   i += adj;
                }
@@ -819,7 +819,7 @@ uint8 S9xGetSPC7110(uint16 Address)
                }
                else
                {
-                  uint16 adj;
+                  uint16_t adj;
                   adj = (s7r.reg4815 << 8) | s7r.reg4814;
                   adj += adj;
                   s7r.reg4815 = (adj & 0xFF00) >> 8;
@@ -914,7 +914,7 @@ uint8 S9xGetSPC7110(uint16 Address)
       if (rtc_f9.init)
       {
          S9xUpdateRTC();
-         uint8 tmp = rtc_f9.reg[rtc_f9.index];
+         uint8_t tmp = rtc_f9.reg[rtc_f9.index];
          rtc_f9.index++;
          rtc_f9.index %= 0x10;
          return tmp;
@@ -931,7 +931,7 @@ uint8 S9xGetSPC7110(uint16 Address)
    }
 }
 
-void S9xSetSPC7110(uint8 data, uint16 Address)
+void S9xSetSPC7110(uint8_t data, uint16_t Address)
 {
    switch (Address)
    {
@@ -1055,7 +1055,7 @@ void S9xSetSPC7110(uint8 data, uint16 Address)
                }
                else
                {
-                  uint32 i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
+                  uint32_t i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
                   if (s7r.reg4818 & 0x08)
                      i += (signed char)s7r.reg4814;
                   else
@@ -1077,7 +1077,7 @@ void S9xSetSPC7110(uint8 data, uint16 Address)
                }
                else
                {
-                  uint32 i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
+                  uint32_t i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
                   if (s7r.reg4818 & 0x08)
                   {
                      short adj;
@@ -1086,7 +1086,7 @@ void S9xSetSPC7110(uint8 data, uint16 Address)
                   }
                   else
                   {
-                     uint16 adj;
+                     uint16_t adj;
                      adj = (s7r.reg4815 << 8) | s7r.reg4814;
                      i += adj;
                   }
@@ -1118,7 +1118,7 @@ void S9xSetSPC7110(uint8 data, uint16 Address)
                }
                else
                {
-                  uint32 i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
+                  uint32_t i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
 
                   if (s7r.reg4818 & 0x08)
                      i += (signed char)s7r.reg4814;
@@ -1141,7 +1141,7 @@ void S9xSetSPC7110(uint8 data, uint16 Address)
                }
                else
                {
-                  uint32 i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
+                  uint32_t i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
                   if (s7r.reg4818 & 0x08)
                   {
                      short adj;
@@ -1150,7 +1150,7 @@ void S9xSetSPC7110(uint8 data, uint16 Address)
                   }
                   else
                   {
-                     uint16 adj;
+                     uint16_t adj;
                      adj = (s7r.reg4815 << 8) | s7r.reg4814;
                      i += adj;
                   }
@@ -1212,22 +1212,22 @@ void S9xSetSPC7110(uint8 data, uint16 Address)
          short m2 = (short)((s7r.reg4820) | (s7r.reg4821 << 8));
 
          mul = m1 * m2;
-         s7r.reg4828 = (uint8)(mul & 0x000000FF);
-         s7r.reg4829 = (uint8)((mul & 0x0000FF00) >> 8);
-         s7r.reg482A = (uint8)((mul & 0x00FF0000) >> 16);
-         s7r.reg482B = (uint8)((mul & 0xFF000000) >> 24);
+         s7r.reg4828 = (uint8_t)(mul & 0x000000FF);
+         s7r.reg4829 = (uint8_t)((mul & 0x0000FF00) >> 8);
+         s7r.reg482A = (uint8_t)((mul & 0x00FF0000) >> 16);
+         s7r.reg482B = (uint8_t)((mul & 0xFF000000) >> 24);
       }
       else
       {
-         uint32 mul;
-         uint16 m1 = (uint16)((s7r.reg4824) | (s7r.reg4825 << 8));
-         uint16 m2 = (uint16)((s7r.reg4820) | (s7r.reg4821 << 8));
+         uint32_t mul;
+         uint16_t m1 = (uint16_t)((s7r.reg4824) | (s7r.reg4825 << 8));
+         uint16_t m2 = (uint16_t)((s7r.reg4820) | (s7r.reg4821 << 8));
 
          mul = m1 * m2;
-         s7r.reg4828 = (uint8)(mul & 0x000000FF);
-         s7r.reg4829 = (uint8)((mul & 0x0000FF00) >> 8);
-         s7r.reg482A = (uint8)((mul & 0x00FF0000) >> 16);
-         s7r.reg482B = (uint8)((mul & 0xFF000000) >> 24);
+         s7r.reg4828 = (uint8_t)(mul & 0x000000FF);
+         s7r.reg4829 = (uint8_t)((mul & 0x0000FF00) >> 8);
+         s7r.reg482A = (uint8_t)((mul & 0x00FF0000) >> 16);
+         s7r.reg482B = (uint8_t)((mul & 0xFF000000) >> 24);
       }
       s7r.reg482F = 0x80;
       break;
@@ -1255,36 +1255,36 @@ void S9xSetSPC7110(uint8 data, uint16 Address)
             quotient = 0;
             remainder = dividend & 0x0000FFFF;
          }
-         s7r.reg4828 = (uint8)(quotient & 0x000000FF);
-         s7r.reg4829 = (uint8)((quotient & 0x0000FF00) >> 8);
-         s7r.reg482A = (uint8)((quotient & 0x00FF0000) >> 16);
-         s7r.reg482B = (uint8)((quotient & 0xFF000000) >> 24);
-         s7r.reg482C = (uint8)remainder & 0x00FF;
-         s7r.reg482D = (uint8)((remainder & 0xFF00) >> 8);
+         s7r.reg4828 = (uint8_t)(quotient & 0x000000FF);
+         s7r.reg4829 = (uint8_t)((quotient & 0x0000FF00) >> 8);
+         s7r.reg482A = (uint8_t)((quotient & 0x00FF0000) >> 16);
+         s7r.reg482B = (uint8_t)((quotient & 0xFF000000) >> 24);
+         s7r.reg482C = (uint8_t)remainder & 0x00FF;
+         s7r.reg482D = (uint8_t)((remainder & 0xFF00) >> 8);
       }
       else
       {
-         uint32 quotient;
-         uint16 remainder;
-         uint32 dividend = (uint32)(s7r.reg4820 | (s7r.reg4821 << 8) |
+         uint32_t quotient;
+         uint16_t remainder;
+         uint32_t dividend = (uint32_t)(s7r.reg4820 | (s7r.reg4821 << 8) |
                                     (s7r.reg4822 << 16) | (s7r.reg4823 << 24));
-         uint16 divisor = (uint16)(s7r.reg4826 | (s7r.reg4827 << 8));
+         uint16_t divisor = (uint16_t)(s7r.reg4826 | (s7r.reg4827 << 8));
          if (divisor != 0)
          {
-            quotient = (uint32)(dividend / divisor);
-            remainder = (uint16)(dividend % divisor);
+            quotient = (uint32_t)(dividend / divisor);
+            remainder = (uint16_t)(dividend % divisor);
          }
          else
          {
             quotient = 0;
             remainder = dividend & 0x0000FFFF;
          }
-         s7r.reg4828 = (uint8)(quotient & 0x000000FF);
-         s7r.reg4829 = (uint8)((quotient & 0x0000FF00) >> 8);
-         s7r.reg482A = (uint8)((quotient & 0x00FF0000) >> 16);
-         s7r.reg482B = (uint8)((quotient & 0xFF000000) >> 24);
-         s7r.reg482C = (uint8)remainder & 0x00FF;
-         s7r.reg482D = (uint8)((remainder & 0xFF00) >> 8);
+         s7r.reg4828 = (uint8_t)(quotient & 0x000000FF);
+         s7r.reg4829 = (uint8_t)((quotient & 0x0000FF00) >> 8);
+         s7r.reg482A = (uint8_t)((quotient & 0x00FF0000) >> 16);
+         s7r.reg482B = (uint8_t)((quotient & 0xFF000000) >> 24);
+         s7r.reg482C = (uint8_t)remainder & 0x00FF;
+         s7r.reg482D = (uint8_t)((remainder & 0xFF00) >> 8);
       }
       s7r.reg482F = 0x80;
       break;
@@ -1429,9 +1429,9 @@ void S9xSetSPC7110(uint8 data, uint16 Address)
 }
 
 //emulate the SPC7110's ability to remap banks Dx, Ex, and Fx.
-uint8 S9xGetSPC7110Byte(uint32 Address)
+uint8_t S9xGetSPC7110Byte(uint32_t Address)
 {
-   uint32 i;
+   uint32_t i;
    switch ((Address & 0x00F00000) >> 16)
    {
    case 0xD0:
@@ -1623,9 +1623,9 @@ void  S9xUpdateRTC()
 }
 
 //allows DMA from the ROM (is this even possible on the SPC7110?
-uint8* Get7110BasePtr(uint32 Address)
+uint8_t* Get7110BasePtr(uint32_t Address)
 {
-   uint32 i;
+   uint32_t i;
    switch ((Address & 0x00F00000) >> 16)
    {
    case 0xD0:
@@ -1650,11 +1650,11 @@ uint8* Get7110BasePtr(uint32 Address)
 bool Load7110Index(char* filename)
 {
    FILE* fp;
-   uint8 buffer[12];
+   uint8_t buffer[12];
    int table = 0;
-   uint8 index = 0;
-   uint32 offset = 0;
-   uint32 size = 0;
+   uint8_t index = 0;
+   uint32_t offset = 0;
+   uint32_t size = 0;
    int i = 0;
    fp = fopen(filename, "rb");
    if (NULL == fp)
@@ -1730,7 +1730,7 @@ void SPC7110Load(char* dirname)
 #endif
          struct stat buf;
          if (-1 != stat(binname, &buf))
-            decompack->binfiles[i] = (uint8*)malloc(buf.st_size);
+            decompack->binfiles[i] = (uint8_t*)malloc(buf.st_size);
          FILE* fp = fopen(binname, "rb");
          if (fp)
          {
@@ -1810,7 +1810,7 @@ void SPC7110Grab(char* dirname)
    getcwd(temp_path, PATH_MAX);
 #endif
 
-   int32 buffer_size = 1024 * 1024 * cacheMegs; //*some setting
+   int32_t buffer_size = 1024 * 1024 * cacheMegs; //*some setting
 
    memset(decompack, 0, sizeof(Pack7110));
 #ifndef _XBOX
@@ -1841,7 +1841,7 @@ void SPC7110Grab(char* dirname)
          if (-1 != stat(binname, &buf))
          {
             if (buf.st_size < buffer_size)
-               decompack->binfiles[i] = (uint8*)malloc(buf.st_size);
+               decompack->binfiles[i] = (uint8_t*)malloc(buf.st_size);
             FILE* fp = fopen(binname, "rb");
             //use them here
             if (fp)
@@ -1855,7 +1855,7 @@ void SPC7110Grab(char* dirname)
                }
                else
                {
-                  decompack->binfiles[i] = (uint8*)fp;
+                  decompack->binfiles[i] = (uint8_t*)fp;
                   decompack->tableEnts[i].is_file = true;
                }
             }
@@ -2038,7 +2038,7 @@ void S9xSpc7110Reset()
 //note the logs are explicitly little-endian, not host byte order.
 void Do7110Logging()
 {
-   uint8 ent_temp;
+   uint8_t ent_temp;
    FILE* flog;
    int entries = 0;
 
@@ -2090,10 +2090,10 @@ void Do7110Logging()
 
       if (flog)
       {
-         uint8 buffer[8];
+         uint8_t buffer[8];
          int table = 0;
-         uint16 offset = 0;
-         uint16 length = 0;
+         uint16_t offset = 0;
+         uint16_t length = 0;
          fseek(flog, 35, 0);
 
          int f_len;
@@ -2236,23 +2236,23 @@ void Do7110Logging()
       }
    }
 }
-bool8 S9xSaveSPC7110RTC(S7RTC* rtc_f9)
+bool S9xSaveSPC7110RTC(S7RTC* rtc_f9)
 {
    FILE* fp;
 
    if ((fp = fopen(S9xGetFilename("rtc"), "wb")) == NULL)
-      return (FALSE);
+      return (false);
    int i = 0;
-   uint8 temp = 0;
+   uint8_t temp = 0;
    for (i = 0; i < 16; i++)
       fwrite(&rtc_f9->reg[i], 1, 1, fp);
    temp = rtc_f9->index & 0x00FF;
    fwrite(&temp, 1, 1, fp);
    temp = (rtc_f9->index) >> 8;
    fwrite(&temp, 1, 1, fp);
-   temp = (uint8)rtc_f9->control;
+   temp = (uint8_t)rtc_f9->control;
    fwrite(&temp, 1, 1, fp);
-   temp = (uint8)rtc_f9->init;
+   temp = (uint8_t)rtc_f9->init;
    fwrite(&temp, 1, 1, fp);
    temp = rtc_f9->last_used & 0x00FF;
    fwrite(&temp, 1, 1, fp);
@@ -2263,19 +2263,19 @@ bool8 S9xSaveSPC7110RTC(S7RTC* rtc_f9)
    temp = (rtc_f9->last_used >> 24) & 0x00FF;;
    fwrite(&temp, 1, 1, fp);
    fclose(fp);
-   return (TRUE);
+   return (true);
 }
 
-bool8 S9xLoadSPC7110RTC(S7RTC* rtc_f9)
+bool S9xLoadSPC7110RTC(S7RTC* rtc_f9)
 {
    FILE* fp;
 
    if ((fp = fopen(S9xGetFilename("rtc"), "rb")) == NULL)
-      return (FALSE);
+      return (false);
    int i;
    for (i = 0; i < 16; i++)
       fread(&(rtc_f9->reg[i]), 1, 1, fp);
-   uint8 temp = 0;
+   uint8_t temp = 0;
    fread(&temp, 1, 1, fp);
    rtc_f9->index = temp;
    fread(&temp, 1, 1, fp);
@@ -2292,6 +2292,6 @@ bool8 S9xLoadSPC7110RTC(S7RTC* rtc_f9)
    fread(&temp, 1, 1, fp);
    rtc_f9->last_used |= (temp << 24);
    fclose(fp);
-   return (TRUE);
+   return (true);
 }
 

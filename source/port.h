@@ -144,61 +144,9 @@ int    strcasecmp(const char* s1, const char* s2);
 #define USE_X86_ASM
 #endif
 
-#ifndef snes9x_types_defined
-#define snes9x_types_defined
-
-typedef unsigned char bool8;
-
-/* FIXME: Refactor this by moving out the BORLAND part and unifying typedefs */
-#ifndef __WIN32__
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef signed char int8;
-typedef short int16;
-typedef int int32;
-typedef unsigned int uint32;
-# ifdef __GNUC__  /* long long is not part of ISO C++ */
-__extension__
-# endif
-typedef long long int64;
-#else /* __WIN32__ */
-
-# ifdef __BORLANDC__
-#   include <systypes.h>
-# else
-
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef signed char int8;
-typedef short int16;
-
-# ifndef WSAAPI
-/* winsock2.h typedefs int32 as well. */
-typedef long int32;
-
-#   define PLAT_SOUND_BUFFER SoundBuffer
-#   define RIGHTSHIFT_IS_SAR
-# endif
-
-typedef unsigned int uint32;
-
-# endif /* __BORLANDC__ */
-
-typedef __int64 int64;
-
-#endif /* __WIN32__ */
-#endif /* snes9x_types_defined */
 
 
 #include "pixform.h"
-
-#ifndef TRUE
-#define TRUE 1
-#endif
-
-#ifndef FALSE
-#define FALSE 0
-#endif
 
 #ifndef __WIN32__
 
@@ -286,15 +234,7 @@ void MixSound(void);
 #define STATIC static
 #endif
 
-#if defined(_MSC_VER) && !defined(SN_TARGET_PS3)
-/* Hack applied for MSVC when compiling in C89 mode
- * as it isn't C99-compliant. */
-#define bool unsigned char
-#define true 1
-#define false 0
-#else
-#include <stdbool.h>
-#endif
+#include <libretro.h>
 
 #endif
 

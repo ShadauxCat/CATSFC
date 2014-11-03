@@ -95,32 +95,32 @@
 /* The FxChip Emulator's internal variables */
 struct FxRegs_s GSU = FxRegs_s_null;
 
-uint32(**fx_ppfFunctionTable)(uint32) = 0;
+uint32_t(**fx_ppfFunctionTable)(uint32_t) = 0;
 void (**fx_ppfPlotTable)() = 0;
 void (**fx_ppfOpcodeTable)() = 0;
 
 #if 0
 void fx_setCache()
 {
-   uint32 c;
-   GSU.bCacheActive = TRUE;
+   uint32_t c;
+   GSU.bCacheActive = true;
    GSU.pvRegisters[0x3e] &= 0xf0;
-   c = (uint32)GSU.pvRegisters[0x3e];
-   c |= ((uint32)GSU.pvRegisters[0x3f]) << 8;
+   c = (uint32_t)GSU.pvRegisters[0x3e];
+   c |= ((uint32_t)GSU.pvRegisters[0x3f]) << 8;
    if (c == GSU.vCacheBaseReg)
       return;
    GSU.vCacheBaseReg = c;
    GSU.vCacheFlags = 0;
    if (c < (0x10000 - 512))
    {
-      uint8 const* t = &ROM(c);
+      uint8_t const* t = &ROM(c);
       memcpy(GSU.pvCache, t, 512);
    }
    else
    {
-      uint8 const* t1;
-      uint8 const* t2;
-      uint32 i = 0x10000 - c;
+      uint8_t const* t1;
+      uint8_t const* t2;
+      uint32_t i = 0x10000 - c;
       t1 = &ROM(c);
       t2 = &ROM(0);
       memcpy(GSU.pvCache, t1, i);
@@ -129,12 +129,12 @@ void fx_setCache()
 }
 #endif
 
-void FxCacheWriteAccess(uint16 vAddress)
+void FxCacheWriteAccess(uint16_t vAddress)
 {
 #if 0
    if (!GSU.bCacheActive)
    {
-      uint8 v = GSU.pvCache[GSU.pvCache[vAddress & 0x1ff];
+      uint8_t v = GSU.pvCache[GSU.pvCache[vAddress & 0x1ff];
                             fx_setCache();
                             GSU.pvCache[GSU.pvCache[vAddress & 0x1ff] = v;
    }
@@ -147,16 +147,16 @@ void FxCacheWriteAccess(uint16 vAddress)
 {
    GSU.vCacheFlags = 0;
    GSU.vCacheBaseReg = 0;
-   GSU.bCacheActive = FALSE;
+   GSU.bCacheActive = false;
    //    GSU.vPipe = 0x1;
 }
 
 static void fx_backupCache()
 {
 #if 0
-   uint32 i;
-   uint32 v = GSU.vCacheFlags;
-   uint32 c = USEX16(GSU.vCacheBaseReg);
+   uint32_t i;
+   uint32_t v = GSU.vCacheFlags;
+   uint32_t c = USEX16(GSU.vCacheBaseReg);
    if (v)
       for (i = 0; i < 32; i++)
       {
@@ -164,15 +164,15 @@ static void fx_backupCache()
          {
             if (c < (0x10000 - 16))
             {
-               uint8* t = &GSU.pvPrgBank[c];
+               uint8_t* t = &GSU.pvPrgBank[c];
                memcpy(&GSU.avCacheBackup[i << 4], t, 16);
                memcpy(t, &GSU.pvCache[i << 4], 16);
             }
             else
             {
-               uint8* t1;
-               uint8* t2;
-               uint32 a = 0x10000 - c;
+               uint8_t* t1;
+               uint8_t* t2;
+               uint32_t a = 0x10000 - c;
                t1 = &GSU.pvPrgBank[c];
                t2 = &GSU.pvPrgBank[0];
                memcpy(&GSU.avCacheBackup[i << 4], t1, a);
@@ -190,9 +190,9 @@ static void fx_backupCache()
 static void fx_restoreCache()
 {
 #if 0
-   uint32 i;
-   uint32 v = GSU.vCacheFlags;
-   uint32 c = USEX16(GSU.vCacheBaseReg);
+   uint32_t i;
+   uint32_t v = GSU.vCacheFlags;
+   uint32_t c = USEX16(GSU.vCacheBaseReg);
    if (v)
       for (i = 0; i < 32; i++)
       {
@@ -200,15 +200,15 @@ static void fx_restoreCache()
          {
             if (c < (0x10000 - 16))
             {
-               uint8* t = &GSU.pvPrgBank[c];
+               uint8_t* t = &GSU.pvPrgBank[c];
                memcpy(t, &GSU.avCacheBackup[i << 4], 16);
                memcpy(&GSU.pvCache[i << 4], t, 16);
             }
             else
             {
-               uint8* t1;
-               uint8* t2;
-               uint32 a = 0x10000 - c;
+               uint8_t* t1;
+               uint8_t* t2;
+               uint32_t a = 0x10000 - c;
                t1 = &GSU.pvPrgBank[c];
                t2 = &GSU.pvPrgBank[0];
                memcpy(t1, &GSU.avCacheBackup[i << 4], a);
@@ -227,14 +227,14 @@ void fx_flushCache()
 {
    fx_restoreCache();
    GSU.vCacheFlags = 0;
-   GSU.bCacheActive = FALSE;
+   GSU.bCacheActive = false;
 }
 
 
-void fx_updateRamBank(uint8 Byte)
+void fx_updateRamBank(uint8_t Byte)
 {
    // Update BankReg and Bank pointer
-   GSU.vRamBankReg = (uint32)Byte & (FX_RAM_BANKS - 1);
+   GSU.vRamBankReg = (uint32_t)Byte & (FX_RAM_BANKS - 1);
    GSU.pvRamBank = GSU.apvRamBank[Byte & 0x3];
 }
 
@@ -242,9 +242,9 @@ void fx_updateRamBank(uint8 Byte)
 static void fx_readRegisterSpace()
 {
    int i;
-   uint8* p;
-   static uint32 avHeight[] = { 128, 160, 192, 256 };
-   static uint32 avMult[] = { 16, 32, 32, 64 };
+   uint8_t* p;
+   static uint32_t avHeight[] = { 128, 160, 192, 256 };
+   static uint32_t avMult[] = { 16, 32, 32, 64 };
 
    GSU.vErrorCode = 0;
 
@@ -253,18 +253,18 @@ static void fx_readRegisterSpace()
    for (i = 0; i < 16; i++)
    {
       GSU.avReg[i] = *p++;
-      GSU.avReg[i] += ((uint32)(*p++)) << 8;
+      GSU.avReg[i] += ((uint32_t)(*p++)) << 8;
    }
 
    /* Update other registers */
    p = GSU.pvRegisters;
-   GSU.vStatusReg = (uint32)p[GSU_SFR];
-   GSU.vStatusReg |= ((uint32)p[GSU_SFR + 1]) << 8;
-   GSU.vPrgBankReg = (uint32)p[GSU_PBR];
-   GSU.vRomBankReg = (uint32)p[GSU_ROMBR];
-   GSU.vRamBankReg = ((uint32)p[GSU_RAMBR]) & (FX_RAM_BANKS - 1);
-   GSU.vCacheBaseReg = (uint32)p[GSU_CBR];
-   GSU.vCacheBaseReg |= ((uint32)p[GSU_CBR + 1]) << 8;
+   GSU.vStatusReg = (uint32_t)p[GSU_SFR];
+   GSU.vStatusReg |= ((uint32_t)p[GSU_SFR + 1]) << 8;
+   GSU.vPrgBankReg = (uint32_t)p[GSU_PBR];
+   GSU.vRomBankReg = (uint32_t)p[GSU_ROMBR];
+   GSU.vRamBankReg = ((uint32_t)p[GSU_RAMBR]) & (FX_RAM_BANKS - 1);
+   GSU.vCacheBaseReg = (uint32_t)p[GSU_CBR];
+   GSU.vCacheBaseReg |= ((uint32_t)p[GSU_CBR + 1]) << 8;
 
    /* Update status register variables */
    GSU.vZero = !(GSU.vStatusReg & FLG_Z);
@@ -318,7 +318,7 @@ static void fx_readRegisterSpace()
 
 void fx_dirtySCBR()
 {
-   GSU.vSCBRDirty = TRUE;
+   GSU.vSCBRDirty = true;
 }
 
 void fx_computeScreenPointers()
@@ -329,7 +329,7 @@ void fx_computeScreenPointers()
    {
       int i;
 
-      GSU.vSCBRDirty = FALSE;
+      GSU.vSCBRDirty = false;
 
       /* Make a list of pointers to the start of each screen column */
       switch (GSU.vScreenHeight)
@@ -454,13 +454,13 @@ void fx_computeScreenPointers()
 static void fx_writeRegisterSpace()
 {
    int i;
-   uint8* p;
+   uint8_t* p;
 
    p = GSU.pvRegisters;
    for (i = 0; i < 16; i++)
    {
-      *p++ = (uint8)GSU.avReg[i];
-      *p++ = (uint8)(GSU.avReg[i] >> 8);
+      *p++ = (uint8_t)GSU.avReg[i];
+      *p++ = (uint8_t)(GSU.avReg[i] >> 8);
    }
 
    /* Update status register */
@@ -474,13 +474,13 @@ static void fx_writeRegisterSpace()
    else CF(CY);
 
    p = GSU.pvRegisters;
-   p[GSU_SFR] = (uint8)GSU.vStatusReg;
-   p[GSU_SFR + 1] = (uint8)(GSU.vStatusReg >> 8);
-   p[GSU_PBR] = (uint8)GSU.vPrgBankReg;
-   p[GSU_ROMBR] = (uint8)GSU.vRomBankReg;
-   p[GSU_RAMBR] = (uint8)GSU.vRamBankReg;
-   p[GSU_CBR] = (uint8)GSU.vCacheBaseReg;
-   p[GSU_CBR + 1] = (uint8)(GSU.vCacheBaseReg >> 8);
+   p[GSU_SFR] = (uint8_t)GSU.vStatusReg;
+   p[GSU_SFR + 1] = (uint8_t)(GSU.vStatusReg >> 8);
+   p[GSU_PBR] = (uint8_t)GSU.vPrgBankReg;
+   p[GSU_ROMBR] = (uint8_t)GSU.vRomBankReg;
+   p[GSU_RAMBR] = (uint8_t)GSU.vRamBankReg;
+   p[GSU_CBR] = (uint8_t)GSU.vCacheBaseReg;
+   p[GSU_CBR + 1] = (uint8_t)(GSU.vCacheBaseReg >> 8);
 
    fx_restoreCache();
 }
@@ -489,7 +489,7 @@ static void fx_writeRegisterSpace()
 void FxReset(struct FxInit_s* psFxInfo)
 {
    int i;
-   static uint32(**appfFunction[])(uint32) =
+   static uint32_t(**appfFunction[])(uint32_t) =
    {
       &fx_apfFunctionTable[0],
 #if 0
@@ -523,7 +523,7 @@ void FxReset(struct FxInit_s* psFxInfo)
    fx_ppfOpcodeTable = appfOpcode[psFxInfo->vFlags & 0x3];
 
    /* Clear all internal variables */
-   memset((uint8*)&GSU, 0, sizeof(struct FxRegs_s));
+   memset((uint8_t*)&GSU, 0, sizeof(struct FxRegs_s));
 
    /* Set default registers */
    GSU.pvSreg = GSU.pvDreg = &R0;
@@ -550,7 +550,7 @@ void FxReset(struct FxInit_s* psFxInfo)
    /* Make ROM bank table */
    for (i = 0; i < 256; i++)
    {
-      uint32 b = i & 0x7f;
+      uint32_t b = i & 0x7f;
       if (b >= 0x40)
       {
          if (GSU.nRomBanks > 1)
@@ -583,36 +583,36 @@ void FxReset(struct FxInit_s* psFxInfo)
    fx_readRegisterSpace();
 }
 
-static uint8 fx_checkStartAddress()
+static bool fx_checkStartAddress()
 {
    /* Check if we start inside the cache */
    if (GSU.bCacheActive && R15 >= GSU.vCacheBaseReg
          && R15 < (GSU.vCacheBaseReg + 512))
-      return TRUE;
+      return true;
 
    /*  Check if we're in an unused area */
    if (GSU.vPrgBankReg < 0x40 && R15 < 0x8000)
-      return FALSE;
+      return false;
    if (GSU.vPrgBankReg >= 0x60 && GSU.vPrgBankReg <= 0x6f)
-      return FALSE;
+      return false;
    if (GSU.vPrgBankReg >= 0x74)
-      return FALSE;
+      return false;
 
    /* Check if we're in RAM and the RAN flag is not set */
    if (GSU.vPrgBankReg >= 0x70 && GSU.vPrgBankReg <= 0x73 && !(SCMR & (1 << 3)))
-      return FALSE;
+      return false;
 
    /* If not, we're in ROM, so check if the RON flag is set */
    if (!(SCMR & (1 << 4)))
-      return FALSE;
+      return false;
 
-   return TRUE;
+   return true;
 }
 
 /* Execute until the next stop instruction */
-int FxEmulate(uint32 nInstructions)
+int FxEmulate(uint32_t nInstructions)
 {
-   uint32 vCount;
+   uint32_t vCount;
 
    /* Read registers and initialize GSU session */
    fx_readRegisterSpace();
@@ -649,20 +649,20 @@ int FxEmulate(uint32 nInstructions)
 }
 
 /* Breakpoints */
-void FxBreakPointSet(uint32 vAddress)
+void FxBreakPointSet(uint32_t vAddress)
 {
-   GSU.bBreakPoint = TRUE;
+   GSU.bBreakPoint = true;
    GSU.vBreakPoint = USEX16(vAddress);
 }
 void FxBreakPointClear()
 {
-   GSU.bBreakPoint = FALSE;
+   GSU.bBreakPoint = false;
 }
 
 /* Step by step execution */
-int FxStepOver(uint32 nInstructions)
+int FxStepOver(uint32_t nInstructions)
 {
-   uint32 vCount;
+   uint32_t vCount;
    fx_readRegisterSpace();
 
    /* Check if the start address is valid */
@@ -703,27 +703,27 @@ int FxGetIllegalAddress()
 }
 
 /* Access to internal registers */
-uint32 FxGetColorRegister()
+uint32_t FxGetColorRegister()
 {
    return GSU.vColorReg & 0xff;
 }
 
-uint32 FxGetPlotOptionRegister()
+uint32_t FxGetPlotOptionRegister()
 {
    return GSU.vPlotOptionReg & 0x1f;
 }
 
-uint32 FxGetSourceRegisterIndex()
+uint32_t FxGetSourceRegisterIndex()
 {
    return GSU.pvSreg - GSU.avReg;
 }
 
-uint32 FxGetDestinationRegisterIndex()
+uint32_t FxGetDestinationRegisterIndex()
 {
    return GSU.pvDreg - GSU.avReg;
 }
 
-uint8 FxPipe()
+uint8_t FxPipe()
 {
    return GSU.vPipe;
 }

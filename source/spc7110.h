@@ -96,17 +96,17 @@ extern void (*LoadUp7110)(char*);
 extern void (*CleanUp7110)(void);
 extern void (*Copy7110)(void);
 
-extern uint16 cacheMegs;
+extern uint16_t cacheMegs;
 
 void Del7110Gfx(void);
 void Close7110Gfx(void);
 void Drop7110Gfx(void);
-uint8 S9xGetSPC7110(uint16 Address);
-uint8 S9xGetSPC7110Byte(uint32 Address);
-uint8* Get7110BasePtr(uint32);
-void S9xSetSPC7110(uint8 data, uint16 Address);
+uint8_t S9xGetSPC7110(uint16_t Address);
+uint8_t S9xGetSPC7110Byte(uint32_t Address);
+uint8_t* Get7110BasePtr(uint32_t);
+void S9xSetSPC7110(uint8_t data, uint16_t Address);
 void S9xSpc7110Init();
-uint8* Get7110BasePtr(uint32);
+uint8_t* Get7110BasePtr(uint32_t);
 void S9xSpc7110Reset();
 void S9xUpdateRTC();
 void Do7110Logging();
@@ -122,7 +122,7 @@ typedef struct SPC7110RTC
 {
    unsigned char reg[16];
    short index;
-   uint8 control;
+   uint8_t control;
    bool init;
    time_t last_used;
 } S7RTC;
@@ -174,20 +174,20 @@ typedef struct SPC7110EmuVars
    unsigned char reg4840;
    unsigned char reg4841;
    unsigned char reg4842;
-   uint8 AlignBy;
-   uint8 written;
-   uint8 offset_add;
-   uint32 DataRomOffset;
-   uint32 DataRomSize;
-   uint32 bank50Internal;
-   uint8 bank50[DECOMP_BUFFER_SIZE];
+   uint8_t AlignBy;
+   uint8_t written;
+   uint8_t offset_add;
+   uint32_t DataRomOffset;
+   uint32_t DataRomSize;
+   uint32_t bank50Internal;
+   uint8_t bank50[DECOMP_BUFFER_SIZE];
 
 } SPC7110Regs;
 extern SPC7110Regs s7r;
 extern S7RTC rtc_f9;
 // These are defined in spc7110.cpp
-bool8 S9xSaveSPC7110RTC(S7RTC* rtc_f9);
-bool8 S9xLoadSPC7110RTC(S7RTC* rtc_f9);
+bool S9xSaveSPC7110RTC(S7RTC* rtc_f9);
+bool S9xLoadSPC7110RTC(S7RTC* rtc_f9);
 
 #endif
 

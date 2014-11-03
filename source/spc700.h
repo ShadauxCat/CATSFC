@@ -138,24 +138,24 @@ typedef union
 #ifdef LSB_FIRST
    struct
    {
-      uint8 A, Y;
+      uint8_t A, Y;
    } B;
 #else
    struct
    {
-      uint8 Y, A;
+      uint8_t Y, A;
    } B;
 #endif
-   uint16 W;
+   uint16_t W;
 } YAndA;
 
 typedef struct
 {
-   uint8  P;
+   uint8_t  P;
    YAndA YA;
-   uint8  X;
-   uint8  S;
-   uint16  PC;
+   uint8_t  X;
+   uint8_t  S;
+   uint16_t  PC;
 } SAPURegisters;
 
 // Needed by ILLUSION OF GAIA
@@ -169,11 +169,11 @@ typedef struct
 // 1.953us := 1.024065.54MHz
 
 #ifdef SPCTOOL
-int32 ESPC(int32);
+int32_t ESPC(int32_t);
 
 #define APU_EXECUTE() \
 { \
-    int32 l = (CPU.Cycles - APU.Cycles) / 14; \
+    int32_t l = (CPU.Cycles - APU.Cycles) / 14; \
     if (l > 0) \
     { \
         l -= _EmuSPC(l); \

@@ -90,13 +90,13 @@
 #include "memmap.h"
 #include "obc1.h"
 
-static uint8* OBC1_RAM = NULL;
+static uint8_t* OBC1_RAM = NULL;
 
 int OBC1_Address;
 int OBC1_BasePtr;
 int OBC1_Shift;
 
-uint8 GetOBC1(uint16 Address)
+uint8_t GetOBC1(uint16_t Address)
 {
    switch (Address)
    {
@@ -119,7 +119,7 @@ uint8 GetOBC1(uint16 Address)
    return OBC1_RAM[Address & 0x1fff];
 }
 
-void SetOBC1(uint8 Byte, uint16 Address)
+void SetOBC1(uint8_t Byte, uint16_t Address)
 {
    switch (Address)
    {
@@ -181,12 +181,12 @@ void SetOBC1(uint8 Byte, uint16 Address)
    }
 }
 
-uint8* GetBasePointerOBC1(uint32 Address)
+uint8_t* GetBasePointerOBC1(uint32_t Address)
 {
    return Memory.FillRAM;
 }
 
-uint8* GetMemPointerOBC1(uint32 Address)
+uint8_t* GetMemPointerOBC1(uint32_t Address)
 {
    return (Memory.FillRAM + (Address & 0xffff));
 }

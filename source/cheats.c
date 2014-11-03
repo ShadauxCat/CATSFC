@@ -96,33 +96,33 @@
 #include "cheats.h"
 #include "memmap.h"
 
-static bool8 S9xAllHex(const char* code, int len)
+static bool S9xAllHex(const char* code, int len)
 {
    int i;
    for (i = 0; i < len; i++)
       if ((code [i] < '0' || code [i] > '9') &&
             (code [i] < 'a' || code [i] > 'f') &&
             (code [i] < 'A' || code [i] > 'F'))
-         return (FALSE);
+         return (false);
 
-   return (TRUE);
+   return (true);
 }
 
-const char* S9xProActionReplayToRaw(const char* code, uint32* address,
-                                    uint8* byte)
+const char* S9xProActionReplayToRaw(const char* code, uint32_t* address,
+                                    uint8_t* byte)
 {
-   uint32 data = 0;
+   uint32_t data = 0;
    if (strlen(code) != 8 || !S9xAllHex(code, 8) ||
          sscanf(code, "%x", &data) != 1)
       return ("Invalid Pro Action Replay code - should be 8 hex digits in length.");
 
    *address = data >> 8;
-   *byte = (uint8) data;
+   *byte = (uint8_t) data;
    return (NULL);
 }
 
-const char* S9xGoldFingerToRaw(const char* code, uint32* address, bool8* sram,
-                               uint8* num_bytes, uint8 bytes[3])
+const char* S9xGoldFingerToRaw(const char* code, uint32_t* address, bool* sram,
+                               uint8_t* num_bytes, uint8_t bytes[3])
 {
    char tmp [15];
    if (strlen(code) != 14)
@@ -141,14 +141,14 @@ const char* S9xGoldFingerToRaw(const char* code, uint32* address, bool8* sram,
       int byte;
       if (sscanf(tmp, "%x", &byte) != 1)
          break;
-      bytes [i] = (uint8) byte;
+      bytes [i] = (uint8_t) byte;
    }
    *num_bytes = i;
    *sram = code [13] == '1';
    return (NULL);
 }
 
-const char* S9xGameGenieToRaw(const char* code, uint32* address, uint8* byte)
+const char* S9xGameGenieToRaw(const char* code, uint32_t* address, uint8_t* byte)
 {
    char new_code [12];
 
@@ -180,9 +180,9 @@ const char* S9xGameGenieToRaw(const char* code, uint32* address, uint8* byte)
       if (j == 16)
          return ("Invalid hex-character in Game Genie(tm) code");
    }
-   uint32 data = 0;
+   uint32_t data = 0;
    sscanf(new_code, "%x", &data);
-   *byte = (uint8)(data >> 24);
+   *byte = (uint8_t)(data >> 24);
    *address = ((data & 0x003c00) << 10) +
               ((data & 0x00003c) << 14) +
               ((data & 0xf00000) >>  8) +
@@ -225,19 +225,19 @@ void S9xStartCheatSearch(SCheatData* d)
  (a) != (b))
 
 #define _D(s,m,o) \
-((s) == S9X_8_BITS ? (uint8) (*((m) + (o))) : \
- (s) == S9X_16_BITS ? ((uint16) (*((m) + (o)) + (*((m) + (o) + 1) << 8))) : \
- (s) == S9X_24_BITS ? ((uint32) (*((m) + (o)) + (*((m) + (o) + 1) << 8) + (*((m) + (o) + 2) << 16))) : \
-((uint32)  (*((m) + (o)) + (*((m) + (o) + 1) << 8) + (*((m) + (o) + 2) << 16) + (*((m) + (o) + 3) << 24))))
+((s) == S9X_8_BITS ? (uint8_t) (*((m) + (o))) : \
+ (s) == S9X_16_BITS ? ((uint16_t) (*((m) + (o)) + (*((m) + (o) + 1) << 8))) : \
+ (s) == S9X_24_BITS ? ((uint32_t) (*((m) + (o)) + (*((m) + (o) + 1) << 8) + (*((m) + (o) + 2) << 16))) : \
+((uint32_t)  (*((m) + (o)) + (*((m) + (o) + 1) << 8) + (*((m) + (o) + 2) << 16) + (*((m) + (o) + 3) << 24))))
 
 #define _DS(s,m,o) \
-((s) == S9X_8_BITS ? ((int8) *((m) + (o))) : \
- (s) == S9X_16_BITS ? ((int16) (*((m) + (o)) + (*((m) + (o) + 1) << 8))) : \
- (s) == S9X_24_BITS ? (((int32) ((*((m) + (o)) + (*((m) + (o) + 1) << 8) + (*((m) + (o) + 2) << 16)) << 8)) >> 8): \
- ((int32) (*((m) + (o)) + (*((m) + (o) + 1) << 8) + (*((m) + (o) + 2) << 16) + (*((m) + (o) + 3) << 24))))
+((s) == S9X_8_BITS ? ((int8_t) *((m) + (o))) : \
+ (s) == S9X_16_BITS ? ((int16_t) (*((m) + (o)) + (*((m) + (o) + 1) << 8))) : \
+ (s) == S9X_24_BITS ? (((int32_t) ((*((m) + (o)) + (*((m) + (o) + 1) << 8) + (*((m) + (o) + 2) << 16)) << 8)) >> 8): \
+ ((int32_t) (*((m) + (o)) + (*((m) + (o) + 1) << 8) + (*((m) + (o) + 2) << 16) + (*((m) + (o) + 3) << 24))))
 
 void S9xSearchForChange(SCheatData* d, S9xCheatComparisonType cmp,
-                        S9xCheatDataSize size, bool8 is_signed, bool8 update)
+                        S9xCheatDataSize size, bool is_signed, bool update)
 {
    int l;
 
@@ -338,8 +338,8 @@ void S9xSearchForChange(SCheatData* d, S9xCheatComparisonType cmp,
 }
 
 void S9xSearchForValue(SCheatData* d, S9xCheatComparisonType cmp,
-                       S9xCheatDataSize size, uint32 value,
-                       bool8 is_signed, bool8 update)
+                       S9xCheatDataSize size, uint32_t value,
+                       bool is_signed, bool update)
 {
    int l;
 
@@ -367,7 +367,7 @@ void S9xSearchForValue(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x20000 - l; i++)
       {
          if (TEST_BIT(d->WRAM_BITS, i) &&
-               CHEATS_C(cmp, _DS(size, d->RAM, i), (int32) value))
+               CHEATS_C(cmp, _DS(size, d->RAM, i), (int32_t) value))
          {
             if (update)
                d->CWRAM [i] = d->RAM [i];
@@ -379,7 +379,7 @@ void S9xSearchForValue(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x10000 - l; i++)
       {
          if (TEST_BIT(d->SRAM_BITS, i) &&
-               CHEATS_C(cmp, _DS(size, d->SRAM, i), (int32) value))
+               CHEATS_C(cmp, _DS(size, d->SRAM, i), (int32_t) value))
          {
             if (update)
                d->CSRAM [i] = d->SRAM [i];
@@ -391,7 +391,7 @@ void S9xSearchForValue(SCheatData* d, S9xCheatComparisonType cmp,
       for (i = 0; i < 0x2000 - l; i++)
       {
          if (TEST_BIT(d->IRAM_BITS, i) &&
-               CHEATS_C(cmp, _DS(size, d->FillRAM + 0x3000, i), (int32) value))
+               CHEATS_C(cmp, _DS(size, d->FillRAM + 0x3000, i), (int32_t) value))
          {
             if (update)
                d->CIRAM [i] = d->FillRAM [i + 0x3000];
