@@ -273,8 +273,11 @@ void init_sfc_setting(void)
    Settings.Transparency = TRUE;
    Settings.SupportHiRes = TRUE;
    Settings.ThreadSound = FALSE;
-   Settings.SoundSync = TRUE;
+#ifdef USE_BLARGG_APU
+   Settings.SoundSync = FALSE;
+#else
    Settings.ApplyCheats = TRUE;
+#endif
    Settings.StretchScreenshots = 1;
 
    Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
@@ -285,6 +288,20 @@ void S9xAutoSaveSRAM()
 {
    SaveSRAM(S9xGetFilename("srm"));
 }
+
+#ifdef USE_BLARGG_APU
+static void S9xAudioCallback()
+{
+   size_t avail;
+   /* Just pick a big buffer. We won't use it all. */
+   static int16_t audio_buf[0x10000];
+
+   S9xFinalizeSamples();
+   avail = S9xGetSampleCount();
+   S9xMixSamples(audio_buf, avail);
+   audio_batch_cb(audio_buf, avail >> 1);
+}
+#endif
 
 void retro_init(void)
 {
@@ -308,6 +325,7 @@ void retro_init(void)
    S9xInitGFX();
 #ifdef USE_BLARGG_APU
    S9xInitSound(16, 0);
+   S9xSetSamplesAvailableCallback(S9xAudioCallback);
 #else
    S9xInitSound(Settings.SoundPlaybackRate,
                 TRUE,
@@ -386,6 +404,7 @@ void retro_run(void)
    S9xMainLoop();
    RETRO_PERFORMANCE_STOP(S9xMainLoop_func);
 
+#ifndef USE_BLARGG_APU
    static int16_t audio_buf[2048];
 
    samples_to_play += samples_per_frame;
@@ -396,6 +415,7 @@ void retro_run(void)
       audio_batch_cb(audio_buf, (int)samples_to_play);
       samples_to_play -= (int)samples_to_play;
    }
+#endif
 
 #ifdef  NO_VIDEO_OUTPUT
    return;

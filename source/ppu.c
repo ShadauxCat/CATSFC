@@ -898,6 +898,8 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
          IAPU.WaitCounter++;
 #endif
 #endif // SPCTOOL
+#else
+         S9xAPUWritePort(Address & 3, Byte);
 #endif // #ifndef USE_BLARGG_APU
          break;
       case 0x2180:
@@ -1323,6 +1325,9 @@ uint8 S9xGetPPU(uint16 Address)
                return ((r >> 3) & 0xff);
          }
          return (Memory.FillRAM[Address]);
+
+#else
+         return (S9xAPUReadPort(Address & 3));
 #endif // SPCTOOL
 
       case 0x2180:
