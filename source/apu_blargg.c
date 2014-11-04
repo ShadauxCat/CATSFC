@@ -182,7 +182,11 @@
 #include <limits.h>
 
 #ifndef INLINE
+#ifdef PSP
+#define INLINE __attribute((force_inline))
+#else
 #define INLINE inline
+#endif
 #endif
 
 #include "blargg_endian.h"
@@ -3059,8 +3063,8 @@ void spc_copy_state( unsigned char** io, dsp_copy_func_t copy )
 ***********************************************************************************/
 
 #define APU_DEFAULT_INPUT_RATE		32000
-#define APU_MINIMUM_SAMPLE_COUNT	512
-#define APU_MINIMUM_SAMPLE_BLOCK	128
+#define APU_MINIMUM_SAMPLE_COUNT	(512*8)
+#define APU_MINIMUM_SAMPLE_BLOCK	(128*8)
 #define APU_NUMERATOR_NTSC		15664
 #define APU_DENOMINATOR_NTSC		328125
 #define APU_NUMERATOR_PAL		34176
@@ -3645,5 +3649,8 @@ void S9xAPULoadState (uint8_t *block)
    ptr += sizeof(int32_t);
    spc_remainder = GET_LE32(ptr);
 }
+
+#undef  INLINE
+#define INLINE static inline
 
 #endif
