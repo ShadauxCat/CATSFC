@@ -181,6 +181,10 @@
 #include <stdlib.h>
 #include <limits.h>
 
+#ifndef INLINE
+#define INLINE inline
+#endif
+
 #include "blargg_endian.h"
 #include "apu_blargg.h"
 
@@ -188,9 +192,6 @@
 //#include "snapshot.h"
 #include "display.h"
 
-#ifndef INLINE
-#define INLINE inline
-#endif
 
 /***********************************************************************************
    SPC DSP
