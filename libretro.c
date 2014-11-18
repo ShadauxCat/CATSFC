@@ -564,7 +564,7 @@ void retro_get_system_info(struct retro_system_info* info)
    info->need_fullpath = true;
 #endif
    info->valid_extensions = "smc|fig|sfc|gd3|gd7|dx2|bsx|swc";
-   info->library_version = "v1.43";
+   info->library_version = "v1.36";
    info->library_name = "CATSFC(SNES9x)";
    info->block_extract = false;
 }
