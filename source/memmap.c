@@ -1486,16 +1486,7 @@ void InitROM(bool Interleaved)
            Memory.ROMCRC32);
 
    S9xMessage(S9X_INFO, S9X_ROM_INFO, String);
-#ifdef __WIN32__
-#ifndef _XBOX
-   EnableMenuItem(GUI.hMenu, IDM_ROM_INFO, MF_ENABLED);
-#endif
-#ifdef RTC_DEBUGGER
-   if (Settings.SPC7110RTC)
-      EnableMenuItem(GUI.hMenu, IDM_7110_RTC, MF_ENABLED);
-   else EnableMenuItem(GUI.hMenu, IDM_7110_RTC, MF_GRAYED);
-#endif
-#endif
+
    Settings.ForceHeader = Settings.ForceHiROM = Settings.ForceLoROM =
                              Settings.ForceInterleaved = Settings.ForceNoHeader =
                                       Settings.ForceNotInterleaved =

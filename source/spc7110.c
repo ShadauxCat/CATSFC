@@ -1746,11 +1746,7 @@ void SPC7110Load(char* dirname)
 
    Copy7110 = &MovePackData;
    CleanUp7110 = &Del7110Gfx;
-#ifdef __WIN32__
-#ifndef _XBOX
-   EnableMenuItem(GUI.hMenu, IDM_LOG_7110, MF_ENABLED);
-#endif
-#endif
+
 }
 
 //Cache 2 load function
@@ -1791,11 +1787,6 @@ void SPC7110Open(char* dirname)
    Copy7110 = &ReadPackData;
    CleanUp7110 = &Close7110Gfx;
 
-#ifdef __WIN32__
-#ifndef _XBOX
-   EnableMenuItem(GUI.hMenu, IDM_LOG_7110, MF_ENABLED);
-#endif
-#endif
 }
 
 //Cache 3's load function
@@ -1871,11 +1862,6 @@ void SPC7110Grab(char* dirname)
    CleanUp7110 = &Drop7110Gfx;
 
 
-#ifdef __WIN32__
-#ifndef _XBOX
-   EnableMenuItem(GUI.hMenu, IDM_LOG_7110, MF_ENABLED);
-#endif
-#endif
 }
 
 //Cache 1 clean up function
@@ -1884,11 +1870,6 @@ void Del7110Gfx()
    int i;
    if (Settings.SPC7110)
    {
-#ifdef __WIN32__
-#ifndef _XBOX
-      EnableMenuItem(GUI.hMenu, IDM_LOG_7110, MF_GRAYED);
-#endif
-#endif
       Do7110Logging();
    }
    for (i = 0; i < MAX_TABLES; i++)
@@ -1914,11 +1895,6 @@ void Close7110Gfx()
    int i;
    if (Settings.SPC7110)
    {
-#ifdef __WIN32__
-#ifndef _XBOX
-      EnableMenuItem(GUI.hMenu, IDM_LOG_7110, MF_GRAYED);
-#endif
-#endif
       Do7110Logging();
    }
    for (i = 0; i < MAX_TABLES; i++)
@@ -1944,11 +1920,6 @@ void Drop7110Gfx()
    int i;
    if (Settings.SPC7110)
    {
-#ifdef __WIN32__
-#ifndef _XBOX
-      EnableMenuItem(GUI.hMenu, IDM_LOG_7110, MF_GRAYED);
-#endif
-#endif
       Do7110Logging();
    }
    for (i = 0; i < MAX_TABLES; i++)
