@@ -99,30 +99,12 @@
 
 extern int cprintf(const char* fmt, ...);
 
-#ifdef __WIN32__
-#include "..\wsnes9x.h"
-#include "..\zlib\zlib.h"
-#endif
-
 #include "port.h"
 #include "65c816.h"
 #include "messages.h"
 
 #define ROM_NAME_LEN 23
 
-#ifdef ZLIB
-#ifndef __WIN32__
-#include "zlib.h"
-#endif
-#define STREAM gzFile
-#define READ_STREAM(p,l,s) gzread (s,p,l)
-#define WRITE_STREAM(p,l,s) gzwrite (s,p,l)
-#define OPEN_STREAM(f,m) gzopen (f,m)
-#define REOPEN_STREAM(f,m) gzdopen (f,m)
-#define FIND_STREAM(f)  gztell(f)
-#define REVERT_STREAM(f,o,s)  gzseek(f,o,s)
-#define CLOSE_STREAM(s) gzclose (s)
-#else
 #define STREAM FILE*
 #define READ_STREAM(p,l,s) fread (p,1,l,s)
 #define WRITE_STREAM(p,l,s) fwrite (p,1,l,s)
@@ -131,7 +113,6 @@ extern int cprintf(const char* fmt, ...);
 #define FIND_STREAM(f)  ftell(f)
 #define REVERT_STREAM(f,o,s)   fseek(f,o,s)
 #define CLOSE_STREAM(s) fclose (s)
-#endif
 
 
 /* SNES screen width and height */
