@@ -490,7 +490,7 @@ void S9xSetST010(uint32_t Address, uint8_t Byte)
          /* TODO - FIXME */
          ST010_Scale(*(short*)&Memory.SRAM[0x0004], *(short*)&Memory.SRAM[0x0000],
                      *(short*)&Memory.SRAM[0x0002],
-                     (int &)Memory.SRAM[0x0010], (int&)Memory.SRAM[0x0014]);
+                     (int*)&Memory.SRAM[0x0010], (int*)&Memory.SRAM[0x0014]);
 #else
          int x1, y1;
 
@@ -522,7 +522,7 @@ void S9xSetST010(uint32_t Address, uint8_t Byte)
 #if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
          /* TODO - FIXME */
          ST010_Multiply(*(short*)&Memory.SRAM[0x0000], *(short*)&Memory.SRAM[0x0002],
-                        (int &) Memory.SRAM[0x0010]);
+                        (int*)&Memory.SRAM[0x0010]);
 #else
          int Product;
 
@@ -600,7 +600,7 @@ void S9xSetST010(uint32_t Address, uint8_t Byte)
          /* TODO - FIXME */
          ST010_Rotate(*(short*)&Memory.SRAM[0x0004], *(short*)&Memory.SRAM[0x0000],
                       *(short*)&Memory.SRAM[0x0002],
-                      (short &) Memory.SRAM[0x0010], (short &) Memory.SRAM[0x0012]);
+                      (short*)&Memory.SRAM[0x0010], (short*)&Memory.SRAM[0x0012]);
 #else
          short x1, y1;
 
