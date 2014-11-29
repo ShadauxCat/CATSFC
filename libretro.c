@@ -173,7 +173,7 @@ bool S9xInitUpdate()
 
    return (true);
 }
-
+#ifndef __WIN32__
 void _makepath(char* path, const char* drive, const char* dir,
                const char* fname, const char* ext)
 {
@@ -232,7 +232,7 @@ void _splitpath(const char* path, char* drive, char* dir, char* fname,
          strcpy(ext, "");
    }
 }
-
+#endif
 const char* S9xGetFilename(const char* ex)
 {
    static char filename [PATH_MAX + 1];
