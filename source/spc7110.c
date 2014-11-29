@@ -99,8 +99,15 @@
 #define chdir _chdir
 #define getcwd _getcwd
 #endif
-//zinx suggested this, for *nix compatibility
+
+#ifndef PATH_MAX
+#ifdef MAX_PATH
 #define PATH_MAX  MAX_PATH
+#else
+#define PATH_MAX 1024
+#endif
+#endif
+
 #else // Unix
 #include "display.h"
 #include <limits.h>
