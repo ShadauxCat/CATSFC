@@ -734,11 +734,45 @@ bool retro_unserialize(const void* data, size_t size)
 
 void retro_cheat_reset(void)
 {
-
+#ifdef WANT_CHEATS
+   S9xDeleteCheats();
+   S9xApplyCheats();
+#endif
 }
+
+#ifdef WANT_CHEATS
+extern SCheatData Cheat;
+#endif
+
 void retro_cheat_set(unsigned index, bool enabled, const char* code)
 {
-
+#ifdef WANT_CHEATS
+   uint32_t address;
+   uint8_t val;
+   
+   bool sram;
+   uint8_t bytes[3];//used only by GoldFinger, ignored for now 
+   
+   if (S9xGameGenieToRaw(code, &address, &val)!=NULL &&
+       S9xProActionReplayToRaw(code, &address, &val)!=NULL &&
+       S9xGoldFingerToRaw(code, &address, &sram, &val, bytes)!=NULL)
+   { // bad code, ignore
+      return;
+   }
+   if (index > Cheat.num_cheats)
+      return; // cheat added in weird order, ignore
+   if (index == Cheat.num_cheats)
+      Cheat.num_cheats++;
+   
+   Cheat.c[index].address = address;
+   Cheat.c[index].byte = val;
+   Cheat.c[index].enabled = enabled;
+   
+   Cheat.c[index].saved = false; // it'll be saved next time cheats run anyways
+   
+   Settings.ApplyCheats=true;
+   S9xApplyCheats();
+#endif
 }
 
 static void init_descriptors(void)
