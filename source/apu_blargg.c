@@ -1610,7 +1610,7 @@ static void spc_cpu_write( int data, int addr, int time )
             else
             {
                *(&(m.ram.ram[0]) + reg + ROM_ADDR) = CPU_PAD_FILL; /* restore overwritten padding */
-               spc_cpu_write( data, reg + ROM_ADDR - 0x10000, time );
+               spc_cpu_write( data, addr & 0xFFFF, time );
             }
          }
       }
