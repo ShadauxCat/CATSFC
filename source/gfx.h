@@ -144,7 +144,7 @@ struct SGFX
    uint8_t*  S;
    uint8_t DB_safety_margin[8];
    uint8_t*  DB;
-   uint32_t DepthDelta;
+   ptrdiff_t DepthDelta;
    uint8_t  Z1;          // Depth for comparison
    uint8_t  Z2;          // Depth to save
    uint8_t  ZSprite;     // Used to ensure only 1st sprite is drawn per pixel
