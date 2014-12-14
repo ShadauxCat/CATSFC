@@ -268,24 +268,7 @@ bool S9xInitGFX()
          register uint32_t h = 0;
          register uint32_t l = 0;
 
-#if defined(LSB_FIRST)
-         if (i & 8)
-            h |= PixelOdd;
-         if (i & 4)
-            h |= PixelOdd << 8;
-         if (i & 2)
-            h |= PixelOdd << 16;
-         if (i & 1)
-            h |= PixelOdd << 24;
-         if (i & 8)
-            l |= PixelOdd;
-         if (i & 4)
-            l |= PixelOdd << 8;
-         if (i & 2)
-            l |= PixelOdd << 16;
-         if (i & 1)
-            l |= PixelOdd << 24;
-#else
+#if defined(MSB_FIRST)
          if (i & 8)
             h |= (PixelOdd << 24);
          if (i & 4)
@@ -302,30 +285,30 @@ bool S9xInitGFX()
             l |= (PixelOdd << 8);
          if (i & 1)
             l |= PixelOdd;
+#else
+         if (i & 8)
+            h |= PixelOdd;
+         if (i & 4)
+            h |= PixelOdd << 8;
+         if (i & 2)
+            h |= PixelOdd << 16;
+         if (i & 1)
+            h |= PixelOdd << 24;
+         if (i & 8)
+            l |= PixelOdd;
+         if (i & 4)
+            l |= PixelOdd << 8;
+         if (i & 2)
+            l |= PixelOdd << 16;
+         if (i & 1)
+            l |= PixelOdd << 24;
 #endif
 
          odd_high[bitshift][i] = h;
          odd_low[bitshift][i] = l;
          h = l = 0;
 
-#if defined(LSB_FIRST)
-         if (i & 8)
-            h |= PixelEven;
-         if (i & 4)
-            h |= PixelEven << 8;
-         if (i & 2)
-            h |= PixelEven << 16;
-         if (i & 1)
-            h |= PixelEven << 24;
-         if (i & 8)
-            l |= PixelEven;
-         if (i & 4)
-            l |= PixelEven << 8;
-         if (i & 2)
-            l |= PixelEven << 16;
-         if (i & 1)
-            l |= PixelEven << 24;
-#else
+#if defined(MSB_FIRST)
          if (i & 8)
             h |= (PixelEven << 24);
          if (i & 4)
@@ -342,6 +325,23 @@ bool S9xInitGFX()
             l |= (PixelEven << 8);
          if (i & 1)
             l |= PixelEven;
+#else
+         if (i & 8)
+            h |= PixelEven;
+         if (i & 4)
+            h |= PixelEven << 8;
+         if (i & 2)
+            h |= PixelEven << 16;
+         if (i & 1)
+            h |= PixelEven << 24;
+         if (i & 8)
+            l |= PixelEven;
+         if (i & 4)
+            l |= PixelEven << 8;
+         if (i & 2)
+            l |= PixelEven << 16;
+         if (i & 1)
+            l |= PixelEven << 24;
 #endif
 
          even_high[bitshift][i] = h;

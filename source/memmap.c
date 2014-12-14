@@ -815,12 +815,12 @@ again:
 #ifdef DETECT_NASTY_FX_INTERLEAVE
       //MK: Damn. YI trips a BRK currently. Maybe even on a real cart.
 
-#ifdef LSB_FIRST
-      if (strncmp((char*) &ROM [0x7fc0], "YOSHI'S ISLAND", 14) == 0
-            && (*(uint16_t*)&ROM[0x7FDE]) == 57611 && ROM[0x10002] == 0xA9)
-#else
+#ifdef MSB_FIRST
       if (strncmp((char*) &ROM [0x7fc0], "YOSHI'S ISLAND", 14) == 0
             && (ROM[0x7FDE] + (ROM[0x7FDF] << 8)) == 57611 && ROM[0x10002] == 0xA9)
+#else
+      if (strncmp((char*) &ROM [0x7fc0], "YOSHI'S ISLAND", 14) == 0
+            && (*(uint16_t*)&ROM[0x7FDE]) == 57611 && ROM[0x10002] == 0xA9)
 #endif
       {
          Interleaved = true;

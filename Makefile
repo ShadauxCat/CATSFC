@@ -107,7 +107,7 @@ else ifeq ($(platform), psp1)
 	CXX = psp-g++$(EXE_EXT)
 	AR = psp-ar$(EXE_EXT)
    STATIC_LINKING = 1
-	FLAGS += -G0 -DLSB_FIRST
+	FLAGS += -G0 
    CFLAGS += -march=allegrex -mno-abicalls -fno-pic -fno-builtin \
 		-fno-exceptions -ffunction-sections -mno-long-calls \
 		-fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \

@@ -146,15 +146,15 @@
 
 typedef union
 {
-#ifdef LSB_FIRST
+#ifdef MSB_FIRST
    struct
    {
-      uint8_t l, h;
+      uint8_t h, l;
    } B;
 #else
    struct
    {
-      uint8_t h, l;
+      uint8_t l, h;
    } B;
 #endif
    uint16_t W;
