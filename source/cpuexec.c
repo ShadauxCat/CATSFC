@@ -103,10 +103,6 @@
 #include "sa1.h"
 #include "spc7110.h"
 
-#ifdef ACCUMULATE_JOYPAD
-#include "display.h"
-#endif
-
 extern void S9xProcessSound(unsigned int);
 
 void S9xMainLoop_SA1_SFX(void);
@@ -495,15 +491,6 @@ void S9xDoHBlankProcessing_SFX()
    switch (CPU.WhichEvent)
    {
    case HBLANK_START_EVENT:
-#ifdef ACCUMULATE_JOYPAD
-      /*
-       * This call allows NDSSFC to synchronise the DS controller more often.
-       * If porting a later version of Snes9x into NDSSFC, it is essential to
-       * preserve it.
-       */
-      if ((CPU.V_Counter & 0xF) == 0)
-         NDSSFCAccumulateJoypad();
-#endif
       if (IPPU.HDMA && CPU.V_Counter <= PPU.ScreenHeight)
          IPPU.HDMA = S9xDoHDMA(IPPU.HDMA);
 
@@ -688,14 +675,6 @@ void S9xDoHBlankProcessing_NoSFX()
    switch (CPU.WhichEvent)
    {
    case HBLANK_START_EVENT:
-#ifdef ACCUMULATE_JOYPAD
-      /*
-       * This call allows NDSSFC to synchronise the DS controller more often.
-       * If porting a later version of Snes9x into NDSSFC, it is essential to
-       * preserve it.
-       */
-      NDSSFCAccumulateJoypad();
-#endif
       if (IPPU.HDMA && CPU.V_Counter <= PPU.ScreenHeight)
          IPPU.HDMA = S9xDoHDMA(IPPU.HDMA);
 

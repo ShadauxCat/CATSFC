@@ -1059,14 +1059,6 @@ void S9xSetupOBJ()
 
 static void DrawOBJS(bool OnMain, uint8_t D)
 {
-#ifdef ACCUMULATE_JOYPAD
-   /*
-    * This call allows NDSSFC to synchronise the DS controller more often.
-    * If porting a later version of Snes9x into NDSSFC, it is essential to
-    * preserve it.
-    */
-   NDSSFCAccumulateJoypad();
-#endif
 #ifdef MK_DEBUG_RTO
    if (Settings.BGLayering) fprintf(stderr, "Entering DrawOBJS() for %d-%d\n",
                                        GFX.StartY, GFX.EndY);
@@ -2209,14 +2201,6 @@ static void DrawBackgroundMode5(uint32_t bg, uint8_t Z1, uint8_t Z2)
 
 static void DrawBackground(uint32_t BGMode, uint32_t bg, uint8_t Z1, uint8_t Z2)
 {
-#ifdef ACCUMULATE_JOYPAD
-   /*
-    * This call allows NDSSFC to synchronise the DS controller more often.
-    * If porting a later version of Snes9x into NDSSFC, it is essential to
-    * preserve it.
-    */
-   NDSSFCAccumulateJoypad();
-#endif
    GFX.PixSize = 1;
 
    BG.TileSize = BGSizes [PPU.BG[bg].BGSize];
