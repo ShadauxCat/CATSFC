@@ -225,10 +225,6 @@ extern uint32_t even_low [4][16];
 extern SBG BG;
 extern uint16_t DirectColourMaps [8][256];
 
-extern uint8_t add32_32 [32][32];
-extern uint8_t add32_32_half [32][32];
-extern uint8_t sub32_32 [32][32];
-extern uint8_t sub32_32_half [32][32];
 extern uint8_t mul_brightness [16][32];
 
 // Could use BSWAP instruction on Intel port...
