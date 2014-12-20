@@ -1,7 +1,7 @@
 DEBUG     = 0
 PERF_TEST = 0
 HAVE_GRIFFIN = 0
-LOAD_FROM_MEMORY_TEST = 0
+LOAD_FROM_MEMORY_TEST = 1
 USE_BLARGG_APU = 1
 
 ifeq ($(platform),)
@@ -107,6 +107,7 @@ else ifeq ($(platform), psp1)
 	CXX = psp-g++$(EXE_EXT)
 	AR = psp-ar$(EXE_EXT)
    STATIC_LINKING = 1
+	LOAD_FROM_MEMORY_TEST = 0
 	FLAGS += -G0 
    CFLAGS += -march=allegrex -mno-abicalls -fno-pic -fno-builtin \
 		-fno-exceptions -ffunction-sections -mno-long-calls \

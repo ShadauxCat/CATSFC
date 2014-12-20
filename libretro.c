@@ -275,9 +275,8 @@ void init_sfc_setting(void)
    Settings.ThreadSound = false;
 #ifdef USE_BLARGG_APU
    Settings.SoundSync = false;
-#else
-   Settings.ApplyCheats = true;
 #endif
+   Settings.ApplyCheats = true;
    Settings.StretchScreenshots = 1;
 
    Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
