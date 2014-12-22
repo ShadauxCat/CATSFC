@@ -158,7 +158,7 @@ ifeq ($(LOAD_FROM_MEMORY_TEST),1)
 FLAGS += -DLOAD_FROM_MEMORY_TEST
 endif
 
-LDFLAGS += $(fpic) -lz $(SHARED)
+LDFLAGS += $(fpic) -lm $(SHARED)
 FLAGS += $(fpic) 
 FLAGS += $(INCFLAGS)
 
