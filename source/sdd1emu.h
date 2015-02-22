@@ -93,7 +93,4 @@
 
 void SDD1_decompress(uint8_t* out, uint8_t* in, int output_length);
 
-void SDD1_init(uint8_t* in);
-uint8_t SDD1_get_byte(void);
-
 #endif

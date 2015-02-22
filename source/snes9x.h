@@ -352,7 +352,6 @@ typedef struct
    uint16_t DisplayColor;
    int    SoundDriver;
    int    AIDOShmId;
-   bool  SDD1Pack;
    bool  NoPatch;
    bool  ForceInterleaveGD24;
 #ifdef DEBUG_MAXCOUNT
