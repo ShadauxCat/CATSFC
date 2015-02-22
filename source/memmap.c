@@ -1250,9 +1250,6 @@ void InitROM(bool Interleaved)
       if ((Memory.ROMType & 0xf0) == 0x40)
          Settings.SDD1 = !Settings.ForceNoSDD1;
 
-      if (Settings.SDD1)
-         S9xLoadSDD1Data();
-
       if (((Memory.ROMType & 0xF0) == 0xF0) & ((Memory.ROMSpeed & 0x0F) != 5))
       {
          Memory.SRAMSize = 2;
@@ -1534,8 +1531,6 @@ bool LoadSRAM(const char* filename)
       S9xHardResetSRTC();
       return (false);
    }
-   if (Settings.SDD1)
-      S9xSDD1LoadLoggedData();
 
    return (true);
 }
@@ -1554,9 +1549,6 @@ bool SaveSRAM(const char* filename)
       size += SRTC_SRAM_PAD;
       S9xSRTCPreSaveState();
    }
-
-   if (Settings.SDD1)
-      S9xSDD1SaveLoggedData();
 
    if (size > 0x20000)
       size = 0x20000;

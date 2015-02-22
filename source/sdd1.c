@@ -89,13 +89,8 @@
 
 #include "snes9x.h"
 #include "memmap.h"
-#include "ppu.h"
 #include "sdd1.h"
 #include "display.h"
-
-#ifdef __linux
-#include <unistd.h>
-#endif
 
 void S9xSetSDD1MemoryMap(uint32_t bank, uint32_t value)
 {
@@ -131,53 +126,3 @@ void S9xSDD1PostLoadState()
    for (i = 0; i < 4; i++)
       S9xSetSDD1MemoryMap(i, Memory.FillRAM [0x4804 + i]);
 }
-
-static int S9xCompareSDD1LoggedDataEntries(const void* p1, const void* p2)
-{
-   uint8_t* b1 = (uint8_t*) p1;
-   uint8_t* b2 = (uint8_t*) p2;
-   uint32_t a1 = (*b1 << 16) + (*(b1 + 1) << 8) + *(b1 + 2);
-   uint32_t a2 = (*b2 << 16) + (*(b2 + 1) << 8) + *(b2 + 2);
-
-   return (a1 - a2);
-}
-
-void S9xSDD1SaveLoggedData()
-{
-   if (Memory.SDD1LoggedDataCount != Memory.SDD1LoggedDataCountPrev)
-   {
-      qsort(Memory.SDD1LoggedData, Memory.SDD1LoggedDataCount, 8,
-            S9xCompareSDD1LoggedDataEntries);
-
-      FILE* fs = fopen(S9xGetFilename("dat"), "wb");
-
-      if (fs)
-      {
-         fwrite(Memory.SDD1LoggedData, 8,
-                Memory.SDD1LoggedDataCount, fs);
-         fclose(fs);
-#if defined(__linux)
-         chown(S9xGetFilename("dat"), getuid(), getgid());
-#endif
-      }
-      Memory.SDD1LoggedDataCountPrev = Memory.SDD1LoggedDataCount;
-   }
-}
-
-void S9xSDD1LoadLoggedData()
-{
-   FILE* fs = fopen(S9xGetFilename("dat"), "rb");
-
-   Memory.SDD1LoggedDataCount = Memory.SDD1LoggedDataCountPrev = 0;
-
-   if (fs)
-   {
-      int c = fread(Memory.SDD1LoggedData, 8,
-                    MEMMAP_MAX_SDD1_LOGGED_ENTRIES, fs);
-
-      if (c != EOF)
-         Memory.SDD1LoggedDataCount = Memory.SDD1LoggedDataCountPrev = c;
-      fclose(fs);
-   }
-}
-
