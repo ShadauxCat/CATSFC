@@ -37,6 +37,7 @@ endif
 TARGET_NAME := catsfc
 DEFS        :=
 CFLAGS      :=
+LIBM        := -lm
 
 ifeq ($(platform), unix)
    TARGET := $(TARGET_NAME)_libretro.so
@@ -47,6 +48,17 @@ ifeq ($(platform), unix)
             -fno-exceptions -ffunction-sections \
              -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
              -fweb -fpeel-loops
+else ifeq ($(platform), linux-portable)
+   TARGET := $(TARGET_NAME)_libretro.so
+   fpic := -fPIC -nostdlib
+   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+
+   CFLAGS += -fno-builtin \
+            -fno-exceptions -ffunction-sections \
+             -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
+             -fweb -fpeel-loops
+	LIBM   :=
+	LDFLAGS += -L. -lmusl
 else ifeq ($(platform), osx)
    TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
@@ -139,6 +151,8 @@ else
    LDFLAGS += -static-libgcc -static-libstdc++ -lwinmm
 endif
 
+LDFLAGS += $(LIBM)
+
 DEFS   += -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
           -DVAR_CYCLES -DCPU_SHUTDOWN -DSPC700_SHUTDOWN \
           -DNO_INLINE_SET_GET -DNOASM -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t' -DWANT_CHEATS
@@ -170,7 +184,7 @@ ifeq ($(LOAD_FROM_MEMORY_TEST),1)
 FLAGS += -DLOAD_FROM_MEMORY_TEST
 endif
 
-LDFLAGS += $(fpic) -lm $(SHARED)
+LDFLAGS += $(fpic) $(SHARED)
 FLAGS += $(fpic) 
 FLAGS += $(INCFLAGS)
 
