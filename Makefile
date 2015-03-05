@@ -51,14 +51,12 @@ ifeq ($(platform), unix)
 else ifeq ($(platform), linux-portable)
    TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC -nostdlib
-   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
-
+   SHARED := -shared -Wl,--version-script=link.T
    CFLAGS += -fno-builtin \
             -fno-exceptions -ffunction-sections \
              -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
              -fweb -fpeel-loops
 	LIBM   :=
-	LDFLAGS += -L. -lmusl
 else ifeq ($(platform), osx)
    TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
