@@ -36,7 +36,6 @@ endif
 
 TARGET_NAME := catsfc
 DEFS        :=
-CFLAGS      :=
 LIBM        := -lm
 
 ifeq ($(platform), unix)
