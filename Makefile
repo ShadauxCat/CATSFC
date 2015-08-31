@@ -123,6 +123,8 @@ else ifeq ($(platform), sncps3)
    STATIC_LINKING = 1
 	FLAGS += -DMSB_FIRST
 	NO_GCC = 1
+
+# PSP1
 else ifeq ($(platform), psp1)
    TARGET := $(TARGET_NAME)_libretro_psp1.a
 	CC = psp-gcc$(EXE_EXT)
@@ -138,6 +140,18 @@ else ifeq ($(platform), psp1)
 	DEFS   +=  -DPSP -D_PSP_FW_VERSION=371
    INCLUDE     += -I$(shell psp-config --pspsdk-path)/include
    STATIC_LINKING := 1
+
+# Vita
+else ifeq ($(platform), vita)
+   TARGET := $(TARGET_NAME)_libretro_vita.a
+	CC = arm-vita-eabi-gcc$(EXE_EXT)
+	CXX = arm-vita-eabi-g++$(EXE_EXT)
+	AR = arm-vita-eabi-ar$(EXE_EXT)
+   STATIC_LINKING = 1
+	LOAD_FROM_MEMORY_TEST = 0
+	DEFS   +=  -DVITA
+   STATIC_LINKING := 1
+
 else
    TARGET := $(TARGET_NAME)_libretro.dll
    CC = gcc
