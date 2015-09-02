@@ -1707,13 +1707,13 @@ void SPC7110Load(char* dirname)
 
    decompack = (Pack7110*)malloc(sizeof(Pack7110));
 
-#ifndef _XBOX
+#if !defined(_XBOX) && !defined(VITA)
    getcwd(temp_path, PATH_MAX);
 #endif
 
    memset(decompack, 0, sizeof(Pack7110));
 
-#ifndef _XBOX
+#if !defined(_XBOX) && !defined(VITA)
    if (-1 == chdir(dirname))
       S9xMessage(0, 0, "Graphics Pack not found!");
 #endif
@@ -1747,7 +1747,7 @@ void SPC7110Load(char* dirname)
       }
    }
 
-#ifndef _XBOX
+#if !defined(_XBOX) && !defined(VITA)
    chdir(temp_path);
 #endif
 
@@ -1764,13 +1764,13 @@ void SPC7110Open(char* dirname)
 
    decompack = (Pack7110*)malloc(sizeof(Pack7110));
 
-#ifndef _XBOX
+#if !defined(_XBOX) && !defined(VITA)
    getcwd(temp_path, PATH_MAX);
 #endif
 
    memset(decompack, 0, sizeof(Pack7110));
 
-#ifndef _XBOX
+#if !defined(_XBOX) && !defined(VITA)
    if (-1 == chdir(dirname))
       S9xMessage(0, 0, "Graphics Pack not found!");
 #endif
@@ -1787,7 +1787,7 @@ void SPC7110Open(char* dirname)
 
    ReadPackData();
 
-#ifndef _XBOX
+#if !defined(_XBOX) && !defined(VITA)
    chdir(temp_path);
 #endif
 
@@ -1804,14 +1804,14 @@ void SPC7110Grab(char* dirname)
 
    decompack = (Pack7110*)malloc(sizeof(Pack7110));
 
-#ifndef _XBOX
+#if !defined(_XBOX) && !defined(VITA)
    getcwd(temp_path, PATH_MAX);
 #endif
 
    int32_t buffer_size = 1024 * 1024 * cacheMegs; //*some setting
 
    memset(decompack, 0, sizeof(Pack7110));
-#ifndef _XBOX
+#if !defined(_XBOX) && !defined(VITA)
 
    if (-1 == chdir(dirname))
       S9xMessage(0, 0, "Graphics Pack not found!");
@@ -1861,7 +1861,7 @@ void SPC7110Grab(char* dirname)
       }
    }
 
-#ifndef _XBOX
+#if !defined(_XBOX) && !defined(VITA)
    chdir(temp_path);
 #endif
 
