@@ -29,6 +29,15 @@ static retro_audio_sample_batch_t audio_batch_cb = NULL;
 static retro_environment_t environ_cb = NULL;
 struct retro_perf_callback perf_cb;
 
+char retro_save_directory[PATH_MAX];
+char retro_base_name[PATH_MAX];
+
+#ifdef _WIN32
+char slash = '\\';
+#else
+char slash = '/';
+#endif
+
 static float samples_per_frame = 0.0;
 
 
@@ -246,6 +255,16 @@ const char* S9xGetFilename(const char* ex)
    return (filename);
 }
 
+void GetBaseName(const char* ex)
+{
+   static char filename [PATH_MAX + 1];
+   char drive [_MAX_DRIVE + 1];
+   char dir [_MAX_DIR + 1];
+   char fname [_MAX_FNAME + 1];
+   char ext [_MAX_EXT + 1];
+   _splitpath(Memory.ROMFilename, drive, dir, fname, ext);
+   snprintf(retro_base_name,sizeof(retro_base_name),"%s",fname);
+}
 
 void init_sfc_setting(void)
 {
@@ -330,7 +349,6 @@ void retro_init(void)
                 true,
                 Settings.SoundBufferSize);
 #endif
-
 }
 
 void retro_deinit(void)
@@ -338,8 +356,10 @@ void retro_deinit(void)
 
    if (Settings.SPC7110)
       (*CleanUp7110)();
-
-   SaveSRAM(S9xGetFilename("srm"));
+   if(retro_save_directory[0] == '\0')
+      SaveSRAM(S9xGetFilename("srm"));
+   else
+      SaveSRAM(retro_save_directory);
 
    S9xDeinitGFX();
    S9xDeinitDisplay();
@@ -864,7 +884,10 @@ bool retro_load_game(const struct retro_game_info* game)
    Settings.FrameTime = (Settings.PAL ? Settings.FrameTimePAL :
                          Settings.FrameTimeNTSC);
 
-   LoadSRAM(S9xGetFilename("srm"));
+   if(retro_save_directory[0] == '\0')
+      LoadSRAM(S9xGetFilename("srm"));
+   else
+      LoadSRAM(retro_save_directory);
 
    struct retro_system_av_info av_info;
    retro_get_system_av_info(&av_info);
@@ -876,6 +899,15 @@ bool retro_load_game(const struct retro_game_info* game)
 #else
    S9xSetPlaybackRate(av_info.timing.sample_rate);
 #endif
+
+   const char *dir = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &dir) && dir)
+   {
+      GetBaseName("");
+      snprintf(retro_save_directory,sizeof(retro_save_directory),"%s%c%s.srm",dir,slash,retro_base_name);
+      log_cb(RETRO_LOG_INFO,
+             "SAVE LOCATION: %s\n", retro_save_directory);
+   }
 
    return true;
 }
