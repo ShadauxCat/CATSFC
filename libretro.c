@@ -884,10 +884,20 @@ bool retro_load_game(const struct retro_game_info* game)
    Settings.FrameTime = (Settings.PAL ? Settings.FrameTimePAL :
                          Settings.FrameTimeNTSC);
 
-   if(retro_save_directory[0] == '\0')
-      LoadSRAM(S9xGetFilename("srm"));
-   else
+
+   const char *dir = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &dir) && dir)
+   {
+      GetBaseName("");
+      snprintf(retro_save_directory,sizeof(retro_save_directory),"%s%c%s.srm",dir,slash,retro_base_name);
+      log_cb(RETRO_LOG_INFO,
+             "SAVE LOCATION: %s\n", retro_save_directory);
+   }
+
+   if(retro_save_directory[0] != '\0')
       LoadSRAM(retro_save_directory);
+   else
+      LoadSRAM(S9xGetFilename("srm"));
 
    struct retro_system_av_info av_info;
    retro_get_system_av_info(&av_info);
@@ -899,16 +909,6 @@ bool retro_load_game(const struct retro_game_info* game)
 #else
    S9xSetPlaybackRate(av_info.timing.sample_rate);
 #endif
-
-   const char *dir = NULL;
-   if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &dir) && dir)
-   {
-      GetBaseName("");
-      snprintf(retro_save_directory,sizeof(retro_save_directory),"%s%c%s.srm",dir,slash,retro_base_name);
-      log_cb(RETRO_LOG_INFO,
-             "SAVE LOCATION: %s\n", retro_save_directory);
-   }
-
    return true;
 }
 
