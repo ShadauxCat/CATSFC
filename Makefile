@@ -166,6 +166,14 @@ else ifeq ($(platform), ctr)
    PLATFORM_DEFINES := -D_3DS
    STATIC_LINKING = 1
 
+# Nintendo Wii
+else ifeq ($(platform), wii)
+   TARGET := $(TARGET_NAME)_libretro_wii.a
+   CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
+   AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
+   CFLAGS += -DGEKKO -DHW_RVL -mrvl -mcpu=750 -meabi -mhard-float -D__ppc__ -DMSB_FIRST
+   STATIC_LINKING = 1
+
 else
    TARGET := $(TARGET_NAME)_libretro.dll
    CC = gcc
