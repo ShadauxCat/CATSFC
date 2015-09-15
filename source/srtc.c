@@ -519,14 +519,14 @@ void S9xSRTCPreSaveState()
       Memory.SRAM [s + 4 + MAX_RTC_INDEX] = rtc.mode;
 
 #ifdef MSB_FIRST
-      SRAM [s + 5  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >>  0);
-      SRAM [s + 6  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >>  8);
-      SRAM [s + 7  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 16);
-      SRAM [s + 8  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 24);
-      SRAM [s + 9  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 32);
-      SRAM [s + 10 + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 40);
-      SRAM [s + 11 + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 48);
-      SRAM [s + 12 + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 56);
+      Memory.SRAM [s + 5  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >>  0);
+      Memory.SRAM [s + 6  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >>  8);
+      Memory.SRAM [s + 7  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 16);
+      Memory.SRAM [s + 8  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 24);
+      Memory.SRAM [s + 9  + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 32);
+      Memory.SRAM [s + 10 + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 40);
+      Memory.SRAM [s + 11 + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 48);
+      Memory.SRAM [s + 12 + MAX_RTC_INDEX] = (uint8_t)(rtc.system_timestamp >> 56);
 #else
       // memmove converted: Different mallocs [Neb]
       memcpy(&Memory.SRAM [s + 5 + MAX_RTC_INDEX], &rtc.system_timestamp, 8);
@@ -551,14 +551,14 @@ void S9xSRTCPostLoadState()
       rtc.mode = Memory.SRAM [s + 4 + MAX_RTC_INDEX];
 
 #ifdef MSB_FIRST
-      rtc.system_timestamp |= (SRAM [s +  5 + MAX_RTC_INDEX] <<  0);
-      rtc.system_timestamp |= (SRAM [s +  6 + MAX_RTC_INDEX] <<  8);
-      rtc.system_timestamp |= (SRAM [s +  7 + MAX_RTC_INDEX] << 16);
-      rtc.system_timestamp |= (SRAM [s +  8 + MAX_RTC_INDEX] << 24);
-      rtc.system_timestamp |= (SRAM [s +  9 + MAX_RTC_INDEX] << 32);
-      rtc.system_timestamp |= (SRAM [s + 10 + MAX_RTC_INDEX] << 40);
-      rtc.system_timestamp |= (SRAM [s + 11 + MAX_RTC_INDEX] << 48);
-      rtc.system_timestamp |= (SRAM [s + 12 + MAX_RTC_INDEX] << 56);
+      rtc.system_timestamp |= (Memory.SRAM [s +  5 + MAX_RTC_INDEX] <<  0);
+      rtc.system_timestamp |= (Memory.SRAM [s +  6 + MAX_RTC_INDEX] <<  8);
+      rtc.system_timestamp |= (Memory.SRAM [s +  7 + MAX_RTC_INDEX] << 16);
+      rtc.system_timestamp |= (Memory.SRAM [s +  8 + MAX_RTC_INDEX] << 24);
+      rtc.system_timestamp |= (Memory.SRAM [s +  9 + MAX_RTC_INDEX] << 32);
+      rtc.system_timestamp |= (Memory.SRAM [s + 10 + MAX_RTC_INDEX] << 40);
+      rtc.system_timestamp |= (Memory.SRAM [s + 11 + MAX_RTC_INDEX] << 48);
+      rtc.system_timestamp |= (Memory.SRAM [s + 12 + MAX_RTC_INDEX] << 56);
 #else
       // memmove converted: Different mallocs [Neb]
       memcpy(&rtc.system_timestamp, &Memory.SRAM [s + 5 + MAX_RTC_INDEX], 8);
@@ -566,4 +566,3 @@ void S9xSRTCPostLoadState()
       S9xUpdateSrtcTime();
    }
 }
-
