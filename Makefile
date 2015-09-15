@@ -107,6 +107,8 @@ else ifeq ($(platform), qnx)
    SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
 	CC = qcc -Vgcc_ntoarmv7le
 	CXX = QCC -Vgcc_ntoarmv7le_cpp
+
+# PS3
 else ifeq ($(platform), ps3)
    TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
@@ -115,6 +117,8 @@ else ifeq ($(platform), ps3)
    STATIC_LINKING = 1
 	FLAGS += -DMSB_FIRST
 	OLD_GCC = 1
+
+# PS3 (SNC)
 else ifeq ($(platform), sncps3)
    TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
@@ -164,6 +168,14 @@ else ifeq ($(platform), ctr)
    CFLAGS += -fomit-frame-pointer -ffast-math
    CFLAGS += -D_3DS
    PLATFORM_DEFINES := -D_3DS
+   STATIC_LINKING = 1
+
+# Nintendo Game Cube
+else ifeq ($(platform), ngc)
+	TARGET := $(TARGET_NAME)_libretro_ngc.a
+   CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
+   AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
+   CFLAGS += -DGEKKO -DHW_DOL -mrvl -mcpu=750 -meabi -mhard-float -D__ppc__ -DMSB_FIRST
    STATIC_LINKING = 1
 
 # Nintendo Wii
