@@ -34,7 +34,7 @@ else ifneq ($(findstring MINGW,$(shell uname -a)),)
    system_platform = win
 endif
 
-ifeq($(USE_BLARGG_APU), 1)
+ifeq ($(USE_BLARGG_APU), 1)
 TARGET_NAME := catsfc_plus
 else
 TARGET_NAME := catsfc
