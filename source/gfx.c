@@ -730,7 +730,7 @@ void S9xSetInfoString(const char* string)
    GFX.InfoStringTimeout = 120;
 }
 
-inline void SelectTileRenderer(bool normal)
+static inline void SelectTileRenderer(bool normal)
 {
    if (normal)
    {

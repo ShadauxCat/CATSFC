@@ -3404,7 +3404,7 @@ static inline void CPUShutdown()
    }
 }
 #else
-inline void CPUShutdown()
+static inline void CPUShutdown()
 {
    if (Settings.Shutdown && CPU.PC == CPU.WaitAddress)
    {
