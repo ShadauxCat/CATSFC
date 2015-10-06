@@ -325,6 +325,10 @@ void retro_init(void)
 {
    struct retro_log_callback log;
    enum retro_pixel_format rgb565;
+   static const struct retro_variable vars[] = {
+      { "SwapJoypads", "Swap Joypads; disabled|enabled" },
+      { NULL, NULL },
+   };
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
       log_cb = log.log;
@@ -349,6 +353,8 @@ void retro_init(void)
                 true,
                 Settings.SoundBufferSize);
 #endif
+   environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void*)vars);
+
 }
 
 void retro_deinit(void)
@@ -401,6 +407,18 @@ uint32_t S9xReadJoypad(int port)
    return joypad;
 }
 
+static void check_variables(void)
+{
+   struct retro_variable var;
+
+   var.key = "SwapJoypads";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+         Settings.SwapJoypads = strcmp(var.value, "disabled");
+
+}
+
+
 #ifdef PSP
 #define FRAMESKIP
 #endif
@@ -409,7 +427,10 @@ uint32_t S9xReadJoypad(int port)
 static float samples_to_play = 0.0;
 void retro_run(void)
 {
-   int i, port;
+   bool updated = false;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+      check_variables();
 
 #ifdef NO_VIDEO_OUTPUT
    video_cb(NULL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, GFX.Pitch);
@@ -485,9 +506,6 @@ void retro_run(void)
       IPPU.RenderThisFrame = true;
    }
 #endif
-
-   //   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
-   //      check_variables();
 
 }
 
@@ -877,6 +895,7 @@ bool retro_load_game(const struct retro_game_info* game)
 {
    CPU.Flags = 0;
   init_descriptors();
+  check_variables();
 
 #ifdef LOAD_FROM_MEMORY_TEST
    if (!LoadROM(game))
