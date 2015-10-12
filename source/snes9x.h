@@ -195,7 +195,7 @@ typedef struct
    uint32_t  Flags;
    bool   BranchSkip;
    bool   NMIActive;
-   bool   IRQActive;
+   uint8_t   IRQActive;
    bool   WaitingForInterrupt;
    bool   InDMA;
    uint8_t   WhichEvent;
