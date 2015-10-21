@@ -20,6 +20,11 @@
 
 #include <libretro.h>
 
+#ifdef _3DS
+void* linearMemAlign(size_t size, size_t alignment);
+void linearFree(void* mem);
+#endif
+
 
 static retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t video_cb = NULL;
@@ -122,6 +127,8 @@ void S9xDeinitDisplay(void)
 {
 #ifdef DS2_DMA
    if (GFX.Screen_buffer) AlignedFree(GFX.Screen, PtrAdj.GFXScreen);
+#elif defined(_3DS)
+   if (GFX.Screen_buffer) linearFree(GFX.Screen_buffer);
 #else
    if (GFX.Screen_buffer) free(GFX.Screen_buffer);
 #endif
@@ -143,12 +150,15 @@ void S9xDeinitDisplay(void)
 void S9xInitDisplay(void)
 {
    int h = IMAGE_HEIGHT;
-   const int safety = 32;
+   int safety = 32;
 
    GFX.Pitch = IMAGE_WIDTH * 2;
 #ifdef DS2_DMA
    GFX.Screen_buffer = (unsigned char*) AlignedMalloc(GFX.Pitch * h + safety, 32,
                        &PtrAdj.GFXScreen);
+#elif defined(_3DS)
+   safety = 0x80;
+   GFX.Screen_buffer = (unsigned char*) linearMemAlign(GFX.Pitch * h + safety, 0x80);
 #else
    GFX.Screen_buffer = (unsigned char*) malloc(GFX.Pitch * h + safety);
 #endif
