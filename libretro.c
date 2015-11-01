@@ -336,7 +336,8 @@ void retro_init(void)
    struct retro_log_callback log;
    enum retro_pixel_format rgb565;
    static const struct retro_variable vars[] = {
-      { "SwapJoypads", "Swap Joypads; disabled|enabled" },
+      { "catsfc_SwapJoypads", "Swap Joypads; disabled|enabled" },
+      { "catsfc_VideoMode",   "Video Mode; auto|NTSC|PAL" },
       { NULL, NULL },
    };
 
@@ -421,11 +422,18 @@ static void check_variables(void)
 {
    struct retro_variable var;
 
-   var.key = "SwapJoypads";
+   var.key = "catsfc_SwapJoypads";
    var.value = NULL;
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
          Settings.SwapJoypads = strcmp(var.value, "disabled");
 
+   var.key = "catsfc_VideoMode";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      Settings.ForceNTSC = !strcmp(var.value, "NTSC");
+      Settings.ForcePAL  = !strcmp(var.value, "PAL");
+   }
 }
 
 
