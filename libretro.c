@@ -664,9 +664,11 @@ size_t retro_serialize_size(void)
    return sizeof(CPU) + sizeof(ICPU) + sizeof(PPU) + sizeof(DMA) +
           0x10000 + 0x20000 + 0x20000 + 0x8000 +
 #ifndef USE_BLARGG_APU
-          sizeof(APU) + sizeof(IAPU)
+          sizeof(APU) + sizeof(IAPU) + 0x10000
+#else
+          SPC_SAVE_STATE_BLOCK_SIZE
 #endif
-          + 0x10000 + sizeof(SA1) +
+          + sizeof(SA1) +
           sizeof(s7r) + sizeof(rtc_f9);
 }
 
@@ -709,6 +711,9 @@ bool retro_serialize(void* data, size_t size)
    buffer += sizeof(IAPU);
    memcpy(buffer, IAPU.RAM, 0x10000);
    buffer += 0x10000;
+#else
+   S9xAPUSaveState(buffer);
+   buffer += SPC_SAVE_STATE_BLOCK_SIZE;
 #endif
 
    SA1.Registers.PC = SA1.PC - SA1.PCBase;
@@ -733,6 +738,7 @@ bool retro_unserialize(const void* data, size_t size)
    S9xReset();
 #ifndef USE_BLARGG_APU
    uint8_t* IAPU_RAM_current = IAPU.RAM;
+   uintptr_t IAPU_RAM_offset;
 #endif
    memcpy(&CPU, buffer, sizeof(CPU));
    buffer += sizeof(CPU);
@@ -755,11 +761,17 @@ bool retro_unserialize(const void* data, size_t size)
    buffer += sizeof(APU);
    memcpy(&IAPU, buffer, sizeof(IAPU));
    buffer += sizeof(IAPU);
-   IAPU.PC = IAPU_RAM_current + (IAPU.PC - IAPU.RAM);
-   IAPU.DirectPage = IAPU_RAM_current + (IAPU.DirectPage - IAPU.RAM);
+   IAPU_RAM_offset = IAPU_RAM_current - IAPU.RAM;
+   IAPU.PC += IAPU_RAM_offset;
+   IAPU.DirectPage += IAPU_RAM_offset;
+   IAPU.WaitAddress1 += IAPU_RAM_offset;
+   IAPU.WaitAddress2 += IAPU_RAM_offset;
    IAPU.RAM = IAPU_RAM_current;
    memcpy(IAPU.RAM, buffer, 0x10000);
    buffer += 0x10000;
+#else
+   S9xAPULoadState(buffer);
+   buffer += SPC_SAVE_STATE_BLOCK_SIZE;
 #endif
 
    memcpy(&SA1, buffer, sizeof(SA1));
@@ -775,7 +787,6 @@ bool retro_unserialize(const void* data, size_t size)
    IPPU.OBJChanged = true;
    CPU.InDMA = false;
    S9xFixColourBrightness();
-
    S9xSA1UnpackStatus();
 #ifndef USE_BLARGG_APU
    S9xAPUUnpackStatus();
