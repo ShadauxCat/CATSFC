@@ -236,7 +236,7 @@ void MovePackData()
    Data7110* log = &
                    (decompack->tableEnts[decompack->idx].location[decompack->last_idx]);
    if ((log->used_len + log->used_offset) < (decompack->last_offset +
-         (unsigned short)s7r.bank50Internal))
+         (uint16_t)s7r.bank50Internal))
    {
       log->used_len = s7r.bank50Internal;
       log->used_offset = decompack->last_offset;
@@ -336,7 +336,7 @@ void ReadPackData()
    Data7110* log = &
                    (decompack->tableEnts[decompack->idx].location[decompack->last_idx]);
    if ((log->used_len + log->used_offset) < (decompack->last_offset +
-         (unsigned short)s7r.bank50Internal))
+         (uint16_t)s7r.bank50Internal))
    {
       log->used_len = s7r.bank50Internal;
       log->used_offset = decompack->last_offset;
@@ -461,7 +461,7 @@ void GetPackData()
    Data7110* log = &
                    (decompack->tableEnts[decompack->idx].location[decompack->last_idx]);
    if ((log->used_len + log->used_offset) < (decompack->last_offset +
-         (unsigned short)s7r.bank50Internal))
+         (uint16_t)s7r.bank50Internal))
    {
       log->used_len = s7r.bank50Internal;
       log->used_offset = decompack->last_offset;
@@ -546,7 +546,7 @@ uint8_t S9xGetSPC7110(uint16_t Address)
    //the offset registers cannot be incremented due to the offset multiplier.
    case 0x4800:
    {
-      unsigned short count = s7r.reg4809 | (s7r.reg480A << 8);
+      uint16_t count = s7r.reg4809 | (s7r.reg480A << 8);
       uint32_t i, j;
       j = (s7r.reg4805 | (s7r.reg4806 << 8));
       j *= s7r.AlignBy;
@@ -622,7 +622,7 @@ uint8_t S9xGetSPC7110(uint16_t Address)
          {
             if (s7r.reg4818 & 0x08)
             {
-               signed short r4814;
+               int16_t r4814;
                r4814 = (s7r.reg4815 << 8) | s7r.reg4814;
                i += r4814;
                r4814++;
@@ -631,7 +631,7 @@ uint8_t S9xGetSPC7110(uint16_t Address)
             }
             else
             {
-               unsigned short r4814;
+               uint16_t r4814;
                r4814 = (s7r.reg4815 << 8) | s7r.reg4814;
                i += r4814;
                if (r4814 != 0xFFFF)
@@ -653,7 +653,7 @@ uint8_t S9xGetSPC7110(uint16_t Address)
          {
             if (s7r.reg4818 & 0x04)
             {
-               signed short inc;
+               int16_t inc;
                inc = (s7r.reg4817 << 8) | s7r.reg4816;
 
                if (!(s7r.reg4818 & 0x10))
@@ -662,7 +662,7 @@ uint8_t S9xGetSPC7110(uint16_t Address)
                {
                   if (s7r.reg4818 & 0x08)
                   {
-                     signed short r4814;
+                     int16_t r4814;
                      r4814 = (s7r.reg4815 << 8) | s7r.reg4814;
                      r4814 += inc;
                      s7r.reg4815 = (r4814 & 0xFF00) >> 8;
@@ -670,7 +670,7 @@ uint8_t S9xGetSPC7110(uint16_t Address)
                   }
                   else
                   {
-                     unsigned short r4814;
+                     uint16_t r4814;
                      r4814 = (s7r.reg4815 << 8) | s7r.reg4814;
                      r4814 += inc;
                      s7r.reg4815 = (r4814 & 0xFF00) >> 8;
@@ -690,7 +690,7 @@ uint8_t S9xGetSPC7110(uint16_t Address)
                {
                   if (s7r.reg4818 & 0x08)
                   {
-                     signed short r4814;
+                     int16_t r4814;
                      r4814 = (s7r.reg4815 << 8) | s7r.reg4814;
                      r4814 += inc;
                      s7r.reg4815 = (r4814 & 0xFF00) >> 8;
@@ -698,7 +698,7 @@ uint8_t S9xGetSPC7110(uint16_t Address)
                   }
                   else
                   {
-                     unsigned short r4814;
+                     uint16_t r4814;
                      r4814 = (s7r.reg4815 << 8) | s7r.reg4814;
                      r4814 += inc;
                      s7r.reg4815 = (r4814 & 0xFF00) >> 8;
@@ -716,7 +716,7 @@ uint8_t S9xGetSPC7110(uint16_t Address)
             {
                if (s7r.reg4818 & 0x08)
                {
-                  signed short r4814;
+                  int16_t r4814;
                   r4814 = (s7r.reg4815 << 8) | s7r.reg4814;
                   r4814 += 1;
                   s7r.reg4815 = (r4814 & 0xFF00) >> 8;
@@ -724,7 +724,7 @@ uint8_t S9xGetSPC7110(uint16_t Address)
                }
                else
                {
-                  unsigned short r4814;
+                  uint16_t r4814;
                   r4814 = (s7r.reg4815 << 8) | s7r.reg4814;
                   r4814 += 1;
                   s7r.reg4815 = (r4814 & 0xFF00) >> 8;
@@ -776,8 +776,8 @@ uint8_t S9xGetSPC7110(uint16_t Address)
          uint32_t i = ((s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811);
          if (s7r.reg4818 & 0x08)
          {
-            short adj;
-            adj = ((short)(s7r.reg4815 << 8)) | s7r.reg4814;
+            int16_t adj;
+            adj = ((int16_t)(s7r.reg4815 << 8)) | s7r.reg4814;
             i += adj;
          }
          else
@@ -799,8 +799,7 @@ uint8_t S9xGetSPC7110(uint16_t Address)
             {
                if (s7r.reg4818 & 0x08)
                {
-                  short adj;
-                  adj = ((short)(s7r.reg4815 << 8)) | s7r.reg4814;
+                  int16_t adj = ((int16_t)(s7r.reg4815 << 8)) | s7r.reg4814;
                   i += adj;
                }
                else
@@ -818,8 +817,7 @@ uint8_t S9xGetSPC7110(uint16_t Address)
             {
                if (s7r.reg4818 & 0x08)
                {
-                  short adj;
-                  adj = ((short)(s7r.reg4815 << 8)) | s7r.reg4814;
+                  int16_t adj = ((int16_t)(s7r.reg4815 << 8)) | s7r.reg4814;
                   adj += adj;
                   s7r.reg4815 = (adj & 0xFF00) >> 8;
                   s7r.reg4814 = adj & 0xFF;
@@ -1087,8 +1085,8 @@ void S9xSetSPC7110(uint8_t data, uint16_t Address)
                   uint32_t i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
                   if (s7r.reg4818 & 0x08)
                   {
-                     short adj;
-                     adj = ((short)(s7r.reg4815 << 8)) | s7r.reg4814;
+                     int16_t adj;
+                     adj = ((int16_t)(s7r.reg4815 << 8)) | s7r.reg4814;
                      i += adj;
                   }
                   else
@@ -1151,8 +1149,8 @@ void S9xSetSPC7110(uint8_t data, uint16_t Address)
                   uint32_t i = (s7r.reg4813 << 16) | (s7r.reg4812 << 8) | s7r.reg4811;
                   if (s7r.reg4818 & 0x08)
                   {
-                     short adj;
-                     adj = ((short)(s7r.reg4815 << 8)) | s7r.reg4814;
+                     int16_t adj;
+                     adj = ((int16_t)(s7r.reg4815 << 8)) | s7r.reg4814;
                      i += adj;
                   }
                   else
@@ -1214,11 +1212,9 @@ void S9xSetSPC7110(uint8_t data, uint16_t Address)
       s7r.reg4825 = data;
       if (s7r.reg482E & 0x01)
       {
-         int mul;
-         short m1 = (short)((s7r.reg4824) | (s7r.reg4825 << 8));
-         short m2 = (short)((s7r.reg4820) | (s7r.reg4821 << 8));
-
-         mul = m1 * m2;
+         int16_t m1 = (int16_t)((s7r.reg4824) | (s7r.reg4825 << 8));
+         int16_t m2 = (int16_t)((s7r.reg4820) | (s7r.reg4821 << 8));
+         int    mul = m1 * m2;
          s7r.reg4828 = (uint8_t)(mul & 0x000000FF);
          s7r.reg4829 = (uint8_t)((mul & 0x0000FF00) >> 8);
          s7r.reg482A = (uint8_t)((mul & 0x00FF0000) >> 16);
@@ -1248,14 +1244,14 @@ void S9xSetSPC7110(uint8_t data, uint16_t Address)
       if (s7r.reg482E & 0x01)
       {
          int quotient;
-         short remainder;
+         int16_t remainder;
          int dividend = (int)(s7r.reg4820 | (s7r.reg4821 << 8) | (s7r.reg4822 << 16) |
                               (s7r.reg4823 << 24));
-         short divisor = (short)(s7r.reg4826 | (s7r.reg4827 << 8));
+         int16_t divisor = (int16_t)(s7r.reg4826 | (s7r.reg4827 << 8));
          if (divisor != 0)
          {
             quotient = (int)(dividend / divisor);
-            remainder = (short)(dividend % divisor);
+            remainder = (int16_t)(dividend % divisor);
          }
          else
          {

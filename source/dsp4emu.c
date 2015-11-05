@@ -103,12 +103,12 @@
 //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
 
-int DSP4_Multiply(short Multiplicand, short Multiplier)
+int DSP4_Multiply(int16_t Multiplicand, int16_t Multiplier)
 {
    return Multiplicand * Multiplier;
 }
 
-short DSP4_UnknownOP11(short A, short B, short C, short D)
+int16_t DSP4_UnknownOP11(int16_t A, int16_t B, int16_t C, int16_t D)
 {
    return ((A * 0x0155 >>  2) & 0xf000) | ((B * 0x0155 >>  6) & 0x0f00) |
           ((C * 0x0155 >> 10) & 0x00f0) | ((D * 0x0155 >> 14) & 0x000f);
@@ -248,10 +248,10 @@ resume2:
 
       // quadratic regression (rough)
       if (project_focaly >= -0x0f)
-         py_dy = (short)(project_focaly * project_focaly * -0.20533553
+         py_dy = (int16_t)(project_focaly * project_focaly * -0.20533553
                          - 1.08330005 * project_focaly - 69.61094639);
       else
-         py_dy = (short)(project_focaly * project_focaly * -0.000657035759
+         py_dy = (int16_t)(project_focaly * project_focaly * -0.000657035759
                          - 1.07629051 * project_focaly - 65.69315963);
 
       // approximate # of raster lines
@@ -458,10 +458,10 @@ resume2:
 
       // quadratic regression (rough)
       if (project_focaly >= -0x0f)
-         py_dy = (short)(project_focaly * project_focaly * -0.20533553
+         py_dy = (int16_t)(project_focaly * project_focaly * -0.20533553
                          - 1.08330005 * project_focaly - 69.61094639);
       else
-         py_dy = (short)(project_focaly * project_focaly * -0.000657035759
+         py_dy = (int16_t)(project_focaly * project_focaly * -0.000657035759
                          - 1.07629051 * project_focaly - 65.69315963);
 
       // approximate # of raster lines
@@ -1043,10 +1043,10 @@ resume2:
 
       // quadratic regression (rough)
       if (project_focaly >= -0x0f)
-         py_dy = (short)(project_focaly * project_focaly * -0.20533553
+         py_dy = (int16_t)(project_focaly * project_focaly * -0.20533553
                          - 1.08330005 * project_focaly - 69.61094639);
       else
-         py_dy = (short)(project_focaly * project_focaly * -0.000657035759
+         py_dy = (int16_t)(project_focaly * project_focaly * -0.000657035759
                          - 1.07629051 * project_focaly - 65.69315963);
 
       // approximate # of raster lines

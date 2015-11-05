@@ -91,14 +91,13 @@
 #include "c4.h"
 #include "memmap.h"
 
-
-short C4WFXVal;
-short C4WFYVal;
-short C4WFZVal;
-short C4WFX2Val;
-short C4WFY2Val;
-short C4WFDist;
-short C4WFScale;
+int16_t C4WFXVal;
+int16_t C4WFYVal;
+int16_t C4WFZVal;
+int16_t C4WFX2Val;
+int16_t C4WFY2Val;
+int16_t C4WFDist;
+int16_t C4WFScale;
 
 static double tanval;
 static double c4x, c4y, c4z;
@@ -126,8 +125,8 @@ void C4TransfWireFrame()
    c4y = c4x2 * sin(tanval) + c4y2 * cos(tanval);
 
    // Scale
-   C4WFXVal = (short)(c4x * (double)C4WFScale / (0x90 * (c4z + 0x95)) * 0x95);
-   C4WFYVal = (short)(c4y * (double)C4WFScale / (0x90 * (c4z + 0x95)) * 0x95);
+   C4WFXVal = (int16_t)(c4x * (double)C4WFScale / (0x90 * (c4z + 0x95)) * 0x95);
+   C4WFYVal = (int16_t)(c4y * (double)C4WFScale / (0x90 * (c4z + 0x95)) * 0x95);
 }
 
 void C4TransfWireFrame2()
@@ -152,8 +151,8 @@ void C4TransfWireFrame2()
    c4y = c4x2 * sin(tanval) + c4y2 * cos(tanval);
 
    // Scale
-   C4WFXVal = (short)(c4x * (double)C4WFScale / 0x100);
-   C4WFYVal = (short)(c4y * (double)C4WFScale / 0x100);
+   C4WFXVal = (int16_t)(c4x * (double)C4WFScale / 0x100);
+   C4WFYVal = (int16_t)(c4y * (double)C4WFScale / 0x100);
 }
 
 void C4CalcWireFrame()
@@ -163,7 +162,7 @@ void C4CalcWireFrame()
    if (abs(C4WFXVal) > abs(C4WFYVal))
    {
       C4WFDist = abs(C4WFXVal) + 1;
-      C4WFYVal = (short)(256 * (double) C4WFYVal / abs(C4WFXVal));
+      C4WFYVal = (int16_t)(256 * (double) C4WFYVal / abs(C4WFXVal));
       if (C4WFXVal < 0)
          C4WFXVal = -256;
       else
@@ -174,7 +173,7 @@ void C4CalcWireFrame()
       if (C4WFYVal != 0)
       {
          C4WFDist = abs(C4WFYVal) + 1;
-         C4WFXVal = (short)(256 * (double)C4WFXVal / abs(C4WFYVal));
+         C4WFXVal = (int16_t)(256 * (double)C4WFXVal / abs(C4WFYVal));
          if (C4WFYVal < 0)
             C4WFYVal = -256;
          else
@@ -185,11 +184,11 @@ void C4CalcWireFrame()
    }
 }
 
-short C41FXVal;
-short C41FYVal;
-short C41FAngleRes;
-short C41FDist;
-short C41FDistVal;
+int16_t C41FXVal;
+int16_t C41FYVal;
+int16_t C41FAngleRes;
+int16_t C41FDist;
+int16_t C41FDistVal;
 
 void C4Op1F()
 {
@@ -203,7 +202,7 @@ void C4Op1F()
    else
    {
       tanval = (double) C41FYVal / C41FXVal;
-      C41FAngleRes = (short)(atan(tanval) / (3.141592675 * 2) * 512);
+      C41FAngleRes = (int16_t)(atan(tanval) / (3.141592675 * 2) * 512);
       if (C41FXVal < 0)
          C41FAngleRes += 0x100;
       C41FAngleRes &= 0x1FF;
@@ -213,15 +212,15 @@ void C4Op1F()
 void C4Op15()
 {
    tanval = sqrt((double) C41FYVal * C41FYVal + (double) C41FXVal * C41FXVal);
-   C41FDist = (short) tanval;
+   C41FDist = (int16_t) tanval;
 }
 
 void C4Op0D()
 {
    tanval = sqrt((double) C41FYVal * C41FYVal + (double) C41FXVal * C41FXVal);
    tanval = C41FDistVal / tanval;
-   C41FYVal = (short)(C41FYVal * tanval * 0.99);
-   C41FXVal = (short)(C41FXVal * tanval * 0.98);
+   C41FYVal = (int16_t)(C41FYVal * tanval * 0.99);
+   C41FXVal = (int16_t)(C41FXVal * tanval * 0.98);
 }
 
 #ifdef ZSNES_C4

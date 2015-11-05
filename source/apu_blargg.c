@@ -250,7 +250,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 /* Gaussian interpolation */
 
-static short gauss [512] =
+static int16_t gauss [512] =
 {
    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   2,   2,   2,   2,   2,
@@ -291,7 +291,7 @@ static short gauss [512] =
 static INLINE int dsp_interpolate( dsp_voice_t *v )
 {
    int offset, out, *in;
-   short *fwd, *rev;
+   int16_t *fwd, *rev;
 
    /* Make pointers into gaussian based on fractional position between samples */
    offset = v->interp_pos >> 4 & 0xFF;
@@ -871,7 +871,7 @@ static INLINE void dsp_echo_26 (void)
 static INLINE void dsp_echo_27 (void)
 {
    int l, r;
-   short *out;
+   int16_t *out;
 
    l = dsp_m.t_main_out [0];
    ECHO_OUTPUT(r, 1);
@@ -1113,7 +1113,7 @@ loop:
 /* Sets destination for output samples. If out is NULL or out_size is 0,
    doesn't generate any. */
 
-static void dsp_set_output( short * out, int size )
+static void dsp_set_output( int16_t * out, int size )
 {
    if ( !out )
    {
@@ -2833,7 +2833,7 @@ static void spc_end_frame( int end_time )
    /* Save any extra samples beyond what should be generated */
    if ( m.buf_begin )
    {
-      short *main_end, *dsp_end, *out, *in;
+      int16_t *main_end, *dsp_end, *out, *in;
       /* Get end pointers */
       main_end = m.buf_end;	/* end of data written to buf */
       dsp_end  = dsp_m.out;	/* end of data written to dsp.extra() */
@@ -2865,7 +2865,7 @@ uint8_t * spc_apuram()
 
 static void spc_reset_buffer(void)
 {
-   short *out;
+   int16_t *out;
    /* Start with half extra buffer of silence */
    out = m.extra_buf;
    while ( out < &m.extra_buf [EXTRA_SIZE_DIV_2] )
@@ -3068,7 +3068,7 @@ static int		buffer_size;
 static int		lag_master      = 0;
 static int		lag             = 0;
 
-static short		*landing_buffer = NULL;
+static int16_t		*landing_buffer = NULL;
 
 static bool		resampler      = false;
 
@@ -3099,7 +3099,7 @@ static int    r_left[4], r_right[4];
 
 #define RESAMPLER_MIN(a, b) ((a) < (b) ? (a) : (b))
 #define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
-#define SHORT_CLAMP(n) ((short) CLAMP((n), -32768, 32767))
+#define SHORT_CLAMP(n) ((int16_t) CLAMP((n), -32768, 32767))
 
 static INLINE int32_t hermite (int32_t mu1, int32_t a, int32_t b, int32_t c, int32_t d)
 {
@@ -3136,13 +3136,13 @@ static void resampler_time_ratio(double ratio)
    resampler_clear();
 }
 
-static void resampler_read(short *data, int num_samples)
+static void resampler_read(int16_t *data, int num_samples)
 {
    int i_position, o_position, consumed;
-   short *internal_buffer;
+   int16_t *internal_buffer;
 
    i_position = rb_start >> 1;
-   internal_buffer = (short *)rb_buffer;
+   internal_buffer = (int16_t *)rb_buffer;
    o_position = 0;
    consumed = 0;
 
@@ -3207,7 +3207,7 @@ static void resampler_new(int num_samples)
    resampler_clear();
 }
 
-static INLINE bool resampler_push(short *src, int num_samples)
+static INLINE bool resampler_push(int16_t *src, int num_samples)
 {
    int bytes, end, first_write_size;
    unsigned char *src_ring;
@@ -3248,7 +3248,7 @@ static INLINE void resampler_resize (int num_samples)
    APU
  ***********************************************************************************/
 
-bool S9xMixSamples (short *buffer, unsigned sample_count)
+bool S9xMixSamples (int16_t *buffer, unsigned sample_count)
 {
    if (AVAIL() >= (sample_count + lag))
    {
@@ -3275,9 +3275,9 @@ int S9xGetSampleCount (void)
 
 /* Sets destination for output samples */
 
-static void spc_set_output( short* out, int size )
+static void spc_set_output( int16_t* out, int size )
 {
-   short *out_end, *in;
+   int16_t *out_end, *in;
 
    out_end = out + size;
    m.buf_begin = out;
@@ -3378,11 +3378,11 @@ bool S9xInitSound (int buffer_ms, int lag_ms)
 
    if (landing_buffer)
       free(landing_buffer);
-   landing_buffer = (short*)malloc(buffer_size * 2);
+   landing_buffer = (int16_t*)malloc(buffer_size * 2);
    if (!landing_buffer)
       return (false);
 
-   /* The resampler and spc unit use samples (16-bit short) as
+   /* The resampler and spc unit use samples (16-bit int16_t) as
       arguments. Use 2x in the resampler for buffer leveling with SoundSync */
 
    if (!resampler)

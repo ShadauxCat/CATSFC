@@ -339,10 +339,10 @@ typedef struct
 
    /* non-emulation state */
    uint8_t* ram; /* 64K shared RAM between DSP and SMP */
-   short* out;
-   short* out_end;
-   short* out_begin;
-   short extra [EXTRA_SIZE];
+   int16_t* out;
+   int16_t* out_end;
+   int16_t* out_begin;
+   int16_t extra [EXTRA_SIZE];
 
    int rom_enabled;
    uint8_t *rom, *hi_ram;
@@ -434,10 +434,10 @@ typedef struct
    int         tempo;
 
    int         extra_clocks;
-   short*   buf_begin;
-   short*	buf_end;
-   short*   extra_pos;
-   short    extra_buf [EXTRA_SIZE];
+   int16_t*   buf_begin;
+   int16_t*	buf_end;
+   int16_t*   extra_pos;
+   int16_t    extra_buf [EXTRA_SIZE];
 
    int         rom_enabled;
    uint8_t     rom    [ROM_SIZE];
@@ -483,7 +483,7 @@ bool S9xSyncSound (void);
 int S9xGetSampleCount (void);
 void S9xFinalizeSamples (void);
 void S9xClearSamples (void);
-bool S9xMixSamples (short * buffer, unsigned sample_count);
+bool S9xMixSamples (int16_t * buffer, unsigned sample_count);
 void S9xSetSamplesAvailableCallback (apu_callback);
 
 #endif // APU_BLARGG_H

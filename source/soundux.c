@@ -140,7 +140,7 @@ extern int32_t EchoBuffer [SOUND_BUFFER_SIZE];
 extern int32_t FilterTaps [8];
 static uint8_t FilterTapDefinitionBitfield;
 // In the above, bit I is set if FilterTaps[I] is non-zero.
-extern unsigned long Z;
+extern uint32_t Z;
 extern int32_t Loop [16];
 
 extern long FilterValues[4][2];
@@ -164,7 +164,7 @@ void DecodeBlockAsm2(int8_t*, int16_t*, int32_t*, int32_t*);
 
 // F is channel's current frequency and M is the 16-bit modulation waveform
 // from the previous channel multiplied by the current envelope volume level.
-#define PITCH_MOD(F,M) ((F) * ((((unsigned long) (M)) + 0x800000) >> 16) >> 7)
+#define PITCH_MOD(F,M) ((F) * ((((uint32_t) (M)) + 0x800000) >> 16) >> 7)
 //#define PITCH_MOD(F,M) ((F) * ((((M) & 0x7fffff) >> 14) + 1) >> 8)
 
 #define LAST_SAMPLE 0xffffff
@@ -208,7 +208,7 @@ void S9xAPUSetEndX(int ch)
 END_OF_FUNCTION(S9xAPUSetEndX)
 #endif
 
-void S9xSetEnvRate(Channel* ch, unsigned long rate, int direction, int target)
+void S9xSetEnvRate(Channel* ch, uint32_t rate, int direction, int target)
 {
    ch->envx_target = target;
 
@@ -239,7 +239,7 @@ void S9xSetEnvRate(Channel* ch, unsigned long rate, int direction, int target)
       ch->erate = 0;
    else
    {
-      ch->erate = (unsigned long)
+      ch->erate = (uint32_t)
                   (steps [ch->state] / (rate * so.playback_rate));
    }
 }
@@ -248,7 +248,7 @@ void S9xSetEnvRate(Channel* ch, unsigned long rate, int direction, int target)
 END_OF_FUNCTION(S9xSetEnvRate);
 #endif
 
-void S9xSetEnvelopeRate(int channel, unsigned long rate, int direction,
+void S9xSetEnvelopeRate(int channel, uint32_t rate, int direction,
                         int target)
 {
    S9xSetEnvRate(&SoundData.channels [channel], rate, direction, target);
@@ -258,7 +258,7 @@ void S9xSetEnvelopeRate(int channel, unsigned long rate, int direction,
 END_OF_FUNCTION(S9xSetEnvelopeRate);
 #endif
 
-void S9xSetSoundVolume(int channel, short volume_left, short volume_right)
+void S9xSetSoundVolume(int channel, int16_t volume_left, int16_t volume_right)
 {
    Channel* ch = &SoundData.channels[channel];
    ch->volume_left = volume_left;
@@ -267,7 +267,7 @@ void S9xSetSoundVolume(int channel, short volume_left, short volume_right)
    ch->right_vol_level = (ch->envx * volume_right) / 128;
 }
 
-void S9xSetMasterVolume(short volume_left, short volume_right)
+void S9xSetMasterVolume(int16_t volume_left, int16_t volume_right)
 {
    if (Settings.DisableMasterVolume || SNESGameFixes.EchoOnlyOutput)
       SoundData.master_volume [0] = SoundData.master_volume [1] = 127;
@@ -278,7 +278,7 @@ void S9xSetMasterVolume(short volume_left, short volume_right)
    }
 }
 
-void S9xSetEchoVolume(short volume_left, short volume_right)
+void S9xSetEchoVolume(int16_t volume_left, int16_t volume_right)
 {
    SoundData.echo_volume [0] = volume_left;
    SoundData.echo_volume [1] = volume_right;
@@ -520,7 +520,7 @@ void DecodeBlock(Channel* ch)
       uint8_t interim_byte = 0;
 
       compressed++;
-      signed short* raw = ch->block = ch->decoded;
+      int16_t* raw = ch->block = ch->decoded;
 
       // Seperate out the header parts used for decoding
 
@@ -581,12 +581,12 @@ void DecodeBlock(Channel* ch)
 
             }
             CLIP16(out);
-            int16_t result = (signed short)(out << 1);
+            int16_t result = (int16_t)(out << 1);
             if (abs(result) > amplitude)
                amplitude = abs(result);
             interim[interim_byte++] = out;
-            prev1 = (signed short)prev0;
-            prev0 = (signed short)(out << 1);
+            prev1 = (int16_t)prev0;
+            prev0 = (int16_t)(out << 1);
          }
       }
       ch->previous [0] = prev0;
@@ -710,7 +710,7 @@ void DecodeBlock(Channel* ch)
          ch->loop = (filter & 2) != 0;
 
       compressed++;
-      signed short* raw = ch->block = ch->decoded;
+      int16_t* raw = ch->block = ch->decoded;
 
       // Seperate out the header parts used for decoding
 
@@ -769,9 +769,9 @@ void DecodeBlock(Channel* ch)
 
             }
             CLIP16(out);
-            *raw++ = (signed short)(out << 1);
-            prev1 = (signed short)prev0;
-            prev0 = (signed short)(out << 1);
+            *raw++ = (int16_t)(out << 1);
+            prev1 = (int16_t)prev0;
+            prev0 = (int16_t)(out << 1);
          }
       }
       ch->previous [0] = prev0;
@@ -795,7 +795,7 @@ static inline void MixStereo(int sample_count)
          continue;
 
       int32_t VL, VR;
-      unsigned long freq0 = ch->frequency;
+      uint32_t freq0 = ch->frequency;
 
       bool mod = pitch_mod & (1 << J);
 
@@ -823,7 +823,7 @@ static inline void MixStereo(int sample_count)
       uint32_t I;
       for (I = 0; I < (uint32_t) sample_count; I += 2)
       {
-         unsigned long freq = freq0;
+         uint32_t freq = freq0;
 
          if (mod)
             freq = PITCH_MOD(freq, wave [I / 2]);
@@ -1125,7 +1125,7 @@ void S9xMixSamples(uint8_t* buffer, int sample_count)
                  E * SoundData.echo_volume [J & 1]) / VOL_DIV16;
 
             CLIP16(I);
-            ((signed short*) buffer)[J] = I;
+            ((int16_t*) buffer)[J] = I;
          }
       }
       else
@@ -1165,7 +1165,7 @@ void S9xMixSamples(uint8_t* buffer, int sample_count)
                  E * SoundData.echo_volume [J & 1]) / VOL_DIV16;
 
             CLIP16(I);
-            ((signed short*) buffer)[J] = I;
+            ((int16_t*) buffer)[J] = I;
          }
       }
    }
@@ -1178,7 +1178,7 @@ void S9xMixSamples(uint8_t* buffer, int sample_count)
               SoundData.master_volume [J & 1]) / VOL_DIV16;
 
          CLIP16(I);
-         ((signed short*) buffer)[J] = I;
+         ((int16_t*) buffer)[J] = I;
       }
    }
 

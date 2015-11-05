@@ -149,7 +149,7 @@ void S9xAPUSetByte(uint8_t, uint32_t address);
 
 // XXX: HalfCarry - BJ fixed?
 #define SBC(a,b)\
-int16_t Int16 = (short) (a) - (short) (b) + (short) (APUCheckCarry ()) - 1;\
+int16_t Int16 = (int16_t) (a) - (int16_t) (b) + (int16_t) (APUCheckCarry ()) - 1;\
 IAPU._Carry = Int16 >= 0;\
 if ((((a) ^ (b)) & 0x80) && (((a) ^ (uint8_t) Int16) & 0x80))\
     APUSetOverflow ();\
@@ -177,7 +177,7 @@ if(((a) ^ (b) ^ (uint8_t) Work16) & 0x10)\
 APUSetZN8 ((uint8_t) Work16);
 
 #define CMP(a,b)\
-int16_t Int16 = (short) (a) - (short) (b);\
+int16_t Int16 = (int16_t) (a) - (int16_t) (b);\
 IAPU._Carry = Int16 >= 0;\
 APUSetZN8 ((uint8_t) Int16);
 

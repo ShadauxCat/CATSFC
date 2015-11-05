@@ -121,7 +121,7 @@ void SPC7110Grab(char*);
 typedef struct SPC7110RTC
 {
    unsigned char reg[16];
-   short index;
+   int16_t index;
    uint8_t control;
    bool init;
    time_t last_used;

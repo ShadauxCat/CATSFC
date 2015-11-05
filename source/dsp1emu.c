@@ -75,7 +75,7 @@ void Stop_Log(void)
 
 #endif
 
-const unsigned short DSP1ROM[1024] =
+const uint16_t DSP1ROM[1024] =
 {
    0x0000,  0x0000,  0x0000,  0x0000,  0x0000,  0x0000,  0x0000,  0x0000,
    0x0000,  0x0000,  0x0000,  0x0000,  0x0000,  0x0000,  0x0000,  0x0000,
@@ -236,13 +236,13 @@ double Atan(double x)
 *  C4 C code                                                                *
 \***************************************************************************/
 
-short C4WFXVal;
-short C4WFYVal;
-short C4WFZVal;
-short C4WFX2Val;
-short C4WFY2Val;
-short C4WFDist;
-short C4WFScale;
+int16_t C4WFXVal;
+int16_t C4WFYVal;
+int16_t C4WFZVal;
+int16_t C4WFX2Val;
+int16_t C4WFY2Val;
+int16_t C4WFDist;
+int16_t C4WFScale;
 double tanval;
 double c4x, c4y, c4z;
 double c4x2, c4y2, c4z2;
@@ -269,8 +269,8 @@ void C4TransfWireFrame()
    c4y = c4x2 * sin(tanval) + c4y2 * cos(tanval);
 
    // Scale
-   C4WFXVal = (short)(c4x * C4WFScale / (0x90 * (c4z + 0x95)) * 0x95);
-   C4WFYVal = (short)(c4y * C4WFScale / (0x90 * (c4z + 0x95)) * 0x95);
+   C4WFXVal = (int16_t)(c4x * C4WFScale / (0x90 * (c4z + 0x95)) * 0x95);
+   C4WFYVal = (int16_t)(c4y * C4WFScale / (0x90 * (c4z + 0x95)) * 0x95);
 }
 
 void C4TransfWireFrame2()
@@ -295,8 +295,8 @@ void C4TransfWireFrame2()
    c4y = c4x2 * sin(tanval) + c4y2 * cos(tanval);
 
    // Scale
-   C4WFXVal = (short)(c4x * C4WFScale / 0x100);
-   C4WFYVal = (short)(c4y * C4WFScale / 0x100);
+   C4WFXVal = (int16_t)(c4x * C4WFScale / 0x100);
+   C4WFYVal = (int16_t)(c4y * C4WFScale / 0x100);
 }
 
 void C4CalcWireFrame()
@@ -320,11 +320,11 @@ void C4CalcWireFrame()
    else C4WFDist = 0;
 }
 
-short C41FXVal;
-short C41FYVal;
-short C41FAngleRes;
-short C41FDist;
-short C41FDistVal;
+int16_t C41FXVal;
+int16_t C41FYVal;
+int16_t C41FAngleRes;
+int16_t C41FDist;
+int16_t C41FDistVal;
 
 void C4Op1F()
 {
@@ -336,7 +336,7 @@ void C4Op1F()
    else
    {
       tanval = ((double)C41FYVal) / ((double)C41FXVal);
-      C41FAngleRes = (short)(atan(tanval) / (PI * 2) * 512);
+      C41FAngleRes = (int16_t)(atan(tanval) / (PI * 2) * 512);
       C41FAngleRes = C41FAngleRes;
       if (C41FXVal < 0) C41FAngleRes += 0x100;
       C41FAngleRes &= 0x1FF;
@@ -347,7 +347,7 @@ void C4Op15()
 {
    tanval = sqrt(((double)C41FYVal) * ((double)C41FYVal) + ((double)C41FXVal) *
                  ((double)C41FXVal));
-   C41FDist = (short)tanval;
+   C41FDist = (int16_t)tanval;
 }
 
 void C4Op0D()
@@ -355,8 +355,8 @@ void C4Op0D()
    tanval = sqrt(((double)C41FYVal) * ((double)C41FYVal) + ((double)C41FXVal) *
                  ((double)C41FXVal));
    tanval = (double)C41FDistVal / tanval;
-   C41FYVal = (short)(((double)C41FYVal * tanval) * 0.99);
-   C41FXVal = (short)(((double)C41FXVal * tanval) * 0.98);
+   C41FYVal = (int16_t)(((double)C41FYVal * tanval) * 0.99);
+   C41FXVal = (int16_t)(((double)C41FXVal * tanval) * 0.98);
 }
 #endif
 
@@ -380,9 +380,9 @@ void InitDSP(void)
 }
 
 
-short Op00Multiplicand;
-short Op00Multiplier;
-short Op00Result;
+int16_t Op00Multiplicand;
+int16_t Op00Multiplier;
+int16_t Op00Result;
 
 void DSPOp00()
 {
@@ -394,9 +394,9 @@ void DSPOp00()
 #endif
 }
 
-short Op20Multiplicand;
-short Op20Multiplier;
-short Op20Result;
+int16_t Op20Multiplicand;
+int16_t Op20Multiplier;
+int16_t Op20Result;
 
 void DSPOp20()
 {
@@ -409,13 +409,13 @@ void DSPOp20()
 #endif
 }
 
-signed short Op10Coefficient;
-signed short Op10Exponent;
-signed short Op10CoefficientR;
-signed short Op10ExponentR;
+int16_t Op10Coefficient;
+int16_t Op10Exponent;
+int16_t Op10CoefficientR;
+int16_t Op10ExponentR;
 
-void DSP1_Inverse(short Coefficient, short Exponent, short* iCoefficient,
-                  short* iExponent)
+void DSP1_Inverse(int16_t Coefficient, int16_t Exponent, int16_t* iCoefficient,
+                  int16_t* iExponent)
 {
    // Step One: Division by Zero
    if (Coefficient == 0x0000)
@@ -425,7 +425,7 @@ void DSP1_Inverse(short Coefficient, short Exponent, short* iCoefficient,
    }
    else
    {
-      short Sign = 1;
+      int16_t Sign = 1;
 
       // Step Two: Remove Sign
       if (Coefficient < 0)
@@ -453,7 +453,7 @@ void DSP1_Inverse(short Coefficient, short Exponent, short* iCoefficient,
       else
       {
          // Step Five: Initial Guess
-         short i = DSP1ROM[((Coefficient - 0x4000) >> 7) + 0x0065];
+         int16_t i = DSP1ROM[((Coefficient - 0x4000) >> 7) + 0x0065];
 
          // Step Six: Iterate "estimated" Newton's Method
          i = (i + (-i * (Coefficient * i >> 15) >> 15)) << 1;
@@ -475,12 +475,12 @@ void DSPOp10()
 #endif
 }
 
-short Op04Angle;
-short Op04Radius;
-short Op04Sin;
-short Op04Cos;
+int16_t Op04Angle;
+int16_t Op04Radius;
+int16_t Op04Sin;
+int16_t Op04Cos;
 
-const short DSP1_MulTable[256] =
+const int16_t DSP1_MulTable[256] =
 {
    0x0000,  0x0003,  0x0006,  0x0009,  0x000c,  0x000f,  0x0012,  0x0015,
    0x0019,  0x001c,  0x001f,  0x0022,  0x0025,  0x0028,  0x002b,  0x002f,
@@ -516,7 +516,7 @@ const short DSP1_MulTable[256] =
    0x030b,  0x030e,  0x0311,  0x0314,  0x0317,  0x031a,  0x031d,  0x0321
 };
 
-const short DSP1_SinTable[256] =
+const int16_t DSP1_SinTable[256] =
 {
    0x0000,  0x0324,  0x0647,  0x096a,  0x0c8b,  0x0fab,  0x12c8,  0x15e2,
    0x18f8,  0x1c0b,  0x1f19,  0x2223,  0x2528,  0x2826,  0x2b1f,  0x2e11,
@@ -552,7 +552,7 @@ const short DSP1_SinTable[256] =
    -0x18f8, -0x15e2, -0x12c8, -0x0fab, -0x0c8b, -0x096a, -0x0647, -0x0324
 };
 
-short DSP1_Sin(short Angle)
+int16_t DSP1_Sin(int16_t Angle)
 {
    if (Angle < 0)
    {
@@ -562,10 +562,10 @@ short DSP1_Sin(short Angle)
    int S = DSP1_SinTable[Angle >> 8] + (DSP1_MulTable[Angle & 0xff] *
                                         DSP1_SinTable[0x40 + (Angle >> 8)] >> 15);
    if (S > 32767) S = 32767;
-   return (short) S;
+   return (int16_t) S;
 }
 
-short DSP1_Cos(short Angle)
+int16_t DSP1_Cos(int16_t Angle)
 {
    if (Angle < 0)
    {
@@ -575,13 +575,13 @@ short DSP1_Cos(short Angle)
    int S = DSP1_SinTable[0x40 + (Angle >> 8)] - (DSP1_MulTable[Angle & 0xff] *
            DSP1_SinTable[Angle >> 8] >> 15);
    if (S < -32768) S = -32767;
-   return (short) S;
+   return (int16_t) S;
 }
 
-void DSP1_Normalize(short m, short* Coefficient, short* Exponent)
+void DSP1_Normalize(int16_t m, int16_t* Coefficient, int16_t* Exponent)
 {
-   short i = 0x4000;
-   short e = 0;
+   int16_t i = 0x4000;
+   int16_t e = 0;
 
    if (m < 0)
       while ((m & i) && i)
@@ -604,12 +604,12 @@ void DSP1_Normalize(short m, short* Coefficient, short* Exponent)
    *Exponent -= e;
 }
 
-void DSP1_NormalizeDouble(int Product, short* Coefficient, short* Exponent)
+void DSP1_NormalizeDouble(int Product, int16_t* Coefficient, int16_t* Exponent)
 {
-   short n = Product & 0x7fff;
-   short m = Product >> 15;
-   short i = 0x4000;
-   short e = 0;
+   int16_t n = Product & 0x7fff;
+   int16_t m = Product >> 15;
+   int16_t i = 0x4000;
+   int16_t e = 0;
 
    if (m < 0)
       while ((m & i) && i)
@@ -659,7 +659,7 @@ void DSP1_NormalizeDouble(int Product, short* Coefficient, short* Exponent)
    *Exponent = e;
 }
 
-short DSP1_Truncate(short C, short E)
+int16_t DSP1_Truncate(int16_t C, int16_t E)
 {
    if (E > 0)
    {
@@ -679,11 +679,11 @@ void DSPOp04()
    Op04Cos = DSP1_Cos(Op04Angle) * Op04Radius >> 15;
 }
 
-short Op0CA;
-short Op0CX1;
-short Op0CY1;
-short Op0CX2;
-short Op0CY2;
+int16_t Op0CA;
+int16_t Op0CX1;
+int16_t Op0CY1;
+int16_t Op0CX2;
+int16_t Op0CY2;
 
 void DSPOp0C()
 {
@@ -691,40 +691,40 @@ void DSPOp0C()
    Op0CY2 = (Op0CY1 * DSP1_Cos(Op0CA) >> 15) - (Op0CX1 * DSP1_Sin(Op0CA) >> 15);
 }
 
-short CentreX;
-short CentreY;
-short VOffset;
+int16_t CentreX;
+int16_t CentreY;
+int16_t VOffset;
 
-short VPlane_C;
-short VPlane_E;
+int16_t VPlane_C;
+int16_t VPlane_E;
 
 // Azimuth and Zenith angles
-short SinAas;
-short CosAas;
-short SinAzs;
-short CosAzs;
+int16_t SinAas;
+int16_t CosAas;
+int16_t SinAzs;
+int16_t CosAzs;
 
 // Clipped Zenith angle
-short SinAZS;
-short CosAZS;
-short SecAZS_C1;
-short SecAZS_E1;
-short SecAZS_C2;
-short SecAZS_E2;
+int16_t SinAZS;
+int16_t CosAZS;
+int16_t SecAZS_C1;
+int16_t SecAZS_E1;
+int16_t SecAZS_C2;
+int16_t SecAZS_E2;
 
-const short MaxAZS_Exp[16] =
+const int16_t MaxAZS_Exp[16] =
 {
    0x38b4, 0x38b7, 0x38ba, 0x38be, 0x38c0, 0x38c4, 0x38c7, 0x38ca,
    0x38ce,  0x38d0, 0x38d4, 0x38d7, 0x38da, 0x38dd, 0x38e0, 0x38e4
 };
 
-void DSP1_Parameter(short Fx, short Fy, short Fz, short Lfe, short Les,
-                    short Aas, short Azs, short* Vof, short* Vva, short* Cx, short* Cy)
+void DSP1_Parameter(int16_t Fx, int16_t Fy, int16_t Fz, int16_t Lfe, int16_t Les,
+                    int16_t Aas, int16_t Azs, int16_t* Vof, int16_t* Vva, int16_t* Cx, int16_t* Cy)
 {
-   short CSec, C, E;
+   int16_t CSec, C, E;
 
    // Copy Zenith angle for clipping
-   short AZS = Azs;
+   int16_t AZS = Azs;
 
    // Store Sin and Cos of Azimuth and Zenith angles
    SinAas = DSP1_Sin(Aas);
@@ -743,7 +743,7 @@ void DSP1_Parameter(short Fx, short Fy, short Fz, short Lfe, short Les,
    VPlane_E = E;
 
    // Determine clip boundary and clip Zenith angle if necessary
-   short MaxAZS = MaxAZS_Exp[-E];
+   int16_t MaxAZS = MaxAZS_Exp[-E];
 
    if (AZS < 0)
    {
@@ -780,7 +780,7 @@ void DSP1_Parameter(short Fx, short Fy, short Fz, short Lfe, short Les,
 
       C = Azs - MaxAZS;
       if (C >= 0) C--;
-      short Aux = ~(C << 2);
+      int16_t Aux = ~(C << 2);
 
       C = Aux * DSP1ROM[0x0328] >> 15;
       C = (C * Aux >> 15) + DSP1ROM[0x0327];
@@ -809,9 +809,9 @@ void DSP1_Parameter(short Fx, short Fy, short Fz, short Lfe, short Les,
    DSP1_Inverse(CosAZS, 0, &SecAZS_C2, &SecAZS_E2);
 }
 
-void DSP1_Raster(short Vs, short* An, short* Bn, short* Cn, short* Dn)
+void DSP1_Raster(int16_t Vs, int16_t* An, int16_t* Bn, int16_t* Cn, int16_t* Dn)
 {
-   short C, E, C1, E1;
+   int16_t C, E, C1, E1;
 
    DSP1_Inverse((Vs * SinAzs >> 15) + VOffset, 7, &C, &E);
    E += VPlane_E;
@@ -834,17 +834,17 @@ void DSP1_Raster(short Vs, short* An, short* Bn, short* Cn, short* Dn)
    *Dn = C * CosAas >> 15;
 }
 
-short Op02FX;
-short Op02FY;
-short Op02FZ;
-short Op02LFE;
-short Op02LES;
-short Op02AAS;
-short Op02AZS;
-short Op02VOF;
-short Op02VVA;
-short Op02CX;
-short Op02CY;
+int16_t Op02FX;
+int16_t Op02FY;
+int16_t Op02FZ;
+int16_t Op02LFE;
+int16_t Op02LES;
+int16_t Op02AAS;
+int16_t Op02AZS;
+int16_t Op02VOF;
+int16_t Op02VVA;
+int16_t Op02CX;
+int16_t Op02CY;
 
 void DSPOp02()
 {
@@ -852,11 +852,11 @@ void DSPOp02()
                   &Op02VOF, &Op02VVA, &Op02CX, &Op02CY);
 }
 
-short Op0AVS;
-short Op0AA;
-short Op0AB;
-short Op0AC;
-short Op0AD;
+int16_t Op0AVS;
+int16_t Op0AA;
+int16_t Op0AB;
+int16_t Op0AC;
+int16_t Op0AD;
 
 void DSPOp0A()
 {
@@ -864,12 +864,12 @@ void DSPOp0A()
    Op0AVS++;
 }
 
-short Op06X;
-short Op06Y;
-short Op06Z;
-short Op06H;
-short Op06V;
-unsigned short Op06S;
+int16_t Op06X;
+int16_t Op06Y;
+int16_t Op06Z;
+int16_t Op06H;
+int16_t Op06V;
+uint16_t Op06S;
 
 double ObjPX;
 double ObjPY;
@@ -915,8 +915,8 @@ void DSPOp06()
    if (ObjPZ2 < 0)
    {
       double d;
-      Op06H = (short)(-ObjPX2 * Op02LES / -(ObjPZ2)); //-ObjPX2*256/-ObjPZ2;
-      Op06V = (short)(-ObjPY2 * Op02LES / -(ObjPZ2)); //-ObjPY2*256/-ObjPZ2;
+      Op06H = (int16_t)(-ObjPX2 * Op02LES / -(ObjPZ2)); //-ObjPX2*256/-ObjPZ2;
+      Op06V = (int16_t)(-ObjPY2 * Op02LES / -(ObjPZ2)); //-ObjPY2*256/-ObjPZ2;
       d = (double)Op02LES;
       d *= 256.0;
       d /= (-ObjPZ2);
@@ -924,9 +924,9 @@ void DSPOp06()
          d = 65535.0;
       else if (d < 0.0)
          d = 0.0;
-      Op06S = (unsigned short)d;
-      //Op06S=(unsigned short)(256*(double)Op02LES/-ObjPZ2);
-      //Op06S=(unsigned short)((double)(256.0*((double)Op02LES)/(-ObjPZ2)));
+      Op06S = (uint16_t)d;
+      //Op06S=(uint16_t)(256*(double)Op02LES/-ObjPZ2);
+      //Op06S=(uint16_t)((double)(256.0*((double)Op02LES)/(-ObjPZ2)));
    }
    else
    {
@@ -975,8 +975,8 @@ void DSPOp06()
 
    if (ObjPZ2 < 0)
    {
-      Op06H = (short)(-ObjPX2 * Op02LES / -(ObjPZ2)); //-ObjPX2*256/-ObjPZ2;
-      Op06V = (short)(-ObjPY2 * Op02LES / -(ObjPZ2)); //-ObjPY2*256/-ObjPZ2;
+      Op06H = (int16_t)(-ObjPX2 * Op02LES / -(ObjPZ2)); //-ObjPX2*256/-ObjPZ2;
+      Op06V = (int16_t)(-ObjPY2 * Op02LES / -(ObjPZ2)); //-ObjPY2*256/-ObjPZ2;
       double d = (double)Op02LES;
       d *= 256.0;
       d /= (-ObjPZ2);
@@ -984,8 +984,8 @@ void DSPOp06()
          d = 65535.0;
       else if (d < 0.0)
          d = 0.0;
-      Op06S = (unsigned short)d;
-      //   Op06S=(unsigned short)(256*(double)Op02LES/-ObjPZ2);
+      Op06S = (uint16_t)d;
+      //   Op06S=(uint16_t)(256*(double)Op02LES/-ObjPZ2);
    }
    else
    {
@@ -1002,31 +1002,31 @@ void DSPOp06()
 #endif
 
 
-short matrixC[3][3];
-short matrixB[3][3];
-short matrixA[3][3];
+int16_t matrixC[3][3];
+int16_t matrixB[3][3];
+int16_t matrixA[3][3];
 
-short Op01m;
-short Op01Zr;
-short Op01Xr;
-short Op01Yr;
-short Op11m;
-short Op11Zr;
-short Op11Xr;
-short Op11Yr;
-short Op21m;
-short Op21Zr;
-short Op21Xr;
-short Op21Yr;
+int16_t Op01m;
+int16_t Op01Zr;
+int16_t Op01Xr;
+int16_t Op01Yr;
+int16_t Op11m;
+int16_t Op11Zr;
+int16_t Op11Xr;
+int16_t Op11Yr;
+int16_t Op21m;
+int16_t Op21Zr;
+int16_t Op21Xr;
+int16_t Op21Yr;
 
 void DSPOp01()
 {
-   short SinAz = DSP1_Sin(Op01Zr);
-   short CosAz = DSP1_Cos(Op01Zr);
-   short SinAy = DSP1_Sin(Op01Yr);
-   short CosAy = DSP1_Cos(Op01Yr);
-   short SinAx = DSP1_Sin(Op01Xr);
-   short CosAx = DSP1_Cos(Op01Xr);
+   int16_t SinAz = DSP1_Sin(Op01Zr);
+   int16_t CosAz = DSP1_Cos(Op01Zr);
+   int16_t SinAy = DSP1_Sin(Op01Yr);
+   int16_t CosAy = DSP1_Cos(Op01Yr);
+   int16_t SinAx = DSP1_Sin(Op01Xr);
+   int16_t CosAx = DSP1_Cos(Op01Xr);
 
    Op01m >>= 1;
 
@@ -1049,12 +1049,12 @@ void DSPOp01()
 
 void DSPOp11()
 {
-   short SinAz = DSP1_Sin(Op11Zr);
-   short CosAz = DSP1_Cos(Op11Zr);
-   short SinAy = DSP1_Sin(Op11Yr);
-   short CosAy = DSP1_Cos(Op11Yr);
-   short SinAx = DSP1_Sin(Op11Xr);
-   short CosAx = DSP1_Cos(Op11Xr);
+   int16_t SinAz = DSP1_Sin(Op11Zr);
+   int16_t CosAz = DSP1_Cos(Op11Zr);
+   int16_t SinAy = DSP1_Sin(Op11Yr);
+   int16_t CosAy = DSP1_Cos(Op11Yr);
+   int16_t SinAx = DSP1_Sin(Op11Xr);
+   int16_t CosAx = DSP1_Cos(Op11Xr);
 
    Op11m >>= 1;
 
@@ -1077,12 +1077,12 @@ void DSPOp11()
 
 void DSPOp21()
 {
-   short SinAz = DSP1_Sin(Op21Zr);
-   short CosAz = DSP1_Cos(Op21Zr);
-   short SinAy = DSP1_Sin(Op21Yr);
-   short CosAy = DSP1_Cos(Op21Yr);
-   short SinAx = DSP1_Sin(Op21Xr);
-   short CosAx = DSP1_Cos(Op21Xr);
+   int16_t SinAz = DSP1_Sin(Op21Zr);
+   int16_t CosAz = DSP1_Cos(Op21Zr);
+   int16_t SinAy = DSP1_Sin(Op21Yr);
+   int16_t CosAy = DSP1_Cos(Op21Yr);
+   int16_t SinAx = DSP1_Sin(Op21Xr);
+   int16_t CosAx = DSP1_Cos(Op21Xr);
 
    Op21m >>= 1;
 
@@ -1103,24 +1103,24 @@ void DSPOp21()
    matrixC[2][2] = (Op21m * CosAx >> 15) * CosAy >> 15;
 }
 
-short Op0DX;
-short Op0DY;
-short Op0DZ;
-short Op0DF;
-short Op0DL;
-short Op0DU;
-short Op1DX;
-short Op1DY;
-short Op1DZ;
-short Op1DF;
-short Op1DL;
-short Op1DU;
-short Op2DX;
-short Op2DY;
-short Op2DZ;
-short Op2DF;
-short Op2DL;
-short Op2DU;
+int16_t Op0DX;
+int16_t Op0DY;
+int16_t Op0DZ;
+int16_t Op0DF;
+int16_t Op0DL;
+int16_t Op0DU;
+int16_t Op1DX;
+int16_t Op1DY;
+int16_t Op1DZ;
+int16_t Op1DF;
+int16_t Op1DL;
+int16_t Op1DU;
+int16_t Op2DX;
+int16_t Op2DY;
+int16_t Op2DZ;
+int16_t Op2DF;
+int16_t Op2DL;
+int16_t Op2DU;
 
 void DSPOp0D()
 {
@@ -1167,24 +1167,24 @@ void DSPOp2D()
 #endif
 }
 
-short Op03F;
-short Op03L;
-short Op03U;
-short Op03X;
-short Op03Y;
-short Op03Z;
-short Op13F;
-short Op13L;
-short Op13U;
-short Op13X;
-short Op13Y;
-short Op13Z;
-short Op23F;
-short Op23L;
-short Op23U;
-short Op23X;
-short Op23Y;
-short Op23Z;
+int16_t Op03F;
+int16_t Op03L;
+int16_t Op03U;
+int16_t Op03X;
+int16_t Op03Y;
+int16_t Op03Z;
+int16_t Op13F;
+int16_t Op13L;
+int16_t Op13U;
+int16_t Op13X;
+int16_t Op13Y;
+int16_t Op13Z;
+int16_t Op23F;
+int16_t Op23L;
+int16_t Op23U;
+int16_t Op23X;
+int16_t Op23Y;
+int16_t Op23Z;
 
 void DSPOp03()
 {
@@ -1231,19 +1231,19 @@ void DSPOp23()
 #endif
 }
 
-short Op14Zr;
-short Op14Xr;
-short Op14Yr;
-short Op14U;
-short Op14F;
-short Op14L;
-short Op14Zrr;
-short Op14Xrr;
-short Op14Yrr;
+int16_t Op14Zr;
+int16_t Op14Xr;
+int16_t Op14Yr;
+int16_t Op14U;
+int16_t Op14F;
+int16_t Op14L;
+int16_t Op14Zrr;
+int16_t Op14Xrr;
+int16_t Op14Yrr;
 
 void DSPOp14()
 {
-   short CSec, ESec, CTan, CSin, C, E;
+   int16_t CSec, ESec, CTan, CSin, C, E;
 
    DSP1_Inverse(DSP1_Cos(Op14Xr), 0, &CSec, &ESec);
 
@@ -1276,9 +1276,9 @@ void DSPOp14()
    Op14Yrr = Op14Yr + DSP1_Truncate(C, E) + Op14L;
 }
 
-void DSP1_Target(short H, short V, short* X, short* Y)
+void DSP1_Target(int16_t H, int16_t V, int16_t* X, int16_t* Y)
 {
-   short C, E, C1, E1;
+   int16_t C, E, C1, E1;
 
    DSP1_Inverse((V * SinAzs >> 15) + VOffset, 8, &C, &E);
    E += VPlane_E;
@@ -1305,28 +1305,28 @@ void DSP1_Target(short H, short V, short* X, short* Y)
    *Y += C * CosAas >> 15;
 }
 
-short Op0EH;
-short Op0EV;
-short Op0EX;
-short Op0EY;
+int16_t Op0EH;
+int16_t Op0EV;
+int16_t Op0EX;
+int16_t Op0EY;
 
 void DSPOp0E()
 {
    DSP1_Target(Op0EH, Op0EV, &Op0EX, &Op0EY);
 }
 
-short Op0BX;
-short Op0BY;
-short Op0BZ;
-short Op0BS;
-short Op1BX;
-short Op1BY;
-short Op1BZ;
-short Op1BS;
-short Op2BX;
-short Op2BY;
-short Op2BZ;
-short Op2BS;
+int16_t Op0BX;
+int16_t Op0BY;
+int16_t Op0BZ;
+int16_t Op0BS;
+int16_t Op1BX;
+int16_t Op1BY;
+int16_t Op1BZ;
+int16_t Op1BS;
+int16_t Op2BX;
+int16_t Op2BY;
+int16_t Op2BZ;
+int16_t Op2BS;
 
 void DSPOp0B()
 {
@@ -1345,8 +1345,8 @@ void DSPOp1B()
 
 #ifdef DebugDSP1
    Log_Message("OP1B X: %d Y: %d Z: %d S: %d", Op1BX, Op1BY, Op1BZ, Op1BS);
-   Log_Message("     MX: %d MY: %d MZ: %d Scale: %d", (short)(matrixB[0][0] * 100),
-               (short)(matrixB[0][1] * 100), (short)(matrixB[0][2] * 100), (short)(sc2 * 100));
+   Log_Message("     MX: %d MY: %d MZ: %d Scale: %d", (int16_t)(matrixB[0][0] * 100),
+               (int16_t)(matrixB[0][1] * 100), (int16_t)(matrixB[0][2] * 100), (int16_t)(sc2 * 100));
 #endif
 }
 
@@ -1360,7 +1360,7 @@ void DSPOp2B()
 #endif
 }
 
-short Op08X, Op08Y, Op08Z, Op08Ll, Op08Lh;
+int16_t Op08X, Op08Y, Op08Z, Op08Ll, Op08Lh;
 
 void DSPOp08()
 {
@@ -1374,7 +1374,7 @@ void DSPOp08()
 #endif
 }
 
-short Op18X, Op18Y, Op18Z, Op18R, Op18D;
+int16_t Op18X, Op18Y, Op18Z, Op18R, Op18D;
 
 void DSPOp18()
 {
@@ -1385,7 +1385,7 @@ void DSPOp18()
 #endif
 }
 
-short Op38X, Op38Y, Op38Z, Op38R, Op38D;
+int16_t Op38X, Op38Y, Op38Z, Op38R, Op38D;
 
 void DSPOp38()
 {
@@ -1397,10 +1397,10 @@ void DSPOp38()
 #endif
 }
 
-short Op28X;
-short Op28Y;
-short Op28Z;
-short Op28R;
+int16_t Op28X;
+int16_t Op28Y;
+int16_t Op28Z;
+int16_t Op28R;
 
 void DSPOp28()
 {
@@ -1409,14 +1409,14 @@ void DSPOp28()
    if (Radius == 0) Op28R = 0;
    else
    {
-      short C, E;
+      int16_t C, E;
       DSP1_NormalizeDouble(Radius, &C, &E);
       if (E & 1) C = C * 0x4000 >> 15;
 
-      short Pos = C * 0x0040 >> 15;
+      int16_t Pos = C * 0x0040 >> 15;
 
-      short Node1 = DSP1ROM[0x00d5 + Pos];
-      short Node2 = DSP1ROM[0x00d6 + Pos];
+      int16_t Node1 = DSP1ROM[0x00d5 + Pos];
+      int16_t Node2 = DSP1ROM[0x00d6 + Pos];
 
       Op28R = ((Node2 - Node1) * (C & 0x1ff) >> 9) + Node1;
       Op28R >>= (E >> 1);
@@ -1428,14 +1428,14 @@ void DSPOp28()
 #endif
 }
 
-short Op1CX, Op1CY, Op1CZ;
-short Op1CXBR, Op1CYBR, Op1CZBR, Op1CXAR, Op1CYAR, Op1CZAR;
-short Op1CX1;
-short Op1CY1;
-short Op1CZ1;
-short Op1CX2;
-short Op1CY2;
-short Op1CZ2;
+int16_t Op1CX, Op1CY, Op1CZ;
+int16_t Op1CXBR, Op1CYBR, Op1CZBR, Op1CXAR, Op1CYAR, Op1CZAR;
+int16_t Op1CX1;
+int16_t Op1CY1;
+int16_t Op1CZ1;
+int16_t Op1CX2;
+int16_t Op1CY2;
+int16_t Op1CZ2;
 
 void DSPOp1C()
 {
@@ -1462,8 +1462,8 @@ void DSPOp1C()
 #endif
 }
 
-unsigned short Op0FRamsize;
-unsigned short Op0FPass;
+uint16_t Op0FRamsize;
+uint16_t Op0FPass;
 
 void DSPOp0F()
 {
@@ -1474,8 +1474,8 @@ void DSPOp0F()
 #endif
 }
 
-short Op2FUnknown;
-short Op2FSize;
+int16_t Op2FUnknown;
+int16_t Op2FSize;
 
 void DSPOp2F()
 {

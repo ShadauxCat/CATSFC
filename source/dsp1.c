@@ -476,13 +476,13 @@ void DSP1SetByte(uint8_t byte, uint16_t address)
                case 0x22:
                case 0x12:
                case 0x02:  // Parameter (Projection)
-                  Op02FX = (short)(DSP1.parameters [0] | (DSP1.parameters[1] << 8));
-                  Op02FY = (short)(DSP1.parameters [2] | (DSP1.parameters[3] << 8));
-                  Op02FZ = (short)(DSP1.parameters [4] | (DSP1.parameters[5] << 8));
-                  Op02LFE = (short)(DSP1.parameters [6] | (DSP1.parameters[7] << 8));
-                  Op02LES = (short)(DSP1.parameters [8] | (DSP1.parameters[9] << 8));
-                  Op02AAS = (unsigned short)(DSP1.parameters [10] | (DSP1.parameters[11] << 8));
-                  Op02AZS = (unsigned short)(DSP1.parameters [12] | (DSP1.parameters[13] << 8));
+                  Op02FX = (int16_t)(DSP1.parameters [0] | (DSP1.parameters[1] << 8));
+                  Op02FY = (int16_t)(DSP1.parameters [2] | (DSP1.parameters[3] << 8));
+                  Op02FZ = (int16_t)(DSP1.parameters [4] | (DSP1.parameters[5] << 8));
+                  Op02LFE = (int16_t)(DSP1.parameters [6] | (DSP1.parameters[7] << 8));
+                  Op02LES = (int16_t)(DSP1.parameters [8] | (DSP1.parameters[9] << 8));
+                  Op02AAS = (uint16_t)(DSP1.parameters [10] | (DSP1.parameters[11] << 8));
+                  Op02AZS = (uint16_t)(DSP1.parameters [12] | (DSP1.parameters[13] << 8));
 
                   DSPOp02();
 
@@ -501,7 +501,7 @@ void DSP1SetByte(uint8_t byte, uint16_t address)
                case 0x2a:  //1a Mirror
                case 0x1a:  // Raster mode 7 matrix data
                case 0x0a:
-                  Op0AVS = (short)(DSP1.parameters [0] | (DSP1.parameters[1] << 8));
+                  Op0AVS = (int16_t)(DSP1.parameters [0] | (DSP1.parameters[1] << 8));
 
                   DSPOp0A();
 
@@ -1479,8 +1479,8 @@ void DSP4SetByte(uint8_t byte, uint16_t address)
             int16_t in3a = DSP4_READ_WORD(4);
             int16_t out1a, out2a;
 
-            out1a = (short)0xff40;
-            out2a = (short)0x00c0;
+            out1a = (int16_t)0xff40;
+            out2a = (int16_t)0x00c0;
 
             DSP4.out_count = 8;
 

@@ -306,8 +306,8 @@ static void CMP16(long Addr)
 
 static void CMP8(long Addr)
 {
-   int16_t Int16 = (short) ICPU.Registers.AL -
-                 (short) S9xGetByte(Addr);
+   int16_t Int16 = (int16_t) ICPU.Registers.AL -
+                 (int16_t) S9xGetByte(Addr);
    ICPU._Carry = Int16 >= 0;
    SetZN8((uint8_t) Int16);
 }
@@ -322,8 +322,8 @@ static void CMX16(long Addr)
 
 static void CMX8(long Addr)
 {
-   int16_t Int16 = (short) ICPU.Registers.XL -
-                 (short) S9xGetByte(Addr);
+   int16_t Int16 = (int16_t) ICPU.Registers.XL -
+                 (int16_t) S9xGetByte(Addr);
    ICPU._Carry = Int16 >= 0;
    SetZN8((uint8_t) Int16);
 }
@@ -338,8 +338,8 @@ static void CMY16(long Addr)
 
 static void CMY8(long Addr)
 {
-   int16_t Int16 = (short) ICPU.Registers.YL -
-                 (short) S9xGetByte(Addr);
+   int16_t Int16 = (int16_t) ICPU.Registers.YL -
+                 (int16_t) S9xGetByte(Addr);
    ICPU._Carry = Int16 >= 0;
    SetZN8((uint8_t) Int16);
 }
@@ -742,8 +742,8 @@ static void SBC8(long Addr)
    }
    else
    {
-      int16_t Int16 = (short) ICPU.Registers.AL - (short) Work8 +
-                    (short) CheckCarry() - 1;
+      int16_t Int16 = (int16_t) ICPU.Registers.AL - (int16_t) Work8 +
+                    (int16_t) CheckCarry() - 1;
 
       ICPU._Carry = Int16 >= 0;
       if ((ICPU.Registers.AL ^ Work8) &

@@ -308,18 +308,18 @@ const unsigned char ST010_ArcTan[32][32] =
    }
 };
 
-short ST010_Sin(short Theta)
+int16_t ST010_Sin(int16_t Theta)
 {
    return ST010_SinTable[(Theta >> 8) & 0xff];
 }
 
-short ST010_Cos(short Theta)
+int16_t ST010_Cos(int16_t Theta)
 {
    return ST010_SinTable[((Theta + 0x4000) >> 8) & 0xff];
 }
 
-void ST010_OP01(short x0, short y0, short* x1, short* y1, short* Quadrant,
-                short* Theta)
+void ST010_OP01(int16_t x0, int16_t y0, int16_t* x1, int16_t* y1, int16_t* Quadrant,
+                int16_t* Theta)
 {
    if ((x0 < 0) && (y0 < 0))
    {
@@ -357,24 +357,24 @@ void ST010_OP01(short x0, short y0, short* x1, short* y1, short* Quadrant,
    *Theta = (ST010_ArcTan[*y1][*x1] << 8) ^ *Quadrant;
 }
 
-void ST010_Scale(short Multiplier, short X0, short Y0, int* X1, int* Y1)
+void ST010_Scale(int16_t Multiplier, int16_t X0, int16_t Y0, int* X1, int* Y1)
 {
    *X1 = X0 * Multiplier << 1;
    *Y1 = Y0 * Multiplier << 1;
 }
 
-void ST010_Multiply(short Multiplicand, short Multiplier, int* Product)
+void ST010_Multiply(int16_t Multiplicand, int16_t Multiplier, int* Product)
 {
    *Product = Multiplicand * Multiplier << 1;
 }
 
-void ST010_Rotate(short Theta, short X0, short Y0, short* X1, short* Y1)
+void ST010_Rotate(int16_t Theta, int16_t X0, int16_t Y0, int16_t* X1, int16_t* Y1)
 {
    *X1 = (Y0 * ST010_Sin(Theta) >> 15) + (X0 * ST010_Cos(Theta) >> 15);
    *Y1 = (Y0 * ST010_Cos(Theta) >> 15) - (X0 * ST010_Sin(Theta) >> 15);
 }
 
-void SETA_Distance(short Y0, short X0, short* Distance)
+void SETA_Distance(int16_t Y0, int16_t X0, int16_t* Distance)
 {
    if (X0 < 0) X0 = -X0;
    if (Y0 < 0) Y0 = -Y0;
@@ -444,7 +444,7 @@ void S9xSetST010(uint32_t Address, uint8_t Byte)
       {
 #if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
          /* TODO - FIXME */
-         ST010_SortDrivers(*(short*)&Memory.SRAM[0x0024], (uint16_t*)(Memory.SRAM + 0x0040),
+         ST010_SortDrivers(*(int16_t*)&Memory.SRAM[0x0024], (uint16_t*)(Memory.SRAM + 0x0040),
                            (uint16_t*)(Memory.SRAM + 0x0080));
 #else
          uint16_t Places[32];
@@ -488,8 +488,8 @@ void S9xSetST010(uint32_t Address, uint8_t Byte)
       {
 #if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
          /* TODO - FIXME */
-         ST010_Scale(*(short*)&Memory.SRAM[0x0004], *(short*)&Memory.SRAM[0x0000],
-                     *(short*)&Memory.SRAM[0x0002],
+         ST010_Scale(*(int16_t*)&Memory.SRAM[0x0004], *(int16_t*)&Memory.SRAM[0x0000],
+                     *(int16_t*)&Memory.SRAM[0x0002],
                      (int*)&Memory.SRAM[0x0010], (int*)&Memory.SRAM[0x0014]);
 #else
          int x1, y1;
@@ -521,7 +521,7 @@ void S9xSetST010(uint32_t Address, uint8_t Byte)
       {
 #if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
          /* TODO - FIXME */
-         ST010_Multiply(*(short*)&Memory.SRAM[0x0000], *(short*)&Memory.SRAM[0x0002],
+         ST010_Multiply(*(int16_t*)&Memory.SRAM[0x0000], *(int16_t*)&Memory.SRAM[0x0002],
                         (int*)&Memory.SRAM[0x0010]);
 #else
          int Product;
@@ -598,11 +598,11 @@ void S9xSetST010(uint32_t Address, uint8_t Byte)
       {
 #if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
          /* TODO - FIXME */
-         ST010_Rotate(*(short*)&Memory.SRAM[0x0004], *(short*)&Memory.SRAM[0x0000],
-                      *(short*)&Memory.SRAM[0x0002],
-                      (short*)&Memory.SRAM[0x0010], (short*)&Memory.SRAM[0x0012]);
+         ST010_Rotate(*(int16_t*)&Memory.SRAM[0x0004], *(int16_t*)&Memory.SRAM[0x0000],
+                      *(int16_t*)&Memory.SRAM[0x0002],
+                      (int16_t*)&Memory.SRAM[0x0010], (int16_t*)&Memory.SRAM[0x0012]);
 #else
-         short x1, y1;
+         int16_t x1, y1;
 
          ST010_Rotate(ST010_WORD(0x0004), ST010_WORD(0x0000), ST010_WORD(0x0002), &x1,
                       &y1);
@@ -628,11 +628,11 @@ void S9xSetST010(uint32_t Address, uint8_t Byte)
 
 #if defined(FAST_LSB_WORD_ACCESS) && !defined(ANDROID)
          /* TODO - FIXME */
-         ST010_OP01(*(short*)&Memory.SRAM[0x0000], *(short*)&Memory.SRAM[0x0002],
-                    (short*) &Memory.SRAM[0x0000], (short*) &Memory.SRAM[0x0002],
-                    (short*) &Memory.SRAM[0x0004], (short*) &Memory.SRAM[0x0010]);
+         ST010_OP01(*(int16_t*)&Memory.SRAM[0x0000], *(int16_t*)&Memory.SRAM[0x0002],
+                    (int16_t*) &Memory.SRAM[0x0000], (int16_t*) &Memory.SRAM[0x0002],
+                    (int16_t*) &Memory.SRAM[0x0004], (int16_t*) &Memory.SRAM[0x0010]);
 #else
-         short x1, y1, Quadrant, Theta;
+         int16_t x1, y1, Quadrant, Theta;
 
          ST010_OP01(ST010_WORD(0x0000), ST010_WORD(0x0002), &x1, &y1, &Quadrant, &Theta);
 

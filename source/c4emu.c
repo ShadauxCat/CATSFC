@@ -344,8 +344,8 @@ static void C4DrawLine(int32_t X1, int32_t Y1, int16_t Z1,
                        int32_t X2, int32_t Y2, int16_t Z2, uint8_t Color)
 {
    // Transform coordinates
-   C4WFXVal = (short)X1;
-   C4WFYVal = (short)Y1;
+   C4WFXVal = (int16_t)X1;
+   C4WFYVal = (int16_t)Y1;
    C4WFZVal = Z1;
    C4WFScale = Memory.C4RAM[0x1f90];
    C4WFX2Val = Memory.C4RAM[0x1f86];
@@ -355,18 +355,18 @@ static void C4DrawLine(int32_t X1, int32_t Y1, int16_t Z1,
    X1 = (C4WFXVal + 48) << 8;
    Y1 = (C4WFYVal + 48) << 8;
 
-   C4WFXVal = (short)X2;
-   C4WFYVal = (short)Y2;
+   C4WFXVal = (int16_t)X2;
+   C4WFYVal = (int16_t)Y2;
    C4WFZVal = Z2;
    C4TransfWireFrame2();
    X2 = (C4WFXVal + 48) << 8;
    Y2 = (C4WFYVal + 48) << 8;
 
    // get line info
-   C4WFXVal = (short)(X1 >> 8);
-   C4WFYVal = (short)(Y1 >> 8);
-   C4WFX2Val = (short)(X2 >> 8);
-   C4WFY2Val = (short)(Y2 >> 8);
+   C4WFXVal = (int16_t)(X1 >> 8);
+   C4WFYVal = (int16_t)(Y1 >> 8);
+   C4WFX2Val = (int16_t)(X2 >> 8);
+   C4WFY2Val = (int16_t)(Y2 >> 8);
    C4CalcWireFrame();
    X2 = (int16_t)C4WFXVal;
    Y2 = (int16_t)C4WFYVal;

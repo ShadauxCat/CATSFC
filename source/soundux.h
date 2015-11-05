@@ -148,28 +148,28 @@ typedef struct
 {
    int state;
    int type;
-   short volume_left;
-   short volume_right;
+   int16_t volume_left;
+   int16_t volume_right;
    uint32_t hertz;
    uint32_t frequency;
    uint32_t count;
    bool loop;
    int envx;
-   short left_vol_level;
-   short right_vol_level;
-   short envx_target;
-   unsigned long int env_error;
-   unsigned long erate;
+   int16_t left_vol_level;
+   int16_t right_vol_level;
+   int16_t envx_target;
+   uint32_t env_error;
+   uint32_t erate;
    int direction;
-   unsigned long attack_rate;
-   unsigned long decay_rate;
-   unsigned long sustain_rate;
-   unsigned long release_rate;
-   unsigned long sustain_level;
-   signed short sample;
-   signed short decoded [16];
-   signed short previous16 [2];
-   signed short* block;
+   uint32_t attack_rate;
+   uint32_t decay_rate;
+   uint32_t sustain_rate;
+   uint32_t release_rate;
+   uint32_t sustain_level;
+   int16_t sample;
+   int16_t decoded [16];
+   int16_t previous16 [2];
+   int16_t* block;
    uint16_t sample_number;
    bool last_block;
    bool needs_decode;
@@ -178,12 +178,11 @@ typedef struct
    int* echo_buf_ptr;
    int mode;
    int32_t envxx;
-   signed short next_sample;
+   int16_t next_sample;
    int32_t interpolate;
    int32_t previous [2];
    // Just incase they are needed in the future, for snapshot compatibility.
    uint32_t dummy [8];
-   // unsigned short last_valid_header;
 } Channel;
 
 typedef struct
@@ -199,8 +198,8 @@ typedef struct
    uint32_t dummy [3];
    Channel channels [NUM_CHANNELS];
    // bool no_filter;
-   short master_volume [2]; /* range is -128 .. 127 */
-   short echo_volume [2]; /* range is -128 .. 127 */
+   int16_t master_volume [2]; /* range is -128 .. 127 */
+   int16_t echo_volume [2]; /* range is -128 .. 127 */
    int noise_hertz;
 } SSoundData;
 
@@ -208,12 +207,12 @@ SSoundData SoundData;
 
 void S9xSetEightBitConsoleSound(bool Enabled);
 
-void S9xSetSoundVolume(int channel, short volume_left, short volume_right);
+void S9xSetSoundVolume(int channel, int16_t volume_left, int16_t volume_right);
 void S9xSetSoundFrequency(int channel, int hertz);
 void S9xSetSoundHertz(int channel, int hertz);
 void S9xSetSoundType(int channel, int type_of_sound);
-void S9xSetMasterVolume(short master_volume_left, short master_volume_right);
-void S9xSetEchoVolume(short echo_volume_left, short echo_volume_right);
+void S9xSetMasterVolume(int16_t master_volume_left, int16_t master_volume_right);
+void S9xSetEchoVolume(int16_t echo_volume_left, int16_t echo_volume_right);
 void S9xSetSoundControl(int sound_switch);
 void S9xSetEnvelopeHeight(int channel, int height);
 void S9xSetSoundADSR(int channel, int attack, int decay, int sustain,
@@ -229,7 +228,7 @@ void S9xSetEchoDelay(int byte);
 void S9xSetEchoWriteEnable(uint8_t byte);
 void S9xSetFilterCoefficient(int tap, int value);
 void S9xSetFrequencyModulationEnable(uint8_t byte);
-void S9xSetEnvelopeRate(int channel, unsigned long rate, int direction,
+void S9xSetEnvelopeRate(int channel, uint32_t rate, int direction,
                         int target);
 bool S9xSetSoundMode(int channel, int mode);
 int S9xGetEnvelopeHeight(int channel);
