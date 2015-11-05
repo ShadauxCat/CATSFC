@@ -2565,6 +2565,7 @@ static void DrawBackground(uint32_t BGMode, uint32_t bg, uint8_t Z1, uint8_t Z2)
 
 #define RENDER_BACKGROUND_MODE7(TYPE,FUNC) \
     uint16_t *ScreenColors = IPPU.ScreenColors; \
+    (void)ScreenColors; \
     CHECK_SOUND(); \
 \
     uint8_t *VRAM1 = Memory.VRAM + 1; \
