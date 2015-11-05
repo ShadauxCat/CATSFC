@@ -179,7 +179,7 @@ int DummyEchoBuffer [SOUND_BUFFER_SIZE];
 int MixBuffer [SOUND_BUFFER_SIZE];
 int EchoBuffer [SOUND_BUFFER_SIZE];
 int FilterTaps [8];
-unsigned long Z = 0;
+uint32_t Z = 0;
 int Loop [16];
 #endif
 uint16_t SignExtend [2] =
