@@ -140,11 +140,6 @@ int    strcasecmp(const char* s1, const char* s2);
 
 #endif /* TARGET_OS_MAC */
 
-#ifndef NOASM
-#define USE_X86_ASM
-#endif
-
-
 
 #include "pixform.h"
 

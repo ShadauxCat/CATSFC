@@ -153,7 +153,7 @@ else ifeq ($(platform), psp1)
 		-fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
 		-fweb -fpeel-loops
 	DEFS   +=  -DPSP -D_PSP_FW_VERSION=371
-   INCLUDE     += -I$(shell psp-config --pspsdk-path)/include
+   INCFLAGS     += -I$(shell psp-config --pspsdk-path)/include
    STATIC_LINKING := 1
 
 # Vita
@@ -207,12 +207,6 @@ endif
 
 LDFLAGS += $(LIBM)
 
-DEFS   += -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
-          -DVAR_CYCLES -DCPU_SHUTDOWN -DSPC700_SHUTDOWN \
-          -DNO_INLINE_SET_GET -DNOASM -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t' -DWANT_CHEATS
-
-DEFS  += -D__LIBRETRO__
-
 CORE_DIR     := ./source
 LIBRETRO_DIR := .
 
@@ -220,45 +214,10 @@ include Makefile.common
 
 OBJECTS := $(SOURCES_C:.c=.o)
 
-ifeq ($(DEBUG),1)
-FLAGS += -O0 -g
-else
-FLAGS += -O3 -DNDEBUG
-endif
-
-ifeq ($(PERF_TEST),1)
-FLAGS += -DPERF_TEST
-endif
-
-ifeq ($(USE_BLARGG_APU),1)
-FLAGS += -DUSE_BLARGG_APU
-endif
-
-ifeq ($(LOAD_FROM_MEMORY_TEST),1)
-FLAGS += -DLOAD_FROM_MEMORY_TEST
-endif
-
 LDFLAGS += $(fpic) $(SHARED)
-FLAGS += $(fpic) 
-FLAGS += $(INCFLAGS)
 
+FLAGS += $(fpic)
 
-ifeq ($(OLD_GCC), 1)
-WARNINGS := -Wall
-else ifeq ($(NO_GCC), 1)
-WARNINGS :=
-else
-WARNINGS := -Wall \
-	-Wno-sign-compare \
-	-Wno-unused-variable \
-	-Wno-unused-function \
-	-Wno-uninitialized \
-	-Wno-strict-aliasing \
-	-Wno-overflow \
-	-fno-strict-overflow
-endif
-
-FLAGS += -D__LIBRETRO__ $(WARNINGS) $(INCLUDE) $(DEFS)
 
 CXXFLAGS += $(FLAGS)
 CFLAGS += $(FLAGS)

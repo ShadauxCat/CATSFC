@@ -4,7 +4,13 @@ include $(CLEAR_VARS)
 
 CORE_DIR     := ../source
 LIBRETRO_DIR := ..
-HAVE_GRIFFIN := 1
+
+DEBUG                 = 0
+PERF_TEST             = 0
+HAVE_GRIFFIN          = 1
+LOAD_FROM_MEMORY_TEST = 1
+USE_BLARGG_APU        = 0
+
 
 LOCAL_MODULE    := retro
 
@@ -21,9 +27,10 @@ ifeq ($(TARGET_ARCH),mips)
 LOCAL_CFLAGS += -DANDROID_MIPS -D__mips__ -D__MIPSEL__
 endif
 
+
 include ../Makefile.common
 
-LOCAL_SRC_FILES    += $(SOURCES_C)
-LOCAL_CFLAGS += -O2 -std=gnu99 -ffast-math -DINLINE=inline -DPERF_TEST -D__LIBRETRO__ -DFRONTEND_SUPPORTS_RGB565 -DNDEBUG=1 $(INCFLAGS)
+LOCAL_SRC_FILES += $(SOURCES_C)
+LOCAL_CFLAGS    += -std=gnu99 -ffast-math -DINLINE=inline $(FLAGS)
 
 include $(BUILD_SHARED_LIBRARY)
