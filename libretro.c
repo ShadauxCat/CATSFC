@@ -954,12 +954,11 @@ bool retro_load_game(const struct retro_game_info* game)
    struct retro_system_av_info av_info;
    retro_get_system_av_info(&av_info);
 
-   samples_per_frame = av_info.timing.sample_rate / av_info.timing.fps;
-
 #ifdef USE_BLARGG_APU
    Settings.SoundPlaybackRate = av_info.timing.sample_rate;
 #else
-   S9xSetPlaybackRate(av_info.timing.sample_rate);
+   samples_per_frame = av_info.timing.sample_rate / av_info.timing.fps;
+   S9xSetPlaybackRate(32*1024);
 #endif
    return true;
 }
