@@ -174,13 +174,13 @@ SCheatData Cheat;
 #ifndef USE_BLARGG_APU
 SoundStatus so;
 
-int Echo [24000];
-int DummyEchoBuffer [SOUND_BUFFER_SIZE];
-int MixBuffer [SOUND_BUFFER_SIZE];
-int EchoBuffer [SOUND_BUFFER_SIZE];
-int FilterTaps [8];
+int32_t Echo [24000];
+int32_t DummyEchoBuffer [SOUND_BUFFER_SIZE];
+int32_t MixBuffer [SOUND_BUFFER_SIZE];
+int32_t EchoBuffer [SOUND_BUFFER_SIZE];
+int32_t FilterTaps [8];
 uint32_t Z = 0;
-int Loop [16];
+int32_t Loop [16];
 #endif
 uint16_t SignExtend [2] =
 {
@@ -262,7 +262,7 @@ long FilterValues[4][2] =
    {460, -208}
 };
 
-int NoiseFreq [32] =
+int32_t NoiseFreq [32] =
 {
    0, 16, 21, 25, 31, 42, 50, 63, 84, 100, 125, 167, 200, 250, 333,
    400, 500, 667, 800, 1000, 1300, 1600, 2000, 2700, 3200, 4000,
