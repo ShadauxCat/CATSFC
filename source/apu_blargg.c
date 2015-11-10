@@ -3616,6 +3616,7 @@ void S9xAPUSaveState (uint8_t *block)
 
    spc_copy_state(&ptr, from_apu_to_state);
 
+   ptr = (uint8_t*)(((uintptr_t)ptr + 0x3)& ~0x3);
    SET_LE32(ptr, reference_time);
    ptr += sizeof(int32_t);
    SET_LE32(ptr, spc_remainder);
@@ -3635,6 +3636,7 @@ void S9xAPULoadState (uint8_t *block)
 
    spc_copy_state(&ptr, to_apu_from_state);
 
+   ptr = (uint8_t*)(((uintptr_t)ptr + 0x3)& ~0x3);
    reference_time = GET_LE32(ptr);
    ptr += sizeof(int32_t);
    spc_remainder = GET_LE32(ptr);
