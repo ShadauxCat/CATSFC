@@ -153,7 +153,6 @@ else ifeq ($(platform), psp1)
 		-fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
 		-fweb -fpeel-loops
 	DEFS   +=  -DPSP -D_PSP_FW_VERSION=371
-   INCFLAGS     += -I$(shell psp-config --pspsdk-path)/include
    STATIC_LINKING := 1
 
 # Vita
@@ -211,6 +210,10 @@ CORE_DIR     := ./source
 LIBRETRO_DIR := .
 
 include Makefile.common
+
+ifeq ($(platform), psp1)
+   INCFLAGS     += -I$(shell psp-config --pspsdk-path)/include
+endif
 
 OBJECTS := $(SOURCES_C:.c=.o)
 
