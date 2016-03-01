@@ -196,6 +196,19 @@ else ifeq ($(platform), wii)
    CFLAGS += -DGEKKO -DHW_RVL -mrvl -mcpu=750 -meabi -mhard-float -D__ppc__ -DMSB_FIRST
    STATIC_LINKING = 1
 
+# GCW0
+else ifeq ($(platform), gcw0)
+   TARGET := $(TARGET_NAME)_libretro.so
+   CC = /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
+   CXX = /opt/gcw0-toolchain/usr/bin/mipsel-linux-g++
+   AR = /opt/gcw0-toolchain/usr/bin/mipsel-linux-ar
+   fpic := -fPIC -nostdlib
+   SHARED := -shared -Wl,--version-script=link.T
+   
+   LIBM   :=
+   LOAD_FROM_MEMORY_TEST = 0
+   CFLAGS += -ffast-math -march=mips32 -mtune=mips32r2 -mhard-float
+
 else
    TARGET := $(TARGET_NAME)_libretro.dll
    CC = gcc
