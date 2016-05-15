@@ -7,7 +7,8 @@ LIBRETRO_DIR := ..
 
 DEBUG                 = 0
 PERF_TEST             = 0
-HAVE_GRIFFIN          = 1
+#HAVE_GRIFFIN          = 1
+HAVE_GRIFFIN          = 0
 LOAD_FROM_MEMORY_TEST = 1
 USE_BLARGG_APU        = 0
 
