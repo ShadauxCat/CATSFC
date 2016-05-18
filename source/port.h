@@ -1,6 +1,6 @@
 /*******************************************************************************
   Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
- 
+
   (c) Copyright 1996 - 2002 Gary Henderson (gary.henderson@ntlworld.com) and
                             Jerremy Koot (jkoot@snes9x.com)
 
@@ -43,46 +43,46 @@
   S-DD1 C emulator code
   (c) Copyright 2003 Brad Jorsch with research by
                      Andreas Naive and John Weidman
- 
+
   S-RTC C emulator code
   (c) Copyright 2001 John Weidman
-  
+
   ST010 C++ emulator code
   (c) Copyright 2003 Feather, Kris Bleakley, John Weidman and Matthew Kendora
 
-  Super FX x86 assembler emulator code 
-  (c) Copyright 1998 - 2003 zsKnight, _Demo_, and pagefault 
+  Super FX x86 assembler emulator code
+  (c) Copyright 1998 - 2003 zsKnight, _Demo_, and pagefault
 
-  Super FX C emulator code 
+  Super FX C emulator code
   (c) Copyright 1997 - 1999 Ivar, Gary Henderson and John Weidman
 
 
   SH assembler code partly based on x86 assembler code
-  (c) Copyright 2002 - 2004 Marcus Comstedt (marcus@mc.pp.se) 
+  (c) Copyright 2002 - 2004 Marcus Comstedt (marcus@mc.pp.se)
 
- 
+
   Specific ports contains the works of other authors. See headers in
   individual files.
- 
+
   Snes9x homepage: http://www.snes9x.com
- 
+
   Permission to use, copy, modify and distribute Snes9x in both binary and
   source form, for non-commercial purposes, is hereby granted without fee,
   providing that this license information and copyright notice appear with
   all copies and any derived work.
- 
+
   This software is provided 'as-is', without any express or implied
   warranty. In no event shall the authors be held liable for any damages
   arising from the use of this software.
- 
+
   Snes9x is freeware for PERSONAL USE only. Commercial users should
   seek permission of the copyright holders first. Commercial use includes
   charging money for Snes9x or software derived from Snes9x.
- 
+
   The copyright holders request that bug fixes and improvements to the code
   should be forwarded to them so everyone can benefit from the modifications
   in future versions.
- 
+
   Super NES and Super Nintendo Entertainment System are trademarks of
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
@@ -93,7 +93,7 @@
 #include <limits.h>
 
 #ifndef STORM
-#include <memory.h>
+//#include <memory.h>
 #include <string.h>
 #else
 #include <strings.h>
@@ -111,12 +111,13 @@
 #include <sys/types.h>
 
 /* #define PIXEL_FORMAT RGB565 */
+#ifdef PSP
 #define PIXEL_FORMAT BGR555
-#define FOREVER_16_BIT
+#else
+#define PIXEL_FORMAT RGB565
+#endif
 // The above is used to disable the 16-bit graphics mode checks sprinkled
 // throughout the code, if the pixel format is always 16-bit.
-
-// #define GFX_MULTI_FORMAT
 
 #if defined(TARGET_OS_MAC) && TARGET_OS_MAC
 
@@ -133,88 +134,14 @@
 #undef  _MAX_PATH
 
 #undef DEBUGGER /* Apple Universal Headers sometimes #define DEBUGGER */
-#undef GFX_MULTI_FORMAT
 
-int    strncasecmp(const char *s1, const char *s2, unsigned n);
-int    strcasecmp(const char *s1, const char *s2 );
+int    strncasecmp(const char* s1, const char* s2, unsigned n);
+int    strcasecmp(const char* s1, const char* s2);
 
 #endif /* TARGET_OS_MAC */
 
-#ifndef NOASM
-#define USE_X86_ASM
-#endif
-
-#ifndef snes9x_types_defined
-#define snes9x_types_defined
-
-typedef unsigned char bool8;
-
-/* FIXME: Refactor this by moving out the BORLAND part and unifying typedefs */
-#ifndef __WIN32__
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef signed char int8;
-typedef short int16;
-typedef int int32;
-typedef unsigned int uint32;
-# ifdef __GNUC__  /* long long is not part of ISO C++ */
-__extension__
-# endif
-typedef long long int64;
-#else /* __WIN32__ */
-
-# ifdef __BORLANDC__
-#   include <systypes.h>
-# else
-
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef signed char int8;
-typedef short int16;
-
-# ifndef WSAAPI
-/* winsock2.h typedefs int32 as well. */
-typedef long int32;
-
-#   define PLAT_SOUND_BUFFER SoundBuffer
-#   define RIGHTSHIFT_IS_SAR
-# endif
-
-typedef unsigned int uint32;
-
-# endif /* __BORLANDC__ */
-
-typedef __int64 int64;
-
-#endif /* __WIN32__ */
-#endif /* snes9x_types_defined */
-
 
 #include "pixform.h"
-
-#ifndef TRUE
-#define TRUE 1
-#endif
-
-#ifndef FALSE
-#define FALSE 0
-#endif
-
-#ifdef STORM
-#define EXTERN_C
-#define START_EXTERN_C
-#define END_EXTERN_C
-#else
-#if defined(__cplusplus) || defined(c_plusplus)
-#define EXTERN_C extern "C"
-#define START_EXTERN_C extern "C" {
-#define END_EXTERN_C }
-#else
-#define EXTERN_C extern
-#define START_EXTERN_C
-#define END_EXTERN_C
-#endif
-#endif
 
 #ifndef __WIN32__
 
@@ -228,22 +155,20 @@ typedef __int64 int64;
 #define _MAX_EXT PATH_MAX
 #define _MAX_PATH PATH_MAX
 
-#define ZeroMemory(a,b) memset((a),0,(b))
-
-void _makepath (char *path, const char *drive, const char *dir,
-		const char *fname, const char *ext);
-void _splitpath (const char *path, char *drive, char *dir, char *fname,
-		 char *ext);
+void _makepath(char* path, const char* drive, const char* dir,
+               const char* fname, const char* ext);
+void _splitpath(const char* path, char* drive, char* dir, char* fname,
+                char* ext);
 #else /* __WIN32__ */
 #define strcasecmp stricmp
 #define strncasecmp strnicmp
 #endif
 
-EXTERN_C void S9xGenerateSound ();
+void S9xGenerateSound();
 
 #ifdef STORM
-EXTERN_C int soundsignal;
-EXTERN_C void MixSound(void);
+int soundsignal;
+void MixSound(void);
 /* Yes, CHECK_SOUND is getting defined correctly! */
 #define CHECK_SOUND if (Settings.APUEnabled) if(SetSignalPPC(0L, soundsignal) & soundsignal) MixSound
 #else
@@ -272,16 +197,13 @@ EXTERN_C void MixSound(void);
 
 #if defined(__i386__) || defined(__i486__) || defined(__i586__) || \
     defined(__WIN32__) || defined(__alpha__)
-#define LSB_FIRST
 #define FAST_LSB_WORD_ACCESS
 #elif defined(__MIPSEL__)
-#define LSB_FIRST
 // On little-endian MIPS, a 16-bit word can be read directly from an address
 // only if it's aligned.
 #define FAST_ALIGNED_LSB_WORD_ACCESS
 #else
 //#define MSB_FIRST
-#define LSB_FIRST
 //#define FAST_LSB_WORD_ACCESS
 #endif
 
@@ -303,6 +225,8 @@ EXTERN_C void MixSound(void);
 #else
 #define STATIC static
 #endif
+
+#include <libretro.h>
 
 #endif
 

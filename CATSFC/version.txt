@@ -1,2 +1,0 @@
-CAT SFC emulator - Based on BAG SFC emulator r3 - core NDSSFC 1.06
-

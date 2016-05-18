@@ -1,0 +1,87 @@
+INCFLAGS := -I$(CORE_DIR) -I$(LIBRETRO_DIR)
+
+ifeq ($(HAVE_GRIFFIN), 1)
+SOURCES_C := $(CORE_DIR)/catsfc_griffin.c
+SOURCES_C += $(CORE_DIR)/sa1.c \
+				 $(CORE_DIR)/sa1cpu.c \
+				 $(CORE_DIR)/apu_blargg.c
+else
+SOURCES_C := \
+	$(CORE_DIR)/apu.c \
+	$(CORE_DIR)/c4.c \
+	$(CORE_DIR)/c4emu.c \
+	$(CORE_DIR)/cheats2.c \
+	$(CORE_DIR)/cheats.c \
+	$(CORE_DIR)/clip.c \
+	$(CORE_DIR)/cpu.c \
+	$(CORE_DIR)/cpuexec.c \
+	$(CORE_DIR)/cpuops.c \
+	$(CORE_DIR)/data.c\
+	$(CORE_DIR)/dma.c \
+	$(CORE_DIR)/dsp1.c \
+	$(CORE_DIR)/fxdbg.c \
+	$(CORE_DIR)/fxemu.c \
+	$(CORE_DIR)/fxinst.c \
+	$(CORE_DIR)/gfx.c \
+	$(CORE_DIR)/globals.c \
+	$(CORE_DIR)/memmap.c \
+	$(CORE_DIR)/obc1.c \
+	$(CORE_DIR)/ppu.c \
+	$(CORE_DIR)/sa1.c \
+	$(CORE_DIR)/sa1cpu.c \
+	$(CORE_DIR)/sdd1.c \
+	$(CORE_DIR)/sdd1emu.c \
+	$(CORE_DIR)/seta010.c \
+	$(CORE_DIR)/seta011.c \
+	$(CORE_DIR)/seta018.c \
+	$(CORE_DIR)/seta.c \
+	$(CORE_DIR)/soundux.c \
+	$(CORE_DIR)/spc700.c \
+	$(CORE_DIR)/spc7110.c \
+	$(CORE_DIR)/srtc.c \
+	$(CORE_DIR)/tile.c \
+	$(CORE_DIR)/apu_blargg.c
+
+SOURCES_C += $(LIBRETRO_DIR)/libretro.c
+endif
+
+ifeq ($(DEBUG),1)
+FLAGS += -O0 -g
+else
+FLAGS += -O3 -DNDEBUG
+endif
+
+ifeq ($(PERF_TEST),1)
+FLAGS += -DPERF_TEST
+endif
+
+ifeq ($(USE_BLARGG_APU),1)
+FLAGS += -DUSE_BLARGG_APU
+endif
+
+ifeq ($(LOAD_FROM_MEMORY_TEST),1)
+FLAGS += -DLOAD_FROM_MEMORY_TEST
+endif
+
+DEFS   += -DSPC700_C -DEXECUTE_SUPERFX_PER_LINE -DSDD1_DECOMP \
+          -DVAR_CYCLES -DCPU_SHUTDOWN -DSPC700_SHUTDOWN \
+          -DNO_INLINE_SET_GET -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t' -DWANT_CHEATS
+
+DEFS  += -D__LIBRETRO__
+
+ifeq ($(OLD_GCC), 1)
+WARNINGS := -Wall
+else ifeq ($(NO_GCC), 1)
+WARNINGS :=
+else
+WARNINGS := -Wall \
+	-Wno-sign-compare \
+	-Wno-unused-variable \
+	-Wno-unused-function \
+	-Wno-uninitialized \
+	-Wno-strict-aliasing \
+	-Wno-overflow \
+	-fno-strict-overflow
+endif
+
+FLAGS += $(DEFS) $(WARNINGS) $(INCFLAGS)

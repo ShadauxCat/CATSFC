@@ -1,6 +1,6 @@
 /*******************************************************************************
   Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
- 
+
   (c) Copyright 1996 - 2002 Gary Henderson (gary.henderson@ntlworld.com) and
                             Jerremy Koot (jkoot@snes9x.com)
 
@@ -43,49 +43,51 @@
   S-DD1 C emulator code
   (c) Copyright 2003 Brad Jorsch with research by
                      Andreas Naive and John Weidman
- 
+
   S-RTC C emulator code
   (c) Copyright 2001 John Weidman
-  
+
   ST010 C++ emulator code
   (c) Copyright 2003 Feather, Kris Bleakley, John Weidman and Matthew Kendora
 
-  Super FX x86 assembler emulator code 
-  (c) Copyright 1998 - 2003 zsKnight, _Demo_, and pagefault 
+  Super FX x86 assembler emulator code
+  (c) Copyright 1998 - 2003 zsKnight, _Demo_, and pagefault
 
-  Super FX C emulator code 
+  Super FX C emulator code
   (c) Copyright 1997 - 1999 Ivar, Gary Henderson and John Weidman
 
 
   SH assembler code partly based on x86 assembler code
-  (c) Copyright 2002 - 2004 Marcus Comstedt (marcus@mc.pp.se) 
+  (c) Copyright 2002 - 2004 Marcus Comstedt (marcus@mc.pp.se)
 
- 
+
   Specific ports contains the works of other authors. See headers in
   individual files.
- 
+
   Snes9x homepage: http://www.snes9x.com
- 
+
   Permission to use, copy, modify and distribute Snes9x in both binary and
   source form, for non-commercial purposes, is hereby granted without fee,
   providing that this license information and copyright notice appear with
   all copies and any derived work.
- 
+
   This software is provided 'as-is', without any express or implied
   warranty. In no event shall the authors be held liable for any damages
   arising from the use of this software.
- 
+
   Snes9x is freeware for PERSONAL USE only. Commercial users should
   seek permission of the copyright holders first. Commercial use includes
   charging money for Snes9x or software derived from Snes9x.
- 
+
   The copyright holders request that bug fixes and improvements to the code
   should be forwarded to them so everyone can benefit from the modifications
   in future versions.
- 
+
   Super NES and Super Nintendo Entertainment System are trademarks of
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
+#ifndef USE_BLARGG_APU
+
 #ifndef _SPC700_H_
 #define _SPC700_H_
 
@@ -133,21 +135,28 @@
 
 typedef union
 {
-#ifdef LSB_FIRST
-    struct { uint8 A, Y; } B;
+#ifdef MSB_FIRST
+   struct
+   {
+      uint8_t Y, A;
+   } B;
 #else
-    struct { uint8 Y, A; } B;
+   struct
+   {
+      uint8_t A, Y;
+   } B;
 #endif
-    uint16 W;
+   uint16_t W;
 } YAndA;
 
-struct SAPURegisters{
-    uint8  P;
-    YAndA YA;
-    uint8  X;
-    uint8  S;
-    uint16  PC;
-};
+typedef struct
+{
+   uint8_t  P;
+   YAndA YA;
+   uint8_t  X;
+   uint8_t  S;
+   uint16_t  PC;
+} SAPURegisters;
 
 // Needed by ILLUSION OF GAIA
 //#define ONE_APU_CYCLE 14
@@ -160,11 +169,11 @@ struct SAPURegisters{
 // 1.953us := 1.024065.54MHz
 
 #ifdef SPCTOOL
-EXTERN_C int32 ESPC (int32);
+int32_t ESPC(int32_t);
 
 #define APU_EXECUTE() \
 { \
-    int32 l = (CPU.Cycles - APU.Cycles) / 14; \
+    int32_t l = (CPU.Cycles - APU.Cycles) / 14; \
     if (l > 0) \
     { \
         l -= _EmuSPC(l); \
@@ -174,29 +183,20 @@ EXTERN_C int32 ESPC (int32);
 
 #else
 
-#ifdef DEBUGGER
-#define APU_EXECUTE1() \
-{ \
-    if (APU.Flags & TRACE_FLAG) \
-	S9xTraceAPU ();\
-    APU.Cycles += S9xAPUCycles [*IAPU.PC]; \
-    (*S9xApuOpcodes[*IAPU.PC]) (); \
-}
-#else
 #define APU_EXECUTE1() \
 { \
     APU.Cycles += S9xAPUCycles [*IAPU.PC]; \
     (*S9xApuOpcodes[*IAPU.PC]) (); \
 }
-#endif
 
 #define APU_EXECUTE() \
 if (IAPU.APUExecuting) \
 {\
     while (APU.Cycles <= CPU.Cycles) \
-	APU_EXECUTE1(); \
+   APU_EXECUTE1(); \
 }
 #endif
 
 #endif
 
+#endif

@@ -1,6 +1,6 @@
 /*******************************************************************************
   Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
- 
+
   (c) Copyright 1996 - 2002 Gary Henderson (gary.henderson@ntlworld.com) and
                             Jerremy Koot (jkoot@snes9x.com)
 
@@ -43,46 +43,46 @@
   S-DD1 C emulator code
   (c) Copyright 2003 Brad Jorsch with research by
                      Andreas Naive and John Weidman
- 
+
   S-RTC C emulator code
   (c) Copyright 2001 John Weidman
-  
+
   ST010 C++ emulator code
   (c) Copyright 2003 Feather, Kris Bleakley, John Weidman and Matthew Kendora
 
-  Super FX x86 assembler emulator code 
-  (c) Copyright 1998 - 2003 zsKnight, _Demo_, and pagefault 
+  Super FX x86 assembler emulator code
+  (c) Copyright 1998 - 2003 zsKnight, _Demo_, and pagefault
 
-  Super FX C emulator code 
+  Super FX C emulator code
   (c) Copyright 1997 - 1999 Ivar, Gary Henderson and John Weidman
 
 
   SH assembler code partly based on x86 assembler code
-  (c) Copyright 2002 - 2004 Marcus Comstedt (marcus@mc.pp.se) 
+  (c) Copyright 2002 - 2004 Marcus Comstedt (marcus@mc.pp.se)
 
- 
+
   Specific ports contains the works of other authors. See headers in
   individual files.
- 
+
   Snes9x homepage: http://www.snes9x.com
- 
+
   Permission to use, copy, modify and distribute Snes9x in both binary and
   source form, for non-commercial purposes, is hereby granted without fee,
   providing that this license information and copyright notice appear with
   all copies and any derived work.
- 
+
   This software is provided 'as-is', without any express or implied
   warranty. In no event shall the authors be held liable for any damages
   arising from the use of this software.
- 
+
   Snes9x is freeware for PERSONAL USE only. Commercial users should
   seek permission of the copyright holders first. Commercial use includes
   charging money for Snes9x or software derived from Snes9x.
- 
+
   The copyright holders request that bug fixes and improvements to the code
   should be forwarded to them so everyone can benefit from the modifications
   in future versions.
- 
+
   Super NES and Super Nintendo Entertainment System are trademarks of
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
@@ -97,58 +97,54 @@
 #define ST_011 0x02
 #define ST_018 0x03
 
+uint8_t S9xGetSetaDSP(uint32_t Address);
+void S9xSetSetaDSP(uint8_t byte, uint32_t Address);
+uint8_t S9xGetST018(uint32_t Address);
+void S9xSetST018(uint8_t Byte, uint32_t Address);
 
-extern "C"
-{
-uint8 S9xGetSetaDSP(uint32 Address);
-void S9xSetSetaDSP(uint8 byte,uint32 Address);
-uint8 S9xGetST018(uint32 Address);
-void S9xSetST018(uint8 Byte, uint32 Address);
+uint8_t S9xGetST010(uint32_t Address);
+void S9xSetST010(uint32_t Address, uint8_t Byte);
+uint8_t S9xGetST011(uint32_t Address);
+void S9xSetST011(uint32_t Address, uint8_t Byte);
 
-uint8 S9xGetST010(uint32 Address);
-void S9xSetST010(uint32 Address, uint8 Byte);
-uint8 S9xGetST011(uint32 Address);
-void S9xSetST011(uint32 Address, uint8 Byte);
-}
-
-extern void (*SetSETA)(uint32, uint8);
-extern uint8 (*GetSETA)(uint32);
+extern void (*SetSETA)(uint32_t, uint8_t);
+extern uint8_t(*GetSETA)(uint32_t);
 
 typedef struct SETA_ST010_STRUCT
 {
-	uint8 input_params[16];
-	uint8 output_params[16];
-	uint8 op_reg;
-	uint8 execute;
-	bool8 control_enable;
+   uint8_t input_params[16];
+   uint8_t output_params[16];
+   uint8_t op_reg;
+   uint8_t execute;
+   bool control_enable;
 } ST010_Regs;
 
 typedef struct SETA_ST011_STRUCT
 {
-	bool8 waiting4command;
-	uint8 status;
-	uint8 command;
-	uint32 in_count;
-	uint32 in_index;
-	uint32 out_count;
-	uint32 out_index;
-	uint8 parameters [512];
-	uint8 output [512];
+   bool waiting4command;
+   uint8_t status;
+   uint8_t command;
+   uint32_t in_count;
+   uint32_t in_index;
+   uint32_t out_count;
+   uint32_t out_index;
+   uint8_t parameters [512];
+   uint8_t output [512];
 } ST011_Regs;
 
 typedef struct SETA_ST018_STRUCT
 {
-	bool8 waiting4command;
-	uint8 status;
-	uint8 part_command;
-	uint8 pass;
-	uint32 command;
-	uint32 in_count;
-	uint32 in_index;
-	uint32 out_count;
-	uint32 out_index;
-	uint8 parameters [512];
-	uint8 output [512];
+   bool waiting4command;
+   uint8_t status;
+   uint8_t part_command;
+   uint8_t pass;
+   uint32_t command;
+   uint32_t in_count;
+   uint32_t in_index;
+   uint32_t out_count;
+   uint32_t out_index;
+   uint8_t parameters [512];
+   uint8_t output [512];
 } ST018_Regs;
 
 #endif

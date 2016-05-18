@@ -1,6 +1,6 @@
 /*******************************************************************************
   Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
- 
+
   (c) Copyright 1996 - 2002 Gary Henderson (gary.henderson@ntlworld.com) and
                             Jerremy Koot (jkoot@snes9x.com)
 
@@ -43,46 +43,46 @@
   S-DD1 C emulator code
   (c) Copyright 2003 Brad Jorsch with research by
                      Andreas Naive and John Weidman
- 
+
   S-RTC C emulator code
   (c) Copyright 2001 John Weidman
-  
+
   ST010 C++ emulator code
   (c) Copyright 2003 Feather, Kris Bleakley, John Weidman and Matthew Kendora
 
-  Super FX x86 assembler emulator code 
-  (c) Copyright 1998 - 2003 zsKnight, _Demo_, and pagefault 
+  Super FX x86 assembler emulator code
+  (c) Copyright 1998 - 2003 zsKnight, _Demo_, and pagefault
 
-  Super FX C emulator code 
+  Super FX C emulator code
   (c) Copyright 1997 - 1999 Ivar, Gary Henderson and John Weidman
 
 
   SH assembler code partly based on x86 assembler code
-  (c) Copyright 2002 - 2004 Marcus Comstedt (marcus@mc.pp.se) 
+  (c) Copyright 2002 - 2004 Marcus Comstedt (marcus@mc.pp.se)
 
- 
+
   Specific ports contains the works of other authors. See headers in
   individual files.
- 
+
   Snes9x homepage: http://www.snes9x.com
- 
+
   Permission to use, copy, modify and distribute Snes9x in both binary and
   source form, for non-commercial purposes, is hereby granted without fee,
   providing that this license information and copyright notice appear with
   all copies and any derived work.
- 
+
   This software is provided 'as-is', without any express or implied
   warranty. In no event shall the authors be held liable for any damages
   arising from the use of this software.
- 
+
   Snes9x is freeware for PERSONAL USE only. Commercial users should
   seek permission of the copyright holders first. Commercial use includes
   charging money for Snes9x or software derived from Snes9x.
- 
+
   The copyright holders request that bug fixes and improvements to the code
   should be forwarded to them so everyone can benefit from the modifications
   in future versions.
- 
+
   Super NES and Super Nintendo Entertainment System are trademarks of
   Nintendo Co., Limited and its subsidiary companies.
 *******************************************************************************/
@@ -90,40 +90,39 @@
 #ifndef _DSP1_H_
 #define _DSP1_H_
 
-extern void (*SetDSP)(uint8, uint16);
-extern uint8 (*GetDSP)(uint16);
+extern void (*SetDSP)(uint8_t, uint16_t);
+extern uint8_t(*GetDSP)(uint16_t);
 
-void DSP1SetByte(uint8 byte, uint16 address);
-uint8 DSP1GetByte(uint16 address);
+void DSP1SetByte(uint8_t byte, uint16_t address);
+uint8_t DSP1GetByte(uint16_t address);
 
-void DSP2SetByte(uint8 byte, uint16 address);
-uint8 DSP2GetByte(uint16 address);
+void DSP2SetByte(uint8_t byte, uint16_t address);
+uint8_t DSP2GetByte(uint16_t address);
 
-void DSP3SetByte(uint8 byte, uint16 address);
-uint8 DSP3GetByte(uint16 address);
+void DSP3SetByte(uint8_t byte, uint16_t address);
+uint8_t DSP3GetByte(uint16_t address);
 
-void DSP4SetByte(uint8 byte, uint16 address);
-uint8 DSP4GetByte(uint16 address);
+void DSP4SetByte(uint8_t byte, uint16_t address);
+uint8_t DSP4GetByte(uint16_t address);
 
-struct SDSP1 {
-    bool8 waiting4command;
-    bool8 first_parameter;
-    uint8 command;
-    uint32 in_count;
-    uint32 in_index;
-    uint32 out_count;
-    uint32 out_index;
-    uint8 parameters [512];
-//output was 512 for DSP-2 work, updated to reflect current thinking on DSP-3
-    uint8 output [512];
-};
+typedef struct
+{
+   bool waiting4command;
+   bool first_parameter;
+   uint8_t command;
+   uint32_t in_count;
+   uint32_t in_index;
+   uint32_t out_count;
+   uint32_t out_index;
+   uint8_t parameters [512];
+   //output was 512 for DSP-2 work, updated to reflect current thinking on DSP-3
+   uint8_t output [512];
+} SDSP1;
 
-START_EXTERN_C
-void S9xResetDSP1 ();
-uint8 S9xGetDSP (uint16 Address);
-void S9xSetDSP (uint8 Byte, uint16 Address);
-extern struct SDSP1 DSP1;
-END_EXTERN_C
+void S9xResetDSP1();
+uint8_t S9xGetDSP(uint16_t Address);
+void S9xSetDSP(uint8_t Byte, uint16_t Address);
+extern SDSP1 DSP1;
 
 //extern struct SDSP1 DSP1;
 

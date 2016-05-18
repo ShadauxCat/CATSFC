@@ -89,38 +89,36 @@
 #ifndef _CHEATS_H_
 #define _CHEATS_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifdef WANT_CHEATS
 
 #define MAX_SFCCHEAT_NAME 48
 #define MAX_CHEATS_T 800
 
-struct SCheat
+typedef struct
 {
-    uint32  address;
-    uint8   byte;
-    uint8   saved_byte;
-    bool8   enabled;
-    bool8   saved;
+    uint32_t  address;
+    uint8_t   byte;
+    uint8_t   saved_byte;
+    bool   enabled;
+    bool   saved;
     char    name[MAX_SFCCHEAT_NAME];
-};
+}SCheat;
 
 
-struct SCheatData
+typedef struct
 {
-    struct SCheat   c [MAX_CHEATS_T];
-    uint32	    num_cheats;
-    uint8	    CWRAM [0x20000];
-    uint8	    CSRAM [0x10000];
-    uint8	    CIRAM [0x2000];
-    uint8           *RAM;
-    uint8           *FillRAM;
-    uint8           *SRAM;
-    uint32	    WRAM_BITS [0x20000 >> 3];
-    uint32	    SRAM_BITS [0x10000 >> 3];
-    uint32	    IRAM_BITS [0x2000 >> 3];
-};
+    SCheat   c [MAX_CHEATS_T];
+    uint32_t	    num_cheats;
+    uint8_t	    CWRAM [0x20000];
+    uint8_t	    CSRAM [0x10000];
+    uint8_t	    CIRAM [0x2000];
+    uint8_t           *RAM;
+    uint8_t           *FillRAM;
+    uint8_t           *SRAM;
+    uint32_t	    WRAM_BITS [0x20000 >> 3];
+    uint32_t	    SRAM_BITS [0x10000 >> 3];
+    uint32_t	    IRAM_BITS [0x2000 >> 3];
+}SCheatData;
 
 typedef enum
 {
@@ -135,34 +133,33 @@ typedef enum
 
 void S9xInitCheatData ();
 
-const char *S9xGameGenieToRaw (const char *code, uint32 *address, uint8 *byte);
-const char *S9xProActionReplayToRaw (const char *code, uint32 *address, uint8 *byte);
-const char *S9xGoldFingerToRaw (const char *code, uint32 *address, bool8 *sram,
-				uint8 *num_bytes, uint8 bytes[3]);
-void S9xApplyCheats ();
-void S9xApplyCheat (uint32 which1);
+const char *S9xGameGenieToRaw (const char *code, uint32_t *address, uint8_t *byte);
+const char *S9xProActionReplayToRaw (const char *code, uint32_t *address, uint8_t *byte);
+const char *S9xGoldFingerToRaw (const char *code, uint32_t *address, bool *sram,
+				uint8_t *num_bytes, uint8_t bytes[3]);
+void S9xApplyCheats(void);
+void S9xApplyCheat (uint32_t which1);
 void S9xRemoveCheats ();
-void S9xRemoveCheat (uint32 which1);
-void S9xEnableCheat (uint32 which1);
-void S9xDisableCheat (uint32 which1);
+void S9xRemoveCheat (uint32_t which1);
+void S9xEnableCheat (uint32_t which1);
+void S9xDisableCheat (uint32_t which1);
 void S9xDisableAllCheat(void);
-void S9xAddCheat (bool8 enable, bool8 save_current_value, uint32 address,
-		  uint8 byte);
-void S9xDeleteCheats ();
-void S9xDeleteCheat (uint32 which1);
-bool8 S9xLoadCheatFile (const char *filename);
-bool8 S9xSaveCheatFile (const char *filename);
+void S9xAddCheat (bool enable, bool save_current_value, uint32_t address,
+		  uint8_t byte);
+void S9xDeleteCheats(void);
+void S9xDeleteCheat (uint32_t which1);
+bool S9xLoadCheatFile (const char *filename);
+bool S9xSaveCheatFile (const char *filename);
 
-void S9xStartCheatSearch (struct SCheatData *cheats);
-void S9xSearchForChange (struct SCheatData *cheats, S9xCheatComparisonType cmp,
-                         S9xCheatDataSize size, bool8 is_signed, bool8 update);
-void S9xSearchForValue (struct SCheatData *cheats, S9xCheatComparisonType cmp,
-                        S9xCheatDataSize size, uint32 value,
-                        bool8 is_signed, bool8 update);
-void S9xOutputCheatSearchResults (struct SCheatData *cheats);
+void S9xStartCheatSearch (SCheatData *cheats);
+void S9xSearchForChange (SCheatData *cheats, S9xCheatComparisonType cmp,
+                         S9xCheatDataSize size, bool is_signed, bool update);
+void S9xSearchForValue (SCheatData *cheats, S9xCheatComparisonType cmp,
+                        S9xCheatDataSize size, uint32_t value,
+                        bool is_signed, bool update);
+void S9xOutputCheatSearchResults (SCheatData *cheats);
 
-#ifdef __cplusplus
-}
 #endif
+
 #endif
 
